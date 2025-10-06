@@ -1,0 +1,13 @@
+{
+  "name": "wallet",
+  "version": "dev. 25w41",
+  "description": "Become your own financial superhero.",
+  "scripts": {
+    "types": "cd client && bun tsc && cd ../server && bun tsc"
+  },
+  "dependencies": {
+    "@vis.gl/react-google-maps": "^1.5.5",
+    "moment-range": "^4.0.2"
+  },
+  "devDependencies": {}
+}
