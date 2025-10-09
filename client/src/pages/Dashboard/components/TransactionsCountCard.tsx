@@ -57,7 +57,7 @@ function TransactionsCountCard() {
                         {t(`transactionTypes.${type}`)}
                       </div>
                       <div className="text-bg-500 text-sm">
-                        {typesCount[type].transactionCount}{' '}
+                        {typesCount[type]?.transactionCount || 0}{' '}
                         {t('transactionCount')}
                       </div>
                     </div>
@@ -88,12 +88,12 @@ function TransactionsCountCard() {
                             ))}
                         </span>
                       ) : (
-                        numberToCurrency(typesCount[type].accumulatedAmount)
+                        numberToCurrency(typesCount[type]?.accumulatedAmount)
                       )}
                     </div>
                     <div className="text-bg-500 text-right text-sm">
                       {(
-                        (typesCount[type].accumulatedAmount /
+                        (typesCount[type]?.accumulatedAmount /
                           (type === 'transfer' ? 2 : 1) /
                           transactions
                             .filter(transaction => transaction.amount)
