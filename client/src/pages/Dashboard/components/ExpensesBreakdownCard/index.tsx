@@ -4,7 +4,13 @@ import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { DashboardItem, Listbox, ListboxOption, WithQuery } from 'lifeforge-ui'
+import {
+  DashboardItem,
+  EmptyStateScreen,
+  Listbox,
+  ListboxOption,
+  WithQuery
+} from 'lifeforge-ui'
 import { createContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -134,13 +140,17 @@ function ExpensesBreakdownCard() {
           </Listbox>
         </div>
         <WithQuery query={expensesBreakdownQuery}>
-          {() => (
-            <>
-              <BreakdownDoughnutChart />
-              <BreakdownChartLegend />
-              <BreakdownDetails />
-            </>
-          )}
+          {data =>
+            Object.keys(data).length === 0 ? (
+              <EmptyStateScreen name="transactions" namespace="apps.wallet" />
+            ) : (
+              <>
+                <BreakdownDoughnutChart />
+                <BreakdownChartLegend />
+                <BreakdownDetails />
+              </>
+            )
+          }
         </WithQuery>
       </DashboardItem>
     </ExpensesBreakdownContext>
