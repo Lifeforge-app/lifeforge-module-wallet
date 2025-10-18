@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import { DashboardItem, Scrollbar, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link } from 'shared'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -65,7 +65,7 @@ function TransactionsCountCard() {
                   <div className="flex w-full flex-row items-center justify-between sm:w-auto sm:flex-col sm:items-end">
                     <div
                       className={clsx(
-                        'flex gap-2 text-right font-medium whitespace-nowrap',
+                        'flex gap-2 whitespace-nowrap text-right font-medium',
                         isAmountHidden ? 'items-center' : 'items-end'
                       )}
                     >

@@ -13,7 +13,7 @@ import {
 import { useModalStore } from 'lifeforge-ui'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation } from 'react-router'
+import { useLocation } from 'shared'
 
 import TotalBalance from './components/Amount'
 import AssetItem from './components/AssetItem'

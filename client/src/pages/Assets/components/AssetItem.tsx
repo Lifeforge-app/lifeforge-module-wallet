@@ -10,8 +10,8 @@ import {
   ItemWrapper,
   useModalStore
 } from 'lifeforge-ui'
-import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'shared'
 
 import BalanceChartModal from '../modals/BalanceChartModal'
 import ModifyAssetModal from '../modals/ModifyAssetModal'

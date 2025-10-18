@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { Scrollbar } from 'lifeforge-ui'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link } from 'shared'
 
 import { ExpensesBreakdownContext } from '..'
 import numberToCurrency from '../../../../../utils/numberToCurrency'

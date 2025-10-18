@@ -13,7 +13,7 @@ import {
 import { useModalStore } from 'lifeforge-ui'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useSearchParams } from 'shared'
 import type { InferOutput } from 'shared'
 
 import HeaderMenu from './components/HeaderMenu'
@@ -173,7 +173,7 @@ function Transactions() {
         <div className="flex h-full min-w-0 flex-1 flex-col xl:ml-8">
           <InnerHeader />
           <SearchBar />
-          <div className="mt-6 mb-8 flex size-full flex-col gap-3">
+          <div className="mb-8 mt-6 flex size-full flex-col gap-3">
             <WithQuery query={transactionsQuery}>
               {transactions =>
                 transactions.length > 0 ? (

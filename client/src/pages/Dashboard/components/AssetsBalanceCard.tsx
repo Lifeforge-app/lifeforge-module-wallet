@@ -9,7 +9,7 @@ import {
   WithQuery
 } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate } from 'shared'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -56,7 +56,7 @@ function AssetsBalanceCard() {
                     </div>
                     <div
                       className={clsx(
-                        'mt-4 flex gap-2 text-right text-3xl font-medium whitespace-nowrap [@media(min-width:400px)]:mt-0',
+                        'mt-4 flex gap-2 whitespace-nowrap text-right text-3xl font-medium [@media(min-width:400px)]:mt-0',
                         isAmountHidden ? 'items-center' : 'items-end'
                       )}
                     >

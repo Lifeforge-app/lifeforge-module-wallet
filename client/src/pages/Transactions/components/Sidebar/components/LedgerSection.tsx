@@ -3,7 +3,7 @@ import { useWalletStore } from '@/stores/useWalletStore'
 import { SidebarTitle, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'shared'
 
 import LedgerSectionItem from './LedgerSectionItem'
 

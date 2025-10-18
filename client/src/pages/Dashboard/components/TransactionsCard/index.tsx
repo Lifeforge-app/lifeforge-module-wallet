@@ -6,7 +6,7 @@ import {
   Scrollbar,
   WithQuery
 } from 'lifeforge-ui'
-import { Link } from 'react-router'
+import { Link } from 'shared'
 
 import ListView from './views/ListView'
 import TableView from './views/TableView'

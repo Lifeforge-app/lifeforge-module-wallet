@@ -13,7 +13,7 @@ import {
 } from 'lifeforge-ui'
 import { createContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link } from 'shared'
 import type { InferOutput } from 'shared'
 
 import type { WalletCategory } from '../../../Transactions'

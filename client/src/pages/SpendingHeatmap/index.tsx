@@ -3,7 +3,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { EmptyStateScreen, ModuleHeader, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'shared'
 import colors from 'tailwindcss/colors'
 
 interface SpendingLocationData {

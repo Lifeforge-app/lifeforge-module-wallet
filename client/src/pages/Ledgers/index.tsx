@@ -9,7 +9,7 @@ import {
 import { useModalStore } from 'lifeforge-ui'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation } from 'react-router'
+import { useLocation } from 'shared'
 
 import LedgerItem from './components/LedgerItem'
 import ModifyLedgerModal from './modals/ModifyLedgerModal'

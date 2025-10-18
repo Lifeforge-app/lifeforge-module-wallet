@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link } from 'shared'
 
 import TransactionAmount from '../../components/TransactionAmount'
 import TransactionParticular from '../../components/TransactionParticular'
@@ -19,7 +19,7 @@ function TableView() {
   return (
     <WithQuery query={transactionsQuery}>
       {transactions => (
-        <table className="hidden w-full text-base! lg:table">
+        <table className="text-base! hidden w-full lg:table">
           <thead>
             <tr className="border-bg-200 text-bg-500 dark:border-bg-800 border-b-2 text-center text-base">
               {['date', 'type', 'particulars', 'category', 'amount'].map(
@@ -44,7 +44,7 @@ function TableView() {
                   key={transaction.id}
                   className="border-bg-200 dark:border-bg-800 border-b"
                 >
-                  <td className="py-2 text-center whitespace-nowrap">
+                  <td className="whitespace-nowrap py-2 text-center">
                     {dayjs(transaction.date).format('MMM DD')}
                   </td>
                   <td className="py-4 text-center">
@@ -69,7 +69,7 @@ function TableView() {
                   <td className="py-2 text-center">
                     {transaction.type !== 'transfer' ? (
                       <Link
-                        className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm whitespace-nowrap"
+                        className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-sm"
                         style={{
                           backgroundColor:
                             categories.find(
