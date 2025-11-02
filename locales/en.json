@@ -68,6 +68,10 @@
     "templates": {
       "title": "No Templates Found",
       "description": "You haven't created any transaction templates yet. Click the button below to add one."
+    },
+    "mapKey": {
+      "description": "A Google Map API key is required for the map to display properly. Please add it to your API key vault under the key \"gcloud\".",
+      "title": "Missing Google Map API Key"
     }
   },
   "sidebar": {
@@ -178,7 +182,8 @@
     "year": "Year",
     "templateName": "Template Name",
     "incomePrompt": "Income Prompt",
-    "expensesPrompt": "Expenses Prompt"
+    "expensesPrompt": "Expenses Prompt",
+    "rangeMode": "Range Mode"
   },
   "items": {
     "transaction": "Transaction",
@@ -221,5 +226,13 @@
   "messages": {
     "aiAccuracy": "When scanning receipt using AI, the AI will attempt to use these templates that you have created when deemed appropriate. Therefore, the accuracy of the AI in scanning receipts will improve as you create more templates.",
     "promptAutoGeneration": "When you click on the 'Auto Generate' button, the AI will analyze your existing transaction particulars and generate a prompt message that will be used during receipt scanning to enhance accuracy."
+  },
+  "rangeModes": {
+    "week": "Last 7 Days",
+    "month": "Last 30 Days",
+    "year": "Last 365 Days",
+    "all": "All Time",
+    "custom": "Custom Range",
+    "quarter": "Last 90 Days"
   }
 }

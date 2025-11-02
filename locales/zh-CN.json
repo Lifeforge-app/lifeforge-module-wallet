@@ -68,6 +68,10 @@
     "templates": {
       "title": "未找到模板",
       "description": "您尚未创建任何交易模板。点击上面的按钮添加一个。"
+    },
+    "mapKey": {
+      "description": "需要一个 Google 地图 API 密钥才能正确显示地图。请在您的 API 密钥库中添加它，密钥为 \"gcloud\"。",
+      "title": "缺少 Google 地图 API 密钥"
     }
   },
   "sidebar": {
@@ -178,7 +182,8 @@
     "year": "年份",
     "templateName": "模板名称",
     "incomePrompt": "收入提示",
-    "expensesPrompt": "支出提示"
+    "expensesPrompt": "支出提示",
+    "rangeMode": "范围模式"
   },
   "items": {
     "transaction": "交易",
@@ -221,5 +226,13 @@
   "messages": {
     "aiAccuracy": "使用 AI 扫描收据时，AI 会在适当情况下尝试使用您创建的这些模板。因此，随着您创建更多模板，AI 在扫描收据时的准确性将得到提高。",
     "promptAutoGeneration": "当您点击“自动生成”按钮时，AI 将分析您现有的交易摘要，并生成一个提示信息，该信息将在扫描收据时使用，以提高准确性。"
+  },
+  "rangeModes": {
+    "week": "过去7天",
+    "month": "过去30天",
+    "year": "过去365天",
+    "all": "所有时间",
+    "custom": "自定义范围",
+    "quarter": "过去90天"
   }
 }

@@ -68,6 +68,10 @@
     "templates": {
       "title": "Tiada Templat Dijumpai",
       "description": "Anda belum mencipta sebarang templat transaksi lagi. Klik butang di atas untuk menambah satu."
+    },
+    "mapKey": {
+      "description": "Kunci API Google Map diperlukan untuk paparan peta yang betul. Sila tambahkan ke dalam peti kunci API anda di bawah kunci \"gcloud\".",
+      "title": "Kunci API Peta Google Hilang"
     }
   },
   "sidebar": {
@@ -178,7 +182,8 @@
     "year": "Tahun",
     "templateName": "Nama Templat",
     "incomePrompt": "Petunjuk Pendapatan",
-    "expensesPrompt": "Petunjuk Perbelanjaan"
+    "expensesPrompt": "Petunjuk Perbelanjaan",
+    "rangeMode": "Mod Susunan"
   },
   "items": {
     "transaction": "Transaksi",
@@ -221,5 +226,13 @@
   "messages": {
     "aiAccuracy": "Apabila mengimbas resit menggunakan AI, AI akan cuba menggunakan templat yang telah anda cipta apabila dianggap sesuai. Oleh itu, ketepatan AI dalam mengimbas resit akan bertambah baik apabila anda mencipta lebih banyak templat.",
     "promptAutoGeneration": "Apabila anda mengklik butang 'Jana Automatik', AI akan menganalisis butiran transaksi sedia ada anda dan menjana mesej arahan yang akan digunakan semasa pengimbasan resit untuk meningkatkan ketepatan."
+  },
+  "rangeModes": {
+    "week": "7 Hari Terakhir",
+    "month": "30 Hari Lalu",
+    "year": "365 Hari Terakhir",
+    "all": "Sepanjang Masa",
+    "custom": "Julat Tersuai",
+    "quarter": "90 Hari Terakhir"
   }
 }
