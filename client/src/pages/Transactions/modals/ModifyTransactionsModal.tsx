@@ -1,5 +1,6 @@
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+import getFormFileFieldInitialData from '@/utils/getFileInitialData'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { FormModal, defineForm } from 'lifeforge-ui'
@@ -201,26 +202,7 @@ function ModifyTransactionsModal({
       type: initialData?.type || 'income',
       date: initialData ? dayjs(initialData.date).toDate() : dayjs().toDate(),
       amount: initialData?.amount || 0,
-      receipt: {
-        file:
-          typeof initialData?.receipt === 'string' &&
-          initialData?.receipt.length > 0
-            ? 'keep'
-            : (initialData?.receipt as File | undefined) instanceof File
-              ? (initialData!.receipt as unknown as File)
-              : null,
-        preview: initialData?.receipt
-          ? typeof initialData?.receipt === 'string'
-            ? forgeAPI.media.input({
-                collectionId: initialData.collectionId!,
-                recordId: initialData.id!,
-                fieldId: initialData!.receipt
-              }).endpoint
-            : (initialData?.receipt as File | undefined) instanceof File
-              ? URL.createObjectURL(initialData!.receipt as unknown as File)
-              : null
-          : null
-      },
+      receipt: getFormFileFieldInitialData(initialData, initialData?.receipt),
       ...(initialData?.type === 'transfer'
         ? {
             from: initialData?.from,
