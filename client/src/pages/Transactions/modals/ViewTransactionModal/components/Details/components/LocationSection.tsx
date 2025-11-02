@@ -45,7 +45,12 @@ function LocationSection({
               </Map>
             </APIProvider>
           ) : (
-            <EmptyStateScreen name="no-api-key" namespace="apps.wallet" />
+            <EmptyStateScreen
+              smaller
+              icon="tabler:key-off"
+              name="mapKey"
+              namespace="apps.wallet"
+            />
           )
         }
       </WithQuery>
