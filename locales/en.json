@@ -108,7 +108,9 @@
     "viewBalanceChart": "View Balance Chart",
     "viewReceipt": "View Receipt",
     "manageTemplates": "Manage Templates",
-    "fromTemplate": "From Template"
+    "fromTemplate": "From Template",
+    "autoGenerate": "Auto Generate",
+    "savePrompts": "Save Prompts"
   },
   "modals": {
     "transactions": {
@@ -139,7 +141,8 @@
       "update": "Update Template",
       "manage": "Manage Templates",
       "choose": "Choose Template"
-    }
+    },
+    "managePrompts": "Manage Prompts"
   },
   "transactionTypes": {
     "income": "Income",
@@ -173,7 +176,9 @@
     "toAsset": "To Asset",
     "month": "Month",
     "year": "Year",
-    "templateName": "Template Name"
+    "templateName": "Template Name",
+    "incomePrompt": "Income Prompt",
+    "expensesPrompt": "Expenses Prompt"
   },
   "items": {
     "transaction": "Transaction",
@@ -212,5 +217,9 @@
     "week": "This Week",
     "month": "This Month",
     "ytd": "Year To Date"
+  },
+  "messages": {
+    "aiAccuracy": "When scanning receipt using AI, the AI will attempt to use these templates that you have created when deemed appropriate. Therefore, the accuracy of the AI in scanning receipts will improve as you create more templates.",
+    "promptAutoGeneration": "When you click on the 'Auto Generate' button, the AI will analyze your existing transaction particulars and generate a prompt message that will be used during receipt scanning to enhance accuracy."
   }
 }

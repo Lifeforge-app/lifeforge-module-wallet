@@ -108,7 +108,9 @@
     "viewBalanceChart": "查看餘額圖表",
     "viewReceipt": "查看收據",
     "manageTemplates": "管理模板",
-    "fromTemplate": "從模板"
+    "fromTemplate": "從模板",
+    "autoGenerate": "自動生成",
+    "savePrompts": "保存提示"
   },
   "modals": {
     "transactions": {
@@ -139,7 +141,8 @@
       "update": "更新模板",
       "manage": "管理模板",
       "choose": "選擇模板"
-    }
+    },
+    "managePrompts": "管理提示"
   },
   "transactionTypes": {
     "income": "收入",
@@ -173,7 +176,9 @@
     "toAsset": "轉入資產",
     "month": "月份",
     "year": "年份",
-    "templateName": "模板名稱"
+    "templateName": "模板名稱",
+    "incomePrompt": "收入提示",
+    "expensesPrompt": "支出提示"
   },
   "items": {
     "transaction": "交易",
@@ -212,5 +217,9 @@
     "week": "本週",
     "month": "本月",
     "ytd": "年至今"
+  },
+  "messages": {
+    "aiAccuracy": "使用 AI 掃描收據時，AI 會在適當情況下嘗試使用您創建的這些模板。因此，隨著您創建更多模板，AI 在掃描收據時的準確性將得到提高。",
+    "promptAutoGeneration": "當您點擊“自動生成”按鈕時，AI 將分析您現有的交易摘要，並生成一個提示信息，該信息將在掃描收據時使用，以提高準確性。"
   }
 }

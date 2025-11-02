@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { usePromiseLoading } from 'shared'
 
+import ManagePromptsModal from './ManagePromptsModal'
 import ModifyTransactionsModal from './ModifyTransactionsModal'
 
 function ScanReceiptModal({ onClose }: { onClose: () => void }) {
@@ -59,6 +60,14 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
     <div className="min-w-[50vw]">
       <ModalHeader
         hasAI
+        actionButtonProps={{
+          icon: 'tabler:message',
+          onClick: () => {
+            open(ManagePromptsModal, {
+              onClose: () => {}
+            })
+          }
+        }}
         icon="tabler:scan"
         namespace="apps.wallet"
         title="receipts.scan"

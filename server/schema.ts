@@ -1091,6 +1091,68 @@ const walletSchemas = {
       indexes: [],
       system: false
     }
+  },
+  transactions_prompts: {
+    schema: z.object({
+      income: z.string(),
+      expenses: z.string()
+    }),
+    raw: {
+      id: 'pbc_4111428197',
+      listRule: '@request.auth.id != ""',
+      viewRule: '@request.auth.id != ""',
+      createRule: '@request.auth.id != ""',
+      updateRule: '@request.auth.id != ""',
+      deleteRule: '@request.auth.id != ""',
+      name: 'wallet__transactions_prompts',
+      type: 'base',
+      fields: [
+        {
+          autogeneratePattern: '[a-z0-9]{15}',
+          hidden: false,
+          id: 'text3208210256',
+          max: 15,
+          min: 15,
+          name: 'id',
+          pattern: '^[a-z0-9]+$',
+          presentable: false,
+          primaryKey: true,
+          required: true,
+          system: true,
+          type: 'text'
+        },
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          id: 'text1067999952',
+          max: 999999999999999,
+          min: 0,
+          name: 'income',
+          pattern: '',
+          presentable: false,
+          primaryKey: false,
+          required: false,
+          system: false,
+          type: 'text'
+        },
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          id: 'text613872475',
+          max: 999999999999999,
+          min: 0,
+          name: 'expenses',
+          pattern: '',
+          presentable: false,
+          primaryKey: false,
+          required: false,
+          system: false,
+          type: 'text'
+        }
+      ],
+      indexes: [],
+      system: false
+    }
   }
 }
 

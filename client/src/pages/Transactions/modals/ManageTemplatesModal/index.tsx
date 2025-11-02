@@ -2,6 +2,7 @@ import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import {
   EmptyStateScreen,
+  MessageBox,
   ModalHeader,
   Scrollbar,
   Tabs,
@@ -54,6 +55,11 @@ function ManageTemplatesModal({
         title={`templates.${choosing ? 'choose' : 'manage'}`}
         onClose={onClose}
       />
+      {!choosing && (
+        <MessageBox className="mb-4" type="note">
+          {t('messages.aiAccuracy')}
+        </MessageBox>
+      )}
       <Tabs
         active={selectedTab}
         enabled={['income', 'expenses']}

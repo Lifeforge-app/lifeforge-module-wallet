@@ -108,7 +108,9 @@
     "viewBalanceChart": "查看余额图表",
     "viewReceipt": "查看收据",
     "manageTemplates": "管理模板",
-    "fromTemplate": "从模板"
+    "fromTemplate": "从模板",
+    "autoGenerate": "自动生成",
+    "savePrompts": "保存提示"
   },
   "modals": {
     "transactions": {
@@ -139,7 +141,8 @@
       "update": "更新模板",
       "manage": "管理模板",
       "choose": "选择模板"
-    }
+    },
+    "managePrompts": "管理提示"
   },
   "transactionTypes": {
     "income": "收入",
@@ -173,7 +176,9 @@
     "toAsset": "转入资产",
     "month": "月份",
     "year": "年份",
-    "templateName": "模板名称"
+    "templateName": "模板名称",
+    "incomePrompt": "收入提示",
+    "expensesPrompt": "支出提示"
   },
   "items": {
     "transaction": "交易",
@@ -212,5 +217,9 @@
     "week": "本周",
     "month": "本月",
     "ytd": "年至今"
+  },
+  "messages": {
+    "aiAccuracy": "使用 AI 扫描收据时，AI 会在适当情况下尝试使用您创建的这些模板。因此，随着您创建更多模板，AI 在扫描收据时的准确性将得到提高。",
+    "promptAutoGeneration": "当您点击“自动生成”按钮时，AI 将分析您现有的交易摘要，并生成一个提示信息，该信息将在扫描收据时使用，以提高准确性。"
   }
 }
