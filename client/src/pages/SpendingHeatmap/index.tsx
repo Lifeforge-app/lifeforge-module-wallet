@@ -1,5 +1,7 @@
 import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
+import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { EmptyStateScreen, ModuleHeader, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
@@ -21,6 +23,14 @@ interface SpendingLocationData {
 
 function SpendingHeatmap() {
   const { transactionsQuery } = useWalletData()
+
+  const googleMapAPIKeyQuery = useQuery(
+    forgeAPI.apiKeys.entries.get
+      .input({
+        keyId: 'gcloud'
+      })
+      .queryOptions()
+  )
 
   const navigate = useNavigate()
 
@@ -127,59 +137,72 @@ function SpendingHeatmap() {
         title="Spending Heatmap"
         tKey="subsectionsTitleAndDesc"
       />
-
-      <WithQuery query={transactionsQuery}>
-        {() =>
-          spendingData.length > 0 ? (
-            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-              <Map
-                className="mb-8 h-full w-full flex-1 overflow-hidden rounded-lg rounded-md"
-                defaultCenter={centerPoint}
-                defaultZoom={8}
-                mapId="SpendingHeatmap"
-              >
-                {spendingData.map(
-                  (locationData: SpendingLocationData, index) => (
-                    <AdvancedMarker
-                      key={index}
-                      position={{
-                        lat: locationData.lat,
-                        lng: locationData.lng
-                      }}
-                      onClick={() => {
-                        navigate(
-                          `/wallet/transactions?query=${encodeURIComponent(
-                            locationData.transactions[0].location_name
-                          )}`
-                        )
-                      }}
+      <WithQuery query={googleMapAPIKeyQuery}>
+        {googleMapAPIKey =>
+          googleMapAPIKey ? (
+            <WithQuery query={transactionsQuery}>
+              {() =>
+                spendingData.length > 0 ? (
+                  <APIProvider apiKey={googleMapAPIKey}>
+                    <Map
+                      className="mb-8 h-full w-full flex-1 overflow-hidden rounded-lg rounded-md"
+                      defaultCenter={centerPoint}
+                      defaultZoom={8}
+                      mapId="SpendingHeatmap"
                     >
-                      <div
-                        className="relative cursor-pointer rounded-full border-2 border-white shadow-lg transition-transform hover:scale-110"
-                        style={{
-                          backgroundColor: getMarkerColor(locationData.amount),
-                          width: getMarkerSize(
-                            locationData.transactions.length
-                          ),
-                          height: getMarkerSize(
-                            locationData.transactions.length
-                          )
-                        }}
-                        title={`${locationData.transactions[0].location_name}: ${numberToCurrency(locationData.amount)}`}
-                      >
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-                          {locationData.transactions.length}
-                        </div>
-                      </div>
-                    </AdvancedMarker>
-                  )
-                )}
-              </Map>
-            </APIProvider>
+                      {spendingData.map(
+                        (locationData: SpendingLocationData, index) => (
+                          <AdvancedMarker
+                            key={index}
+                            position={{
+                              lat: locationData.lat,
+                              lng: locationData.lng
+                            }}
+                            onClick={() => {
+                              navigate(
+                                `/wallet/transactions?query=${encodeURIComponent(
+                                  locationData.transactions[0].location_name
+                                )}`
+                              )
+                            }}
+                          >
+                            <div
+                              className="relative cursor-pointer rounded-full border-2 border-white shadow-lg transition-transform hover:scale-110"
+                              style={{
+                                backgroundColor: getMarkerColor(
+                                  locationData.amount
+                                ),
+                                width: getMarkerSize(
+                                  locationData.transactions.length
+                                ),
+                                height: getMarkerSize(
+                                  locationData.transactions.length
+                                )
+                              }}
+                              title={`${locationData.transactions[0].location_name}: ${numberToCurrency(locationData.amount)}`}
+                            >
+                              <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
+                                {locationData.transactions.length}
+                              </div>
+                            </div>
+                          </AdvancedMarker>
+                        )
+                      )}
+                    </Map>
+                  </APIProvider>
+                ) : (
+                  <EmptyStateScreen
+                    icon="tabler:map-pin-off"
+                    name="location"
+                    namespace="apps.wallet"
+                  />
+                )
+              }
+            </WithQuery>
           ) : (
             <EmptyStateScreen
-              icon="tabler:map-pin-off"
-              name="location"
+              icon="tabler:key-off"
+              name="mapKey"
               namespace="apps.wallet"
             />
           )
