@@ -2,13 +2,13 @@ import { useWalletData } from '@/hooks/useWalletData'
 import type { WalletTransaction } from '@/pages/Transactions'
 import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
-import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { Button, useModalStore } from 'lifeforge-ui'
 
 import ViewReceiptModal from '../../../ViewReceiptModal'
 import DetailItem from './components/DetailItem'
+import LocationSection from './components/LocationSection'
 
 function Details({ transaction }: { transaction: WalletTransaction }) {
   const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
@@ -163,26 +163,7 @@ function Details({ transaction }: { transaction: WalletTransaction }) {
         </DetailItem>
       )}
       {transaction.type !== 'transfer' && transaction.location_name && (
-        <DetailItem vertical icon="tabler:map-pin" label="location">
-          <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-            <Map
-              className="h-96 overflow-hidden rounded-md"
-              defaultCenter={{
-                lat: transaction.location_coords?.lat || 0,
-                lng: transaction.location_coords?.lon || 0
-              }}
-              defaultZoom={15}
-              mapId="LocationMap"
-            >
-              <AdvancedMarker
-                position={{
-                  lat: transaction.location_coords?.lat || 0,
-                  lng: transaction.location_coords?.lon || 0
-                }}
-              />
-            </Map>
-          </APIProvider>
-        </DetailItem>
+        <LocationSection transaction={transaction} />
       )}
     </div>
   )
