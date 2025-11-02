@@ -4,6 +4,8 @@ import Moment from 'moment'
 import MomentRange from 'moment-range'
 import z from 'zod'
 
+import getDateRange from '../utils/getDateRange'
+
 // @ts-expect-error - MomentRange types are not fully compatible with Moment
 const moment = MomentRange.extendMoment(Moment)
 
@@ -23,13 +25,18 @@ const getAssetAccumulatedBalance = forgeController
   .description('Get accumulated balance for a wallet asset')
   .input({
     query: z.object({
-      id: z.string()
+      id: z.string(),
+      rangeMode: z.enum(['week', 'month', 'year', 'all', 'custom', 'quarter']),
+      startDate: z.string().optional(),
+      endDate: z.string().optional()
     })
   })
   .existenceCheck('query', {
     id: 'wallet__assets'
   })
-  .callback(async ({ pb, query: { id } }) => {
+  .callback(async ({ pb, query: { id, rangeMode, startDate, endDate } }) => {
+    const dateRange = getDateRange(rangeMode, startDate, endDate)
+
     const { starting_balance } = await pb.getOne
       .collection('wallet__assets')
       .id(id)
@@ -126,7 +133,21 @@ const getAssetAccumulatedBalance = forgeController
       }
     }
 
-    return accumulatedBalance
+    return Object.fromEntries(
+      Object.entries(accumulatedBalance).filter(([date]) => {
+        const dateMoment = moment(date)
+
+        const isAfterStartDate = dateRange.startDate
+          ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
+          : true
+
+        const isBeforeEndDate = dateRange.endDate
+          ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
+          : true
+
+        return isAfterStartDate && isBeforeEndDate
+      })
+    )
   })
 
 const create = forgeController

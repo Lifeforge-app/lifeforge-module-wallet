@@ -12,13 +12,30 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import { ModalHeader, WithQuery } from 'lifeforge-ui'
-import { useMemo } from 'react'
+import dayjs from 'dayjs'
+import {
+  DateInput,
+  ListboxInput,
+  ListboxOption,
+  ModalHeader,
+  WithQuery
+} from 'lifeforge-ui'
+import { useMemo, useState } from 'react'
 import { Line } from 'react-chartjs-2'
+import { useTranslation } from 'react-i18next'
 import { usePersonalization } from 'shared'
 import tinycolor from 'tinycolor2'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
+
+const RANGE_MODE = [
+  'week',
+  'month',
+  'quarter',
+  'year',
+  'all',
+  'custom'
+] as const
 
 // Register Chart.js components
 ChartJS.register(
@@ -41,12 +58,32 @@ function BalanceChartModal({
   }
   onClose: () => void
 }) {
+  const { t } = useTranslation('apps.wallet')
+
   const { derivedThemeColor } = usePersonalization()
+
+  const [rangeMode, setRangeMode] =
+    useState<(typeof RANGE_MODE)[number]>('month')
+
+  const [startDate, setStartDate] = useState<Date | null>(
+    dayjs().subtract(1, 'month').toDate()
+  )
+
+  const [endDate, setEndDate] = useState<Date | null>(new Date())
 
   const assetBalanceQuery = useQuery(
     forgeAPI.wallet.assets.getAssetAccumulatedBalance
       .input({
-        id: initialData.id
+        id: initialData.id,
+        rangeMode: rangeMode,
+        startDate:
+          rangeMode === 'custom'
+            ? dayjs(startDate).format('YYYY-MM-DD')
+            : undefined,
+        endDate:
+          rangeMode === 'custom'
+            ? dayjs(endDate).format('YYYY-MM-DD')
+            : undefined
       })
       .queryOptions()
   )
@@ -78,7 +115,6 @@ function BalanceChartModal({
             .setAlpha(0.1)
             .toRgbString(),
           fill: true,
-          tension: 0.4,
           borderWidth: 2,
           pointHoverBackgroundColor: derivedThemeColor,
           pointHoverBorderColor: derivedThemeColor,
@@ -124,6 +160,7 @@ function BalanceChartModal({
           border: {
             display: false
           },
+          min: 0,
           ticks: {
             callback: (value: any) => `RM ${numberToCurrency(value)}`
           }
@@ -148,6 +185,60 @@ function BalanceChartModal({
         title="assetsBalanceChart"
         onClose={onClose}
       />
+      <div className="mb-6 space-y-4">
+        <ListboxInput
+          buttonContent={<span>{t(`rangeModes.${rangeMode}`)}</span>}
+          icon="tabler:history"
+          label="range mode"
+          namespace="apps.wallet"
+          setValue={setRangeMode}
+          value={rangeMode}
+        >
+          {RANGE_MODE.map(mode => (
+            <ListboxOption
+              key={mode}
+              label={t(`rangeModes.${mode}`)}
+              value={mode}
+            />
+          ))}
+        </ListboxInput>
+        {rangeMode === 'custom' && (
+          <div className="mt-4 flex w-full gap-3">
+            <DateInput
+              className="flex-1"
+              icon="tabler:calendar-up"
+              label="startDate"
+              namespace="apps.wallet"
+              setValue={(date: Date | null) => {
+                setStartDate(date)
+
+                if (endDate && date && dayjs(date).isAfter(dayjs(endDate))) {
+                  setEndDate(date)
+                }
+              }}
+              value={startDate}
+            />
+            <DateInput
+              className="flex-1"
+              icon="tabler:calendar-down"
+              label="endDate"
+              namespace="apps.wallet"
+              setValue={(date: Date | null) => {
+                setEndDate(date)
+
+                if (
+                  startDate &&
+                  date &&
+                  dayjs(date).isBefore(dayjs(startDate))
+                ) {
+                  setStartDate(date)
+                }
+              }}
+              value={endDate}
+            />
+          </div>
+        )}
+      </div>
       <WithQuery query={assetBalanceQuery}>
         {assetBalance => (
           <div className="p-6">
