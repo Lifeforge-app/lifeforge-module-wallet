@@ -1,7 +1,7 @@
 import useYearMonthOptions from '@/hooks/useYearMonthOptions'
-import dayjs from 'dayjs'
 import { ListboxInput, ListboxOption } from 'lifeforge-ui'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 function YearMonthInput({
   month,
@@ -14,6 +14,8 @@ function YearMonthInput({
   year: number | null
   setYear: (value: number | null) => void
 }) {
+  const { t } = useTranslation('common.misc')
+
   const { yearsOptions, monthsOptions } = useYearMonthOptions(year)
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function YearMonthInput({
         buttonContent={
           <>
             <span className="-mt-px block truncate">
-              {month !== null ? dayjs().month(month).format('MMMM') : 'None'}
+              {month !== null ? t(`dates.months.${month}`) : 'None'}
             </span>
           </>
         }
@@ -48,7 +50,7 @@ function YearMonthInput({
         {monthsOptions.map(mon => (
           <ListboxOption
             key={mon}
-            label={dayjs().month(mon).format('MMMM')}
+            label={t(`dates.months.${mon}`)}
             value={mon}
           />
         ))}
