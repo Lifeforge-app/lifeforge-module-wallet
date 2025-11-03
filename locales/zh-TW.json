@@ -23,7 +23,13 @@
     },
     "assetsBalance": {
       "title": "資產餘額",
-      "description": "追蹤資產餘額。"
+      "description": "追蹤資產餘額。",
+      "empty": {
+        "assets": {
+          "title": "未找到資產",
+          "description": "您尚未創建任何資產。"
+        }
+      }
     },
     "statistics": {
       "title": "統計"

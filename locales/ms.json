@@ -23,7 +23,13 @@
     },
     "assetsBalance": {
       "title": "Baki Aset",
-      "description": "Jejak baki aset anda."
+      "description": "Jejak baki aset anda.",
+      "empty": {
+        "assets": {
+          "title": "Tiada Aset Dijumpai",
+          "description": "Anda belum mencipta sebarang aset lagi."
+        }
+      }
     },
     "statistics": {
       "title": "Statistik"

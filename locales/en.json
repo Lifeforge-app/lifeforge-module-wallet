@@ -56,7 +56,13 @@
     },
     "assets": {
       "title": "No Assets Found",
-      "description": "You haven't created any assets yet. Click the button above to add one."
+      "description": "You haven't created any assets yet. Click the button above to add one.",
+      "empty": {
+        "assets": {
+          "title": "No Assets Found",
+          "description": "You haven't created any assets yet."
+        }
+      }
     },
     "ledger": {
       "title": "No Ledgers Found",

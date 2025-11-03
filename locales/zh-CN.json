@@ -23,7 +23,13 @@
     },
     "assetsBalance": {
       "title": "资产余额",
-      "description": "追踪资产余额。"
+      "description": "追踪资产余额。",
+      "empty": {
+        "assets": {
+          "title": "未找到资产",
+          "description": "您尚未创建任何资产。"
+        }
+      }
     },
     "statistics": {
       "title": "统计"
