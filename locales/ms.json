@@ -22,7 +22,8 @@
       "title": "Pendapatan"
     },
     "assetsBalance": {
-      "title": "Baki Aset"
+      "title": "Baki Aset",
+      "description": "Jejak baki aset anda."
     },
     "statistics": {
       "title": "Statistik"

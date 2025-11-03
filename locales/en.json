@@ -22,7 +22,8 @@
       "title": "Income"
     },
     "assetsBalance": {
-      "title": "Assets Balance"
+      "title": "Assets Balance",
+      "description": "Track your assets balance."
     },
     "statistics": {
       "title": "Statistics"

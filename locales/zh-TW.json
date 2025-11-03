@@ -22,7 +22,8 @@
       "title": "收入"
     },
     "assetsBalance": {
-      "title": "資產餘額"
+      "title": "資產餘額",
+      "description": "追蹤資產餘額。"
     },
     "statistics": {
       "title": "統計"
