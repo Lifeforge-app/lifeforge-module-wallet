@@ -147,7 +147,15 @@ function ModifyTemplatesModal({
     })
     .initialData({
       ...initialData,
-      type: initialData?.type ?? 'income'
+      type: initialData?.type ?? 'income',
+      location: {
+        name: initialData?.location_name || '',
+        location: {
+          latitude: initialData?.location_coords?.lat || 0,
+          longitude: initialData?.location_coords?.lon || 0
+        },
+        formattedAddress: initialData?.location_name || ''
+      }
     })
     .onSubmit(async data => {
       await mutation.mutateAsync(data)
