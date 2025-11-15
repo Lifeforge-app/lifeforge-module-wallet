@@ -388,7 +388,7 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_1pIQ',
+          id: '_clone_se7t',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -400,7 +400,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_FUQY',
+          id: '_clone_WZjW',
           max: 0,
           min: 0,
           name: 'name',
@@ -414,7 +414,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_Xcet',
+          id: '_clone_gqcR',
           max: 0,
           min: 0,
           name: 'icon',
@@ -428,7 +428,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_es6p',
+          id: '_clone_kviX',
           max: 0,
           min: 0,
           name: 'color',
@@ -493,7 +493,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_R3v3',
+          id: '_clone_9D9G',
           max: 0,
           min: 0,
           name: 'name',
@@ -507,7 +507,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_Gnfq',
+          id: '_clone_dnaX',
           max: 0,
           min: 0,
           name: 'icon',
@@ -520,7 +520,7 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_6W3A',
+          id: '_clone_51Rx',
           max: null,
           min: null,
           name: 'starting_balance',
@@ -593,7 +593,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_6icy',
+          id: '_clone_r4R2',
           max: 0,
           min: 0,
           name: 'name',
@@ -607,7 +607,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_vbq9',
+          id: '_clone_690z',
           max: 0,
           min: 0,
           name: 'color',
@@ -621,7 +621,7 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_QhRv',
+          id: '_clone_J9YV',
           max: 0,
           min: 0,
           name: 'icon',
