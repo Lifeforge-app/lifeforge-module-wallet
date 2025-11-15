@@ -26,12 +26,12 @@ export default {
     }
   ],
   routes: {
-    wallet: lazy(() => import('@/pages/Dashboard')),
-    'wallet/transactions': lazy(() => import('@/pages/Transactions')),
-    'wallet/assets': lazy(() => import('@/pages/Assets')),
-    'wallet/ledgers': lazy(() => import('@/pages/Ledgers')),
-    'wallet/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
-    'wallet/statements': lazy(() => import('@/pages/Statements'))
+    '/': lazy(() => import('@/pages/Dashboard')),
+    '/transactions': lazy(() => import('@/pages/Transactions')),
+    '/assets': lazy(() => import('@/pages/Assets')),
+    '/ledgers': lazy(() => import('@/pages/Ledgers')),
+    '/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
+    '/statements': lazy(() => import('@/pages/Statements'))
   },
   category: 'Finance'
 } satisfies ModuleConfig
