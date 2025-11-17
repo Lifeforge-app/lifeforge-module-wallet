@@ -48,6 +48,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
       title: 'Delete Ledger',
       description: `Are you sure you want to delete the ledger "${ledger.name}"? This action cannot be undone.`,
       confirmationButton: 'delete',
+      confirmationPrompt: ledger.name,
       onConfirm: async () => {
         await deleteMutation.mutateAsync({})
       }
