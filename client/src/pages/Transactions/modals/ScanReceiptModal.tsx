@@ -75,8 +75,8 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
       />
       <FileInput
         acceptedMimeTypes={{
-          images: ['image/jpeg', 'image/png', 'image/jpg'],
-          files: ['application/pdf']
+          image: ['jpeg', 'png', 'jpg'],
+          application: ['pdf']
         }}
         file={file}
         icon="tabler:receipt"

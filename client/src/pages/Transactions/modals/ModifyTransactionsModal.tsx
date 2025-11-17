@@ -184,8 +184,8 @@ function ModifyTransactionsModal({
         icon: 'tabler:receipt',
         optional: true,
         acceptedMimeTypes: {
-          images: ['image/png', 'image/jpeg', 'image/webp'],
-          documents: ['application/pdf']
+          image: ['png', 'jpeg', 'webp'],
+          application: ['pdf']
         }
       }
     })
