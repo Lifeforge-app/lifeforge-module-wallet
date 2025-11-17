@@ -4,7 +4,12 @@ import z from 'zod'
 
 const list = forgeController
   .query()
-  .description('Get all wallet categories')
+  .description({
+    en: 'Get all transaction categories',
+    ms: 'Dapatkan semua kategori transaksi',
+    'zh-CN': '获取所有交易类别',
+    'zh-TW': '獲取所有交易類別'
+  })
   .input({})
   .callback(({ pb }) =>
     pb.getFullList
@@ -15,7 +20,12 @@ const list = forgeController
 
 const create = forgeController
   .mutation()
-  .description('Create a new wallet category')
+  .description({
+    en: 'Create a new transaction category',
+    ms: 'Cipta kategori transaksi baharu',
+    'zh-CN': '创建新交易类别',
+    'zh-TW': '創建新交易類別'
+  })
   .input({
     body: SCHEMAS.wallet.categories.schema
   })
@@ -26,7 +36,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update an existing wallet category')
+  .description({
+    en: 'Update category details',
+    ms: 'Kemas kini butiran kategori',
+    'zh-CN': '更新类别详情',
+    'zh-TW': '更新類別詳情'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -42,7 +57,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a wallet category')
+  .description({
+    en: 'Delete a transaction category',
+    ms: 'Padam kategori transaksi',
+    'zh-CN': '删除交易类别',
+    'zh-TW': '刪除交易類別'
+  })
   .input({
     query: z.object({
       id: z.string()

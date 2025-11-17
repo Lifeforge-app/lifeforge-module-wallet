@@ -4,7 +4,12 @@ import z from 'zod'
 
 const getTypesCount = forgeController
   .query()
-  .description('Get wallet transaction types count and accumulation')
+  .description({
+    en: 'Get transaction counts and totals by type',
+    ms: 'Dapatkan kiraan dan jumlah transaksi mengikut jenis',
+    'zh-CN': '按类型获取交易数量和总额',
+    'zh-TW': '按類型獲取交易數量和總額'
+  })
   .input({})
   .callback(async ({ pb }) => {
     const types = await pb.getFullList
@@ -30,7 +35,12 @@ const getTypesCount = forgeController
 
 const getIncomeExpensesSummary = forgeController
   .query()
-  .description('Get income and expenses summary for a specific month/year')
+  .description({
+    en: 'Get income and expenses summary for a month',
+    ms: 'Dapatkan ringkasan pendapatan dan perbelanjaan untuk sebulan',
+    'zh-CN': '获取月度收入和支出摘要',
+    'zh-TW': '獲取月度收入和支出摘要'
+  })
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -114,7 +124,12 @@ const getIncomeExpensesSummary = forgeController
 
 const getExpensesBreakdown = forgeController
   .query()
-  .description('Get expenses breakdown by category for a specific month/year')
+  .description({
+    en: 'Get expenses breakdown by category for a month',
+    ms: 'Dapatkan pecahan perbelanjaan mengikut kategori untuk sebulan',
+    'zh-CN': '按类别获取月度支出明细',
+    'zh-TW': '按類別獲取月度支出明細'
+  })
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),

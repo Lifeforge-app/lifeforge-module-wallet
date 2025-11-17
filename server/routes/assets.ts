@@ -11,7 +11,12 @@ const moment = MomentRange.extendMoment(Moment)
 
 const list = forgeController
   .query()
-  .description('Get all wallet assets')
+  .description({
+    en: 'Get all wallet assets',
+    ms: 'Dapatkan semua aset dompet',
+    'zh-CN': '获取所有钱包资产',
+    'zh-TW': '獲取所有錢包資產'
+  })
   .input({})
   .callback(({ pb }) =>
     pb.getFullList
@@ -22,7 +27,12 @@ const list = forgeController
 
 const getAssetAccumulatedBalance = forgeController
   .query()
-  .description('Get accumulated balance for a wallet asset')
+  .description({
+    en: 'Get asset balance over time',
+    ms: 'Dapatkan baki aset mengikut masa',
+    'zh-CN': '获取资产随时间的余额',
+    'zh-TW': '獲取資產隨時間的餘額'
+  })
   .input({
     query: z.object({
       id: z.string(),
@@ -152,7 +162,12 @@ const getAssetAccumulatedBalance = forgeController
 
 const create = forgeController
   .mutation()
-  .description('Create a new wallet asset')
+  .description({
+    en: 'Create a new wallet asset',
+    ms: 'Cipta aset dompet baharu',
+    'zh-CN': '创建新钱包资产',
+    'zh-TW': '創建新錢包資產'
+  })
   .input({
     body: SCHEMAS.wallet.assets.schema
   })
@@ -163,7 +178,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update an existing wallet asset')
+  .description({
+    en: 'Update asset details',
+    ms: 'Kemas kini butiran aset',
+    'zh-CN': '更新资产详情',
+    'zh-TW': '更新資產詳情'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -179,7 +199,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a wallet asset')
+  .description({
+    en: 'Delete a wallet asset',
+    ms: 'Padam aset dompet',
+    'zh-CN': '删除钱包资产',
+    'zh-TW': '刪除錢包資產'
+  })
   .input({
     query: z.object({
       id: z.string()

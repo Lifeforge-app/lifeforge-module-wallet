@@ -4,7 +4,12 @@ import z from 'zod'
 
 const list = forgeController
   .query()
-  .description('Get all wallet ledgers')
+  .description({
+    en: 'Get all ledgers',
+    ms: 'Dapatkan semua lejar',
+    'zh-CN': '获取所有分类账',
+    'zh-TW': '獲取所有分類帳'
+  })
   .input({})
   .callback(({ pb }) =>
     pb.getFullList
@@ -15,7 +20,12 @@ const list = forgeController
 
 const create = forgeController
   .mutation()
-  .description('Create a new wallet ledger')
+  .description({
+    en: 'Create a new ledger',
+    ms: 'Cipta lejar baharu',
+    'zh-CN': '创建新分类账',
+    'zh-TW': '創建新分類帳'
+  })
   .input({
     body: SCHEMAS.wallet.ledgers.schema
   })
@@ -26,7 +36,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update an existing wallet ledger')
+  .description({
+    en: 'Update ledger details',
+    ms: 'Kemas kini butiran lejar',
+    'zh-CN': '更新分类账详情',
+    'zh-TW': '更新分類帳詳情'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -42,7 +57,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a wallet ledger')
+  .description({
+    en: 'Delete a ledger',
+    ms: 'Padam lejar',
+    'zh-CN': '删除分类账',
+    'zh-TW': '刪除分類帳'
+  })
   .input({
     query: z.object({
       id: z.string()

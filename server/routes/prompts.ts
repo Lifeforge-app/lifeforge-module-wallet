@@ -6,7 +6,12 @@ import { getPromptGenerationPrompt } from '../constants/prompts'
 
 export const get = forgeController
   .query()
-  .description('Get prompts for generating wallet entries')
+  .description({
+    en: 'Get AI prompts for transaction generation',
+    ms: 'Dapatkan prompt AI untuk penjanaan transaksi',
+    'zh-CN': '获取用于交易生成的 AI 提示词',
+    'zh-TW': '獲取用於交易生成的 AI 提示詞'
+  })
   .input({})
   .callback(async ({ pb }) => {
     const records = await pb.getFullList
@@ -28,7 +33,12 @@ export const get = forgeController
 
 export const update = forgeController
   .mutation()
-  .description('Update prompts for generating wallet entries')
+  .description({
+    en: 'Update AI generation prompts',
+    ms: 'Kemas kini prompt penjanaan AI',
+    'zh-CN': '更新 AI 生成提示词',
+    'zh-TW': '更新 AI 生成提示詞'
+  })
   .input({
     body: z.object({
       income: z.string().min(1),
@@ -66,7 +76,12 @@ export const update = forgeController
 
 export const autoGenerate = forgeController
   .mutation()
-  .description('Auto-generate a prompt using AI')
+  .description({
+    en: 'Auto-generate prompt using AI',
+    ms: 'Jana prompt secara automatik menggunakan AI',
+    'zh-CN': '使用 AI 自动生成提示词',
+    'zh-TW': '使用 AI 自動生成提示詞'
+  })
   .input({
     body: z.object({
       type: z.enum(['income', 'expenses']),

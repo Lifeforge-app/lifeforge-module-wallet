@@ -6,7 +6,12 @@ import z from 'zod'
 
 const list = forgeController
   .query()
-  .description('Get all transaction templates')
+  .description({
+    en: 'Get all transaction templates',
+    ms: 'Dapatkan semua templat transaksi',
+    'zh-CN': '获取所有交易模板',
+    'zh-TW': '獲取所有交易模板'
+  })
   .input({})
   .callback(async ({ pb }) =>
     (
@@ -39,7 +44,12 @@ const list = forgeController
 
 const create = forgeController
   .mutation()
-  .description('Create a new transaction template')
+  .description({
+    en: 'Create a new transaction template',
+    ms: 'Cipta templat transaksi baharu',
+    'zh-CN': '创建新交易模板',
+    'zh-TW': '創建新交易模板'
+  })
   .input({
     body: COLLECTION_SCHEMAS.wallet__transaction_templates
       .omit({
@@ -72,7 +82,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update an existing transaction template')
+  .description({
+    en: 'Update transaction template',
+    ms: 'Kemas kini templat transaksi',
+    'zh-CN': '更新交易模板',
+    'zh-TW': '更新交易模板'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -111,7 +126,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a transaction template')
+  .description({
+    en: 'Delete a transaction template',
+    ms: 'Padam templat transaksi',
+    'zh-CN': '删除交易模板',
+    'zh-TW': '刪除交易模板'
+  })
   .input({
     query: z.object({
       id: z.string()

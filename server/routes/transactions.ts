@@ -10,7 +10,12 @@ import { getTransactionDetails } from '../utils/transactions'
 
 const list = forgeController
   .query()
-  .description('Get all wallet transactions')
+  .description({
+    en: 'Get all wallet transactions',
+    ms: 'Dapatkan semua transaksi dompet',
+    'zh-CN': '获取所有钱包交易',
+    'zh-TW': '獲取所有錢包交易'
+  })
   .input({})
   .callback(async ({ pb }) => {
     const incomeExpensesTransactions = await pb.getFullList
@@ -94,7 +99,12 @@ const CreateTransactionInputSchema = SCHEMAS.wallet.transactions.schema
 
 const create = forgeController
   .mutation()
-  .description('Create a new wallet transaction')
+  .description({
+    en: 'Create a new transaction with receipt',
+    ms: 'Cipta transaksi baharu dengan resit',
+    'zh-CN': '创建新交易并上传收据',
+    'zh-TW': '創建新交易並上傳收據'
+  })
   .input({
     body: CreateTransactionInputSchema
   })
@@ -164,7 +174,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update an existing wallet transaction')
+  .description({
+    en: 'Update transaction details',
+    ms: 'Kemas kini butiran transaksi',
+    'zh-CN': '更新交易详情',
+    'zh-TW': '更新交易詳情'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -267,7 +282,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a wallet transaction')
+  .description({
+    en: 'Delete a transaction',
+    ms: 'Padam transaksi',
+    'zh-CN': '删除交易',
+    'zh-TW': '刪除交易'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -283,7 +303,12 @@ const remove = forgeController
 
 const scanReceipt = forgeController
   .mutation()
-  .description('Scan receipt to extract transaction data')
+  .description({
+    en: 'Extract transaction data from receipt using OCR',
+    ms: 'Ekstrak data transaksi dari resit menggunakan OCR',
+    'zh-CN': '使用 OCR 从收据中提取交易数据',
+    'zh-TW': '使用 OCR 從收據中提取交易數據'
+  })
   .input({})
   .media({
     file: {
