@@ -23,7 +23,13 @@
     },
     "assetsBalance": {
       "title": "Assets Balance",
-      "description": "Track your assets balance."
+      "description": "Track your assets balance.",
+      "empty": {
+        "assets": {
+          "title": "No Assets Found",
+          "description": "You haven't created any assets yet."
+        }
+      }
     },
     "statistics": {
       "title": "Statistics"
@@ -56,13 +62,7 @@
     },
     "assets": {
       "title": "No Assets Found",
-      "description": "You haven't created any assets yet. Click the button above to add one.",
-      "empty": {
-        "assets": {
-          "title": "No Assets Found",
-          "description": "You haven't created any assets yet."
-        }
-      }
+      "description": "You haven't created any assets yet. Click the button above to add one."
     },
     "ledger": {
       "title": "No Ledgers Found",

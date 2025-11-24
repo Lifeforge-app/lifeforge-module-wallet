@@ -35,7 +35,7 @@ export default function AssetsBalance() {
     >
       <WithQuery query={assetsQuery}>
         {assets =>
-          assets.length !== 0 ? (
+          assets.length === 0 ? (
             <EmptyStateScreen
               smaller
               icon="tabler:wallet-off"
@@ -48,7 +48,7 @@ export default function AssetsBalance() {
               {assets.map(asset => (
                 <Link
                   key={asset.id}
-                  className="flex-between bg-bg-100 component-bg-lighter-with-hover flex h-full gap-3 rounded-lg p-2 pl-4 pr-0 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] transition-all"
+                  className="flex-between bg-bg-100 component-bg-lighter-with-hover flex h-full gap-3 rounded-lg p-2 pr-0 pl-4 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] transition-all"
                   to={'/wallet/assets'}
                 >
                   <div className="flex w-full min-w-0 items-center gap-3">
