@@ -70,6 +70,16 @@ function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
         <TransactionIncomeExpensesItem transaction={transaction} />
       )}
       <ContextMenu>
+        {transaction.type !== 'transfer' && (
+          <ContextMenuItem
+            icon="tabler:copy"
+            label="Copy"
+            onClick={() => {
+              navigator.clipboard.writeText(transaction.particulars)
+              toast.success('Transaction particulars copied to clipboard')
+            }}
+          />
+        )}
         <ContextMenuItem
           icon="tabler:pencil"
           label="Edit"
