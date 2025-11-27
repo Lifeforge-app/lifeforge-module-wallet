@@ -2,7 +2,7 @@ import type { ChartOptions } from 'chart.js'
 import { useMemo } from 'react'
 import { usePersonalization } from 'shared'
 
-export function useChartOptions(range: 'week' | 'month' | 'ytd'): ChartOptions {
+export function useChartOptions(range: 'week' | 'month' | 'ytd'): ChartOptions<'bar'> {
   const { bgTempPalette, derivedTheme } = usePersonalization()
 
   return useMemo<ChartOptions<'bar'>>(
