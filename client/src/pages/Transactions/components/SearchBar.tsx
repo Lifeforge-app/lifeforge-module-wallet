@@ -10,7 +10,7 @@ function SearchBar() {
         className="mt-4"
         namespace="apps.wallet"
         searchTarget="transaction"
-        setValue={setSearchQuery}
+        onChange={setSearchQuery}
         value={searchQuery}
       />
     </div>

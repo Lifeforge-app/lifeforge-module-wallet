@@ -1,11 +1,6 @@
 import { useWalletData } from '@/hooks/useWalletData'
 import { Icon } from '@iconify/react'
-import {
-  DashboardItem,
-  EmptyStateScreen,
-  Scrollbar,
-  WithQuery
-} from 'lifeforge-ui'
+import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from 'lifeforge-ui'
 import { Link } from 'shared'
 
 import ListView from './views/ListView'
@@ -15,9 +10,8 @@ function TransactionsCard() {
   const { transactionsQuery } = useWalletData()
 
   return (
-    <DashboardItem
-      className="col-span-2 row-span-4"
-      componentBesideTitle={
+    <Widget
+      actionComponent={
         <Link
           className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 font-medium transition-all"
           to="/wallet/transactions"
@@ -25,6 +19,7 @@ function TransactionsCard() {
           <Icon className="text-xl" icon="tabler:chevron-right" />
         </Link>
       }
+      className="col-span-2 row-span-4"
       icon="tabler:list"
       namespace="apps.wallet"
       title="Recent Transactions"
@@ -39,13 +34,18 @@ function TransactionsCard() {
                   <ListView />
                 </>
               ) : (
-                <EmptyStateScreen name="transactions" namespace="apps.wallet" />
+                <EmptyStateScreen
+                  message={{
+                    id: 'transactions',
+                    namespace: 'apps.wallet'
+                  }}
+                />
               )}
             </Scrollbar>
           </div>
         )}
       </WithQuery>
-    </DashboardItem>
+    </Widget>
   )
 }
 

@@ -48,8 +48,10 @@ function LocationSection({
             <EmptyStateScreen
               smaller
               icon="tabler:key-off"
-              name="mapKey"
-              namespace="apps.wallet"
+              message={{
+                id: 'mapKey',
+                namespace: 'apps.wallet'
+              }}
             />
           )
         }

@@ -4,10 +4,10 @@ import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Button,
+  Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
-  ItemWrapper,
   useModalStore
 } from 'lifeforge-ui'
 import { toast } from 'react-toastify'
@@ -64,7 +64,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
     })
 
   return (
-    <ItemWrapper className="space-y-3">
+    <Card className="space-y-3">
       <div className="flex items-center gap-3">
         <span className="bg-bg-200 text-bg-500 dark:bg-bg-800 w-min rounded-md p-2">
           <Icon className="size-5" icon={asset.icon} />
@@ -106,7 +106,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
           onClick={handleDeleteAsset}
         />
       </ContextMenu>
-    </ItemWrapper>
+    </Card>
   )
 }
 

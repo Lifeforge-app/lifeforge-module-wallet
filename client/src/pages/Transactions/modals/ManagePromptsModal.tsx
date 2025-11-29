@@ -1,9 +1,9 @@
 import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
+  Alert,
   Button,
   EmptyStateScreen,
-  MessageBox,
   ModalHeader,
   TextAreaInput,
   WithQuery
@@ -91,9 +91,9 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
         title="Manage Prompts"
         onClose={onClose}
       />
-      <MessageBox className="mb-4" type="note">
+      <Alert className="mb-4" type="note">
         {t('messages.promptAutoGeneration')}
-      </MessageBox>
+      </Alert>
       <WithQuery query={openaiAPIKeyAvailabilityQuery}>
         {keyAvailable =>
           keyAvailable ? (
@@ -106,8 +106,8 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                       label="Income Prompt"
                       namespace="apps.wallet"
                       placeholder="Prompt used to generate particulars for income transactions."
-                      setValue={value => handleChange('income', value)}
                       value={prompts.income}
+                      onChange={value => handleChange('income', value)}
                     />
                     <Button
                       className="w-full"
@@ -126,8 +126,8 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                       label="Expenses Prompt"
                       namespace="apps.wallet"
                       placeholder="Prompt used to generate particulars for expenses transactions."
-                      setValue={value => handleChange('expenses', value)}
                       value={prompts.expenses}
+                      onChange={value => handleChange('expenses', value)}
                     />
                     <Button
                       className="w-full"
@@ -155,8 +155,10 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
           ) : (
             <EmptyStateScreen
               icon="tabler:robot-off"
-              name="openAIApiKeyRequired"
-              namespace="apps.wallet"
+              message={{
+                id: 'openAIApiKeyRequired',
+                namespace: 'apps.wallet'
+              }}
             />
           )
         }

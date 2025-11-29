@@ -66,15 +66,15 @@ function DateRangeSelector() {
             icon={icon}
             label={name}
             namespace="apps.wallet"
-            setValue={date => {
-              handleDateChange(date, type)
-            }}
             value={
               (type === 'start_date' ? startDate : endDate) &&
               dayjs(type === 'start_date' ? startDate : endDate).isValid()
                 ? dayjs(type === 'start_date' ? startDate : endDate).toDate()
                 : null
             }
+            onChange={date => {
+              handleDateChange(date, type)
+            }}
           />
         ))}
       </div>

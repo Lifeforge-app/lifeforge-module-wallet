@@ -77,8 +77,10 @@ function Ledgers() {
                   tProps: { item: t('items.ledger') }
                 }}
                 icon="tabler:wallet-off"
-                name="ledger"
-                namespace="apps.wallet"
+                message={{
+                  id: 'ledger',
+                  namespace: 'apps.wallet'
+                }}
               />
             )}
             {ledgers.length > 0 && (

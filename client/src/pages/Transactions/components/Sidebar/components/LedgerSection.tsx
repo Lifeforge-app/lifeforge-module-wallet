@@ -33,9 +33,11 @@ function LedgerSection() {
   return (
     <>
       <SidebarTitle
-        actionButtonIcon="tabler:plus"
-        actionButtonOnClick={() => {
-          navigate('/wallet/ledgers#new')
+        actionButton={{
+          icon: 'tabler:plus',
+          onClick: () => {
+            navigate('/wallet/ledgers#new')
+          }
         }}
         label={t('sidebar.ledgers')}
       />

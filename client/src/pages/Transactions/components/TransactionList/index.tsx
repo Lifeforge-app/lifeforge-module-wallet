@@ -20,8 +20,10 @@ function TransactionList() {
     return (
       <EmptyStateScreen
         icon="tabler:filter-off"
-        name="results"
-        namespace="apps.wallet"
+        message={{
+          id: 'results',
+          namespace: 'apps.wallet'
+        }}
       />
     )
   }
@@ -29,7 +31,7 @@ function TransactionList() {
   return (
     <>
       <Pagination
-        currentPage={page}
+        page={page}
         totalPages={Math.ceil(transactions.length / 25)}
         onPageChange={setPage}
       />

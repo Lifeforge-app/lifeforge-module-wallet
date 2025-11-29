@@ -22,8 +22,8 @@ function RangeSelector({
         </div>
       }
       className={className}
-      setValue={setRange}
       value={range}
+      onChange={setRange}
     >
       {['week', 'month', 'ytd'].map(option => (
         <ListboxOption

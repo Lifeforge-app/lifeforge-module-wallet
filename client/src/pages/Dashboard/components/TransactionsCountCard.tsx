@@ -2,7 +2,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { DashboardItem, Scrollbar, WithQuery } from 'lifeforge-ui'
+import { Scrollbar, Widget, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'shared'
 
@@ -18,9 +18,9 @@ function TransactionsCountCard() {
   const typesCount = typesCountQuery.data ?? {}
 
   return (
-    <DashboardItem
+    <Widget
       className="col-span-1 row-span-1 min-h-96 xl:min-h-0"
-      componentBesideTitle={
+      actionComponent={
         <Link
           className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 transition-all"
           to="./transactions"
@@ -65,7 +65,7 @@ function TransactionsCountCard() {
                   <div className="flex w-full flex-row items-center justify-between sm:w-auto sm:flex-col sm:items-end">
                     <div
                       className={clsx(
-                        'flex gap-2 whitespace-nowrap text-right font-medium',
+                        'flex gap-2 text-right font-medium whitespace-nowrap',
                         isAmountHidden ? 'items-center' : 'items-end'
                       )}
                     >
@@ -115,7 +115,7 @@ function TransactionsCountCard() {
           </Scrollbar>
         )}
       </WithQuery>
-    </DashboardItem>
+    </Widget>
   )
 }
 

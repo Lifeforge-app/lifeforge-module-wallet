@@ -1,10 +1,10 @@
 import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
+  Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
-  ItemWrapper,
   useModalStore
 } from 'lifeforge-ui'
 import { useCallback } from 'react'
@@ -59,7 +59,7 @@ function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
   }, [transaction])
 
   return (
-    <ItemWrapper
+    <Card
       isInteractive
       className="flex-between flex gap-3"
       onClick={handleViewTransaction}
@@ -92,7 +92,7 @@ function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
           onClick={handleDeleteTransaction}
         />
       </ContextMenu>
-    </ItemWrapper>
+    </Card>
   )
 }
 

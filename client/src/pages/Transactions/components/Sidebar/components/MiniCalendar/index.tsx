@@ -31,7 +31,7 @@ function MiniCalendar() {
   return (
     <>
       <SidebarTitle
-        customActionButton={
+        actionButton={
           <MiniCalendarToggleViewMenu
             toggleView={toggleView}
             viewsFilter={viewsFilter}

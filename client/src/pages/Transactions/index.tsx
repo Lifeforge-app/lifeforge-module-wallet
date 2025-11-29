@@ -173,7 +173,7 @@ function Transactions() {
         <div className="flex h-full min-w-0 flex-1 flex-col xl:ml-8">
           <InnerHeader />
           <SearchBar />
-          <div className="mb-8 mt-6 flex size-full flex-col gap-3">
+          <div className="mt-6 mb-8 flex size-full flex-col gap-3">
             <WithQuery query={transactionsQuery}>
               {transactions =>
                 transactions.length > 0 ? (
@@ -189,8 +189,10 @@ function Transactions() {
                       }
                     }}
                     icon="tabler:wallet-off"
-                    name="transactions"
-                    namespace="apps.wallet"
+                    message={{
+                      id: 'transactions',
+                      namespace: 'apps.wallet'
+                    }}
                   />
                 )
               }

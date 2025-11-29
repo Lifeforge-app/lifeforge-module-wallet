@@ -4,10 +4,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ContextMenuItem,
-  DashboardItem,
   EmptyStateScreen,
   FAB,
   ModuleHeader,
+  Widget,
   WithQuery
 } from 'lifeforge-ui'
 import { useModalStore } from 'lifeforge-ui'
@@ -103,9 +103,9 @@ function Assets() {
       <WithQuery query={assetsQuery}>
         {assets => (
           <>
-            <DashboardItem
+            <Widget
               className="mb-6 h-min"
-              componentBesideTitle={
+              actionComponent={
                 <TotalBalance
                   amount={totalBalance}
                   className="hidden sm:flex"
@@ -119,7 +119,7 @@ function Assets() {
                 amount={totalBalance}
                 className="flex-center w-full sm:hidden"
               />
-            </DashboardItem>
+            </Widget>
             {assets.length > 0 ? (
               <div className="mb-24 grid grid-cols-1 gap-3 md:mb-6 md:grid-cols-2 lg:grid-cols-3">
                 {assets.map(asset => (
@@ -134,8 +134,10 @@ function Assets() {
                   onClick: handleCreateCategory
                 }}
                 icon="tabler:wallet-off"
-                name="assets"
-                namespace="apps.wallet"
+                message={{
+                  id: 'assets',
+                  namespace: 'apps.wallet'
+                }}
               />
             )}
             {assets.length > 0 && (

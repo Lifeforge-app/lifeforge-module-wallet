@@ -191,8 +191,8 @@ function BalanceChartModal({
           icon="tabler:history"
           label="range mode"
           namespace="apps.wallet"
-          setValue={setRangeMode}
           value={rangeMode}
+          onChange={setRangeMode}
         >
           {RANGE_MODE.map(mode => (
             <ListboxOption
@@ -209,21 +209,22 @@ function BalanceChartModal({
               icon="tabler:calendar-up"
               label="startDate"
               namespace="apps.wallet"
-              setValue={(date: Date | null) => {
+              value={startDate}
+              onChange={(date: Date | null) => {
                 setStartDate(date)
 
                 if (endDate && date && dayjs(date).isAfter(dayjs(endDate))) {
                   setEndDate(date)
                 }
               }}
-              value={startDate}
             />
             <DateInput
               className="flex-1"
               icon="tabler:calendar-down"
               label="endDate"
               namespace="apps.wallet"
-              setValue={(date: Date | null) => {
+              value={endDate}
+              onChange={(date: Date | null) => {
                 setEndDate(date)
 
                 if (
@@ -234,7 +235,6 @@ function BalanceChartModal({
                   setStartDate(date)
                 }
               }}
-              value={endDate}
             />
           </div>
         )}

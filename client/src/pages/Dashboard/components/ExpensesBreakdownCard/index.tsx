@@ -5,10 +5,10 @@ import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import {
-  DashboardItem,
   EmptyStateScreen,
   Listbox,
   ListboxOption,
+  Widget,
   WithQuery
 } from 'lifeforge-ui'
 import { createContext, useEffect, useMemo, useState } from 'react'
@@ -88,9 +88,8 @@ function ExpensesBreakdownCard() {
 
   return (
     <ExpensesBreakdownContext value={memoizedContextValue}>
-      <DashboardItem
-        className="col-span-1 row-span-4"
-        componentBesideTitle={
+      <Widget
+        actionComponent={
           <Link
             className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 font-medium transition-all"
             to="/wallet/transactions?type=expenses"
@@ -98,6 +97,7 @@ function ExpensesBreakdownCard() {
             <Icon className="text-xl" icon="tabler:chevron-right" />
           </Link>
         }
+        className="col-span-1 row-span-4"
         icon="tabler:chart-donut-3"
         namespace="apps.wallet"
         title="Expenses Breakdown"
@@ -111,8 +111,8 @@ function ExpensesBreakdownCard() {
               </div>
             }
             className="flex-1"
-            setValue={setMonth}
             value={month}
+            onChange={setMonth}
           >
             {monthsOptions.map(option => (
               <ListboxOption
@@ -127,8 +127,8 @@ function ExpensesBreakdownCard() {
               <div className="flex items-center gap-3">{year}</div>
             }
             className="sm:w-36!"
-            setValue={setYear}
             value={year}
+            onChange={setYear}
           >
             {yearsOptions.map(option => (
               <ListboxOption
@@ -142,7 +142,12 @@ function ExpensesBreakdownCard() {
         <WithQuery query={expensesBreakdownQuery}>
           {data =>
             Object.keys(data).length === 0 ? (
-              <EmptyStateScreen name="transactions" namespace="apps.wallet" />
+              <EmptyStateScreen
+                message={{
+                  id: 'transactions',
+                  namespace: 'apps.wallet'
+                }}
+              />
             ) : (
               <>
                 <BreakdownDoughnutChart />
@@ -152,7 +157,7 @@ function ExpensesBreakdownCard() {
             )
           }
         </WithQuery>
-      </DashboardItem>
+      </Widget>
     </ExpensesBreakdownContext>
   )
 }

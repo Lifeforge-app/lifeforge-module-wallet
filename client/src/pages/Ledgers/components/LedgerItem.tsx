@@ -6,7 +6,7 @@ import {
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
-  ItemWrapper,
+  Card,
   useModalStore
 } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
@@ -55,7 +55,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
     })
 
   return (
-    <ItemWrapper
+    <Card
       isInteractive
       className="flex-between gap-3"
       onClick={() => navigate(`/wallet/transactions?ledger=${ledger.id}`)}
@@ -91,7 +91,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
           onClick={handleDeleteLedger}
         />
       </ContextMenu>
-    </ItemWrapper>
+    </Card>
   )
 }
 

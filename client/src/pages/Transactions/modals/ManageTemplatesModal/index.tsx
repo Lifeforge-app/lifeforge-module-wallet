@@ -1,8 +1,8 @@
 import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import {
+  Alert,
   EmptyStateScreen,
-  MessageBox,
   ModalHeader,
   Scrollbar,
   Tabs,
@@ -56,12 +56,12 @@ function ManageTemplatesModal({
         onClose={onClose}
       />
       {!choosing && (
-        <MessageBox className="mb-4" type="note">
+        <Alert className="mb-4" type="note">
           {t('messages.aiAccuracy')}
-        </MessageBox>
+        </Alert>
       )}
       <Tabs
-        active={selectedTab}
+        currentTab={selectedTab}
         enabled={['income', 'expenses']}
         items={[
           {
@@ -77,7 +77,7 @@ function ManageTemplatesModal({
             amount: transactionTemplatesQuery.data?.expenses?.length || 0
           }
         ]}
-        onNavClick={setSelectedTab as (value: string) => void}
+        onTabChange={setSelectedTab as (value: string) => void}
       />
       <WithQuery query={transactionTemplatesQuery}>
         {templates =>
@@ -117,8 +117,10 @@ function ManageTemplatesModal({
                             }
                           }}
                           icon="tabler:template-off"
-                          name="templates"
-                          namespace="apps.wallet"
+                          message={{
+                            id: 'templates',
+                            namespace: 'apps.wallet'
+                          }}
                         />
                       )}
                     </ul>
@@ -139,8 +141,10 @@ function ManageTemplatesModal({
                 tProps: { item: t('items.template') }
               }}
               icon="tabler:template-off"
-              name="templates"
-              namespace="apps.wallet"
+              message={{
+                id: 'templates',
+                namespace: 'apps.wallet'
+              }}
             />
           )
         }

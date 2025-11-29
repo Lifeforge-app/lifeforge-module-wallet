@@ -54,8 +54,10 @@ function CategoriesSection() {
   return selectedType !== 'transfer' ? (
     <>
       <SidebarTitle
-        actionButtonIcon="tabler:plus"
-        actionButtonOnClick={handleActionButtonClick}
+        actionButton={{
+          icon: 'tabler:plus',
+          onClick: handleActionButtonClick
+        }}
         label={t('sidebar.categories')}
       />
       <WithQuery query={categoriesQuery}>

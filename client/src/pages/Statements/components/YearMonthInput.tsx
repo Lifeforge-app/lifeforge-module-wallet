@@ -44,7 +44,7 @@ function YearMonthInput({
         icon="tabler:calendar-month"
         label="Month"
         namespace="apps.wallet"
-        setValue={setMonth}
+        onChange={setMonth}
         value={month}
       >
         {monthsOptions.map(mon => (
@@ -65,7 +65,7 @@ function YearMonthInput({
         icon="tabler:calendar"
         label="Year"
         namespace="apps.wallet"
-        setValue={setYear}
+        onChange={setYear}
         value={year}
       >
         {yearsOptions.map(yr => (

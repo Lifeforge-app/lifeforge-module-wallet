@@ -1,6 +1,6 @@
 import { useWalletData } from '@/hooks/useWalletData'
 import type { ChartOptions } from 'chart.js'
-import { DashboardItem, EmptyStateScreen, WithQuery } from 'lifeforge-ui'
+import { EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
@@ -22,15 +22,15 @@ function StatisticChardCard() {
   const data = useChartData(labels, range)
 
   return (
-    <DashboardItem
-      className="col-span-2 row-span-2 max-h-120"
-      componentBesideTitle={
+    <Widget
+      actionComponent={
         <RangeSelector
           className="hidden w-72! sm:flex"
           range={range}
           setRange={setRange}
         />
       }
+      className="col-span-2 row-span-2 max-h-120"
       icon="tabler:chart-dots"
       namespace="apps.wallet"
       title="Statistics"
@@ -40,7 +40,12 @@ function StatisticChardCard() {
         <WithQuery query={transactionsQuery}>
           {transactions =>
             transactions.length === 0 ? (
-              <EmptyStateScreen name="transactions" namespace="apps.wallet" />
+              <EmptyStateScreen
+                message={{
+                  id: 'transactions',
+                  namespace: 'apps.wallet'
+                }}
+              />
             ) : (
               <Bar
                 className="w-full"
@@ -79,7 +84,7 @@ function StatisticChardCard() {
           <span className="text-sm">{t('transactionTypes.expenses')}</span>
         </div>
       </div>
-    </DashboardItem>
+    </Widget>
   )
 }
 

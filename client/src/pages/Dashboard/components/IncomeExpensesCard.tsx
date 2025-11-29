@@ -3,7 +3,7 @@ import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { DashboardItem, WithQuery } from 'lifeforge-ui'
+import { Widget, WithQuery } from 'lifeforge-ui'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -22,7 +22,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   )
 
   return (
-    <DashboardItem
+    <Widget
       className="col-span-1 row-span-1"
       icon={icon}
       namespace="apps.wallet"
@@ -86,7 +86,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
           </div>
         )}
       </WithQuery>
-    </DashboardItem>
+    </Widget>
   )
 }
 

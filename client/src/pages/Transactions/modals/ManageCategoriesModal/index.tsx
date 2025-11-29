@@ -46,7 +46,7 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
         onClose={onClose}
       />
       <Tabs
-        active={selectedTab}
+        currentTab={selectedTab}
         enabled={['income', 'expenses']}
         items={[
           {
@@ -68,7 +68,7 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
               ).length || 0
           }
         ]}
-        onNavClick={setSelectedTab as (value: string) => void}
+        onTabChange={setSelectedTab as (value: string) => void}
       />
       <WithQuery query={categoriesQuery}>
         {categories =>
@@ -110,8 +110,10 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
                 tProps: { item: t('items.category') }
               }}
               icon="tabler:apps-off"
-              name="categories"
-              namespace="apps.wallet"
+              message={{
+                id: 'categories',
+                namespace: 'apps.wallet'
+              }}
             />
           )
         }

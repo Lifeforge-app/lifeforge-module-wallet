@@ -2,12 +2,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import {
-  DashboardItem,
-  EmptyStateScreen,
-  Scrollbar,
-  WithQuery
-} from 'lifeforge-ui'
+import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'shared'
 
@@ -23,9 +18,9 @@ function AssetsBalanceCard() {
   const { t } = useTranslation('apps.wallet')
 
   return (
-    <DashboardItem
+    <Widget
       className="col-span-1 row-span-2 min-h-96 xl:min-h-0"
-      componentBesideTitle={
+      actionComponent={
         <Link
           className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 transition-all"
           to="./assets"
@@ -56,7 +51,7 @@ function AssetsBalanceCard() {
                     </div>
                     <div
                       className={clsx(
-                        'mt-4 flex gap-2 whitespace-nowrap text-right text-3xl font-medium [@media(min-width:400px)]:mt-0',
+                        'mt-4 flex gap-2 text-right text-3xl font-medium whitespace-nowrap [@media(min-width:400px)]:mt-0',
                         isAmountHidden ? 'items-center' : 'items-end'
                       )}
                     >
@@ -93,13 +88,15 @@ function AssetsBalanceCard() {
                 tProps: { item: t('items.asset') }
               }}
               icon="tabler:wallet-off"
-              name="assets"
-              namespace="apps.wallet"
+              message={{
+                id: 'assets',
+                namespace: 'apps.wallet'
+              }}
             />
           )
         }
       </WithQuery>
-    </DashboardItem>
+    </Widget>
   )
 }
 

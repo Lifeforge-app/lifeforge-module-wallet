@@ -96,7 +96,7 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
           </span>
         </div>
         <Switch
-          checked={keepReceiptAfterScan}
+          value={keepReceiptAfterScan}
           onChange={() => {
             setKeepReceiptAfterScan(!keepReceiptAfterScan)
           }}

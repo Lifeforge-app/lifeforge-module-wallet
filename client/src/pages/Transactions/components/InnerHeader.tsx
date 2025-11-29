@@ -1,7 +1,7 @@
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
-import { Button, HeaderFilter, useModuleSidebarState } from 'lifeforge-ui'
+import { Button, TagsFilter, useModuleSidebarState } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 
 function InnerHeader() {
@@ -53,8 +53,8 @@ function InnerHeader() {
             ({filteredTransactions.length.toLocaleString()})
           </span>
         </h1>
-        <HeaderFilter
-          items={{
+        <TagsFilter
+          availableFilters={{
             type: {
               data: [
                 {
@@ -90,17 +90,17 @@ function InnerHeader() {
               isColored: true
             }
           }}
-          setValues={{
-            type: setSelectedType as (value: string | null) => void,
-            category: setSelectedCategory,
-            asset: setSelectedAsset,
-            ledger: setSelectedLedger
-          }}
           values={{
             type: selectedType,
             category: selectedCategory,
             asset: selectedAsset,
             ledger: selectedLedger
+          }}
+          onChange={{
+            type: setSelectedType as (value: string | null) => void,
+            category: setSelectedCategory,
+            asset: setSelectedAsset,
+            ledger: setSelectedLedger
           }}
         />
       </div>

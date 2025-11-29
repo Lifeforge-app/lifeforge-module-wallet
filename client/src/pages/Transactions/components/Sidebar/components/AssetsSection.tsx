@@ -34,8 +34,10 @@ function AssetsSection() {
   return (
     <>
       <SidebarTitle
-        actionButtonIcon="tabler:plus"
-        actionButtonOnClick={handleActionButtonClick}
+        actionButton={{
+          icon: 'plus',
+          onClick: handleActionButtonClick
+        }}
         label={t('sidebar.assets')}
       />
       {ITEMS.map(({ icon, name, id, amount }) => (

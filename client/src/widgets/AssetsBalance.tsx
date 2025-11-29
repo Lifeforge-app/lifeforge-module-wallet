@@ -1,10 +1,5 @@
 import { Icon } from '@iconify/react'
-import {
-  Button,
-  DashboardItem,
-  EmptyStateScreen,
-  WithQuery
-} from 'lifeforge-ui'
+import { Button, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useState } from 'react'
 import { Link } from 'shared'
 import type { WidgetConfig } from 'shared'
@@ -18,8 +13,8 @@ export default function AssetsBalance() {
   const [showBalance, setShowBalance] = useState(false)
 
   return (
-    <DashboardItem
-      componentBesideTitle={
+    <Widget
+      actionComponent={
         <Button
           className="p-2!"
           icon={!showBalance ? 'tabler:eye-off' : 'tabler:eye'}
@@ -39,9 +34,11 @@ export default function AssetsBalance() {
             <EmptyStateScreen
               smaller
               icon="tabler:wallet-off"
-              name="assets"
-              namespace="apps.wallet"
-              tKey="widgets.assetsBalance"
+              message={{
+                id: 'assets',
+                namespace: 'apps.wallet',
+                tKey: 'widgets.assetsBalance'
+              }}
             />
           ) : (
             <ul className="grid h-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2 overflow-y-auto">
@@ -91,7 +88,7 @@ export default function AssetsBalance() {
           )
         }
       </WithQuery>
-    </DashboardItem>
+    </Widget>
   )
 }
 
