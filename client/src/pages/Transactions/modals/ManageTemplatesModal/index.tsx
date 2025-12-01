@@ -129,23 +129,25 @@ function ManageTemplatesModal({
               </AutoSizer>
             </div>
           ) : (
-            <EmptyStateScreen
-              CTAButtonProps={{
-                children: 'new',
-                icon: 'tabler:plus',
-                onClick: () => {
-                  open(ModifyTemplatesModal, {
-                    type: 'create'
-                  })
-                },
-                tProps: { item: t('items.template') }
-              }}
-              icon="tabler:template-off"
-              message={{
-                id: 'templates',
-                namespace: 'apps.wallet'
-              }}
-            />
+            <div className="flex-center flex-1">
+              <EmptyStateScreen
+                CTAButtonProps={{
+                  children: 'new',
+                  icon: 'tabler:plus',
+                  onClick: () => {
+                    open(ModifyTemplatesModal, {
+                      type: 'create'
+                    })
+                  },
+                  tProps: { item: t('items.template') }
+                }}
+                icon="tabler:template-off"
+                message={{
+                  id: 'templates',
+                  namespace: 'apps.wallet'
+                }}
+              />
+            </div>
           )
         }
       </WithQuery>

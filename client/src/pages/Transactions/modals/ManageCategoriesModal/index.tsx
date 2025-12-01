@@ -98,23 +98,25 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
               </AutoSizer>
             </div>
           ) : (
-            <EmptyStateScreen
-              CTAButtonProps={{
-                children: 'new',
-                icon: 'tabler:plus',
-                onClick: () => {
-                  open(ModifyCategoryModal, {
-                    type: 'create'
-                  })
-                },
-                tProps: { item: t('items.category') }
-              }}
-              icon="tabler:apps-off"
-              message={{
-                id: 'categories',
-                namespace: 'apps.wallet'
-              }}
-            />
+            <div className="flex-center flex-1">
+              <EmptyStateScreen
+                CTAButtonProps={{
+                  children: 'new',
+                  icon: 'tabler:plus',
+                  onClick: () => {
+                    open(ModifyCategoryModal, {
+                      type: 'create'
+                    })
+                  },
+                  tProps: { item: t('items.category') }
+                }}
+                icon="tabler:apps-off"
+                message={{
+                  id: 'categories',
+                  namespace: 'apps.wallet'
+                }}
+              />
+            </div>
           )
         }
       </WithQuery>
