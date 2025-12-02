@@ -64,7 +64,7 @@ function TransactionIncomeExpensesItem({
         />
         <div className="flex w-full min-w-0 flex-col-reverse sm:flex-col">
           <div className="flex w-full min-w-0 items-center gap-2">
-            <div className="min-w-0 truncate text-lg font-medium print:text-[16px]">
+            <div className="min-w-0 truncate text-lg font-medium print:text-[14px]">
               {transaction.particulars}{' '}
               {transaction.location_name !== '' && (
                 <>
