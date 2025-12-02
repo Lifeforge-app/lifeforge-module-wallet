@@ -104,13 +104,13 @@ function Assets() {
         {assets => (
           <>
             <Widget
-              className="mb-6 h-min"
               actionComponent={
                 <TotalBalance
                   amount={totalBalance}
                   className="hidden sm:flex"
                 />
               }
+              className="mb-6 h-min"
               icon="tabler:currency-dollar"
               namespace="apps.wallet"
               title="Total Assets"
