@@ -1,5 +1,6 @@
 import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import clsx from 'clsx'
 import {
   Card,
   ConfirmationModal,
@@ -16,7 +17,15 @@ import ViewTransactionModal from '../../../modals/ViewTransactionModal'
 import TransactionIncomeExpensesItem from './TransactionIncomeExpensesItem'
 import TransactionTransferItem from './TransactionTransferItem'
 
-function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
+function TransactionItem({
+  transaction,
+  viewOnly,
+  className
+}: {
+  transaction: WalletTransaction
+  viewOnly?: boolean
+  className?: string
+}) {
   const queryClient = useQueryClient()
 
   const open = useModalStore(state => state.open)
@@ -53,15 +62,17 @@ function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
   }, [transaction])
 
   const handleViewTransaction = useCallback(() => {
+    if (viewOnly) return
+
     open(ViewTransactionModal, {
       transaction
     })
-  }, [transaction])
+  }, [transaction, viewOnly])
 
   return (
     <Card
-      isInteractive
-      className="flex-between flex gap-3"
+      className={clsx('flex-between flex gap-3', className)}
+      isInteractive={!viewOnly}
       onClick={handleViewTransaction}
     >
       {transaction.type === 'transfer' ? (
@@ -69,29 +80,31 @@ function TransactionItem({ transaction }: { transaction: WalletTransaction }) {
       ) : (
         <TransactionIncomeExpensesItem transaction={transaction} />
       )}
-      <ContextMenu>
-        {transaction.type !== 'transfer' && (
+      {!viewOnly && (
+        <ContextMenu>
+          {transaction.type !== 'transfer' && (
+            <ContextMenuItem
+              icon="tabler:copy"
+              label="Copy"
+              onClick={() => {
+                navigator.clipboard.writeText(transaction.particulars)
+                toast.success('Transaction particulars copied to clipboard')
+              }}
+            />
+          )}
           <ContextMenuItem
-            icon="tabler:copy"
-            label="Copy"
-            onClick={() => {
-              navigator.clipboard.writeText(transaction.particulars)
-              toast.success('Transaction particulars copied to clipboard')
-            }}
+            icon="tabler:pencil"
+            label="Edit"
+            onClick={handleEditTransaction}
           />
-        )}
-        <ContextMenuItem
-          icon="tabler:pencil"
-          label="Edit"
-          onClick={handleEditTransaction}
-        />
-        <ContextMenuItem
-          dangerous
-          icon="tabler:trash"
-          label="Delete"
-          onClick={handleDeleteTransaction}
-        />
-      </ContextMenu>
+          <ContextMenuItem
+            dangerous
+            icon="tabler:trash"
+            label="Delete"
+            onClick={handleDeleteTransaction}
+          />
+        </ContextMenu>
+      )}
     </Card>
   )
 }
