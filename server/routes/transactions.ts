@@ -16,13 +16,27 @@ const list = forgeController
     'zh-CN': '获取所有钱包交易',
     'zh-TW': '獲取所有錢包交易'
   })
-  .input({})
-  .callback(async ({ pb }) => {
+  .input({
+    query: z.object({
+      q: z.string().optional(),
+      type: z.enum(['income', 'expenses', 'transfer']).optional()
+    })
+  })
+  .callback(async ({ pb, query: { q, type } }) => {
     const incomeExpensesTransactions = await pb.getFullList
       .collection('wallet__transactions_income_expenses')
       .expand({
         base_transaction: 'wallet__transactions'
       })
+      .filter([
+        q
+          ? {
+              field: 'particulars',
+              operator: '~',
+              value: q
+            }
+          : null
+      ])
       .execute()
 
     const transferTransactions = await pb.getFullList
@@ -60,13 +74,80 @@ const list = forgeController
       })
     }
 
-    return allTransactions.sort((a, b) => {
-      if (new Date(a.date).getTime() === new Date(b.date).getTime()) {
-        return new Date(b.created).getTime() - new Date(a.created).getTime()
-      }
+    return allTransactions
+      .filter(transaction => !type || transaction.type === type)
+      .sort((a, b) => {
+        if (new Date(a.date).getTime() === new Date(b.date).getTime()) {
+          return new Date(b.created).getTime() - new Date(a.created).getTime()
+        }
 
-      return new Date(b.date).getTime() - new Date(a.date).getTime()
+        return new Date(b.date).getTime() - new Date(a.date).getTime()
+      })
+  })
+
+const getById = forgeController
+  .query()
+  .description({
+    en: 'Get wallet transaction by ID',
+    ms: 'Dapatkan transaksi dompet mengikut ID',
+    'zh-CN': '通过ID获取钱包交易',
+    'zh-TW': '通過ID獲取錢包交易'
+  })
+  .input({
+    query: z.object({
+      id: z.string()
     })
+  })
+  .existenceCheck('query', {
+    id: 'wallet__transactions'
+  })
+  .callback(async ({ pb, query: { id } }) => {
+    const baseTransaction = await pb.getOne
+      .collection('wallet__transactions')
+      .id(id)
+      .execute()
+
+    if (baseTransaction.type === 'transfer') {
+      const transferTransaction = await pb.getFirstListItem
+        .collection('wallet__transactions_transfer')
+        .filter([
+          {
+            field: 'base_transaction',
+            operator: '=',
+            value: id
+          }
+        ])
+        .execute()
+
+      return {
+        ...baseTransaction,
+        type: 'transfer' as const,
+        from: transferTransaction.from,
+        to: transferTransaction.to
+      }
+    } else {
+      const incomeExpensesTransaction = await pb.getFirstListItem
+        .collection('wallet__transactions_income_expenses')
+        .filter([
+          {
+            field: 'base_transaction',
+            operator: '=',
+            value: id
+          }
+        ])
+        .execute()
+
+      return {
+        ...baseTransaction,
+        type: incomeExpensesTransaction.type,
+        particulars: incomeExpensesTransaction.particulars,
+        asset: incomeExpensesTransaction.asset,
+        category: incomeExpensesTransaction.category,
+        ledgers: incomeExpensesTransaction.ledgers,
+        location_name: incomeExpensesTransaction.location_name,
+        location_coords: incomeExpensesTransaction.location_coords
+      }
+    }
   })
 
 const CreateTransactionInputSchema = SCHEMAS.wallet.transactions.schema
@@ -351,6 +432,7 @@ const scanReceipt = forgeController
 
 export default forgeRouter({
   list,
+  getById,
   create,
   update,
   remove,
