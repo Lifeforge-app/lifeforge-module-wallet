@@ -57,14 +57,14 @@ function TransactionIncomeExpensesItem({
           }}
         />
         <Icon
-          className="text-bg-500 size-8 shrink-0"
+          className="text-bg-500 size-8 shrink-0 print:text-zinc-500"
           icon={
             assets.find(asset => asset.id === transaction.asset)?.icon ?? ''
           }
         />
         <div className="flex w-full min-w-0 flex-col-reverse sm:flex-col">
           <div className="flex w-full min-w-0 items-center gap-2">
-            <div className="min-w-0 truncate text-lg font-medium">
+            <div className="min-w-0 truncate text-lg font-medium print:text-[16px]">
               {transaction.particulars}{' '}
               {transaction.location_name !== '' && (
                 <>
@@ -75,11 +75,14 @@ function TransactionIncomeExpensesItem({
             </div>
             {transaction.receipt !== '' && (
               <button onClick={handleViewReceipt}>
-                <Icon className="text-bg-500 size-5" icon="tabler:file-text" />
+                <Icon
+                  className="text-bg-500 size-5 print:text-zinc-500"
+                  icon="tabler:file-text"
+                />
               </button>
             )}
           </div>
-          <div className="text-bg-500 flex items-center gap-2 text-sm font-medium">
+          <div className="text-bg-500 flex items-center gap-2 text-sm font-medium print:text-[10px] print:text-zinc-500">
             <span className="block truncate whitespace-nowrap sm:hidden">
               {dayjs(transaction.date).format('DD MMM')}
             </span>
