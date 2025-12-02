@@ -81,7 +81,7 @@ function ManageTemplatesModal({
       />
       <WithQuery query={transactionTemplatesQuery}>
         {templates =>
-          Object.values(templates).flat().length > 0 ? (
+          templates[selectedTab].length > 0 ? (
             <div className="mt-4 flex-1">
               <AutoSizer>
                 {({ width, height }) => (
@@ -92,37 +92,14 @@ function ManageTemplatesModal({
                     }}
                   >
                     <ul className="space-y-3">
-                      {templates[selectedTab].length > 0 ? (
-                        templates[selectedTab].map(template => (
-                          <TemplateItem
-                            key={template.id}
-                            choosing={!!choosing}
-                            template={template}
-                            onClose={onClose}
-                          />
-                        ))
-                      ) : (
-                        <EmptyStateScreen
-                          smaller
-                          CTAButtonProps={{
-                            children: 'new',
-                            icon: 'tabler:plus',
-                            onClick: () => {
-                              open(ModifyTemplatesModal, {
-                                type: 'create'
-                              })
-                            },
-                            tProps: {
-                              item: t('items.template')
-                            }
-                          }}
-                          icon="tabler:template-off"
-                          message={{
-                            id: 'templates',
-                            namespace: 'apps.wallet'
-                          }}
+                      {templates[selectedTab].map(template => (
+                        <TemplateItem
+                          key={template.id}
+                          choosing={!!choosing}
+                          template={template}
+                          onClose={onClose}
                         />
-                      )}
+                      ))}
                     </ul>
                   </Scrollbar>
                 )}
