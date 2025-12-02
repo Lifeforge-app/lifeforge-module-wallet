@@ -119,46 +119,44 @@ function Transactions() {
     <>
       <ModuleHeader
         actionButton={
-          (transactionsQuery.data?.length || 0) > 0 && (
-            <ContextMenu
-              buttonComponent={
-                <Button
-                  className="hidden md:flex"
-                  icon="tabler:plus"
-                  tProps={{
-                    item: t('apps.wallet:items.transaction')
-                  }}
-                  onClick={() => {}}
-                >
-                  new
-                </Button>
-              }
-              classNames={{ button: 'hidden:md:block' }}
-            >
-              <ContextMenuItem
+          <ContextMenu
+            buttonComponent={
+              <Button
+                className="hidden md:flex"
                 icon="tabler:plus"
-                label="Add Manually"
-                namespace="apps.wallet"
-                onClick={handleCreateTransaction}
-              />
-              <ContextMenuItem
-                icon="tabler:template"
-                label="From Template"
-                namespace="apps.wallet"
-                onClick={() => {
-                  open(ManageTemplatesModal, {
-                    choosing: true
-                  })
+                tProps={{
+                  item: t('apps.wallet:items.transaction')
                 }}
-              />
-              <ContextMenuItem
-                icon="tabler:scan"
-                label="Scan Receipt"
-                namespace="apps.wallet"
-                onClick={handleUploadReceipt}
-              />
-            </ContextMenu>
-          )
+                onClick={() => {}}
+              >
+                new
+              </Button>
+            }
+            classNames={{ button: 'hidden:md:block' }}
+          >
+            <ContextMenuItem
+              icon="tabler:plus"
+              label="Add Manually"
+              namespace="apps.wallet"
+              onClick={handleCreateTransaction}
+            />
+            <ContextMenuItem
+              icon="tabler:template"
+              label="From Template"
+              namespace="apps.wallet"
+              onClick={() => {
+                open(ManageTemplatesModal, {
+                  choosing: true
+                })
+              }}
+            />
+            <ContextMenuItem
+              icon="tabler:scan"
+              label="Scan Receipt"
+              namespace="apps.wallet"
+              onClick={handleUploadReceipt}
+            />
+          </ContextMenu>
         }
         contextMenuProps={{
           children: <HeaderMenu />
@@ -180,14 +178,6 @@ function Transactions() {
                   <TransactionList />
                 ) : (
                   <EmptyStateScreen
-                    CTAButtonProps={{
-                      children: 'new',
-                      icon: 'tabler:plus',
-                      onClick: handleCreateTransaction,
-                      tProps: {
-                        item: t('items.transaction')
-                      }
-                    }}
                     icon="tabler:wallet-off"
                     message={{
                       id: 'transactions',
