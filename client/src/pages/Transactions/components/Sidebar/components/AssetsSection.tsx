@@ -35,7 +35,7 @@ function AssetsSection() {
     <>
       <SidebarTitle
         actionButton={{
-          icon: 'plus',
+          icon: 'tabler:plus',
           onClick: handleActionButtonClick
         }}
         label={t('sidebar.assets')}
