@@ -1,4 +1,5 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
+import clsx from 'clsx'
 import { Listbox, ListboxOption } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 
@@ -21,7 +22,7 @@ function RangeSelector({
           {t(`timeRanges.${range}`)}
         </div>
       }
-      className={className}
+      className={clsx(className, 'component-bg-lighter')}
       value={range}
       onChange={setRange}
     >

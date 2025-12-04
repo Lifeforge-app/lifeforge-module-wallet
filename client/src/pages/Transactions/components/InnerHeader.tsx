@@ -60,33 +60,47 @@ function InnerHeader() {
                 {
                   id: 'income',
                   icon: 'tabler:login-2',
-                  name: 'Income',
+                  label: 'Income',
                   color: '#22c55e'
                 },
                 {
                   id: 'expenses',
                   icon: 'tabler:logout',
-                  name: 'Expenses',
+                  label: 'Expenses',
                   color: '#ef4444'
                 },
                 {
                   id: 'transfer',
                   icon: 'tabler:transfer',
-                  name: 'Transfer',
+                  label: 'Transfer',
                   color: '#3b82f6'
                 }
               ],
               isColored: true
             },
             category: {
-              data: categories,
+              data: categories.map(category => ({
+                id: category.id,
+                icon: category.icon,
+                color: category.color,
+                label: category.name
+              })),
               isColored: true
             },
             asset: {
-              data: assets
+              data: assets.map(asset => ({
+                id: asset.id,
+                icon: asset.icon,
+                label: asset.name
+              }))
             },
             ledger: {
-              data: ledgers,
+              data: ledgers.map(ledger => ({
+                id: ledger.id,
+                icon: ledger.icon,
+                color: ledger.color,
+                label: ledger.name
+              })),
               isColored: true
             }
           }}
