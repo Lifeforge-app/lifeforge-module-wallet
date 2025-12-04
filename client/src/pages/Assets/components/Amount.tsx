@@ -9,18 +9,18 @@ function Amount({ amount, className }: { amount: number; className?: string }) {
   return (
     <p
       className={clsx(
-        'flex text-5xl font-medium',
+        'flex text-3xl font-medium sm:text-5xl',
         isAmountHidden ? 'items-center' : 'items-end',
         className
       )}
     >
-      <span className="text-bg-500 mr-2 text-3xl">RM</span>
+      <span className="text-bg-500 mr-2 text-xl sm:text-3xl">RM</span>
       {isAmountHidden ? (
         <span className="flex items-center">
           {Array(4)
             .fill(0)
             .map((_, i) => (
-              <Icon key={i} className="size-8" icon="uil:asterisk" />
+              <Icon key={i} className="size-6 sm:size-8" icon="uil:asterisk" />
             ))}
         </span>
       ) : (

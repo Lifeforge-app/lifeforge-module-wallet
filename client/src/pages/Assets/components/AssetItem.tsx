@@ -1,17 +1,19 @@
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Button,
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  WithQuery,
   useModalStore
 } from 'lifeforge-ui'
+import { useMemo } from 'react'
 import { toast } from 'react-toastify'
-import { useNavigate } from 'shared'
+import { Area, AreaChart, ResponsiveContainer } from 'recharts'
+import { usePersonalization } from 'shared'
 
 import BalanceChartModal from '../modals/BalanceChartModal'
 import ModifyAssetModal from '../modals/ModifyAssetModal'
@@ -22,7 +24,29 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
 
   const open = useModalStore(state => state.open)
 
-  const navigate = useNavigate()
+  const { derivedThemeColor } = usePersonalization()
+
+  const assetBalanceQuery = useQuery(
+    forgeAPI.wallet.assets.getAssetAccumulatedBalance
+      .input({
+        id: asset.id,
+        rangeMode: 'month'
+      })
+      .queryOptions()
+  )
+
+  const chartData = useMemo(() => {
+    if (!assetBalanceQuery.data) return []
+
+    const sortedEntries = Object.entries(assetBalanceQuery.data).sort(
+      ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+    )
+
+    return sortedEntries.map(([date, balance]) => ({
+      date,
+      balance
+    }))
+  }, [assetBalanceQuery.data])
 
   const deleteMutation = useMutation(
     forgeAPI.wallet.assets.remove
@@ -72,17 +96,50 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
         <h2 className="text-xl font-medium">{asset.name}</h2>
       </div>
       <Amount amount={asset.current_balance} />
-      <Button
-        className="mt-4 w-full"
-        icon="tabler:eye"
-        namespace="apps.wallet"
-        variant="secondary"
-        onClick={() => {
-          navigate(`/wallet/transactions?asset=${asset.id}`)
-        }}
-      >
-        View Transactions
-      </Button>
+      <div className="mt-4 h-16">
+        <WithQuery query={assetBalanceQuery} showRetryButton={false}>
+          {() =>
+            chartData.length === 0 ? (
+              <p className="flex-center text-bg-500 size-full">
+                No data available
+              </p>
+            ) : (
+              <ResponsiveContainer height="100%" width="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient
+                      id={`colorBalance-${asset.id}`}
+                      x1="0"
+                      x2="0"
+                      y1="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="5%"
+                        stopColor={derivedThemeColor}
+                        stopOpacity={0.2}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={derivedThemeColor}
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    dataKey="balance"
+                    dot={false}
+                    fill={`url(#colorBalance-${asset.id})`}
+                    stroke={derivedThemeColor}
+                    strokeWidth={2}
+                    type="monotone"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )
+          }
+        </WithQuery>
+      </div>
       <ContextMenu
         classNames={{
           wrapper: 'absolute right-4 top-4'

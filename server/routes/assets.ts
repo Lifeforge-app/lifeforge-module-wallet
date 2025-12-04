@@ -117,6 +117,10 @@ const getAssetAccumulatedBalance = forgeController
       }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
+    if (allTransactions.length === 0) {
+      return {}
+    }
+
     let currentBalance = starting_balance
 
     const accumulatedBalance: Record<string, number> = {}
