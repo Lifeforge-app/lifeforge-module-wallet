@@ -4,7 +4,7 @@ import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { Button, useModalStore } from 'lifeforge-ui'
+import { Button, TagChip, useModalStore } from 'lifeforge-ui'
 
 import ViewReceiptModal from '../../../ViewReceiptModal'
 import DetailItem from './components/DetailItem'
@@ -118,23 +118,16 @@ function Details({ transaction }: { transaction: WalletTransaction }) {
           return (
             <DetailItem icon="tabler:book" label="ledger">
               {ledger ? (
-                <ul className="flex flex-col gap-2">
+                <div className="flex flex-wrap gap-2 sm:justify-end">
                   {ledger.map(ledgerItem => (
-                    <li
+                    <TagChip
                       key={ledgerItem.id}
-                      className="flex items-center justify-end gap-2"
-                    >
-                      <Icon
-                        className="size-5"
-                        icon={ledgerItem.icon}
-                        style={{
-                          color: ledgerItem.color
-                        }}
-                      />
-                      {ledgerItem.name}
-                    </li>
+                      color={ledgerItem.color}
+                      icon={ledgerItem.icon}
+                      label={ledgerItem.name}
+                    />
                   ))}
-                </ul>
+                </div>
               ) : (
                 <span className="text-bg-500">No Ledger</span>
               )}
