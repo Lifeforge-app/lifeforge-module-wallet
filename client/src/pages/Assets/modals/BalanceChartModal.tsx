@@ -1,30 +1,28 @@
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Filler,
-  Legend,
-  LineElement,
-  LinearScale,
-  PointElement,
-  Title,
-  Tooltip
-} from 'chart.js'
 import dayjs from 'dayjs'
 import {
+  Card,
   DateInput,
+  EmptyStateScreen,
   ListboxInput,
   ListboxOption,
   ModalHeader,
   WithQuery
 } from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
-import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts'
 import { usePersonalization } from 'shared'
-import tinycolor from 'tinycolor2'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -36,18 +34,6 @@ const RANGE_MODE = [
   'all',
   'custom'
 ] as const
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-)
 
 function BalanceChartModal({
   data: { initialData },
@@ -89,90 +75,49 @@ function BalanceChartModal({
   )
 
   const chartData = useMemo(() => {
-    if (!assetBalanceQuery.data) return null
+    if (!assetBalanceQuery.data) return []
 
     const sortedEntries = Object.entries(assetBalanceQuery.data).sort(
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     )
 
-    const labels = sortedEntries.map(([date]) =>
-      new Date(date).toLocaleDateString('en-US', {
+    return sortedEntries.map(([date, balance]) => ({
+      date: new Date(date).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric'
-      })
-    )
-
-    const data = sortedEntries.map(([, balance]) => balance)
-
-    return {
-      labels,
-      datasets: [
-        {
-          label: 'Balance',
-          data,
-          borderColor: derivedThemeColor,
-          backgroundColor: tinycolor(derivedThemeColor)
-            .setAlpha(0.1)
-            .toRgbString(),
-          fill: true,
-          borderWidth: 2,
-          pointHoverBackgroundColor: derivedThemeColor,
-          pointHoverBorderColor: derivedThemeColor,
-          pointRadius: 0,
-          pointHoverRadius: 6
-        }
-      ]
-    }
+      }),
+      balance
+    }))
   }, [assetBalanceQuery.data])
 
-  const chartOptions = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: 'white',
-          bodyColor: 'white',
-          borderColor: 'rgb(34, 197, 94)',
-          borderWidth: 1,
-          callbacks: {
-            label: (context: any) => `RM ${numberToCurrency(context.parsed.y)}`
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false
-          },
-          border: {
-            display: false
-          }
-        },
-        y: {
-          grid: {
-            color: 'rgba(156, 163, 175, 0.2)'
-          },
-          border: {
-            display: false
-          },
-          min: 0,
-          ticks: {
-            callback: (value: any) => `RM ${numberToCurrency(value)}`
-          }
-        }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index' as const
-      }
-    }),
-    []
-  )
+  const CustomTooltip = ({
+    active,
+    payload,
+    label
+  }: {
+    active?: boolean
+    payload?: Array<{
+      value: number
+      payload: { date: string; balance: number }
+    }>
+    label?: string
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Card className="border-bg-200 dark:border-bg-700/50 border">
+          <p className="text-bg-500 mb-1.5 font-medium">{label}</p>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-bg-500">Balance:</span>
+            <span className="text-lg font-semibold">
+              RM {numberToCurrency(payload[0].value)}
+            </span>
+          </div>
+        </Card>
+      )
+    }
+
+    return null
+  }
 
   return (
     <div className="min-w-[50vw]">
@@ -240,22 +185,80 @@ function BalanceChartModal({
         )}
       </div>
       <WithQuery query={assetBalanceQuery}>
-        {assetBalance => (
-          <div className="p-6">
-            {chartData && Object.keys(assetBalance).length > 0 ? (
+        {() => (
+          <>
+            {chartData.length > 0 ? (
               <div className="h-96">
-                <Line data={chartData} options={chartOptions} />
+                <ResponsiveContainer height="100%" width="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient
+                        id="colorBalance"
+                        x1="0"
+                        x2="0"
+                        y1="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={derivedThemeColor}
+                          stopOpacity={0.1}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={derivedThemeColor}
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      stroke="rgba(156, 163, 175, 0.2)"
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
+                    <XAxis
+                      angle={-45}
+                      axisLine={false}
+                      dataKey="date"
+                      height={60}
+                      textAnchor="end"
+                      tick={{ fill: 'currentColor' }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      domain={[0, 'auto']}
+                      tick={{ fill: 'currentColor' }}
+                      tickFormatter={value => `${numberToCurrency(value)}`}
+                      tickLine={false}
+                      width="auto"
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      activeDot={{
+                        r: 6,
+                        fill: derivedThemeColor,
+                        stroke: derivedThemeColor
+                      }}
+                      dataKey="balance"
+                      dot={false}
+                      fill="url(#colorBalance)"
+                      stroke={derivedThemeColor}
+                      strokeWidth={2}
+                      type="monotone"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             ) : (
-              <div className="flex-center h-96 flex-col gap-3 text-gray-500">
-                <div className="text-6xl">📊</div>
-                <div className="text-lg font-medium">No Balance History</div>
-                <div className="text-sm">
-                  Balance data will appear here once transactions are recorded.
-                </div>
-              </div>
+              <EmptyStateScreen
+                message={{
+                  id: 'transactions',
+                  namespace: 'apps.wallet'
+                }}
+              />
             )}
-          </div>
+          </>
         )}
       </WithQuery>
     </div>

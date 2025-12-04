@@ -1,16 +1,17 @@
 import { useWalletData } from '@/hooks/useWalletData'
-import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { WithQuery } from 'lifeforge-ui'
+import { TagChip, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'shared'
+import { Link, useNavigate } from 'shared'
 
 import TransactionAmount from '../../components/TransactionAmount'
 import TransactionParticular from '../../components/TransactionParticular'
 
 function TableView() {
   const { t } = useTranslation('apps.wallet')
+
+  const navigate = useNavigate()
 
   const { transactionsQuery, categoriesQuery } = useWalletData()
 
@@ -19,7 +20,7 @@ function TableView() {
   return (
     <WithQuery query={transactionsQuery}>
       {transactions => (
-        <table className="text-base! hidden w-full lg:table">
+        <table className="hidden w-full text-base! lg:table">
           <thead>
             <tr className="border-bg-200 text-bg-500 dark:border-bg-800 border-b-2 text-center text-base">
               {['date', 'type', 'particulars', 'category', 'amount'].map(
@@ -44,7 +45,7 @@ function TableView() {
                   key={transaction.id}
                   className="border-bg-200 dark:border-bg-800 border-b"
                 >
-                  <td className="whitespace-nowrap py-2 text-center">
+                  <td className="py-2 text-center whitespace-nowrap">
                     {dayjs(transaction.date).format('MMM DD')}
                   </td>
                   <td className="py-4 text-center">
@@ -68,31 +69,31 @@ function TableView() {
                   </td>
                   <td className="py-2 text-center">
                     {transaction.type !== 'transfer' ? (
-                      <Link
-                        className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-sm"
-                        style={{
-                          backgroundColor:
+                      <div className="flex-center">
+                        <TagChip
+                          className="w-min"
+                          color={
                             categories.find(
                               category => category.id === transaction.category
-                            )?.color + '20',
-                          color: categories.find(
-                            category => category.id === transaction.category
-                          )?.color
-                        }}
-                        to={`/wallet/transactions?category=${transaction.category}`}
-                      >
-                        <Icon
-                          className="size-4"
+                            )?.color
+                          }
                           icon={
                             categories.find(
                               category => category.id === transaction.category
-                            )?.icon ?? 'tabler:currency-dollar'
+                            )?.icon
                           }
+                          label={
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.name ?? '-'
+                          }
+                          onClick={() => {
+                            navigate(
+                              `/wallet/transactions?category=${transaction.category}`
+                            )
+                          }}
                         />
-                        {categories.find(
-                          category => category.id === transaction.category
-                        )?.name ?? '-'}
-                      </Link>
+                      </div>
                     ) : (
                       <span className="text-bg-400 dark:text-bg-600">-</span>
                     )}

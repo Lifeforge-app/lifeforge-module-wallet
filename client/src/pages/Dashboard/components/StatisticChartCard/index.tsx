@@ -1,25 +1,91 @@
 import { useWalletData } from '@/hooks/useWalletData'
-import type { ChartOptions } from 'chart.js'
-import { EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
+import numberToCurrency from '@/utils/numberToCurrency'
+import { Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useState } from 'react'
-import { Bar } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
+import {
+  Bar,
+  CartesianGrid,
+  ComposedChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts'
+import { usePersonalization } from 'shared'
 
 import RangeSelector from './components/RangeSelector'
-import { useChartData, useChartLabels, useChartOptions } from './hooks'
+import { useChartData } from './hooks'
 
 function StatisticChardCard() {
   const { transactionsQuery } = useWalletData()
 
   const { t } = useTranslation('apps.wallet')
 
+  const { bgTempPalette, derivedTheme } = usePersonalization()
+
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
-  const options = useChartOptions(range)
+  const data = useChartData(range)
 
-  const labels = useChartLabels(range)
+  const CustomTooltip = ({
+    active,
+    payload,
+    label
+  }: {
+    active?: boolean
+    payload?: Array<{
+      value: number
+      name: string
+      stroke: string
+    }>
+    label?: string
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Card className="border-bg-200 dark:border-bg-700/50 border">
+          <p className="mb-2 font-medium">{label}</p>
+          <div className="space-y-1">
+            {payload.map((entry, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: entry.stroke }}
+                  />
+                  <span className="text-bg-500">{entry.name}:</span>
+                </div>
+                <span className="font-semibold" style={{ color: entry.stroke }}>
+                  RM {numberToCurrency(Math.abs(entry.value))}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="border-bg-200 dark:border-bg-700/50 my-2 w-full border-b" />
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-bg-500 font-medium">Difference:</span>
+            <span className="font-semibold">
+              RM{' '}
+              {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
+                ? '('
+                : ''}
+              {numberToCurrency(
+                Math.abs((payload[0]?.value ?? 0) + (payload[1]?.value ?? 0))
+              )}
+              {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
+                ? ')'
+                : ''}
+            </span>
+          </div>
+        </Card>
+      )
+    }
 
-  const data = useChartData(labels, range)
+    return null
+  }
 
   return (
     <Widget
@@ -36,7 +102,7 @@ function StatisticChardCard() {
       title="Statistics"
     >
       <RangeSelector className="sm:hidden" range={range} setRange={setRange} />
-      <div className="flex-center size-full min-h-0 flex-1">
+      <div className="flex-center size-full min-h-96 flex-1">
         <WithQuery query={transactionsQuery}>
           {transactions =>
             transactions.length === 0 ? (
@@ -47,29 +113,53 @@ function StatisticChardCard() {
                 }}
               />
             ) : (
-              <Bar
-                className="w-full"
-                data={{
-                  labels: labels,
-                  datasets: [
-                    {
-                      label: 'Income',
-                      data: data[0],
-                      borderWidth: 2,
-                      borderColor: 'rgb(34 197 94)',
-                      backgroundColor: 'rgba(34,197,94,0.2)'
-                    },
-                    {
-                      label: 'Expenses',
-                      data: data[1],
-                      borderWidth: 2,
-                      borderColor: 'rgb(239 68 68)',
-                      backgroundColor: 'rgba(239,68,68,0.2)'
+              <ResponsiveContainer height="100%" width="100%">
+                <ComposedChart barGap={0} data={data}>
+                  <CartesianGrid
+                    stroke={
+                      bgTempPalette[derivedTheme === 'dark' ? '800' : '200']
                     }
-                  ]
-                }}
-                options={options as ChartOptions<'bar'>}
-              />
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
+                  <XAxis
+                    axisLine={false}
+                    dataKey="date"
+                    tick={{ fill: 'currentColor', fontSize: 12 }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tick={{ fill: 'currentColor', fontSize: 12 }}
+                    tickFormatter={value =>
+                      `${numberToCurrency(Math.abs(value))}`
+                    }
+                    tickLine={false}
+                    width="auto"
+                  />
+
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }}
+                  />
+                  <Bar
+                    dataKey="income"
+                    fill="rgba(34,197,94,0.2)"
+                    name="Income"
+                    radius={[8, 8, 8, 8]}
+                    stroke="rgb(34 197 94)"
+                    strokeWidth={2}
+                  />
+                  <Bar
+                    dataKey="expenses"
+                    fill="rgba(239,68,68,0.2)"
+                    name="Expenses"
+                    radius={[8, 8, 8, 8]}
+                    stroke="rgb(239 68 68)"
+                    strokeWidth={2}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
             )
           }
         </WithQuery>
