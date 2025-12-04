@@ -1,5 +1,6 @@
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+import getChartScale from '@/utils/getChartScale'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import {
@@ -89,6 +90,11 @@ function BalanceChartModal({
       balance
     }))
   }, [assetBalanceQuery.data])
+
+  const chartScale = useMemo(
+    () => getChartScale(chartData.map(d => d.balance)),
+    [chartData]
+  )
 
   const CustomTooltip = ({
     active,
@@ -227,7 +233,8 @@ function BalanceChartModal({
                     />
                     <YAxis
                       axisLine={false}
-                      domain={[0, 'auto']}
+                      domain={['auto', 'auto']}
+                      scale={chartScale}
                       tick={{ fill: 'currentColor' }}
                       tickFormatter={value => `${numberToCurrency(value)}`}
                       tickLine={false}

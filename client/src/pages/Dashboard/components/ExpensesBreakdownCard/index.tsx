@@ -110,7 +110,7 @@ function ExpensesBreakdownCard() {
                 {t('dates.months.' + month)}
               </div>
             }
-            className="flex-1"
+            className="component-bg-lighter flex-1"
             value={month}
             onChange={setMonth}
           >
@@ -126,7 +126,7 @@ function ExpensesBreakdownCard() {
             buttonContent={
               <div className="flex items-center gap-3">{year}</div>
             }
-            className="sm:w-36!"
+            className="component-bg-lighter sm:w-36!"
             value={year}
             onChange={setYear}
           >

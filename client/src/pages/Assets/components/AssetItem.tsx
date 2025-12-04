@@ -1,5 +1,6 @@
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+import getChartScale from '@/utils/getChartScale'
 import { Icon } from '@iconify/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -12,7 +13,7 @@ import {
 } from 'lifeforge-ui'
 import { useMemo } from 'react'
 import { toast } from 'react-toastify'
-import { Area, AreaChart, ResponsiveContainer } from 'recharts'
+import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
 import { usePersonalization } from 'shared'
 
 import BalanceChartModal from '../modals/BalanceChartModal'
@@ -47,6 +48,11 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
       balance
     }))
   }, [assetBalanceQuery.data])
+
+  const chartScale = useMemo(
+    () => getChartScale(chartData.map(d => d.balance)),
+    [chartData]
+  )
 
   const deleteMutation = useMutation(
     forgeAPI.wallet.assets.remove
@@ -126,6 +132,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
                       />
                     </linearGradient>
                   </defs>
+                  <YAxis hide domain={['auto', 'auto']} scale={chartScale} />
                   <Area
                     dataKey="balance"
                     dot={false}

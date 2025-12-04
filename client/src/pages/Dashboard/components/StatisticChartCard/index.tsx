@@ -1,7 +1,8 @@
 import { useWalletData } from '@/hooks/useWalletData'
+import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
 import { Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Bar,
@@ -27,6 +28,12 @@ function StatisticChardCard() {
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
   const data = useChartData(range)
+
+  const chartScale = useMemo(() => {
+    const allValues = data.flatMap(d => [d.income, Math.abs(d.expenses)])
+
+    return getChartScale(allValues)
+  }, [data])
 
   const CustomTooltip = ({
     active,
@@ -114,7 +121,11 @@ function StatisticChardCard() {
               />
             ) : (
               <ResponsiveContainer height="100%" width="100%">
-                <ComposedChart barGap={0} data={data}>
+                <ComposedChart
+                  barGap={0}
+                  data={data}
+                  margin={{ top: 0, bottom: 20, left: 0, right: 0 }}
+                >
                   <CartesianGrid
                     stroke={
                       bgTempPalette[derivedTheme === 'dark' ? '800' : '200']
@@ -130,6 +141,8 @@ function StatisticChardCard() {
                   />
                   <YAxis
                     axisLine={false}
+                    domain={['auto', 'auto']}
+                    scale={chartScale}
                     tick={{ fill: 'currentColor', fontSize: 12 }}
                     tickFormatter={value =>
                       `${numberToCurrency(Math.abs(value))}`

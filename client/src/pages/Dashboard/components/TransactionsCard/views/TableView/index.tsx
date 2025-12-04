@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { TagChip, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'shared'
+import { useNavigate } from 'shared'
 
 import TransactionAmount from '../../components/TransactionAmount'
 import TransactionParticular from '../../components/TransactionParticular'
@@ -49,20 +49,27 @@ function TableView() {
                     {dayjs(transaction.date).format('MMM DD')}
                   </td>
                   <td className="py-4 text-center">
-                    <Link
-                      className={clsx('rounded-full px-3 py-1 text-sm', {
-                        'bg-green-500/20 text-green-500':
-                          transaction.type === 'income',
-                        'bg-red-500/20 text-red-500':
-                          transaction.type === 'expenses',
-                        'bg-blue-500/20 text-blue-500':
-                          transaction.type === 'transfer'
-                      })}
-                      to={`/wallet/transactions?type=${transaction.type}`}
-                    >
-                      {transaction.type[0].toUpperCase() +
-                        transaction.type.slice(1)}
-                    </Link>
+                    <div className="flex-center">
+                      <TagChip
+                        className="w-min"
+                        color={
+                          {
+                            income: '#22c55e',
+                            expenses: '#ef4444',
+                            transfer: '#3b82f6'
+                          }[transaction.type]
+                        }
+                        label={
+                          transaction.type[0].toUpperCase() +
+                          transaction.type.slice(1)
+                        }
+                        onClick={() => {
+                          navigate(
+                            `/wallet/transactions?type=${transaction.type}`
+                          )
+                        }}
+                      />
+                    </div>
                   </td>
                   <td className="max-w-64 truncate py-2">
                     <TransactionParticular transaction={transaction} />
