@@ -43,8 +43,19 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     )
 
+    // Check if data spans multiple years
+    const years = new Set(
+      sortedEntries.map(([date]) => new Date(date).getFullYear())
+    )
+
+    const includeYear = years.size > 1
+
     return sortedEntries.map(([date, balance]) => ({
-      date,
+      date: new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        ...(includeYear && { year: '2-digit' })
+      }),
       balance
     }))
   }, [assetBalanceQuery.data])
@@ -53,6 +64,17 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
     () => getChartScale(chartData.map(d => d.balance)),
     [chartData]
   )
+
+  const chartDomain = useMemo(() => {
+    if (chartScale === 'log') {
+      // Log scale can't start from 0, use the minimum value or 1
+      const minValue = Math.min(...chartData.map(d => d.balance))
+
+      return [Math.max(minValue * 0.9, 1), 'auto'] as [number, 'auto']
+    }
+
+    return [0, 'auto'] as [number, 'auto']
+  }, [chartScale, chartData])
 
   const deleteMutation = useMutation(
     forgeAPI.wallet.assets.remove
@@ -110,7 +132,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
                 No data available
               </p>
             ) : (
-              <ResponsiveContainer height="100%" width="100%">
+              <ResponsiveContainer height="100%" minHeight={64} width="100%">
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient
@@ -132,7 +154,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
                       />
                     </linearGradient>
                   </defs>
-                  <YAxis hide domain={['auto', 'auto']} scale={chartScale} />
+                  <YAxis hide domain={chartDomain} scale={chartScale} />
                   <Area
                     dataKey="balance"
                     dot={false}

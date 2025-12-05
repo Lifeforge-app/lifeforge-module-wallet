@@ -32,7 +32,7 @@ function StatisticChardCard() {
   const chartScale = useMemo(() => {
     const allValues = data.flatMap(d => [d.income, Math.abs(d.expenses)])
 
-    return getChartScale(allValues)
+    return getChartScale(allValues, { startFromZero: false })
   }, [data])
 
   const CustomTooltip = ({

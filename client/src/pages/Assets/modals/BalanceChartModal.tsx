@@ -82,10 +82,18 @@ function BalanceChartModal({
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     )
 
+    // Check if data spans multiple years
+    const years = new Set(
+      sortedEntries.map(([date]) => new Date(date).getFullYear())
+    )
+
+    const includeYear = years.size > 1
+
     return sortedEntries.map(([date, balance]) => ({
       date: new Date(date).toLocaleDateString('en-US', {
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        ...(includeYear && { year: '2-digit' })
       }),
       balance
     }))
@@ -95,6 +103,17 @@ function BalanceChartModal({
     () => getChartScale(chartData.map(d => d.balance)),
     [chartData]
   )
+
+  const chartDomain = useMemo(() => {
+    if (chartScale === 'log') {
+      // Log scale can't start from 0, use the minimum value or 1
+      const minValue = Math.min(...chartData.map(d => d.balance))
+
+      return [Math.max(minValue * 0.9, 1), 'auto'] as [number, 'auto']
+    }
+
+    return [0, 'auto'] as [number, 'auto']
+  }, [chartScale, chartData])
 
   const CustomTooltip = ({
     active,
@@ -233,7 +252,7 @@ function BalanceChartModal({
                     />
                     <YAxis
                       axisLine={false}
-                      domain={['auto', 'auto']}
+                      domain={chartDomain}
                       scale={chartScale}
                       tick={{ fill: 'currentColor' }}
                       tickFormatter={value => `${numberToCurrency(value)}`}
