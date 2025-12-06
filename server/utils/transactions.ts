@@ -1,8 +1,9 @@
+import { SCHEMAS } from '@schema'
+import z from 'zod'
+
 import { PBService, getAPIKey } from '@functions/database'
 import { fetchAI } from '@functions/external/ai'
 import searchLocations from '@functions/external/location'
-import { SCHEMAS } from '@schema'
-import z from 'zod'
 
 export async function getTransactionDetails(ocrResult: string, pb: PBService) {
   type FinalResult = Omit<

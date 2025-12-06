@@ -1,6 +1,7 @@
+import z from 'zod'
+
 import { fetchAI } from '@functions/external/ai'
 import { forgeController } from '@functions/routes'
-import z from 'zod'
 
 import { getPromptGenerationPrompt } from '../constants/prompts'
 
