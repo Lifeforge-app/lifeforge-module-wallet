@@ -1,9 +1,8 @@
 import { useWalletData } from '@/hooks/useWalletData'
-import useYearMonthOptions from '@/hooks/useYearMonthOptions'
+import useYearMonthState from '@/hooks/useYearMonthState'
 import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
 import {
   EmptyStateScreen,
   Listbox,
@@ -11,7 +10,7 @@ import {
   Widget,
   WithQuery
 } from 'lifeforge-ui'
-import { createContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'shared'
 import type { InferOutput } from 'shared'
@@ -36,16 +35,21 @@ function ExpensesBreakdownCard() {
 
   const { categoriesQuery } = useWalletData()
 
-  const [year, setYear] = useState(dayjs().year())
-
-  const [month, setMonth] = useState(dayjs().month())
-
-  const { yearsOptions, monthsOptions } = useYearMonthOptions(year)
+  const {
+    yearMonth: { year, month },
+    setYearMonth,
+    options: { years: yearsOptions, months: monthsOptions }
+  } = useYearMonthState()
 
   const expensesBreakdownQuery = useQuery(
     forgeAPI.wallet.utils.getExpensesBreakdown
-      .input({ year: year.toString(), month: (month + 1).toString() })
-      .queryOptions()
+      .input({
+        year: year?.toString() ?? '',
+        month: ((month ?? 0) + 1).toString()
+      })
+      .queryOptions({
+        enabled: year !== null && month !== null
+      })
   )
 
   const expensesCategories = useMemo(
@@ -74,18 +78,6 @@ function ExpensesBreakdownCard() {
     }
   }, [expensesBreakdownQuery.data, expensesCategories])
 
-  useEffect(() => {
-    if (yearsOptions.length > 0) {
-      setYear(yearsOptions[0])
-    }
-  }, [yearsOptions])
-
-  useEffect(() => {
-    if (monthsOptions.length > 0) {
-      setMonth(monthsOptions[0])
-    }
-  }, [monthsOptions])
-
   return (
     <ExpensesBreakdownContext value={memoizedContextValue}>
       <Widget
@@ -112,7 +104,7 @@ function ExpensesBreakdownCard() {
             }
             className="component-bg-lighter flex-1"
             value={month}
-            onChange={setMonth}
+            onChange={setYearMonth.bind(null, { month })}
           >
             {monthsOptions.map(option => (
               <ListboxOption
@@ -128,7 +120,7 @@ function ExpensesBreakdownCard() {
             }
             className="component-bg-lighter sm:w-36!"
             value={year}
-            onChange={setYear}
+            onChange={setYearMonth.bind(null, { year })}
           >
             {yearsOptions.map(option => (
               <ListboxOption

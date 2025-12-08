@@ -290,9 +290,56 @@ const getSpendingByLocation = forgeController
     return Object.values(locationGroups)
   })
 
+const getAvailableYearMonths = forgeController
+  .query()
+  .description({
+    en: 'Get available years and months from transaction dates',
+    ms: 'Dapatkan tahun dan bulan yang tersedia daripada tarikh transaksi',
+    'zh-CN': '获取交易日期中可用的年份和月份',
+    'zh-TW': '獲取交易日期中可用的年份和月份'
+  })
+  .input({})
+  .callback(async ({ pb }) => {
+    const transactions = await pb.getFullList
+      .collection('wallet__transactions')
+      .fields({
+        date: true
+      })
+      .execute()
+
+    const yearMonthMap: Record<number, Set<number>> = {}
+
+    for (const transaction of transactions) {
+      const date = moment(transaction.date)
+
+      const year = date.year()
+
+      const month = date.month()
+
+      if (!yearMonthMap[year]) {
+        yearMonthMap[year] = new Set()
+      }
+      yearMonthMap[year].add(month)
+    }
+
+    // Convert Sets to sorted arrays
+    const years = Object.keys(yearMonthMap)
+      .map(Number)
+      .sort((a, b) => b - a) // Sort years descending (newest first)
+
+    const monthsByYear: Record<number, number[]> = {}
+
+    for (const year of years) {
+      monthsByYear[year] = Array.from(yearMonthMap[year]).sort((a, b) => b - a) // Sort months descending
+    }
+
+    return { years, monthsByYear }
+  })
+
 export default forgeRouter({
   getTypesCount,
   getIncomeExpensesSummary,
   getExpensesBreakdown,
-  getSpendingByLocation
+  getSpendingByLocation,
+  getAvailableYearMonths
 })

@@ -1,3 +1,4 @@
+import useYearMonthState from '@/hooks/useYearMonthState'
 import { ModuleHeader } from 'lifeforge-ui'
 import { useRef, useState } from 'react'
 
@@ -6,9 +7,11 @@ import StatementContent from './components/StatementContent'
 import YearMonthInput from './components/YearMonthInput'
 
 function Statements() {
-  const [year, setYear] = useState<number | null>(null)
-
-  const [month, setMonth] = useState<number | null>(null)
+  const {
+    yearMonth: { year, month },
+    setYearMonth,
+    options: { years: yearsOptions, months: monthsOptions }
+  } = useYearMonthState()
 
   const [showStatement, setShowStatement] = useState(false)
 
@@ -24,9 +27,11 @@ function Statements() {
       />
       <YearMonthInput
         month={month}
-        setMonth={setMonth}
-        setYear={setYear}
+        monthsOptions={monthsOptions}
+        setMonth={setYearMonth.bind(null, { month })}
+        setYear={setYearMonth.bind(null, { year })}
         year={year}
+        yearsOptions={yearsOptions}
       />
       {year !== null && month !== null && (
         <>

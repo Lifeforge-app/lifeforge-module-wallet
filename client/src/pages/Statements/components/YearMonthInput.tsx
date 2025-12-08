@@ -1,4 +1,3 @@
-import useYearMonthOptions from '@/hooks/useYearMonthOptions'
 import { ListboxInput, ListboxOption } from 'lifeforge-ui'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -7,16 +6,18 @@ function YearMonthInput({
   month,
   setMonth,
   year,
-  setYear
+  setYear,
+  yearsOptions = [],
+  monthsOptions = []
 }: {
   month: number | null
   setMonth: (value: number | null) => void
   year: number | null
   setYear: (value: number | null) => void
+  yearsOptions: number[]
+  monthsOptions: number[]
 }) {
   const { t } = useTranslation('common.misc')
-
-  const { yearsOptions, monthsOptions } = useYearMonthOptions(year)
 
   useEffect(() => {
     if (yearsOptions.length > 0) {
@@ -44,8 +45,8 @@ function YearMonthInput({
         icon="tabler:calendar-month"
         label="Month"
         namespace="apps.wallet"
-        onChange={setMonth}
         value={month}
+        onChange={setMonth}
       >
         {monthsOptions.map(mon => (
           <ListboxOption
@@ -65,8 +66,8 @@ function YearMonthInput({
         icon="tabler:calendar"
         label="Year"
         namespace="apps.wallet"
-        onChange={setYear}
         value={year}
+        onChange={setYear}
       >
         {yearsOptions.map(yr => (
           <ListboxOption key={yr} label={yr.toString()} value={yr} />
