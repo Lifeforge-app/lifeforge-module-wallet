@@ -28,8 +28,8 @@ function Statements() {
       <YearMonthInput
         month={month}
         monthsOptions={monthsOptions}
-        setMonth={setYearMonth.bind(null, { month })}
-        setYear={setYearMonth.bind(null, { year })}
+        setMonth={(month: number | null) => setYearMonth({ month })}
+        setYear={(year: number | null) => setYearMonth({ year })}
         year={year}
         yearsOptions={yearsOptions}
       />

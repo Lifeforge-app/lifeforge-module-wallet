@@ -292,10 +292,26 @@ const getTransactionCountByDay = forgeController
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val))
+      month: z.string().transform(val => parseInt(val)),
+      viewFilter: z
+        .string()
+        .optional()
+        .transform((val): ('income' | 'expenses' | 'transfer')[] => {
+          if (!val) return ['income', 'expenses', 'transfer']
+
+          const types = val.split(',').map(v => v.trim())
+
+          if (
+            !types.every(t => ['income', 'expenses', 'transfer'].includes(t))
+          ) {
+            throw new Error('Invalid viewFilter types')
+          }
+
+          return types as ('income' | 'expenses' | 'transfer')[]
+        })
     })
   })
-  .callback(async ({ pb, query: { year, month } }) => {
+  .callback(async ({ pb, query: { year, month, viewFilter } }) => {
     const data = await pb.getFullList
       .collection('wallet__transactions_amount_aggregated')
       .filter([
@@ -328,11 +344,22 @@ const getTransactionCountByDay = forgeController
       const dateKey = `${row.year}-${row.month}-${row.date}`
 
       countMap[dateKey] = {
-        income: row.income ?? 0,
-        expenses: row.expenses ?? 0,
-        transfer: row.transfer ?? 0,
-        total: row.total ?? 0,
-        count: row.count ?? 0
+        income: 0,
+        expenses: 0,
+        transfer: 0,
+        total: 0,
+        count: 0
+      }
+
+      const types = ['income', 'expenses', 'transfer'] as const
+
+      for (const type of types) {
+        if (viewFilter.includes(type)) {
+          const count = row[`${type}_count`] || 0
+          countMap[dateKey][type] = count
+          countMap[dateKey].total += count
+          countMap[dateKey].count += count > 0 ? count : 0
+        }
       }
     }
 

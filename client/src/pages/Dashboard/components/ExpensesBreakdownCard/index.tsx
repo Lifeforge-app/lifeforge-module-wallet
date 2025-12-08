@@ -104,7 +104,7 @@ function ExpensesBreakdownCard() {
             }
             className="component-bg-lighter flex-1"
             value={month}
-            onChange={setYearMonth.bind(null, { month })}
+            onChange={(value: number | null) => setYearMonth({ month: value })}
           >
             {monthsOptions.map(option => (
               <ListboxOption
@@ -120,7 +120,7 @@ function ExpensesBreakdownCard() {
             }
             className="component-bg-lighter sm:w-36!"
             value={year}
-            onChange={setYearMonth.bind(null, { year })}
+            onChange={(value: number | null) => setYearMonth({ year: value })}
           >
             {yearsOptions.map(option => (
               <ListboxOption
