@@ -231,64 +231,9 @@ const getSpendingByLocation = forgeController
     'zh-TW': '獲取按位置匯總的支出（用於熱力圖）'
   })
   .input({})
-  .callback(async ({ pb }) => {
-    const expenses = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
-      .expand({
-        base_transaction: 'wallet__transactions'
-      })
-      .filter([
-        {
-          field: 'type',
-          operator: '=',
-          value: 'expenses'
-        }
-      ])
-      .execute()
-
-    const locationGroups: Record<
-      string,
-      {
-        lat: number
-        lng: number
-        amount: number
-        locationName: string
-        count: number
-      }
-    > = {}
-
-    for (const expense of expenses) {
-      const baseTransaction = expense.expand?.base_transaction
-
-      if (!baseTransaction) continue
-
-      const lat = expense.location_coords?.lat
-
-      const lon = expense.location_coords?.lon
-
-      const locationName = expense.location_name
-
-      // Skip transactions without valid location data
-      if (!lat || !lon || !locationName) continue
-
-      const key = `${lat},${lon},${locationName}`
-
-      if (locationGroups[key]) {
-        locationGroups[key].amount += baseTransaction.amount
-        locationGroups[key].count += 1
-      } else {
-        locationGroups[key] = {
-          lat,
-          lng: lon,
-          amount: baseTransaction.amount,
-          locationName,
-          count: 1
-        }
-      }
-    }
-
-    return Object.values(locationGroups)
-  })
+  .callback(async ({ pb }) =>
+    pb.getFullList.collection('wallet__expenses_location_aggregated').execute()
+  )
 
 const getAvailableYearMonths = forgeController
   .query()
@@ -336,10 +281,69 @@ const getAvailableYearMonths = forgeController
     return { years, monthsByYear }
   })
 
+const getTransactionCountByDay = forgeController
+  .query()
+  .description({
+    en: 'Get transaction counts by day for a specific month',
+    ms: 'Dapatkan bilangan transaksi mengikut hari untuk bulan tertentu',
+    'zh-CN': '获取特定月份每天的交易数量',
+    'zh-TW': '獲取特定月份每天的交易數量'
+  })
+  .input({
+    query: z.object({
+      year: z.string().transform(val => parseInt(val)),
+      month: z.string().transform(val => parseInt(val))
+    })
+  })
+  .callback(async ({ pb, query: { year, month } }) => {
+    const data = await pb.getFullList
+      .collection('wallet__transactions_amount_aggregated')
+      .filter([
+        {
+          field: 'year',
+          operator: '=',
+          value: year
+        },
+        {
+          field: 'month',
+          operator: '=',
+          value: month + 1 // Convert 0-indexed to 1-indexed
+        }
+      ])
+      .execute()
+
+    // Convert to the expected format keyed by date
+    const countMap: Record<
+      string,
+      {
+        income: number
+        expenses: number
+        transfer: number
+        total: number
+        count: number
+      }
+    > = {}
+
+    for (const row of data) {
+      const dateKey = `${row.year}-${row.month}-${row.date}`
+
+      countMap[dateKey] = {
+        income: row.income ?? 0,
+        expenses: row.expenses ?? 0,
+        transfer: row.transfer ?? 0,
+        total: row.total ?? 0,
+        count: row.count ?? 0
+      }
+    }
+
+    return countMap
+  })
+
 export default forgeRouter({
   getTypesCount,
   getIncomeExpensesSummary,
   getExpensesBreakdown,
   getSpendingByLocation,
-  getAvailableYearMonths
+  getAvailableYearMonths,
+  getTransactionCountByDay
 })

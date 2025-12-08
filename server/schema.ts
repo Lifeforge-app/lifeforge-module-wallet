@@ -1153,6 +1153,231 @@ const walletSchemas = {
       viewQuery:
         'SELECT\n  (ROW_NUMBER() OVER()) as id,\n  (\n  CASE WHEN wallet__transactions.type = \'transfer\' THEN "transfer"\n  ELSE wallet__transactions_income_expenses.type\n  END\n  ) as name,\n  COUNT(wallet__transactions.id) as transaction_count,\n  SUM(wallet__transactions.amount) as accumulated_amount\nFROM wallet__transactions\nLEFT JOIN wallet__transactions_income_expenses\n  ON wallet__transactions.id = wallet__transactions_income_expenses.base_transaction\nLEFT JOIN wallet__transactions_transfer\n  ON wallet__transactions.id = wallet__transactions_transfer.base_transaction\nGROUP BY name\n'
     }
+  },
+  expenses_location_aggregated: {
+    schema: z.object({
+      lat: z.any(),
+      lng: z.any(),
+      locationName: z.string(),
+      amount: z.any(),
+      count: z.number()
+    }),
+    raw: {
+      id: 'pbc_3200607087',
+      listRule: '@request.auth.id != ""',
+      viewRule: '@request.auth.id != ""',
+      createRule: null,
+      updateRule: null,
+      deleteRule: null,
+      name: 'wallet__expenses_location_aggregated',
+      type: 'view',
+      fields: [
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          id: 'text3208210256',
+          max: 0,
+          min: 0,
+          name: 'id',
+          pattern: '^[a-z0-9]+$',
+          presentable: false,
+          primaryKey: true,
+          required: true,
+          system: true,
+          type: 'text'
+        },
+        {
+          hidden: false,
+          id: 'json2499937429',
+          maxSize: 1,
+          name: 'lat',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'json2518964612',
+          maxSize: 1,
+          name: 'lng',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          id: '_clone_FrKM',
+          max: 0,
+          min: 0,
+          name: 'locationName',
+          pattern: '',
+          presentable: false,
+          primaryKey: false,
+          required: false,
+          system: false,
+          type: 'text'
+        },
+        {
+          hidden: false,
+          id: 'json2392944706',
+          maxSize: 1,
+          name: 'amount',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'number2245608546',
+          max: null,
+          min: null,
+          name: 'count',
+          onlyInt: false,
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'number'
+        }
+      ],
+      indexes: [],
+      system: false,
+      viewQuery:
+        "SELECT\n  (ROW_NUMBER() OVER()) as id,\n  json_extract(wallet__transactions_income_expenses.location_coords, '$.lat') AS lat,\n  json_extract(wallet__transactions_income_expenses.location_coords, '$.lon') AS lng,\n  wallet__transactions_income_expenses.location_name AS locationName,\n  SUM(wallet__transactions.amount) AS amount,\n  COUNT(*) AS count\nFROM wallet__transactions_income_expenses\nINNER JOIN wallet__transactions \n  ON wallet__transactions_income_expenses.base_transaction = wallet__transactions.id\nWHERE \n  wallet__transactions_income_expenses.type = 'expenses'\n  AND wallet__transactions_income_expenses.location_name IS NOT NULL\n  AND wallet__transactions_income_expenses.location_name != ''\n  AND json_extract(wallet__transactions_income_expenses.location_coords, '$.lat') IS NOT NULL\n  AND json_extract(wallet__transactions_income_expenses.location_coords, '$.lat') != 0\n  AND json_extract(wallet__transactions_income_expenses.location_coords, '$.lon') IS NOT NULL\n  AND json_extract(wallet__transactions_income_expenses.location_coords, '$.lon') != 0\nGROUP BY \n  json_extract(wallet__transactions_income_expenses.location_coords, '$.lat'),\n  json_extract(wallet__transactions_income_expenses.location_coords, '$.lon'),\n  wallet__transactions_income_expenses.location_name"
+    }
+  },
+  transactions_amount_aggregated: {
+    schema: z.object({
+      year: z.number(),
+      month: z.number(),
+      date: z.number(),
+      income: z.any(),
+      expenses: z.any(),
+      transfer: z.any(),
+      total: z.any(),
+      count: z.number()
+    }),
+    raw: {
+      id: 'pbc_322615261',
+      listRule: '@request.auth.id != ""',
+      viewRule: '@request.auth.id != ""',
+      createRule: null,
+      updateRule: null,
+      deleteRule: null,
+      name: 'wallet__transactions_amount_aggregated',
+      type: 'view',
+      fields: [
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          id: 'text3208210256',
+          max: 0,
+          min: 0,
+          name: 'id',
+          pattern: '^[a-z0-9]+$',
+          presentable: false,
+          primaryKey: true,
+          required: true,
+          system: true,
+          type: 'text'
+        },
+        {
+          hidden: false,
+          id: 'number3145888567',
+          max: null,
+          min: null,
+          name: 'year',
+          onlyInt: false,
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'number'
+        },
+        {
+          hidden: false,
+          id: 'number2394296326',
+          max: null,
+          min: null,
+          name: 'month',
+          onlyInt: false,
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'number'
+        },
+        {
+          hidden: false,
+          id: 'number2862495610',
+          max: null,
+          min: null,
+          name: 'date',
+          onlyInt: false,
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'number'
+        },
+        {
+          hidden: false,
+          id: 'json1067999952',
+          maxSize: 1,
+          name: 'income',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'json613872475',
+          maxSize: 1,
+          name: 'expenses',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'json1077191616',
+          maxSize: 1,
+          name: 'transfer',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'json3257917790',
+          maxSize: 1,
+          name: 'total',
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'json'
+        },
+        {
+          hidden: false,
+          id: 'number2245608546',
+          max: null,
+          min: null,
+          name: 'count',
+          onlyInt: false,
+          presentable: false,
+          required: false,
+          system: false,
+          type: 'number'
+        }
+      ],
+      indexes: [],
+      system: false,
+      viewQuery:
+        "WITH all_transactions AS (\n  SELECT\n    DATE(wallet__transactions.date) AS date_key,\n    wallet__transactions_income_expenses.type AS transaction_type,\n    wallet__transactions.amount AS amount\n  FROM wallet__transactions_income_expenses\n  INNER JOIN wallet__transactions \n    ON wallet__transactions_income_expenses.base_transaction = wallet__transactions.id\n\n  UNION ALL\n\n  SELECT\n    DATE(wallet__transactions.date) AS date_key,\n    'transfer' AS transaction_type,\n    wallet__transactions.amount AS amount\n  FROM wallet__transactions_transfer\n  INNER JOIN wallet__transactions \n    ON wallet__transactions_transfer.base_transaction = wallet__transactions.id\n)\nSELECT\n  (ROW_NUMBER() OVER()) as id,\n  CAST(strftime('%Y', date_key) AS INTEGER) AS year,\n  CAST(strftime('%m', date_key) AS INTEGER) AS month,\n  CAST(strftime('%d', date_key) AS INTEGER) AS date,\n  SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END) AS income,\n  SUM(CASE WHEN transaction_type = 'expenses' THEN amount ELSE 0 END) AS expenses,\n  SUM(CASE WHEN transaction_type = 'transfer' THEN amount ELSE 0 END) AS transfer,\n  SUM(amount) AS total,\n  COUNT(*) AS count\nFROM all_transactions\nGROUP BY date_key"
+    }
   }
 }
 
