@@ -1,28 +1,20 @@
-import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { EmptyStateScreen, ModuleHeader, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
-import { useNavigate } from 'shared'
+import { type InferOutput, useNavigate } from 'shared'
 import colors from 'tailwindcss/colors'
 
-interface SpendingLocationData {
-  lat: number
-  lng: number
-  amount: number
-  transactions: Array<{
-    id: string
-    particulars: string
-    amount: number
-    date: string
-    location_name: string
-  }>
-}
+type SpendingLocationData = InferOutput<
+  typeof forgeAPI.wallet.utils.getSpendingByLocation
+>[number]
 
 function SpendingHeatmap() {
-  const { transactionsQuery } = useWalletData()
+  const spendingDataQuery = useQuery(
+    forgeAPI.wallet.utils.getSpendingByLocation.queryOptions()
+  )
 
   const googleMapAPIKeyQuery = useQuery(
     forgeAPI.apiKeys.entries.get
@@ -34,69 +26,19 @@ function SpendingHeatmap() {
 
   const navigate = useNavigate()
 
-  const spendingData = useMemo((): SpendingLocationData[] => {
-    if (!transactionsQuery.data) return []
+  const spendingData = spendingDataQuery.data ?? []
 
-    const expenseTransactions = transactionsQuery.data.filter(
-      transaction =>
-        transaction.type === 'expenses' &&
-        transaction.location_coords?.lat &&
-        transaction.location_coords?.lon &&
-        transaction.location_name
-    )
-
-    const locationGroups: Record<string, SpendingLocationData> = {}
-
-    expenseTransactions.forEach(transaction => {
-      if (transaction.type === 'transfer') return
-
-      const key = `${transaction.location_coords.lat},${transaction.location_coords.lon},${transaction.location_name}`
-
-      if (locationGroups[key]) {
-        const existing = locationGroups[key]
-
-        existing.amount += transaction.amount
-        existing.transactions.push({
-          id: transaction.id,
-          particulars: transaction.particulars,
-          amount: transaction.amount,
-          date: transaction.date,
-          location_name: transaction.location_name
-        })
-      } else {
-        locationGroups[key] = {
-          lat: transaction.location_coords.lat,
-          lng: transaction.location_coords.lon,
-          amount: transaction.amount,
-          transactions: [
-            {
-              id: transaction.id,
-              particulars: transaction.particulars,
-              amount: transaction.amount,
-              date: transaction.date,
-              location_name: transaction.location_name
-            }
-          ]
-        }
-      }
-    })
-
-    return Object.values(locationGroups)
-  }, [transactionsQuery.data])
-
-  const maxAmountOfTransactions = useMemo(() => {
+  const maxCount = useMemo(() => {
     return Math.max(
-      ...spendingData.map(
-        (data: SpendingLocationData) => data.transactions.length
-      ),
+      ...spendingData.map((data: SpendingLocationData) => data.count),
       0
     )
   }, [spendingData])
 
-  const getMarkerSize = (amountOfTransactions: number) => {
-    if (amountOfTransactions === 0) return 30
+  const getMarkerSize = (count: number) => {
+    if (count === 0) return 30
 
-    const ratio = amountOfTransactions / maxAmountOfTransactions
+    const ratio = count / maxCount
 
     return Math.max(30, 30 + ratio * 40)
   }
@@ -140,7 +82,7 @@ function SpendingHeatmap() {
       <WithQuery query={googleMapAPIKeyQuery}>
         {googleMapAPIKey =>
           googleMapAPIKey ? (
-            <WithQuery query={transactionsQuery}>
+            <WithQuery query={spendingDataQuery}>
               {() =>
                 spendingData.length > 0 ? (
                   <APIProvider apiKey={googleMapAPIKey}>
@@ -161,7 +103,7 @@ function SpendingHeatmap() {
                             onClick={() => {
                               navigate(
                                 `/wallet/transactions?query=${encodeURIComponent(
-                                  locationData.transactions[0].location_name
+                                  locationData.locationName
                                 )}`
                               )
                             }}
@@ -172,17 +114,13 @@ function SpendingHeatmap() {
                                 backgroundColor: getMarkerColor(
                                   locationData.amount
                                 ),
-                                width: getMarkerSize(
-                                  locationData.transactions.length
-                                ),
-                                height: getMarkerSize(
-                                  locationData.transactions.length
-                                )
+                                width: getMarkerSize(locationData.count),
+                                height: getMarkerSize(locationData.count)
                               }}
-                              title={`${locationData.transactions[0].location_name}: ${numberToCurrency(locationData.amount)}`}
+                              title={`${locationData.locationName}: ${numberToCurrency(locationData.amount)}`}
                             >
                               <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-                                {locationData.transactions.length}
+                                {locationData.count}
                               </div>
                             </div>
                           </AdvancedMarker>

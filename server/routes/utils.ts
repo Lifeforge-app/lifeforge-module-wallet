@@ -222,8 +222,77 @@ const getExpensesBreakdown = forgeController
     return spentOnEachCategory
   })
 
+const getSpendingByLocation = forgeController
+  .query()
+  .description({
+    en: 'Get spending aggregated by location for heatmap',
+    ms: 'Dapatkan perbelanjaan yang diagregatkan mengikut lokasi untuk peta haba',
+    'zh-CN': '获取按位置汇总的支出（用于热力图）',
+    'zh-TW': '獲取按位置匯總的支出（用於熱力圖）'
+  })
+  .input({})
+  .callback(async ({ pb }) => {
+    const expenses = await pb.getFullList
+      .collection('wallet__transactions_income_expenses')
+      .expand({
+        base_transaction: 'wallet__transactions'
+      })
+      .filter([
+        {
+          field: 'type',
+          operator: '=',
+          value: 'expenses'
+        }
+      ])
+      .execute()
+
+    const locationGroups: Record<
+      string,
+      {
+        lat: number
+        lng: number
+        amount: number
+        locationName: string
+        count: number
+      }
+    > = {}
+
+    for (const expense of expenses) {
+      const baseTransaction = expense.expand?.base_transaction
+
+      if (!baseTransaction) continue
+
+      const lat = expense.location_coords?.lat
+
+      const lon = expense.location_coords?.lon
+
+      const locationName = expense.location_name
+
+      // Skip transactions without valid location data
+      if (!lat || !lon || !locationName) continue
+
+      const key = `${lat},${lon},${locationName}`
+
+      if (locationGroups[key]) {
+        locationGroups[key].amount += baseTransaction.amount
+        locationGroups[key].count += 1
+      } else {
+        locationGroups[key] = {
+          lat,
+          lng: lon,
+          amount: baseTransaction.amount,
+          locationName,
+          count: 1
+        }
+      }
+    }
+
+    return Object.values(locationGroups)
+  })
+
 export default forgeRouter({
   getTypesCount,
   getIncomeExpensesSummary,
-  getExpensesBreakdown
+  getExpensesBreakdown,
+  getSpendingByLocation
 })
