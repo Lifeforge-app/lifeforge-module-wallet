@@ -4,6 +4,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { TagChip } from 'lifeforge-ui'
 import { useMemo } from 'react'
 
 function TransactionList({
@@ -136,28 +137,23 @@ function TransactionList({
                 {type !== 'transfer' && (
                   <td className="p-3 text-lg whitespace-nowrap">
                     {transaction.type !== 'transfer' && (
-                      <div className="flex items-center gap-2">
-                        <Icon
-                          className="size-6 shrink-0"
-                          icon={
-                            categories.find(
-                              category => category.id === transaction.category
-                            )?.icon ?? ''
-                          }
-                          style={{
-                            color: categories.find(
-                              category => category.id === transaction.category
-                            )?.color
-                          }}
-                        />
-                        <span>
-                          {
-                            categories.find(
-                              category => category.id === transaction.category
-                            )?.name
-                          }
-                        </span>
-                      </div>
+                      <TagChip
+                        color={
+                          categories.find(
+                            category => category.id === transaction.category
+                          )?.color
+                        }
+                        icon={
+                          categories.find(
+                            category => category.id === transaction.category
+                          )?.icon
+                        }
+                        label={
+                          categories.find(
+                            category => category.id === transaction.category
+                          )?.name ?? '-'
+                        }
+                      />
                     )}
                   </td>
                 )}
