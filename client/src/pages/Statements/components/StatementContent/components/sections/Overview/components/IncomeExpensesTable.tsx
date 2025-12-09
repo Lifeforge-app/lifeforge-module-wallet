@@ -1,8 +1,11 @@
 import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
+import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
 function IncomeExpensesTable({
   month,
@@ -13,11 +16,67 @@ function IncomeExpensesTable({
   year: number
   type: 'income' | 'expenses'
 }) {
-  const { transactionsQuery, categoriesQuery } = useWalletData()
-
-  const transactions = transactionsQuery.data ?? []
+  const { categoriesQuery } = useWalletData()
 
   const categories = categoriesQuery.data ?? []
+
+  // Calculate previous month/year
+  const prevMonth = useMemo(() => {
+    const date = dayjs().year(year).month(month).subtract(1, 'month')
+
+    return {
+      month: date.month() + 1, // API expects 1-indexed
+      year: date.year()
+    }
+  }, [month, year])
+
+  // Current month breakdown
+  const currentMonthQuery = useQuery(
+    forgeAPI.wallet.analytics.getCategoriesBreakdown
+      .input({
+        year: year.toString(),
+        month: (month + 1).toString() // API expects 1-indexed
+      })
+      .queryOptions()
+  )
+
+  // Previous month breakdown
+  const prevMonthQuery = useQuery(
+    forgeAPI.wallet.analytics.getCategoriesBreakdown
+      .input({
+        year: prevMonth.year.toString(),
+        month: prevMonth.month.toString()
+      })
+      .queryOptions()
+  )
+
+  const currentBreakdown = currentMonthQuery.data?.[type] ?? {}
+
+  const prevBreakdown = prevMonthQuery.data?.[type] ?? {}
+
+  // Calculate totals
+  const currentTotal = useMemo(
+    () =>
+      Object.values(currentBreakdown).reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      ),
+    [currentBreakdown]
+  )
+
+  const prevTotal = useMemo(
+    () =>
+      Object.values(prevBreakdown).reduce((acc, curr) => acc + curr.amount, 0),
+    [prevBreakdown]
+  )
+
+  const filteredCategories = useMemo(
+    () =>
+      categories
+        .filter(category => category.type === type)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [categories, type]
+  )
 
   return (
     <>
@@ -34,11 +93,12 @@ function IncomeExpensesTable({
               </th>
               <th className="p-3 text-lg font-medium whitespace-nowrap">
                 {dayjs()
-                  .month(month - 1)
+                  .year(prevMonth.year)
+                  .month(prevMonth.month - 1)
                   .format('MMM YYYY')}
               </th>
               <th className="p-3 text-lg font-medium whitespace-nowrap">
-                {dayjs().month(month).format('MMM YYYY')}
+                {dayjs().year(year).month(month).format('MMM YYYY')}
               </th>
               <th
                 className="p-3 text-lg font-medium whitespace-nowrap"
@@ -56,10 +116,17 @@ function IncomeExpensesTable({
             </tr>
           </thead>
           <tbody>
-            {categories
-              .filter(category => category.type === type)
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map(category => (
+            {filteredCategories.map(category => {
+              const currentAmount = currentBreakdown[category.id]?.amount ?? 0
+
+              const prevAmount = prevBreakdown[category.id]?.amount ?? 0
+
+              const change = currentAmount - prevAmount
+
+              const isNegativeChange =
+                type === 'income' ? change < 0 : change > 0
+
+              return (
                 <tr
                   key={category.id}
                   className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
@@ -76,83 +143,35 @@ function IncomeExpensesTable({
                       <span className="whitespace-nowrap">{category.name}</span>
                     </div>
                   </td>
-                  {(() => {
-                    if (typeof transactions === 'string') {
-                      return <></>
-                    }
-
-                    const lastMonth = dayjs()
-                      .year(year)
-                      .month(month - 1)
-
-                    const lastMonthAmount = transactions
-                      .filter(
-                        transaction =>
-                          dayjs(transaction.date).month() ===
-                            lastMonth.month() &&
-                          dayjs(transaction.date).year() === lastMonth.year() &&
-                          transaction.type !== 'transfer' &&
-                          transaction.category === category.id
-                      )
-                      .reduce((acc, curr) => acc + curr.amount, 0)
-
-                    const thatMonthAmount = transactions
-                      .filter(
-                        transaction =>
-                          dayjs(transaction.date).month() === month &&
-                          dayjs(transaction.date).year() === year &&
-                          transaction.type !== 'transfer' &&
-                          transaction.category === category.id
-                      )
-                      .reduce((acc, curr) => acc + curr.amount, 0)
-
-                    return (
-                      <>
-                        <td className="p-3 text-right text-lg whitespace-nowrap">
-                          {numberToCurrency(lastMonthAmount)}
-                        </td>
-                        <td className="p-3 text-right text-lg whitespace-nowrap">
-                          {numberToCurrency(thatMonthAmount)}
-                        </td>
-                        <td
-                          className={clsx(
-                            'p-3 text-right text-lg whitespace-nowrap',
-                            (type === 'income'
-                              ? thatMonthAmount - lastMonthAmount
-                              : lastMonthAmount - thatMonthAmount) < 0 &&
-                              'text-rose-600'
-                          )}
-                        >
-                          {thatMonthAmount - lastMonthAmount < 0
-                            ? `(${numberToCurrency(
-                                Math.abs(thatMonthAmount - lastMonthAmount)
-                              )})`
-                            : numberToCurrency(
-                                thatMonthAmount - lastMonthAmount
-                              )}
-                        </td>
-                        <td
-                          className={clsx(
-                            'p-3 text-right text-lg whitespace-nowrap',
-                            (type === 'income'
-                              ? thatMonthAmount - lastMonthAmount
-                              : lastMonthAmount - thatMonthAmount) < 0 &&
-                              'text-rose-600'
-                          )}
-                        >
-                          {Math.abs(lastMonthAmount) < 0.001
-                            ? '-'
-                            : `${(
-                                ((thatMonthAmount - lastMonthAmount) /
-                                  lastMonthAmount) *
-                                100
-                              ).toFixed(2)}%`}
-                        </td>
-                      </>
-                    )
-                  })()}
+                  <td className="p-3 text-right text-lg whitespace-nowrap">
+                    {numberToCurrency(prevAmount)}
+                  </td>
+                  <td className="p-3 text-right text-lg whitespace-nowrap">
+                    {numberToCurrency(currentAmount)}
+                  </td>
+                  <td
+                    className={clsx(
+                      'p-3 text-right text-lg whitespace-nowrap',
+                      isNegativeChange && 'text-rose-600'
+                    )}
+                  >
+                    {change < 0
+                      ? `(${numberToCurrency(Math.abs(change))})`
+                      : numberToCurrency(change)}
+                  </td>
+                  <td
+                    className={clsx(
+                      'p-3 text-right text-lg whitespace-nowrap',
+                      isNegativeChange && 'text-rose-600'
+                    )}
+                  >
+                    {Math.abs(prevAmount) < 0.001
+                      ? '-'
+                      : `${((change / prevAmount) * 100).toFixed(2)}%`}
+                  </td>
                 </tr>
-              ))}
+              )
+            })}
             <tr className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]">
               <td className="p-3 text-lg">
                 <div className="flex items-center gap-2 text-xl font-semibold">
@@ -160,31 +179,10 @@ function IncomeExpensesTable({
                 </div>
               </td>
               {(() => {
-                if (typeof transactions === 'string') {
-                  return <></>
-                }
+                const change = currentTotal - prevTotal
 
-                const lastMonth = dayjs()
-                  .year(year)
-                  .month(month - 1)
-
-                const lastMonthAmount = transactions
-                  .filter(
-                    transaction =>
-                      transaction.type === type &&
-                      dayjs(transaction.date).month() === lastMonth.month() &&
-                      dayjs(transaction.date).year() === lastMonth.year()
-                  )
-                  .reduce((acc, curr) => acc + curr.amount, 0)
-
-                const thatMonthAmount = transactions
-                  .filter(
-                    transaction =>
-                      transaction.type === type &&
-                      dayjs(transaction.date).month() === month &&
-                      dayjs(transaction.date).year() === year
-                  )
-                  .reduce((acc, curr) => acc + curr.amount, 0)
+                const isNegativeChange =
+                  type === 'income' ? change < 0 : change > 0
 
                 return (
                   <>
@@ -195,7 +193,7 @@ function IncomeExpensesTable({
                         borderBottom: '6px double'
                       }}
                     >
-                      {numberToCurrency(lastMonthAmount)}
+                      {numberToCurrency(prevTotal)}
                     </td>
                     <td
                       className="p-3 text-right text-lg font-medium whitespace-nowrap"
@@ -204,47 +202,35 @@ function IncomeExpensesTable({
                         borderBottom: '6px double'
                       }}
                     >
-                      {numberToCurrency(thatMonthAmount)}
+                      {numberToCurrency(currentTotal)}
                     </td>
                     <td
                       className={clsx(
                         'p-3 text-right text-lg font-medium whitespace-nowrap',
-                        (type === 'income'
-                          ? thatMonthAmount - lastMonthAmount
-                          : lastMonthAmount - thatMonthAmount) < 0 &&
-                          'text-rose-600'
+                        isNegativeChange && 'text-rose-600'
                       )}
                       style={{
                         borderTop: '2px solid',
                         borderBottom: '6px double'
                       }}
                     >
-                      {thatMonthAmount - lastMonthAmount < 0
-                        ? `(${numberToCurrency(
-                            Math.abs(thatMonthAmount - lastMonthAmount)
-                          )})`
-                        : numberToCurrency(thatMonthAmount - lastMonthAmount)}
+                      {change < 0
+                        ? `(${numberToCurrency(Math.abs(change))})`
+                        : numberToCurrency(change)}
                     </td>
                     <td
                       className={clsx(
                         'p-3 text-right text-lg font-medium whitespace-nowrap',
-                        (type === 'income'
-                          ? thatMonthAmount - lastMonthAmount
-                          : lastMonthAmount - thatMonthAmount) < 0 &&
-                          'text-rose-600'
+                        isNegativeChange && 'text-rose-600'
                       )}
                       style={{
                         borderTop: '2px solid',
                         borderBottom: '6px double'
                       }}
                     >
-                      {Math.abs(lastMonthAmount) < 0.001
+                      {Math.abs(prevTotal) < 0.001
                         ? '-'
-                        : `${(
-                            ((thatMonthAmount - lastMonthAmount) /
-                              lastMonthAmount) *
-                            100
-                          ).toFixed(2)}%`}
+                        : `${((change / prevTotal) * 100).toFixed(2)}%`}
                     </td>
                   </>
                 )
