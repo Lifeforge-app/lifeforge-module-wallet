@@ -80,7 +80,7 @@ function IncomeExpensesTable({
 
   return (
     <>
-      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase">
+      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase print:text-[18px]">
         <span>1.{type === 'income' ? '2' : '3'} </span>
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </h2>

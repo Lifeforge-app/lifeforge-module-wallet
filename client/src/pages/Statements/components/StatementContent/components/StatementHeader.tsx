@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 function StatementHeader({ month, year }: { month: number; year: number }) {
   return (
     <>
-      <h1 className="mb-8 hidden items-center gap-2 text-4xl font-medium print:flex">
+      <h1 className="mb-8 hidden items-center gap-2 text-4xl font-medium print:flex print:text-[28px]">
         <Icon
           className="text-custom-500 size-12 print:text-lime-600"
           icon="tabler:hammer"
@@ -12,12 +12,12 @@ function StatementHeader({ month, year }: { month: number; year: number }) {
         Lifeforge
         <span className="text-custom-500 print:text-lime-600">.</span>
       </h1>
-      <h1 className="hidden text-6xl leading-snug font-bold tracking-widest uppercase print:block">
+      <h1 className="hidden text-6xl leading-snug font-bold tracking-widest uppercase print:block print:text-[48px]">
         Personal
         <br />
         Financial Statements
       </h1>
-      <p className="text-bg-500 mt-4 hidden text-3xl print:block">
+      <p className="text-bg-500 mt-4 hidden text-3xl print:block print:text-[24px]">
         For the month ended{' '}
         <span className="text-bg-100 font-bold">
           {dayjs()

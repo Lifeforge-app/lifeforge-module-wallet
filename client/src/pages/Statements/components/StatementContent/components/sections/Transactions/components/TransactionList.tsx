@@ -48,7 +48,7 @@ function TransactionList({
 
   return (
     <>
-      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase">
+      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase print:text-[18px]">
         <span>
           2.
           {['income', 'expenses', 'transfer'].indexOf(type) + 1}{' '}
@@ -117,7 +117,7 @@ function TransactionList({
                 </td>
                 {transaction.type !== 'transfer' && (
                   <td className="p-3 text-lg whitespace-nowrap">
-                    <div className="flex items-center gap-2">
+                    <div className="text-bg-500 flex items-center gap-2">
                       <Icon
                         className="size-6 shrink-0"
                         icon={
@@ -137,23 +137,26 @@ function TransactionList({
                 {type !== 'transfer' && (
                   <td className="p-3 text-lg whitespace-nowrap">
                     {transaction.type !== 'transfer' && (
-                      <TagChip
-                        color={
-                          categories.find(
-                            category => category.id === transaction.category
-                          )?.color
-                        }
-                        icon={
-                          categories.find(
-                            category => category.id === transaction.category
-                          )?.icon
-                        }
-                        label={
-                          categories.find(
-                            category => category.id === transaction.category
-                          )?.name ?? '-'
-                        }
-                      />
+                      <div className="flex-center">
+                        <TagChip
+                          className="w-min"
+                          color={
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.color
+                          }
+                          icon={
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.icon
+                          }
+                          label={
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.name ?? '-'
+                          }
+                        />
+                      </div>
                     )}
                   </td>
                 )}
