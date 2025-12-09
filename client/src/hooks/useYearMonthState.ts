@@ -14,7 +14,7 @@ export default function useYearMonthState() {
   })
 
   const yearMonthsQuery = useQuery(
-    forgeAPI.wallet.utils.getAvailableYearMonths.queryOptions()
+    forgeAPI.wallet.analytics.getAvailableYearMonths.queryOptions()
   )
 
   const yearsOptions = yearMonthsQuery.data?.years ?? []

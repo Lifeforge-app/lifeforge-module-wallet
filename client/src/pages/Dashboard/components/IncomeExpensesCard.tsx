@@ -13,7 +13,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const { isAmountHidden } = useWalletStore()
 
   const incomeExpensesQuery = useQuery(
-    forgeAPI.wallet.utils.getIncomeExpensesSummary
+    forgeAPI.wallet.analytics.getIncomeExpensesSummary
       .input({
         year: new Date().getFullYear().toString(),
         month: (new Date().getMonth() + 1).toString()

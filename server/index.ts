@@ -1,12 +1,12 @@
 import { forgeRouter } from '@functions/routes'
 
+import analyticsRouter from './routes/analytics'
 import assetsRouter from './routes/assets'
 import categoriesRouter from './routes/categories'
 import ledgersRouter from './routes/ledgers'
 import promptsRouter from './routes/prompts'
 import templatesRouter from './routes/templates'
 import transactionsRouter from './routes/transactions'
-import utilsRouter from './routes/utils'
 
 export default forgeRouter({
   transactions: {
@@ -17,5 +17,5 @@ export default forgeRouter({
   assets: assetsRouter,
   ledgers: ledgersRouter,
   templates: templatesRouter,
-  utils: utilsRouter
+  analytics: analyticsRouter
 })

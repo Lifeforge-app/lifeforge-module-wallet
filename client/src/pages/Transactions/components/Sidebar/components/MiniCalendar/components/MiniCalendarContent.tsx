@@ -21,7 +21,7 @@ function MiniCalendarContent({
   const [nextToSelect, setNextToSelect] = useState<'start' | 'end'>('start')
 
   const transactionCountQuery = useQuery(
-    forgeAPI.wallet.utils.getTransactionCountByDay
+    forgeAPI.wallet.analytics.getTransactionCountByDay
       .input({
         year: currentYear.toString(),
         month: currentMonth.toString(),

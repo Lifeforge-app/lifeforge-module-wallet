@@ -8,12 +8,12 @@ import { type InferOutput, useNavigate } from 'shared'
 import colors from 'tailwindcss/colors'
 
 type SpendingLocationData = InferOutput<
-  typeof forgeAPI.wallet.utils.getSpendingByLocation
+  typeof forgeAPI.wallet.analytics.getSpendingByLocation
 >[number]
 
 function SpendingHeatmap() {
   const spendingDataQuery = useQuery(
-    forgeAPI.wallet.utils.getSpendingByLocation.queryOptions()
+    forgeAPI.wallet.analytics.getSpendingByLocation.queryOptions()
   )
 
   const googleMapAPIKeyQuery = useQuery(

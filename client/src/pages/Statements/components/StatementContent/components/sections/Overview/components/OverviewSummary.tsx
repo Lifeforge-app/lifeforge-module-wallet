@@ -6,7 +6,7 @@ import { WithQuery } from 'lifeforge-ui'
 
 function OverviewSummary({ month, year }: { month: number; year: number }) {
   const incomeExpensesQuery = useQuery(
-    forgeAPI.wallet.utils.getIncomeExpensesSummary
+    forgeAPI.wallet.analytics.getIncomeExpensesSummary
       .input({
         year: year.toString(),
         month: (month + 1).toString()

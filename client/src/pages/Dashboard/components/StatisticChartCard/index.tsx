@@ -26,7 +26,7 @@ function StatisticChardCard() {
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
   const chartDataQuery = useQuery(
-    forgeAPI.wallet.utils.getChartData.input({ range }).queryOptions()
+    forgeAPI.wallet.analytics.getChartData.input({ range }).queryOptions()
   )
 
   const data = chartDataQuery.data ?? []
