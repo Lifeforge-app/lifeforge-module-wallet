@@ -96,8 +96,8 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
   return (
     <WithQuery query={assetsQuery}>
       {assets => (
-        <div className="overflow-x-auto">
-          <table className="mt-6 w-full">
+        <div className="overflow-x-auto print:overflow-visible">
+          <table className="mt-6 w-full print:break-inside-auto">
             <thead>
               <tr className="bg-custom-500 text-white print:bg-lime-600">
                 <th className="w-full p-3 text-left text-lg font-medium">
@@ -132,7 +132,7 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
                 .map(asset => (
                   <tr
                     key={asset.id}
-                    className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
+                    className="even:bg-bg-200 dark:even:bg-bg-800/30 print:break-inside-avoid print:even:bg-black/[3%]"
                   >
                     <td className="p-3 text-lg">
                       <div className="flex items-center gap-2">

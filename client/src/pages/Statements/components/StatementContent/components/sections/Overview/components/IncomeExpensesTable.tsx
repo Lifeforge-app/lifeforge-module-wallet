@@ -80,12 +80,12 @@ function IncomeExpensesTable({
 
   return (
     <>
-      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase print:text-[18px]">
+      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase print:break-after-avoid print:text-[18px]">
         <span>1.{type === 'income' ? '2' : '3'} </span>
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </h2>
-      <div className="overflow-x-auto overflow-y-hidden">
-        <table className="mt-6 w-full">
+      <div className="overflow-x-auto overflow-y-hidden print:overflow-visible">
+        <table className="mt-6 w-full print:break-inside-auto">
           <thead>
             <tr className="bg-custom-500 text-white print:bg-lime-600">
               <th className="w-full p-3 text-left text-lg font-medium">
@@ -129,7 +129,7 @@ function IncomeExpensesTable({
               return (
                 <tr
                   key={category.id}
-                  className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
+                  className="even:bg-bg-200 dark:even:bg-bg-800/30 print:break-inside-avoid print:even:bg-black/[3%]"
                 >
                   <td className="p-3 text-lg">
                     <div className="flex items-center gap-2">
