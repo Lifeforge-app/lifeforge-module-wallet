@@ -1,6 +1,7 @@
-import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
+import { useQuery } from '@tanstack/react-query'
 import { Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,18 +17,19 @@ import {
 import { usePersonalization } from 'shared'
 
 import RangeSelector from './components/RangeSelector'
-import { useChartData } from './hooks'
 
 function StatisticChardCard() {
-  const { transactionsQuery } = useWalletData()
-
   const { t } = useTranslation('apps.wallet')
 
   const { bgTempPalette, derivedTheme } = usePersonalization()
 
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
-  const data = useChartData(range)
+  const chartDataQuery = useQuery(
+    forgeAPI.wallet.utils.getChartData.input({ range }).queryOptions()
+  )
+
+  const data = chartDataQuery.data ?? []
 
   const chartScale = useMemo(() => {
     const allValues = data.flatMap(d => [d.income, Math.abs(d.expenses)])
@@ -110,9 +112,9 @@ function StatisticChardCard() {
     >
       <RangeSelector className="sm:hidden" range={range} setRange={setRange} />
       <div className="flex-center size-full min-h-96 flex-1">
-        <WithQuery query={transactionsQuery}>
-          {transactions =>
-            transactions.length === 0 ? (
+        <WithQuery query={chartDataQuery}>
+          {chartData =>
+            chartData.length === 0 ? (
               <EmptyStateScreen
                 message={{
                   id: 'transactions',

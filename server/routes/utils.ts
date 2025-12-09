@@ -367,11 +367,139 @@ const getTransactionCountByDay = forgeController
     return countMap
   })
 
+const getChartData = forgeController
+  .query()
+  .description({
+    en: 'Get chart data for income/expenses by date range',
+    ms: 'Dapatkan data carta untuk pendapatan/perbelanjaan mengikut julat tarikh',
+    'zh-CN': '获取收入/支出按日期范围的图表数据',
+    'zh-TW': '獲取收入/支出按日期範圍的圖表數據'
+  })
+  .input({
+    query: z.object({
+      range: z.enum(['week', 'month', 'ytd'])
+    })
+  })
+  .callback(async ({ pb, query: { range } }) => {
+    const now = moment()
+
+    const currentYear = now.year()
+
+    let startDate: string
+    let endDate: string
+    let groupBy: 'day' | 'month'
+
+    const labels: string[] = []
+
+    switch (range) {
+      case 'week': {
+        const startOfWeek = moment().startOf('week')
+
+        startDate = startOfWeek.format('YYYY-MM-DD')
+        endDate = moment().endOf('week').format('YYYY-MM-DD')
+        groupBy = 'day'
+
+        for (let i = 0; i <= 6; i++) {
+          labels.push(startOfWeek.clone().add(i, 'day').format('MMM DD'))
+        }
+        break
+      }
+
+      case 'month': {
+        const startOfMonth = moment().startOf('month')
+
+        const endOfMonth = moment().endOf('month')
+
+        startDate = startOfMonth.format('YYYY-MM-DD')
+        endDate = endOfMonth.format('YYYY-MM-DD')
+        groupBy = 'day'
+
+        for (let i = 0; i < endOfMonth.date(); i++) {
+          labels.push(startOfMonth.clone().add(i, 'day').format('MMM DD'))
+        }
+        break
+      }
+
+      case 'ytd': {
+        startDate = moment().startOf('year').format('YYYY-MM-DD')
+        endDate = moment().endOf('month').format('YYYY-MM-DD')
+        groupBy = 'month'
+
+        for (let i = 0; i <= now.month(); i++) {
+          labels.push(moment().month(i).format('MMM'))
+        }
+        break
+      }
+    }
+
+    // Fetch transactions for the date range
+    const transactions = await pb.getFullList
+      .collection('wallet__transactions_income_expenses')
+      .expand({
+        base_transaction: 'wallet__transactions'
+      })
+      .filter([
+        {
+          field: 'base_transaction.date',
+          operator: '>=',
+          value: startDate
+        },
+        {
+          field: 'base_transaction.date',
+          operator: '<=',
+          value: endDate
+        }
+      ])
+      .execute()
+
+    // Build the result map
+    const resultMap: Record<string, { income: number; expenses: number }> = {}
+
+    for (const label of labels) {
+      resultMap[label] = { income: 0, expenses: 0 }
+    }
+
+    for (const transaction of transactions) {
+      const base = transaction.expand?.base_transaction
+
+      if (!base) continue
+
+      // Only include transactions from current year
+      const transactionYear = moment(base.date).year()
+
+      if (transactionYear !== currentYear) continue
+
+      let dateKey: string
+
+      if (groupBy === 'day') {
+        dateKey = moment(base.date).format('MMM DD')
+      } else {
+        dateKey = moment(base.date).format('MMM')
+      }
+
+      if (resultMap[dateKey]) {
+        if (transaction.type === 'income') {
+          resultMap[dateKey].income += base.amount
+        } else if (transaction.type === 'expenses') {
+          resultMap[dateKey].expenses += base.amount
+        }
+      }
+    }
+
+    // Convert to array format with expenses as negative
+    return labels.map(date => ({
+      date,
+      income: resultMap[date].income,
+      expenses: resultMap[date].expenses > 0 ? -resultMap[date].expenses : 0
+    }))
+  })
+
 export default forgeRouter({
   getTypesCount,
   getIncomeExpensesSummary,
   getExpensesBreakdown,
   getSpendingByLocation,
   getAvailableYearMonths,
-  getTransactionCountByDay
+  getTransactionCountByDay,
+  getChartData
 })
