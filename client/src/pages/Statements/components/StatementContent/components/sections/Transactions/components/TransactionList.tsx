@@ -139,6 +139,7 @@ function TransactionList({
                     {transaction.type !== 'transfer' && (
                       <div className="flex-center">
                         <TagChip
+                          iconClassName="print:hidden"
                           className="w-min"
                           color={
                             categories.find(
