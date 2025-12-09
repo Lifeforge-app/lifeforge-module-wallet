@@ -1,15 +1,15 @@
-import { ModalHeader } from 'lifeforge-ui'
+import forgeAPI from '@/utils/forgeAPI'
+import { ModalHeader, WithQueryData } from 'lifeforge-ui'
 
-import type { WalletTransaction } from '../..'
 import Details from './components/Details'
 import Header from './components/Header'
 
 function ViewTransactionModal({
-  data: { transaction },
+  data: { id },
   onClose
 }: {
   data: {
-    transaction: WalletTransaction
+    id: string
   }
   onClose: () => void
 }) {
@@ -21,8 +21,18 @@ function ViewTransactionModal({
         title="transactions.view"
         onClose={onClose}
       />
-      <Header transaction={transaction} />
-      <Details transaction={transaction} />
+      <WithQueryData
+        controller={forgeAPI.wallet.transactions.getById.input({
+          id
+        })}
+      >
+        {transaction => (
+          <>
+            <Header transaction={transaction} />
+            <Details transaction={transaction} />
+          </>
+        )}
+      </WithQueryData>
     </div>
   )
 }

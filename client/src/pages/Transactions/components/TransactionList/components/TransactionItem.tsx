@@ -62,17 +62,15 @@ function TransactionItem({
   }, [transaction])
 
   const handleViewTransaction = useCallback(() => {
-    if (viewOnly) return
-
     open(ViewTransactionModal, {
-      transaction
+      id: transaction.id
     })
-  }, [transaction, viewOnly])
+  }, [transaction.id])
 
   return (
     <Card
+      isInteractive
       className={clsx('flex-between flex gap-3', className)}
-      isInteractive={!viewOnly}
       onClick={handleViewTransaction}
     >
       {transaction.type === 'transfer' ? (
