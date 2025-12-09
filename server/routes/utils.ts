@@ -356,6 +356,7 @@ const getTransactionCountByDay = forgeController
       for (const type of types) {
         if (viewFilter.includes(type)) {
           const count = row[`${type}_count`] || 0
+
           countMap[dateKey][type] = count
           countMap[dateKey].total += count
           countMap[dateKey].count += count > 0 ? count : 0
