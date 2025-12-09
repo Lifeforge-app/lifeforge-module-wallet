@@ -165,6 +165,130 @@ const getAssetAccumulatedBalance = forgeController
     )
   })
 
+const getAllAssetAccumulatedBalance = forgeController
+  .query()
+  .description({
+    en: 'Get all asset balances for a specific month',
+    ms: 'Dapatkan semua baki aset untuk bulan tertentu',
+    'zh-CN': '获取特定月份的所有资产余额',
+    'zh-TW': '獲取特定月份的所有資產餘額'
+  })
+  .input({
+    query: z.object({
+      year: z.string().transform(val => parseInt(val)),
+      month: z.string().transform(val => parseInt(val))
+    })
+  })
+  .callback(async ({ pb, query: { year, month } }) => {
+    // Calculate dates
+    const currentMonthEnd = moment()
+      .year(year)
+      .month(month - 1)
+      .endOf('month')
+
+    const prevMonthEnd = moment()
+      .year(year)
+      .month(month - 1)
+      .startOf('month')
+      .subtract(1, 'day')
+
+    // Get all assets
+    const assets = await pb.getFullList
+      .collection('wallet__assets')
+      .fields({
+        id: true,
+        starting_balance: true
+      })
+      .execute()
+
+    // Get all income/expenses transactions
+    const allIncomeExpensesTransactions = await pb.getFullList
+      .collection('wallet__transactions_income_expenses')
+      .expand({
+        base_transaction: 'wallet__transactions'
+      })
+      .fields({
+        type: true,
+        asset: true,
+        'expand.base_transaction.amount': true,
+        'expand.base_transaction.date': true
+      })
+      .execute()
+
+    // Get all transfer transactions
+    const allTransferTransactions = await pb.getFullList
+      .collection('wallet__transactions_transfer')
+      .expand({
+        base_transaction: 'wallet__transactions'
+      })
+      .fields({
+        'expand.base_transaction.amount': true,
+        'expand.base_transaction.date': true,
+        from: true,
+        to: true
+      })
+      .execute()
+
+    const result: Record<string, { last: number; current: number }> = {}
+
+    for (const asset of assets) {
+      // Get transactions for this asset
+      const incomeExpenses = allIncomeExpensesTransactions
+        .filter(t => t.asset === asset.id)
+        .map(t => ({
+          type: t.type as 'income' | 'expenses',
+          amount: t.expand!.base_transaction!.amount!,
+          date: t.expand!.base_transaction!.date!
+        }))
+
+      const transfers = allTransferTransactions
+        .filter(t => t.from === asset.id || t.to === asset.id)
+        .map(t => ({
+          type: (t.from === asset.id ? 'expenses' : 'income') as
+            | 'income'
+            | 'expenses',
+          amount: t.expand!.base_transaction!.amount!,
+          date: t.expand!.base_transaction!.date!
+        }))
+
+      const allTransactions = [...incomeExpenses, ...transfers].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      )
+
+      // Calculate balances by walking through transactions
+      let balance = asset.starting_balance
+      let lastMonthBalance = asset.starting_balance
+      let currentMonthBalance = asset.starting_balance
+
+      for (const transaction of allTransactions) {
+        const txDate = moment(transaction.date)
+
+        if (transaction.type === 'income') {
+          balance += transaction.amount
+        } else {
+          balance -= transaction.amount
+        }
+
+        // Update last month balance if transaction is on or before prev month end
+        if (txDate.isSameOrBefore(prevMonthEnd, 'day')) {
+          lastMonthBalance = balance
+        }
+
+        // Update current month balance if transaction is on or before current month end
+        if (txDate.isSameOrBefore(currentMonthEnd, 'day')) {
+          currentMonthBalance = balance
+        }
+      }
+
+      result[asset.id] = {
+        last: parseFloat(lastMonthBalance.toFixed(2)),
+        current: parseFloat(currentMonthBalance.toFixed(2))
+      }
+    }
+
+    return result
+  })
+
 const create = forgeController
   .mutation()
   .description({
@@ -226,6 +350,7 @@ const remove = forgeController
 export default forgeRouter({
   list,
   getAssetAccumulatedBalance,
+  getAllAssetAccumulatedBalance,
   create,
   update,
   remove

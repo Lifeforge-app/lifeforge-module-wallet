@@ -139,7 +139,6 @@ function TransactionList({
                     {transaction.type !== 'transfer' && (
                       <div className="flex-center">
                         <TagChip
-                          iconClassName="print:hidden"
                           className="w-min"
                           color={
                             categories.find(
@@ -151,6 +150,7 @@ function TransactionList({
                               category => category.id === transaction.category
                             )?.icon
                           }
+                          iconClassName="print:hidden"
                           label={
                             categories.find(
                               category => category.id === transaction.category
