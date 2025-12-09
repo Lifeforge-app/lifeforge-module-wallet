@@ -7,31 +7,26 @@ import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
-import { ExpensesBreakdownContext } from '..'
+import { CategoriesBreakdownContext } from '..'
 
 function BreakdownDoughnutChart() {
   const { t } = useTranslation('apps.wallet')
 
   const { isAmountHidden } = useWalletStore()
 
-  const { spentOnEachCategory, expensesCategories } = useContext(
-    ExpensesBreakdownContext
-  )
+  const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
 
   const chartData = useMemo(() => {
-    return expensesCategories.map(category => ({
+    return categories.map(category => ({
       name: category.name,
-      value: spentOnEachCategory?.[category.id]?.amount || 0,
+      value: breakdown?.[category.id]?.amount || 0,
       color: category.color
     }))
-  }, [expensesCategories, spentOnEachCategory])
+  }, [categories, breakdown])
 
-  const totalSpent = useMemo(() => {
-    return Object.values(spentOnEachCategory).reduce(
-      (acc, curr) => acc + curr.amount,
-      0
-    )
-  }, [spentOnEachCategory])
+  const totalAmount = useMemo(() => {
+    return Object.values(breakdown).reduce((acc, curr) => acc + curr.amount, 0)
+  }, [breakdown])
 
   const CustomTooltip = ({
     active,
@@ -47,7 +42,7 @@ function BreakdownDoughnutChart() {
     if (active && payload && payload.length) {
       const data = payload[0]
 
-      const percentage = totalSpent > 0 ? (data.value / totalSpent) * 100 : 0
+      const percentage = totalAmount > 0 ? (data.value / totalAmount) * 100 : 0
 
       return (
         <Card className="border-bg-200 dark:border-bg-700/50 component-bg border p-0!">
@@ -103,11 +98,13 @@ function BreakdownDoughnutChart() {
                 ))}
             </span>
           ) : (
-            numberToCurrency(totalSpent)
+            numberToCurrency(totalAmount)
           )}
         </div>
         <div className="text-bg-500 mt-2 w-1/2 text-center text-sm sm:text-base">
-          {t('widgets.expensesBreakdown.thisMonthsSpending')}
+          {type === 'expenses'
+            ? t('widgets.expensesBreakdown.thisMonthsSpending')
+            : t('widgets.expensesBreakdown.thisMonthsIncome')}
         </div>
       </div>
       <ResponsiveContainer height="100%" width="100%">

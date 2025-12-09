@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'shared'
 
 import AssetsBalanceCard from './components/AssetsBalanceCard'
-import ExpensesBreakdownCard from './components/ExpensesBreakdownCard'
+import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
 import StatisticChardCard from './components/StatisticChartCard'
 import TransactionsCard from './components/TransactionsCard'
@@ -107,7 +107,7 @@ function WalletDashboard() {
         <StatisticChardCard />
         <TransactionsCountCard />
         <TransactionsCard />
-        <ExpensesBreakdownCard />
+        <CategoriesBreakdownCard />
       </div>
       <ContextMenu
         buttonComponent={<FAB className="static!" isibilityBreakpoint="md" />}

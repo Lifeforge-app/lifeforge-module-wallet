@@ -123,13 +123,13 @@ const getIncomeExpensesSummary = forgeController
     }
   })
 
-const getExpensesBreakdown = forgeController
+const getCategoriesBreakdown = forgeController
   .query()
   .description({
-    en: 'Get expenses breakdown by category for a month',
-    ms: 'Dapatkan pecahan perbelanjaan mengikut kategori untuk sebulan',
-    'zh-CN': '按类别获取月度支出明细',
-    'zh-TW': '按類別獲取月度支出明細'
+    en: 'Get income and expenses breakdown by category for a month',
+    ms: 'Dapatkan pecahan pendapatan dan perbelanjaan mengikut kategori untuk sebulan',
+    'zh-CN': '按类别获取月度收入和支出明细',
+    'zh-TW': '按類別獲取月度收入和支出明細'
   })
   .input({
     query: z.object({
@@ -150,7 +150,7 @@ const getExpensesBreakdown = forgeController
       .endOf('month')
       .format('YYYY-MM-DD')
 
-    const expenses = await pb.getFullList
+    const transactions = await pb.getFullList
       .collection('wallet__transactions_income_expenses')
       .expand({
         category: 'wallet__categories',
@@ -166,60 +166,83 @@ const getExpensesBreakdown = forgeController
           field: 'base_transaction.date',
           operator: '<=',
           value: endDate
-        },
-        {
-          field: 'type',
-          operator: '=',
-          value: 'expenses'
         }
       ])
       .fields({
+        type: true,
         'expand.base_transaction.amount': true,
         'expand.base_transaction.date': true,
         'expand.category.id': true
       })
       .execute()
 
-    const spentOnEachCategory: Record<
+    type CategoryBreakdown = Record<
       string,
       {
         amount: number
         count: number
         percentage: number
       }
-    > = {}
+    >
 
-    for (const expense of expenses) {
-      const categoryId = expense.expand?.category?.id
+    const incomeByCategory: CategoryBreakdown = {}
 
-      if (!categoryId) {
-        continue
-      }
+    const expensesByCategory: CategoryBreakdown = {}
 
-      if (spentOnEachCategory[categoryId]) {
-        spentOnEachCategory[categoryId].amount +=
-          expense.expand?.base_transaction?.amount || 0
-        spentOnEachCategory[categoryId].count += 1
+    for (const transaction of transactions) {
+      const categoryId = transaction.expand?.category?.id
+
+      const amount = transaction.expand?.base_transaction?.amount || 0
+
+      const type = transaction.type
+
+      if (!categoryId) continue
+
+      const targetMap =
+        type === 'income' ? incomeByCategory : expensesByCategory
+
+      if (targetMap[categoryId]) {
+        targetMap[categoryId].amount += amount
+        targetMap[categoryId].count += 1
       } else {
-        spentOnEachCategory[categoryId] = {
-          amount: expense.expand?.base_transaction?.amount || 0,
+        targetMap[categoryId] = {
+          amount,
           count: 1,
           percentage: 0
         }
       }
     }
 
-    const totalSpent = Object.values(spentOnEachCategory).reduce(
+    // Calculate percentages for income
+    const totalIncome = Object.values(incomeByCategory).reduce(
       (acc, { amount }) => acc + amount,
       0
     )
 
-    for (const categoryId in spentOnEachCategory) {
-      spentOnEachCategory[categoryId].percentage =
-        (spentOnEachCategory[categoryId].amount / totalSpent) * 100
+    for (const categoryId in incomeByCategory) {
+      incomeByCategory[categoryId].percentage =
+        totalIncome > 0
+          ? (incomeByCategory[categoryId].amount / totalIncome) * 100
+          : 0
     }
 
-    return spentOnEachCategory
+    // Calculate percentages for expenses
+    const totalExpenses = Object.values(expensesByCategory).reduce(
+      (acc, { amount }) => acc + amount,
+      0
+    )
+
+    for (const categoryId in expensesByCategory) {
+      expensesByCategory[categoryId].percentage =
+        totalExpenses > 0
+          ? (expensesByCategory[categoryId].amount / totalExpenses) * 100
+          : 0
+    }
+
+    return {
+      income: incomeByCategory,
+      expenses: expensesByCategory
+    }
   })
 
 const getSpendingByLocation = forgeController
@@ -497,7 +520,7 @@ const getChartData = forgeController
 export default forgeRouter({
   getTypesCount,
   getIncomeExpensesSummary,
-  getExpensesBreakdown,
+  getCategoriesBreakdown,
   getSpendingByLocation,
   getAvailableYearMonths,
   getTransactionCountByDay,

@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'shared'
 
-import { ExpensesBreakdownContext } from '..'
+import { CategoriesBreakdownContext } from '..'
 import numberToCurrency from '../../../../../utils/numberToCurrency'
 
 function BreakdownDetails() {
@@ -14,19 +14,17 @@ function BreakdownDetails() {
 
   const { isAmountHidden } = useWalletStore()
 
-  const { spentOnEachCategory, expensesCategories } = useContext(
-    ExpensesBreakdownContext
-  )
+  const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
 
   return (
     <div className="h-full min-h-96 xl:min-h-0">
       <Scrollbar className="mb-4">
         <ul className="divide-bg-200 dark:divide-bg-800 flex flex-col divide-y">
-          {expensesCategories.map(category => (
+          {categories.map(category => (
             <Link
               key={category.id}
               className="flex-between hover:bg-bg-100 dark:hover:bg-bg-800/50 flex gap-3 rounded-md p-4 transition-all"
-              to={`/wallet/transactions?type=expenses&category=${category.id}`}
+              to={`/wallet/transactions?type=${type}&category=${category.id}`}
             >
               <div className="flex items-center gap-3">
                 <div
@@ -41,8 +39,7 @@ function BreakdownDetails() {
                 <div className="flex flex-col">
                   <div className="font-semibold">{category.name}</div>
                   <div className="text-bg-500 text-sm">
-                    {spentOnEachCategory[category.id]?.count}{' '}
-                    {t('transactionCount')}
+                    {breakdown[category.id]?.count} {t('transactionCount')}
                   </div>
                 </div>
               </div>
@@ -50,10 +47,11 @@ function BreakdownDetails() {
                 <div
                   className={clsx(
                     'flex gap-2 text-right font-medium',
-                    isAmountHidden ? 'items-center' : 'items-end'
+                    isAmountHidden ? 'items-center' : 'items-end',
+                    type === 'income' ? 'text-green-500' : 'text-red-500'
                   )}
                 >
-                  - RM{' '}
+                  {type === 'income' ? '+' : '-'} RM{' '}
                   {isAmountHidden ? (
                     <span className="flex items-center">
                       {Array(4)
@@ -67,11 +65,11 @@ function BreakdownDetails() {
                         ))}
                     </span>
                   ) : (
-                    numberToCurrency(spentOnEachCategory[category.id]?.amount)
+                    numberToCurrency(breakdown[category.id]?.amount)
                   )}
                 </div>
                 <div className="text-bg-500 text-right text-sm">
-                  {spentOnEachCategory[category.id]?.percentage.toFixed(2)}%
+                  {breakdown[category.id]?.percentage.toFixed(2)}%
                 </div>
               </div>
             </Link>

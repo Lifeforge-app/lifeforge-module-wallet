@@ -1,13 +1,13 @@
 import { useContext } from 'react'
 
-import { ExpensesBreakdownContext } from '..'
+import { CategoriesBreakdownContext } from '..'
 
 function BreakdownChartLegend() {
-  const { expensesCategories } = useContext(ExpensesBreakdownContext)
+  const { categories } = useContext(CategoriesBreakdownContext)
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-      {expensesCategories.map(category => (
+      {categories.map(category => (
         <div key={category.id} className="flex items-center gap-2">
           <span
             className="-mb-0.5 size-3 rounded-[3px] border"

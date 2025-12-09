@@ -16,7 +16,8 @@
   "widgets": {
     "expensesBreakdown": {
       "title": "支出分析",
-      "thisMonthsSpending": "本月支出总额"
+      "thisMonthsSpending": "本月支出总额",
+      "thisMonthsIncome": "本月收入总额"
     },
     "income": {
       "title": "收入"
