@@ -14,9 +14,9 @@
     "filteredTransactions": "Transaksi Ditapis"
   },
   "widgets": {
-    "expensesBreakdown": {
-      "title": "Pecahan Perbelanjaan",
-      "thisMonthsSpending": "telah Dilanja",
+    "categoriesBreakdown": {
+      "title": "Pecahan Kategori",
+      "thisMonthsExpenses": "Perbelanjaan Bulan Ini",
       "thisMonthsIncome": "Pendapatan Bulan Ini"
     },
     "income": {

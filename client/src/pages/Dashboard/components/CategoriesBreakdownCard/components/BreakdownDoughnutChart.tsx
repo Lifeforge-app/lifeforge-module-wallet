@@ -103,8 +103,8 @@ function BreakdownDoughnutChart() {
         </div>
         <div className="text-bg-500 mt-2 w-1/2 text-center text-sm sm:text-base">
           {type === 'expenses'
-            ? t('widgets.expensesBreakdown.thisMonthsSpending')
-            : t('widgets.expensesBreakdown.thisMonthsIncome')}
+            ? t('widgets.categoriesBreakdown.thisMonthsExpenses')
+            : t('widgets.categoriesBreakdown.thisMonthsIncome')}
         </div>
       </div>
       <ResponsiveContainer height="100%" width="100%">

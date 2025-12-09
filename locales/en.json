@@ -14,9 +14,9 @@
     "filteredTransactions": "Filtered Transactions"
   },
   "widgets": {
-    "expensesBreakdown": {
-      "title": "Expenses Breakdown",
-      "thisMonthsSpending": "This Month's Spending",
+    "categoriesBreakdown": {
+      "title": "Categories Breakdown",
+      "thisMonthsExpenses": "This Month's Spending",
       "thisMonthsIncome": "This Month's Income"
     },
     "income": {

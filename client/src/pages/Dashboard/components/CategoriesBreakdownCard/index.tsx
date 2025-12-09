@@ -106,60 +106,78 @@ function CategoriesBreakdownCard() {
         namespace="apps.wallet"
         title="Categories Breakdown"
       >
-        <div className="mb-2 flex flex-col items-center gap-2 sm:flex-row">
-          <div className="flex w-full gap-1 sm:w-auto">
-            {(['income', 'expenses'] as const).map(type => (
-              <button
-                key={type}
-                className={clsx(
-                  'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
-                  selectedType === type
-                    ? type === 'income'
-                      ? 'bg-green-500/20 text-green-500'
-                      : 'bg-red-500/20 text-red-500'
-                    : 'bg-bg-200 text-bg-500 hover:bg-bg-300 dark:bg-bg-800 dark:hover:bg-bg-700'
-                )}
-                onClick={() => setSelectedType(type)}
-              >
-                {t(`apps.wallet:${type}`)}
-              </button>
-            ))}
-          </div>
+        <div className="mb-2 flex flex-col items-center gap-2">
           <Listbox
             buttonContent={
               <div className="flex items-center gap-3">
-                <Icon className="text-bg-500 size-6" icon="tabler:calendar" />
-                {t('common.misc:dates.months.' + month)}
+                <Icon
+                  className={clsx(
+                    'size-6',
+                    selectedType === 'income'
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  )}
+                  icon={
+                    selectedType === 'income'
+                      ? 'tabler:login-2'
+                      : 'tabler:logout'
+                  }
+                />
+                {t(`apps.wallet:transactionTypes.${selectedType}`)}
               </div>
             }
-            className="component-bg-lighter flex-1"
-            value={month}
-            onChange={(value: number | null) => setYearMonth({ month: value })}
+            className="component-bg-lighter w-full"
+            value={selectedType}
+            onChange={(value: 'income' | 'expenses') => setSelectedType(value)}
           >
-            {monthsOptions.map(option => (
+            {(['income', 'expenses'] as const).map(type => (
               <ListboxOption
-                key={option}
-                label={t('common.misc:dates.months.' + option)}
-                value={option}
+                key={type}
+                icon={type === 'income' ? 'tabler:login-2' : 'tabler:logout'}
+                label={t(`apps.wallet:transactionTypes.${type}`)}
+                value={type}
               />
             ))}
           </Listbox>
-          <Listbox
-            buttonContent={
-              <div className="flex items-center gap-3">{year}</div>
-            }
-            className="component-bg-lighter sm:w-36!"
-            value={year}
-            onChange={(value: number | null) => setYearMonth({ year: value })}
-          >
-            {yearsOptions.map(option => (
-              <ListboxOption
-                key={option}
-                label={option.toString()}
-                value={option}
-              />
-            ))}
-          </Listbox>
+          <div className="flex w-full flex-col gap-2 min-[360px]:flex-row">
+            <Listbox
+              buttonContent={
+                <div className="flex items-center gap-3">
+                  <Icon className="text-bg-500 size-6" icon="tabler:calendar" />
+                  {t('common.misc:dates.months.' + month)}
+                </div>
+              }
+              className="component-bg-lighter flex-1"
+              value={month}
+              onChange={(value: number | null) =>
+                setYearMonth({ month: value })
+              }
+            >
+              {monthsOptions.map(option => (
+                <ListboxOption
+                  key={option}
+                  label={t('common.misc:dates.months.' + option)}
+                  value={option}
+                />
+              ))}
+            </Listbox>
+            <Listbox
+              buttonContent={
+                <div className="flex items-center gap-3">{year}</div>
+              }
+              className="component-bg-lighter min-[360px]:w-36!"
+              value={year}
+              onChange={(value: number | null) => setYearMonth({ year: value })}
+            >
+              {yearsOptions.map(option => (
+                <ListboxOption
+                  key={option}
+                  label={option.toString()}
+                  value={option}
+                />
+              ))}
+            </Listbox>
+          </div>
         </div>
         <WithQuery query={categoriesBreakdownQuery}>
           {data =>

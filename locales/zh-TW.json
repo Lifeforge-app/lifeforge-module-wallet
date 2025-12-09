@@ -14,9 +14,9 @@
     "filteredTransactions": "篩選後的交易"
   },
   "widgets": {
-    "expensesBreakdown": {
-      "title": "支出分析",
-      "thisMonthsSpending": "本月支出總額",
+    "categoriesBreakdown": {
+      "title": "收支類別分析",
+      "thisMonthsExpenses": "本月支出總額",
       "thisMonthsIncome": "本月收入總額"
     },
     "income": {
