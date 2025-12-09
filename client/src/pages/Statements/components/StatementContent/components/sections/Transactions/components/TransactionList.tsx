@@ -42,21 +42,7 @@ function TransactionList({
 
   // Calculate total
   const total = useMemo(() => {
-    return transactions.reduce((acc, curr) => {
-      if (curr.type !== 'transfer') {
-        if (curr.type === 'income') {
-          return acc + curr.amount
-        }
-
-        if (curr.type === 'expenses') {
-          return acc - curr.amount
-        }
-      } else {
-        return acc + curr.amount / 2
-      }
-
-      return acc
-    }, 0)
+    return transactions.reduce((acc, curr) => acc + curr.amount, 0)
   }, [transactions])
 
   return (
@@ -106,15 +92,13 @@ function TransactionList({
             </tr>
           </thead>
           <tbody>
-            {sortedTransactions.map((transaction, index) => (
+            {sortedTransactions.map(transaction => (
               <tr
                 key={transaction.id}
                 className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
               >
                 <td className="p-3 text-lg whitespace-nowrap">
-                  {((type === 'transfer' && index % 2 === 0) ||
-                    type !== 'transfer') &&
-                    dayjs(transaction.date).format('MMM DD')}
+                  {dayjs(transaction.date).format('MMM DD')}
                 </td>
                 <td className="min-w-96 p-3 text-lg">
                   {transaction.type === 'transfer' ? (
@@ -178,7 +162,7 @@ function TransactionList({
                   </td>
                 )}
                 <td className="p-3 text-right text-lg whitespace-nowrap">
-                  {transaction.type === 'expenses'
+                  {type === 'expenses'
                     ? `(${numberToCurrency(transaction.amount)})`
                     : numberToCurrency(transaction.amount)}
                 </td>
