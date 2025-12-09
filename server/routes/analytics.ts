@@ -11,8 +11,60 @@ const getTypesCount = forgeController
     'zh-CN': '按类型获取交易数量和总额',
     'zh-TW': '按類型獲取交易數量和總額'
   })
-  .input({})
-  .callback(async ({ pb }) => {
+  .input({
+    query: z.object({
+      year: z
+        .string()
+        .optional()
+        .transform(val => (val ? parseInt(val) : undefined)),
+      month: z
+        .string()
+        .optional()
+        .transform(val => (val ? parseInt(val) : undefined))
+    })
+  })
+  .callback(async ({ pb, query: { year, month } }) => {
+    // If year/month provided, fetch from amount_aggregated with filter
+    if (year !== undefined && month !== undefined) {
+      const data = await pb.getFullList
+        .collection('wallet__transactions_amount_aggregated')
+        .filter([
+          {
+            field: 'year',
+            operator: '=' as const,
+            value: year
+          },
+          {
+            field: 'month',
+            operator: '=' as const,
+            value: month
+          }
+        ])
+        .execute()
+
+      // Aggregate by type
+      const typesCount: Record<
+        string,
+        { transactionCount: number; accumulatedAmount: number }
+      > = {
+        income: { transactionCount: 0, accumulatedAmount: 0 },
+        expenses: { transactionCount: 0, accumulatedAmount: 0 },
+        transfer: { transactionCount: 0, accumulatedAmount: 0 }
+      }
+
+      for (const row of data) {
+        typesCount.income.transactionCount += row.income_count || 0
+        typesCount.income.accumulatedAmount += row.income || 0
+        typesCount.expenses.transactionCount += row.expenses_count || 0
+        typesCount.expenses.accumulatedAmount += row.expenses || 0
+        typesCount.transfer.transactionCount += row.transfer_count || 0
+        typesCount.transfer.accumulatedAmount += row.transfer || 0
+      }
+
+      return typesCount
+    }
+
+    // Otherwise, fetch all-time totals from types_aggregated
     const types = await pb.getFullList
       .collection('wallet__transaction_types_aggregated')
       .execute()

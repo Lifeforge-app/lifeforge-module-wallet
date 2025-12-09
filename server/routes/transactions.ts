@@ -1,6 +1,7 @@
 import { Location } from '@lib/locations/typescript/location.types'
 import { SCHEMAS } from '@schema'
 import fs from 'fs'
+import moment from 'moment'
 import z from 'zod'
 
 import parseOCR from '@functions/external/ocr'
@@ -20,10 +21,43 @@ const list = forgeController
   .input({
     query: z.object({
       q: z.string().optional(),
-      type: z.enum(['income', 'expenses', 'transfer']).optional()
+      type: z.enum(['income', 'expenses', 'transfer']).optional(),
+      year: z
+        .string()
+        .optional()
+        .transform(val => (val ? parseInt(val) : undefined)),
+      month: z
+        .string()
+        .optional()
+        .transform(val => (val ? parseInt(val) : undefined))
     })
   })
-  .callback(async ({ pb, query: { q, type } }) => {
+  .callback(async ({ pb, query: { q, type, year, month } }) => {
+    // Build date filter if year/month provided
+    const dateFilters =
+      year !== undefined && month !== undefined
+        ? ([
+            {
+              field: 'base_transaction.date' as const,
+              operator: '>=' as const,
+              value: moment()
+                .year(year)
+                .month(month - 1)
+                .startOf('month')
+                .format('YYYY-MM-DD')
+            },
+            {
+              field: 'base_transaction.date' as const,
+              operator: '<=' as const,
+              value: moment()
+                .year(year)
+                .month(month - 1)
+                .endOf('month')
+                .format('YYYY-MM-DD')
+            }
+          ] as const)
+        : []
+
     const incomeExpensesTransactions = await pb.getFullList
       .collection('wallet__transactions_income_expenses')
       .expand({
@@ -32,11 +66,12 @@ const list = forgeController
       .filter([
         q
           ? {
-              field: 'particulars',
-              operator: '~',
+              field: 'particulars' as const,
+              operator: '~' as const,
               value: q
             }
-          : null
+          : null,
+        ...dateFilters
       ])
       .execute()
 
@@ -45,6 +80,7 @@ const list = forgeController
       .expand({
         base_transaction: 'wallet__transactions'
       })
+      .filter([...dateFilters])
       .execute()
 
     const allTransactions = []

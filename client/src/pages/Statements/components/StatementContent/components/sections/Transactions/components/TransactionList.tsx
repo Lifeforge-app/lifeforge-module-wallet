@@ -1,7 +1,10 @@
 import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
 function TransactionList({
   type,
@@ -12,13 +15,49 @@ function TransactionList({
   month: number
   year: number
 }) {
-  const { transactionsQuery, assetsQuery, categoriesQuery } = useWalletData()
+  const { assetsQuery, categoriesQuery } = useWalletData()
+
+  // Fetch transactions filtered by year/month from API
+  const transactionsQuery = useQuery(
+    forgeAPI.wallet.transactions.list
+      .input({
+        year: year.toString(),
+        month: (month + 1).toString(), // API expects 1-indexed
+        type
+      })
+      .queryOptions()
+  )
 
   const transactions = transactionsQuery.data ?? []
 
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
+
+  // Sort transactions by date ascending
+  const sortedTransactions = useMemo(
+    () => [...transactions].sort((a, b) => dayjs(a.date).diff(dayjs(b.date))),
+    [transactions]
+  )
+
+  // Calculate total
+  const total = useMemo(() => {
+    return transactions.reduce((acc, curr) => {
+      if (curr.type !== 'transfer') {
+        if (curr.type === 'income') {
+          return acc + curr.amount
+        }
+
+        if (curr.type === 'expenses') {
+          return acc - curr.amount
+        }
+      } else {
+        return acc + curr.amount / 2
+      }
+
+      return acc
+    }, 0)
+  }, [transactions])
 
   return (
     <>
@@ -67,92 +106,84 @@ function TransactionList({
             </tr>
           </thead>
           <tbody>
-            {transactions
-              .filter(
-                transaction =>
-                  transaction.type === type &&
-                  dayjs(transaction.date).month() === month &&
-                  dayjs(transaction.date).year() === year
-              )
-              .sort((a, b) => dayjs(a.date).diff(b.date))
-              .map((transaction, index) => (
-                <tr
-                  key={transaction.id}
-                  className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
-                >
+            {sortedTransactions.map((transaction, index) => (
+              <tr
+                key={transaction.id}
+                className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]"
+              >
+                <td className="p-3 text-lg whitespace-nowrap">
+                  {((type === 'transfer' && index % 2 === 0) ||
+                    type !== 'transfer') &&
+                    dayjs(transaction.date).format('MMM DD')}
+                </td>
+                <td className="min-w-96 p-3 text-lg">
+                  {transaction.type === 'transfer' ? (
+                    <>
+                      Transfer from{' '}
+                      {assets.find(asset => asset.id === transaction.from)
+                        ?.name ?? 'Unknown Asset'}{' '}
+                      to{' '}
+                      {assets.find(asset => asset.id === transaction.to)
+                        ?.name ?? 'Unknown Asset'}
+                    </>
+                  ) : (
+                    transaction.particulars
+                  )}
+                </td>
+                {transaction.type !== 'transfer' && (
                   <td className="p-3 text-lg whitespace-nowrap">
-                    {((type === 'transfer' && index % 2 === 0) ||
-                      type !== 'transfer') &&
-                      dayjs(transaction.date).format('MMM DD')}
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        className="size-6 shrink-0"
+                        icon={
+                          assets.find(asset => asset.id === transaction.asset)
+                            ?.icon ?? 'tabler:coin'
+                        }
+                      />
+                      <span>
+                        {
+                          assets.find(asset => asset.id === transaction.asset)
+                            ?.name
+                        }
+                      </span>
+                    </div>
                   </td>
-                  <td className="min-w-96 p-3 text-lg">
-                    {transaction.type === 'transfer' ? (
-                      <>
-                        Transfer from{' '}
-                        {assets.find(asset => asset.id === transaction.from)
-                          ?.name ?? 'Unknown Asset'}{' '}
-                        to{' '}
-                        {assets.find(asset => asset.id === transaction.to)
-                          ?.name ?? 'Unknown Asset'}
-                      </>
-                    ) : (
-                      transaction.particulars
-                    )}
-                  </td>
-                  {transaction.type !== 'transfer' && (
-                    <td className="p-3 text-lg whitespace-nowrap">
+                )}
+                {type !== 'transfer' && (
+                  <td className="p-3 text-lg whitespace-nowrap">
+                    {transaction.type !== 'transfer' && (
                       <div className="flex items-center gap-2">
                         <Icon
                           className="size-6 shrink-0"
                           icon={
-                            assets.find(asset => asset.id === transaction.asset)
-                              ?.icon ?? 'tabler:coin'
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.icon ?? ''
                           }
+                          style={{
+                            color: categories.find(
+                              category => category.id === transaction.category
+                            )?.color
+                          }}
                         />
                         <span>
                           {
-                            assets.find(asset => asset.id === transaction.asset)
-                              ?.name
+                            categories.find(
+                              category => category.id === transaction.category
+                            )?.name
                           }
                         </span>
                       </div>
-                    </td>
-                  )}
-                  {type !== 'transfer' && (
-                    <td className="p-3 text-lg whitespace-nowrap">
-                      {transaction.type !== 'transfer' && (
-                        <div className="flex items-center gap-2">
-                          <Icon
-                            className="size-6 shrink-0"
-                            icon={
-                              categories.find(
-                                category => category.id === transaction.category
-                              )?.icon ?? ''
-                            }
-                            style={{
-                              color: categories.find(
-                                category => category.id === transaction.category
-                              )?.color
-                            }}
-                          />
-                          <span>
-                            {
-                              categories.find(
-                                category => category.id === transaction.category
-                              )?.name
-                            }
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                  )}
-                  <td className="p-3 text-right text-lg whitespace-nowrap">
-                    {transaction.type === 'expenses'
-                      ? `(${numberToCurrency(transaction.amount)})`
-                      : numberToCurrency(transaction.amount)}
+                    )}
                   </td>
-                </tr>
-              ))}
+                )}
+                <td className="p-3 text-right text-lg whitespace-nowrap">
+                  {transaction.type === 'expenses'
+                    ? `(${numberToCurrency(transaction.amount)})`
+                    : numberToCurrency(transaction.amount)}
+                </td>
+              </tr>
+            ))}
             <tr className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]">
               <td
                 className="p-3 text-left text-xl font-semibold whitespace-nowrap"
@@ -167,38 +198,11 @@ function TransactionList({
                   borderBottom: '6px double'
                 }}
               >
-                {(() => {
-                  const amount = transactions
-                    .filter(
-                      transaction =>
-                        transaction.type === type &&
-                        dayjs(transaction.date).month() === month &&
-                        dayjs(transaction.date).year() === year
-                    )
-                    .reduce((acc, curr) => {
-                      if (curr.type !== 'transfer') {
-                        if (curr.type === 'income') {
-                          return acc + curr.amount
-                        }
-
-                        if (curr.type === 'expenses') {
-                          return acc - curr.amount
-                        }
-                      } else {
-                        return acc + curr.amount / 2
-                      }
-
-                      return acc
-                    }, 0)
-
-                  return (
-                    <span className="font-medium">
-                      {amount < 0
-                        ? `(${numberToCurrency(Math.abs(amount))})`
-                        : numberToCurrency(amount)}
-                    </span>
-                  )
-                })()}
+                <span className="font-medium">
+                  {total < 0
+                    ? `(${numberToCurrency(Math.abs(total))})`
+                    : numberToCurrency(total)}
+                </span>
               </td>
             </tr>
           </tbody>
