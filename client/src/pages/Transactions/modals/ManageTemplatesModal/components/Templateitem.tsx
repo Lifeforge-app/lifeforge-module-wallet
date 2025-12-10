@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import {
+  Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
@@ -68,10 +69,10 @@ function TemplateItem({
   }, [])
 
   return (
-    <button
+    <Card
       key={template.id}
       className={clsx(
-        'flex-between shadow-custom flex w-full min-w-0 gap-3 rounded-md p-4 text-left',
+        'flex-between gap-3',
         !choosing
           ? 'component-bg-lighter bg-bg-50 cursor-default!'
           : 'component-bg-lighter-with-hover cursor-pointer'
@@ -132,7 +133,7 @@ function TemplateItem({
           />
         </ContextMenu>
       )}
-    </button>
+    </Card>
   )
 }
 

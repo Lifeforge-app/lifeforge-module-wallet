@@ -2,6 +2,7 @@ import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
+  Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
@@ -55,9 +56,9 @@ function CategoryItem({ category }: { category: WalletCategory }) {
   }, [])
 
   return (
-    <li
+    <Card
       key={category.id}
-      className="flex-between component-bg-lighter bg-bg-50 shadow-custom flex gap-3 rounded-md p-4"
+      className="flex-between component-bg-lighter gap-3"
     >
       <div className="flex w-full min-w-0 items-center gap-3">
         <div
@@ -96,7 +97,7 @@ function CategoryItem({ category }: { category: WalletCategory }) {
           onClick={handleDeleteCategory}
         />
       </ContextMenu>
-    </li>
+    </Card>
   )
 }
 

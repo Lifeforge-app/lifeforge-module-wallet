@@ -159,7 +159,10 @@ function Transactions() {
           </ContextMenu>
         }
         contextMenuProps={{
-          children: <HeaderMenu />
+          children: <HeaderMenu />,
+          classNames: {
+            menu: 'min-w-60'
+          }
         }}
         icon="tabler:arrows-exchange"
         namespace="apps.wallet"

@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react'
-import { Button, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
-import { useState } from 'react'
-import { Link } from 'shared'
+import clsx from 'clsx'
+import { Button, Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
+import { useRef, useState } from 'react'
+import { Link, useDivSize } from 'shared'
 import type { WidgetConfig } from 'shared'
 
 import { useWalletData } from '../hooks/useWalletData'
@@ -9,6 +10,10 @@ import numberToCurrency from '../utils/numberToCurrency'
 
 export default function AssetsBalance() {
   const { assetsQuery } = useWalletData()
+
+  const ref = useRef<HTMLDivElement>(null)
+
+  const { width } = useDivSize(ref)
 
   const [showBalance, setShowBalance] = useState(false)
 
@@ -41,11 +46,18 @@ export default function AssetsBalance() {
               }}
             />
           ) : (
-            <ul className="grid h-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2 overflow-y-auto">
+            <ul
+              className={clsx(
+                'grid h-full gap-2 overflow-y-auto',
+                width > 400 && 'grid-cols-[repeat(auto-fill,minmax(240px,1fr))]'
+              )}
+            >
               {assets.map(asset => (
-                <Link
+                <Card
                   key={asset.id}
-                  className="flex-between bg-bg-100 component-bg-lighter-with-hover flex h-full gap-3 rounded-lg p-2 pr-0 pl-4 shadow-[4px_4px_10px_rgba(0,0,0,0.1)] transition-all"
+                  isInteractive
+                  as={Link}
+                  className="flex-between component-bg-lighter-with-hover flex min-w-0 gap-3"
                   to={'/wallet/assets'}
                 >
                   <div className="flex w-full min-w-0 items-center gap-3">
@@ -82,7 +94,7 @@ export default function AssetsBalance() {
                   <button className="text-bg-300 dark:text-bg-700 rounded-lg p-4 transition-all">
                     <Icon className="text-xl" icon="tabler:chevron-right" />
                   </button>
-                </Link>
+                </Card>
               ))}
             </ul>
           )

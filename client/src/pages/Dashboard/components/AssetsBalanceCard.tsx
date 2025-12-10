@@ -2,7 +2,13 @@ import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from 'lifeforge-ui'
+import {
+  Card,
+  EmptyStateScreen,
+  Scrollbar,
+  Widget,
+  WithQuery
+} from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'shared'
 
@@ -19,7 +25,6 @@ function AssetsBalanceCard() {
 
   return (
     <Widget
-      className="col-span-1 row-span-2 min-h-96 xl:min-h-0"
       actionComponent={
         <Link
           className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 transition-all"
@@ -28,6 +33,7 @@ function AssetsBalanceCard() {
           <Icon className="text-xl" icon="tabler:chevron-right" />
         </Link>
       }
+      className="col-span-1 row-span-2 min-h-96 xl:min-h-0"
       icon="tabler:wallet"
       namespace="apps.wallet"
       title="Assets Balance"
@@ -38,9 +44,10 @@ function AssetsBalanceCard() {
             <Scrollbar>
               <ul className="flex flex-col gap-3 pb-2">
                 {assets.map(asset => (
-                  <Link
+                  <Card
                     key={asset.id}
-                    className="flex-between shadow-custom component-bg-lighter-with-hover flex w-full min-w-0 flex-1 flex-col gap-3 rounded-lg p-6 transition-all [@media(min-width:400px)]:flex-row"
+                    as={Link}
+                    className="flex-between component-bg-lighter-with-hover flex flex-col gap-3 [@media(min-width:400px)]:flex-row"
                     to={`/wallet/transactions?asset=${asset.id}`}
                   >
                     <div className="flex w-full min-w-0 items-center gap-3">
@@ -72,7 +79,7 @@ function AssetsBalanceCard() {
                         <span>{numberToCurrency(asset.current_balance)}</span>
                       )}
                     </div>
-                  </Link>
+                  </Card>
                 ))}
               </ul>
             </Scrollbar>

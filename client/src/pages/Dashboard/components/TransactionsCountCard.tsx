@@ -2,7 +2,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { Scrollbar, Widget } from 'lifeforge-ui'
+import { Card, Scrollbar, Widget } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'shared'
 
@@ -41,14 +41,15 @@ function TransactionsCountCard() {
               ['transfer', 'bg-blue-500']
             ] as const
           ).map(([type, color]) => (
-            <Link
+            <Card
               key={type}
-              className="flex-between component-bg-lighter-with-hover flex flex-col gap-3 rounded-md p-4 transition-all sm:flex-row"
+              as={Link}
+              className="flex-between component-bg-lighter-with-hover flex flex-col gap-3 sm:flex-row"
               to={`/wallet/transactions?type=${type}`}
             >
               <div className="flex w-full items-center gap-3">
                 <div
-                  className={clsx('size-4 shrink-0 rounded-md', color)}
+                  className={clsx('size-4 shrink-0 rounded-full', color)}
                 ></div>
                 <div className="flex flex-col">
                   <div className="font-semibold">
@@ -101,7 +102,7 @@ function TransactionsCountCard() {
                   %
                 </div>
               </div>
-            </Link>
+            </Card>
           ))}
         </ul>
       </Scrollbar>

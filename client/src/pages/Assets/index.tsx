@@ -93,7 +93,8 @@ function Assets() {
                 }}
               />
             </>
-          )
+          ),
+          classNames: { menu: 'min-w-60' }
         }}
         icon="tabler:wallet"
         namespace="apps.wallet"
