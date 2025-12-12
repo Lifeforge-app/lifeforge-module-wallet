@@ -20,7 +20,7 @@ function StatementContent({
     <div
       ref={contentRef}
       className={clsx(
-        'print-area relative my-6 flex h-0 w-full flex-col overflow-hidden font-[Onest] transition-all duration-500 [interpolate-size:allow-keywords] print:!w-[1200px] print:bg-white print:text-black',
+        'print-area relative my-6 flex h-0 w-full flex-col overflow-hidden font-[Onest] transition-all duration-500 [interpolate-size:allow-keywords] print:!w-[1200px] print:bg-white print:text-black print:shadow-none print:[--radius-2xl:1rem] print:[--radius-3xl:1.5rem] print:[--radius-lg:0.5rem] print:[--radius-md:0.375rem] print:[--radius-sm:0.125rem] print:[--radius-xl:0.75rem] print:**:[--spacing:0.25rem]',
         !showStatement ? 'h-0 print:h-auto' : 'h-full! duration-[1.5s]'
       )}
     >
