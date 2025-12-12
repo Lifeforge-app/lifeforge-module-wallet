@@ -1,4 +1,3 @@
-import { useDebounce } from '@uidotdev/usehooks'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
@@ -20,8 +19,6 @@ export function useFilteredTransactions(transactions: WalletTransaction[]) {
     endDate,
     searchQuery
   } = useWalletStore()
-
-  const debouncedQuery = useDebounce(searchQuery.trim(), 300)
 
   return useMemo(() => {
     return transactions
@@ -49,14 +46,14 @@ export function useFilteredTransactions(transactions: WalletTransaction[]) {
       })
       .filter(
         tx =>
-          debouncedQuery === '' ||
+          searchQuery === '' ||
           (tx.type !== 'transfer'
             ? tx.particulars
                 ?.toLowerCase()
-                .includes(debouncedQuery.toLowerCase()) ||
+                .includes(searchQuery.toLowerCase()) ||
               tx.location_name
                 ?.toLowerCase()
-                .includes(debouncedQuery.toLowerCase())
+                .includes(searchQuery.toLowerCase())
             : false)
       )
       .filter(tx => {
@@ -82,6 +79,6 @@ export function useFilteredTransactions(transactions: WalletTransaction[]) {
     selectedLedger,
     startDate,
     endDate,
-    debouncedQuery
+    searchQuery
   ])
 }
