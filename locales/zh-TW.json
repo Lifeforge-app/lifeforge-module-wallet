@@ -80,6 +80,10 @@
     "mapKey": {
       "description": "需要一個 Google 地圖 API 密鑰才能正確顯示地圖。請在您的 API 密鑰庫中添加它，密鑰為 \"gcloud\"。",
       "title": "缺少 Google 地圖 API 金鑰"
+    },
+    "statements": {
+      "title": "財務報表無數據",
+      "description": "找不到用於生成財務報表的交易。請先添加一些交易。"
     }
   },
   "sidebar": {

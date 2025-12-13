@@ -1,5 +1,5 @@
 import useYearMonthState from '@/hooks/useYearMonthState'
-import { ModuleHeader } from 'lifeforge-ui'
+import { EmptyStateScreen, LoadingScreen, ModuleHeader } from 'lifeforge-ui'
 import { useRef, useState } from 'react'
 
 import PrintAndViewButton from './components/PrintAndViewButton'
@@ -10,7 +10,8 @@ function Statements() {
   const {
     yearMonth: { year, month },
     setYearMonth,
-    options: { years: yearsOptions, months: monthsOptions }
+    options: { years: yearsOptions, months: monthsOptions },
+    isLoading
   } = useYearMonthState()
 
   const [showStatement, setShowStatement] = useState(false)
@@ -25,27 +26,41 @@ function Statements() {
         title="Financial Statements"
         tKey="subsectionsTitleAndDesc"
       />
-      <YearMonthInput
-        month={month}
-        monthsOptions={monthsOptions}
-        setMonth={(month: number | null) => setYearMonth({ month })}
-        setYear={(year: number | null) => setYearMonth({ year })}
-        year={year}
-        yearsOptions={yearsOptions}
-      />
-      {year !== null && month !== null && (
+      {isLoading ? (
+        <LoadingScreen />
+      ) : yearsOptions.length === 0 && monthsOptions.length === 0 ? (
+        <EmptyStateScreen
+          icon="tabler:report-off"
+          message={{
+            id: 'statements',
+            namespace: 'apps.wallet'
+          }}
+        />
+      ) : (
         <>
-          <PrintAndViewButton
-            contentRef={contentRef}
-            setShowStatement={setShowStatement}
-            showStatement={showStatement}
-          />
-          <StatementContent
-            contentRef={contentRef}
+          <YearMonthInput
             month={month}
-            showStatement={showStatement}
+            monthsOptions={monthsOptions}
+            setMonth={(month: number | null) => setYearMonth({ month })}
+            setYear={(year: number | null) => setYearMonth({ year })}
             year={year}
+            yearsOptions={yearsOptions}
           />
+          {year !== null && month !== null && (
+            <>
+              <PrintAndViewButton
+                contentRef={contentRef}
+                setShowStatement={setShowStatement}
+                showStatement={showStatement}
+              />
+              <StatementContent
+                contentRef={contentRef}
+                month={month}
+                showStatement={showStatement}
+                year={year}
+              />
+            </>
+          )}
         </>
       )}
     </>

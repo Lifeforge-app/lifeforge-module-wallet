@@ -80,6 +80,10 @@
     "mapKey": {
       "description": "Kunci API Google Map diperlukan untuk paparan peta yang betul. Sila tambahkan ke dalam peti kunci API anda di bawah kunci \"gcloud\".",
       "title": "Kunci API Peta Google Hilang"
+    },
+    "statements": {
+      "title": "Tiada Data untuk Penyata Kewangan",
+      "description": "Tiada transaksi dijumpai untuk menjana penyata kewangan. Sila tambah beberapa transaksi terlebih dahulu."
     }
   },
   "sidebar": {

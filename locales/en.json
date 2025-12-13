@@ -80,6 +80,10 @@
     "mapKey": {
       "description": "A Google Map API key is required for the map to display properly. Please add it to your API key vault under the key \"gcloud\".",
       "title": "Missing Google Map API Key"
+    },
+    "statements": {
+      "title": "No Data for Financial Statement",
+      "description": "No transactions found to generate the financial statement. Please add some transactions first."
     }
   },
   "sidebar": {
