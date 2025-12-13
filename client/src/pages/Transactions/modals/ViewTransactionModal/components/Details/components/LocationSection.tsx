@@ -18,12 +18,14 @@ function LocationSection({
       .input({
         keyId: 'gcloud'
       })
-      .queryOptions()
+      .queryOptions({
+        retry: false
+      })
   )
 
   return (
     <DetailItem vertical icon="tabler:map-pin" label="location">
-      <WithQuery query={googleMapAPIKey}>
+      <WithQuery query={googleMapAPIKey} showRetryButton={false}>
         {key =>
           key ? (
             <APIProvider apiKey={key}>
