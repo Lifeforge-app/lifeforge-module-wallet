@@ -1,15 +1,19 @@
 import { useWalletData } from '@/hooks/useWalletData'
+import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
+import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
 import forgeAPI from '@/utils/forgeAPI'
 import getFormFileFieldInitialData from '@/utils/getFileInitialData'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { FormModal, defineForm } from 'lifeforge-ui'
+import { FormModal, defineForm, useModalStore } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import type { InferInput } from 'shared'
 import colors from 'tailwindcss/colors'
+import z from 'zod'
 
 import type { WalletTransaction } from '..'
+import ModifyCategoryModal from './ModifyCategoryModal'
 
 function ModifyTransactionsModal({
   data: { type, initialData },
@@ -24,6 +28,8 @@ function ModifyTransactionsModal({
   onClose: () => void
 }) {
   const { t } = useTranslation('apps.wallet')
+
+  const open = useModalStore(state => state.open)
 
   const queryClient = useQueryClient()
 
@@ -51,7 +57,7 @@ function ModifyTransactionsModal({
     })
   )
 
-  const { formProps } = defineForm<
+  const { formProps, formStateStore } = defineForm<
     InferInput<(typeof forgeAPI.wallet.transactions)[typeof type]>['body']
   >({
     namespace: 'apps.wallet',
@@ -115,7 +121,11 @@ function ModifyTransactionsModal({
         required: true,
         label: 'Amount',
         icon: 'tabler:currency-dollar',
-        placeholder: 'Enter amount'
+        placeholder: 'Enter amount',
+        validator: z
+          .number()
+          .nonnegative('Amount must be non-negative')
+          .refine(val => val > 0, 'Amount must be greater than zero')
       },
       from: {
         required: true,
@@ -151,6 +161,23 @@ function ModifyTransactionsModal({
               icon: category.icon,
               color: category.color
             })),
+        actionButtonOption: {
+          text: t('common.buttons:new', {
+            item: t('items.category')
+          }),
+          icon: 'tabler:plus',
+          onClick: () => {
+            open(ModifyCategoryModal, {
+              type: 'create',
+              initialData: {
+                type:
+                  formStateStore.getState().type === 'income'
+                    ? 'income'
+                    : 'expenses'
+              }
+            })
+          }
+        },
         icon: 'tabler:category',
         required: true
       },
@@ -163,6 +190,15 @@ function ModifyTransactionsModal({
           icon: asset.icon
         })),
         icon: 'tabler:coin',
+        actionButtonOption: {
+          text: t('common.buttons:new', {
+            item: t('items.asset')
+          }),
+          icon: 'tabler:plus',
+          onClick: () => {
+            open(ModifyAssetModal, { type: 'create' })
+          }
+        },
         required: true
       },
       ledgers: {
@@ -174,7 +210,16 @@ function ModifyTransactionsModal({
           icon: ledger.icon,
           color: ledger.color
         })),
-        icon: 'tabler:book'
+        icon: 'tabler:book',
+        actionButtonOption: {
+          text: t('common.buttons:new', {
+            item: t('items.ledger')
+          }),
+          icon: 'tabler:plus',
+          onClick: () => {
+            open(ModifyLedgerModal, { type: 'create' })
+          }
+        }
       },
       location: {
         label: 'Location'
