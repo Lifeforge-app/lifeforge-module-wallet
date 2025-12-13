@@ -38,8 +38,8 @@ function CategoryItem({ category }: { category: WalletCategory }) {
             queryKey: ['wallet', 'categories']
           })
         },
-        onError: () => {
-          toast.error('Failed to delete category')
+        onError: err => {
+          toast.error(`Failed to delete category: ${err.message}`)
         }
       })
   )
@@ -56,10 +56,7 @@ function CategoryItem({ category }: { category: WalletCategory }) {
   }, [])
 
   return (
-    <Card
-      key={category.id}
-      className="flex-between component-bg-lighter gap-3"
-    >
+    <Card key={category.id} className="flex-between component-bg-lighter gap-3">
       <div className="flex w-full min-w-0 items-center gap-3">
         <div
           className="rounded-md p-2"

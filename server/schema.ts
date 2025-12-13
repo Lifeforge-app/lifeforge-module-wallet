@@ -428,7 +428,7 @@ const walletSchemas = {
           type: 'text'
         },
         {
-          cascadeDelete: false,
+          cascadeDelete: true,
           collectionId: 'jb4b93uex7fgql5',
           hidden: false,
           id: 'relation45046364',
@@ -540,7 +540,7 @@ const walletSchemas = {
           type: 'relation'
         },
         {
-          cascadeDelete: false,
+          cascadeDelete: true,
           collectionId: 'jb4b93uex7fgql5',
           hidden: false,
           id: 'relation3957184672',
@@ -553,7 +553,7 @@ const walletSchemas = {
           type: 'relation'
         },
         {
-          cascadeDelete: false,
+          cascadeDelete: true,
           collectionId: 'jb4b93uex7fgql5',
           hidden: false,
           id: 'relation2040861836',
@@ -660,7 +660,7 @@ const walletSchemas = {
           type: 'text'
         },
         {
-          cascadeDelete: false,
+          cascadeDelete: true,
           collectionId: 'jb4b93uex7fgql5',
           hidden: false,
           id: 'relation45046364',

@@ -10,7 +10,10 @@ function PrintAndViewButton({
   showStatement: boolean
   setShowStatement: (value: boolean) => void
 }) {
-  const reactToPrintFn = useReactToPrint({ contentRef })
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    bodyClass: 'print-area'
+  })
 
   return (
     <>

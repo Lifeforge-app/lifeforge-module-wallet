@@ -55,20 +55,16 @@ function Assets() {
     <>
       <ModuleHeader
         actionButton={
-          <>
-            {(assetsQuery.data ?? []).length > 0 && (
-              <Button
-                className="hidden sm:flex"
-                icon="tabler:plus"
-                tProps={{
-                  item: t('items.asset')
-                }}
-                onClick={handleCreateCategory}
-              >
-                new
-              </Button>
-            )}
-          </>
+          <Button
+            className="hidden sm:flex"
+            icon="tabler:plus"
+            tProps={{
+              item: t('items.asset')
+            }}
+            onClick={handleCreateCategory}
+          >
+            new
+          </Button>
         }
         contextMenuProps={{
           children: (
@@ -129,11 +125,6 @@ function Assets() {
               </div>
             ) : (
               <EmptyStateScreen
-                CTAButtonProps={{
-                  children: 'new',
-                  icon: 'tabler:plus',
-                  onClick: handleCreateCategory
-                }}
                 icon="tabler:wallet-off"
                 message={{
                   id: 'assets',

@@ -35,6 +35,7 @@ function TransactionsCard() {
                 </>
               ) : (
                 <EmptyStateScreen
+                  icon="tabler:wallet-off"
                   message={{
                     id: 'transactions',
                     namespace: 'apps.wallet'

@@ -41,18 +41,16 @@ function Ledgers() {
     <>
       <ModuleHeader
         actionButton={
-          (ledgersQuery.data ?? []).length > 0 && (
-            <Button
-              className="hidden md:flex"
-              icon="tabler:plus"
-              tProps={{
-                item: t('items.ledger')
-              }}
-              onClick={handleCreateLedger}
-            >
-              New
-            </Button>
-          )
+          <Button
+            className="hidden md:flex"
+            icon="tabler:plus"
+            tProps={{
+              item: t('items.ledger')
+            }}
+            onClick={handleCreateLedger}
+          >
+            New
+          </Button>
         }
         icon="tabler:book"
         namespace="apps.wallet"
@@ -70,12 +68,6 @@ function Ledgers() {
               </div>
             ) : (
               <EmptyStateScreen
-                CTAButtonProps={{
-                  children: 'new',
-                  icon: 'tabler:plus',
-                  onClick: handleCreateLedger,
-                  tProps: { item: t('items.ledger') }
-                }}
                 icon="tabler:wallet-off"
                 message={{
                   id: 'ledger',

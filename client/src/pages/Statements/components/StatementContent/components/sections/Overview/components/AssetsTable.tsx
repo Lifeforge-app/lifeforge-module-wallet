@@ -24,8 +24,8 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
       {assets => (
         <WithQuery query={balancesQuery}>
           {balances => (
-            <div className="overflow-x-auto print:overflow-visible">
-              <table className="mt-6 w-full print:break-inside-auto">
+            <div className="min-w-0 overflow-x-auto print:overflow-visible">
+              <table className="mt-6 w-full min-w-0 print:break-inside-auto">
                 <thead>
                   <tr className="bg-custom-500 text-white print:bg-lime-600">
                     <th className="w-full p-3 text-left text-lg font-medium">

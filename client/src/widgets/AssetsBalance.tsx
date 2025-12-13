@@ -57,7 +57,7 @@ export default function AssetsBalance() {
                   key={asset.id}
                   isInteractive
                   as={Link}
-                  className="flex-between component-bg-lighter-with-hover flex min-w-0 gap-3"
+                  className="flex-between component-bg-lighter-with-hover flex h-min min-w-0 gap-3"
                   to={'/wallet/assets'}
                 >
                   <div className="flex w-full min-w-0 items-center gap-3">

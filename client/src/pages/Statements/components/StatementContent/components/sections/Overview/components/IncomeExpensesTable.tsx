@@ -84,8 +84,8 @@ function IncomeExpensesTable({
         <span>1.{type === 'income' ? '2' : '3'} </span>
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </h2>
-      <div className="overflow-x-auto overflow-y-hidden print:overflow-visible">
-        <table className="mt-6 w-full print:break-inside-auto">
+      <div className="min-w-0 overflow-x-auto overflow-y-hidden print:overflow-visible">
+        <table className="mt-6 w-full min-w-0 print:break-inside-auto">
           <thead>
             <tr className="bg-custom-500 text-white print:bg-lime-600">
               <th className="w-full p-3 text-left text-lg font-medium">
