@@ -179,7 +179,10 @@
     "ledgerColor": "帐本颜色",
     "assetName": "资产名称",
     "ledgerName": "帐本名称",
-    "categoryName": "类别名称",
+    "categoryName": {
+      "label": "类别名称",
+      "placeholder": "例如：杂货，薪水，租金"
+    },
     "categoryIcon": "类别图示",
     "categoryColor": "类别颜色",
     "categoryType": "类别类型",

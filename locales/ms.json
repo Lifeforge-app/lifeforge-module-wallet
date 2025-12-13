@@ -179,7 +179,10 @@
     "ledgerColor": "Warna Lejar",
     "assetName": "Nama Aset",
     "ledgerName": "Nama Lejar",
-    "categoryName": "Nama Kategori",
+    "categoryName": {
+      "label": "Nama Kategori",
+      "placeholder": "cth. Barangan Runcit, Gaji, Sewa"
+    },
     "categoryIcon": "Ikon Kategori",
     "categoryColor": "Warna Kategori",
     "categoryType": "Jenis Kategori",

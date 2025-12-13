@@ -87,7 +87,7 @@ function ModifyCategoryModal({
         required: true,
         label: t('categoryName'),
         icon: 'tabler:pencil',
-        placeholder: t('categoryNamePlaceholder')
+        placeholder: t('inputs.categoryName.placeholder')
       },
       icon: {
         required: true,

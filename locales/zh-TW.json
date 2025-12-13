@@ -179,7 +179,10 @@
     "ledgerColor": "帳本顏色",
     "assetName": "資產名稱",
     "ledgerName": "帳本名稱",
-    "categoryName": "類別名稱",
+    "categoryName": {
+      "label": "類別名稱",
+      "placeholder": "例如：雜貨，薪水，租金"
+    },
     "categoryIcon": "類別圖示",
     "categoryColor": "類別顏色",
     "categoryType": "類別類型",

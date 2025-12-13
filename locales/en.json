@@ -179,7 +179,10 @@
     "ledgerColor": "Ledger Color",
     "assetName": "Asset Name",
     "ledgerName": "Ledger Name",
-    "categoryName": "Category Name",
+    "categoryName": {
+      "label": "Category Name",
+      "placeholder": "e.g. Groceries, Salary, Rent"
+    },
     "categoryIcon": "Category Icon",
     "categoryColor": "Category Color",
     "categoryType": "Category Type",
