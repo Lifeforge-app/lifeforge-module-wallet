@@ -21,7 +21,9 @@ function SpendingHeatmap() {
       .input({
         keyId: 'gcloud'
       })
-      .queryOptions()
+      .queryOptions({
+        retry: false
+      })
   )
 
   const navigate = useNavigate()
@@ -79,7 +81,7 @@ function SpendingHeatmap() {
         title="Spending Heatmap"
         tKey="subsectionsTitleAndDesc"
       />
-      <WithQuery query={googleMapAPIKeyQuery}>
+      <WithQuery query={googleMapAPIKeyQuery} showRetryButton={false}>
         {googleMapAPIKey =>
           googleMapAPIKey ? (
             <WithQuery query={spendingDataQuery}>
@@ -87,7 +89,7 @@ function SpendingHeatmap() {
                 spendingData.length > 0 ? (
                   <APIProvider apiKey={googleMapAPIKey}>
                     <Map
-                      className="mb-8 h-full w-full flex-1 overflow-hidden rounded-lg rounded-md"
+                      className="mb-8 h-full w-full flex-1 overflow-hidden rounded-lg"
                       defaultCenter={centerPoint}
                       defaultZoom={8}
                       mapId="SpendingHeatmap"
