@@ -6,6 +6,8 @@
     "transactions": "交易",
     "assets": "資產",
     "ledgers": "帳本",
+    "budgets": "預算",
+    "savingGoals": "儲蓄目標",
     "financialStatements": "財務報表",
     "spendingHeatmap": "消費熱力圖"
   },
@@ -44,7 +46,8 @@
     "transactionsCount": {
       "title": "交易筆數"
     },
-    "totalAssets": "總資產"
+    "totalAssets": "總資產",
+    "budgets": "預算"
   },
   "transactionCount": "筆交易",
   "receiptUploadInfo": "僅接受 PDF 和圖片文件",
@@ -84,6 +87,18 @@
     "statements": {
       "title": "財務報表無數據",
       "description": "找不到用於生成財務報表的交易。請先添加一些交易。"
+    },
+    "budgets": {
+      "title": "暫無預算",
+      "description": "您尚未設置任何預算。切換到「無預算」標籤以建立一個。"
+    },
+    "allCategoriesHaveBudgetsSet": {
+      "title": "全部就緒！",
+      "description": "您的所有支出類別都已配置預算。"
+    },
+    "savingGoals": {
+      "title": "暫無儲蓄目標",
+      "description": "您還沒有建立任何儲蓄目標。點擊上方按鈕新增一個。"
     }
   },
   "sidebar": {
@@ -126,7 +141,8 @@
     "manageTemplates": "管理模板",
     "fromTemplate": "從模板",
     "autoGenerate": "自動生成",
-    "savePrompts": "保存提示"
+    "savePrompts": "保存提示",
+    "contribute": "貢獲"
   },
   "modals": {
     "transactions": {
@@ -158,7 +174,15 @@
       "manage": "管理模板",
       "choose": "選擇模板"
     },
-    "managePrompts": "管理提示"
+    "managePrompts": "管理提示",
+    "budget": {
+      "create": "建立預算 - {{category}}",
+      "update": "更新預算 - {{category}}"
+    },
+    "savingGoal": {
+      "create": "建立儲蓄目標",
+      "update": "編輯儲蓄目標"
+    }
   },
   "transactionTypes": {
     "income": "收入",
@@ -198,7 +222,17 @@
     "templateName": "模板名稱",
     "incomePrompt": "收入提示",
     "expensesPrompt": "支出提示",
-    "rangeMode": "範圍模式"
+    "rangeMode": "範圍模式",
+    "monthlyBudget": "每月預算",
+    "enableRollover": "啟用結轉（將未使用的預算結轉到下個月）",
+    "rolloverCap": "結轉上限",
+    "alertThreshold": "警報閾值",
+    "contributeAmount": "貢獲金額",
+    "goalName": "目標名稱",
+    "goalIcon": "目標圖示",
+    "goalColor": "目標顏色",
+    "goalTargetAmount": "目標金額",
+    "goalTargetDate": "目標日期"
   },
   "items": {
     "transaction": "交易",
@@ -206,7 +240,8 @@
     "ledger": "帳本",
     "category": "類別",
     "receipt": "收據",
-    "template": "模板"
+    "template": "模板",
+    "savingGoal": "儲蓄目標"
   },
   "receipts": {
     "keepAfterScan": "掃描後保留收據"
@@ -215,6 +250,10 @@
     "assets": {
       "title": "資產",
       "description": "在您的錢包中安全高效地管理您的資產。"
+    },
+    "budgets": {
+      "title": "預算",
+      "description": "管理您的預算。"
     },
     "ledgers": {
       "title": "分類帳",
@@ -231,6 +270,10 @@
     "spendingHeatmap": {
       "title": "消費熱力圖",
       "description": "顯示您隨時間變化的消費習慣的可視化圖形。"
+    },
+    "savingGoals": {
+      "title": "儲蓄目標",
+      "description": "在錢包中安全高效地管理您的儲蓄目標。"
     }
   },
   "timeRanges": {
@@ -249,5 +292,36 @@
     "all": "所有時間",
     "custom": "自訂範圍",
     "quarter": "過去90天"
+  },
+  "budgets": {
+    "active": "活動預算",
+    "noSet": "未設定預算",
+    "totalBudgeted": "預算總額",
+    "spent": "已花費",
+    "remaining": "剩餘",
+    "over": "超支",
+    "left": "剩餘",
+    "budgetUsed": "預算已使用"
+  },
+  "savingGoals": {
+    "contribute": "新增貢獻",
+    "goalName": "目標名稱",
+    "toGo": "還差 {{amount}}",
+    "goalReached": "目標達成！",
+    "target": "目標日期：{{date}}",
+    "fillRemaining": "填滿剩餘：{{amount}}",
+    "messages": {
+      "contributionAdded": "貢獻新增成功",
+      "goalCreated": "目標建立成功",
+      "goalUpdated": "目標更新成功",
+      "goalDeleted": "目標刪除成功",
+      "deleteFailed": "刪除目標失敗"
+    },
+    "deleteConfirmation": {
+      "title": "刪除目標",
+      "description": "您確定要刪除「{{name}}」嗎？此操作無法撤銷。"
+    },
+    "targetAmount": "目標金額",
+    "targetDate": "目標日期"
   }
 }

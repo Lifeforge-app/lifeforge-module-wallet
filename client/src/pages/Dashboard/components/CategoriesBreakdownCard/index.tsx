@@ -37,7 +37,7 @@ function CategoriesBreakdownCard() {
           <Icon className="text-xl" icon="tabler:chevron-right" />
         </Link>
       }
-      className="col-span-1 row-span-4"
+      className="col-span-1 row-span-6 h-full min-h-0"
       icon="tabler:chart-donut-3"
       namespace="apps.wallet"
       title="Categories Breakdown"

@@ -6,6 +6,8 @@
     "transactions": "Transactions",
     "assets": "Assets",
     "ledgers": "Ledgers",
+    "budgets": "Budgets",
+    "savingGoals": "Saving Goals",
     "financialStatements": "Financial Statements",
     "spendingHeatmap": "Spending Heatmap"
   },
@@ -44,7 +46,8 @@
     "transactionsCount": {
       "title": "Transactions Count"
     },
-    "totalAssets": "Total Assets"
+    "totalAssets": "Total Assets",
+    "budgets": "Budgets"
   },
   "transactionCount": "Transactions",
   "receiptUploadInfo": "Only PDF and image files are accepted",
@@ -84,6 +87,18 @@
     "statements": {
       "title": "No Data for Financial Statement",
       "description": "No transactions found to generate the financial statement. Please add some transactions first."
+    },
+    "budgets": {
+      "title": "No Active Budgets",
+      "description": "You haven't set any budgets yet. Switch to the 'No Budget Set' tab to create one."
+    },
+    "allCategoriesHaveBudgetsSet": {
+      "title": "All Set!",
+      "description": "All your expense categories have budgets configured."
+    },
+    "savingGoals": {
+      "title": "No Saving Goals",
+      "description": "You haven't created any saving goals yet. Click the button above to add one."
     }
   },
   "sidebar": {
@@ -126,7 +141,8 @@
     "manageTemplates": "Manage Templates",
     "fromTemplate": "From Template",
     "autoGenerate": "Auto Generate",
-    "savePrompts": "Save Prompts"
+    "savePrompts": "Save Prompts",
+    "contribute": "Contribute"
   },
   "modals": {
     "transactions": {
@@ -158,7 +174,15 @@
       "manage": "Manage Templates",
       "choose": "Choose Template"
     },
-    "managePrompts": "Manage Prompts"
+    "managePrompts": "Manage Prompts",
+    "budget": {
+      "create": "Create Budget - {{category}}",
+      "update": "Update Budget - {{category}}"
+    },
+    "savingGoal": {
+      "create": "Create Saving Goal",
+      "update": "Edit Saving Goal"
+    }
   },
   "transactionTypes": {
     "income": "Income",
@@ -198,7 +222,17 @@
     "templateName": "Template Name",
     "incomePrompt": "Income Prompt",
     "expensesPrompt": "Expenses Prompt",
-    "rangeMode": "Range Mode"
+    "rangeMode": "Range Mode",
+    "monthlyBudget": "Monthly Budget",
+    "enableRollover": "Enable Rollover (carry unused budget to next month)",
+    "rolloverCap": "Rollover Cap",
+    "alertThreshold": "Alert Threshold",
+    "contributeAmount": "Contribution Amount",
+    "goalName": "Goal Name",
+    "goalIcon": "Goal Icon",
+    "goalColor": "Goal Color",
+    "goalTargetAmount": "Target Amount",
+    "goalTargetDate": "Target Date"
   },
   "items": {
     "transaction": "Transaction",
@@ -206,7 +240,8 @@
     "ledger": "Ledger",
     "category": "Category",
     "receipt": "Receipt",
-    "template": "Template"
+    "template": "Template",
+    "savingGoal": "Saving Goal"
   },
   "receipts": {
     "keepAfterScan": "Keep Receipt After Scan"
@@ -215,6 +250,10 @@
     "assets": {
       "title": "Assets",
       "description": "Manage your assets securely and efficiently in your wallet."
+    },
+    "budgets": {
+      "title": "Budgets",
+      "description": "Manage your budgets securely and efficiently in your wallet."
     },
     "ledgers": {
       "title": "Ledgers",
@@ -231,6 +270,10 @@
     "spendingHeatmap": {
       "title": "Spending Heatmap",
       "description": "Visual representation of your spending habits over time."
+    },
+    "savingGoals": {
+      "title": "Saving Goals",
+      "description": "Track progress towards your financial goals."
     }
   },
   "timeRanges": {
@@ -249,5 +292,36 @@
     "all": "All Time",
     "custom": "Custom Range",
     "quarter": "Last 90 Days"
+  },
+  "budgets": {
+    "active": "Active Budgets",
+    "noSet": "No Budget Set",
+    "totalBudgeted": "Total Budgeted",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "over": "over",
+    "left": "left",
+    "budgetUsed": "of budget used"
+  },
+  "savingGoals": {
+    "contribute": "Add Contribution",
+    "goalName": "Goal Name",
+    "toGo": "{{amount}} to go",
+    "goalReached": "Goal reached!",
+    "target": "Target: {{date}}",
+    "fillRemaining": "Fill remaining: {{amount}}",
+    "messages": {
+      "contributionAdded": "Contribution added successfully",
+      "goalCreated": "Goal created successfully",
+      "goalUpdated": "Goal updated successfully",
+      "goalDeleted": "Goal deleted successfully",
+      "deleteFailed": "Failed to delete goal"
+    },
+    "deleteConfirmation": {
+      "title": "Delete Goal",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "targetAmount": "Target Amount",
+    "targetDate": "Target Date"
   }
 }

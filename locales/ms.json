@@ -6,6 +6,8 @@
     "transactions": "Transaksi",
     "assets": "Aset",
     "ledgers": "Lejar",
+    "budgets": "Budget",
+    "savingGoals": "Matlamat Simpanan",
     "financialStatements": "Penyata Kewangan",
     "spendingHeatmap": "Peta Suhu Perbelanjaan"
   },
@@ -44,7 +46,8 @@
     "transactionsCount": {
       "title": "Bilangan Transaksi"
     },
-    "totalAssets": "Jumlah Aset"
+    "totalAssets": "Jumlah Aset",
+    "budgets": "Budget"
   },
   "transactionCount": "Transaksi",
   "receiptUploadInfo": "Hanya fail PDF dan imej diterima",
@@ -84,6 +87,18 @@
     "statements": {
       "title": "Tiada Data untuk Penyata Kewangan",
       "description": "Tiada transaksi dijumpai untuk menjana penyata kewangan. Sila tambah beberapa transaksi terlebih dahulu."
+    },
+    "budgets": {
+      "title": "Tiada Budget Aktif",
+      "description": "Anda belum menetapkan sebarang budget lagi. Tukar ke tab 'Tiada Budget' untuk mencipta satu."
+    },
+    "allCategoriesHaveBudgetsSet": {
+      "title": "Semua Sudah Sedia!",
+      "description": "Semua kategori perbelanjaan anda sudah mempunyai budget."
+    },
+    "savingGoals": {
+      "title": "Tiada Matlamat Simpanan",
+      "description": "Anda belum mencipta sebarang matlamat simpanan. Klik butang di atas untuk menambah satu."
     }
   },
   "sidebar": {
@@ -126,7 +141,8 @@
     "manageTemplates": "Urus Templat",
     "fromTemplate": "Dari Templat",
     "autoGenerate": "Jana Automatik",
-    "savePrompts": "Simpan Petunjuk"
+    "savePrompts": "Simpan Petunjuk",
+    "contribute": "Sumbang"
   },
   "modals": {
     "transactions": {
@@ -158,7 +174,15 @@
       "manage": "Urus Templat",
       "choose": "Pilih Templat"
     },
-    "managePrompts": "Urus Petunjuk"
+    "managePrompts": "Urus Petunjuk",
+    "budget": {
+      "create": "Cipta Budget - {{category}}",
+      "update": "Kemas Kini Budget - {{category}}"
+    },
+    "savingGoal": {
+      "create": "Cipta Matlamat Simpanan",
+      "update": "Sunting Matlamat Simpanan"
+    }
   },
   "transactionTypes": {
     "income": "Pendapatan",
@@ -198,7 +222,17 @@
     "templateName": "Nama Templat",
     "incomePrompt": "Petunjuk Pendapatan",
     "expensesPrompt": "Petunjuk Perbelanjaan",
-    "rangeMode": "Mod Susunan"
+    "rangeMode": "Mod Susunan",
+    "monthlyBudget": "Budget Bulanan",
+    "enableRollover": "Dayakan Rollover (bawa budget yang tidak digunakan ke bulan berikutnya)",
+    "rolloverCap": "Had Rollover",
+    "alertThreshold": "Ambang Amaran",
+    "contributeAmount": "Jumlah Sumbangan",
+    "goalName": "Nama Matlamat",
+    "goalIcon": "Ikon Matlamat",
+    "goalColor": "Warna Matlamat",
+    "goalTargetAmount": "Jumlah Sasaran",
+    "goalTargetDate": "Tarikh Sasaran"
   },
   "items": {
     "transaction": "Transaksi",
@@ -206,7 +240,8 @@
     "ledger": "Lejar",
     "category": "Kategori",
     "receipt": "Resit",
-    "template": "Templat"
+    "template": "Templat",
+    "savingGoal": "Matlamat Simpanan"
   },
   "receipts": {
     "keepAfterScan": "Simpan Resit Selepas Imbasan"
@@ -220,6 +255,10 @@
       "title": "Buku Tunai",
       "description": "Urus dan lihat transaksi kewangan dan akaun anda dalam lejer."
     },
+    "budgets": {
+      "title": "Budget",
+      "description": "Urus budget anda dengan selamat dan cekap dalam dompet anda."
+    },
     "transactions": {
       "title": "Transaksi",
       "description": "Lihat sejarah transaksi dan butiran."
@@ -231,6 +270,10 @@
     "spendingHeatmap": {
       "title": "Peta Panas Perbelanjaan",
       "description": "Representasi visual tentang tabiat perbelanjaan anda dari semasa ke semasa."
+    },
+    "savingGoals": {
+      "title": "Matlamat Simpanan",
+      "description": "Urus matlamat simpanan anda dengan selamat dan cekap dalam dompet anda."
     }
   },
   "timeRanges": {
@@ -249,5 +292,36 @@
     "all": "Sepanjang Masa",
     "custom": "Julat Tersuai",
     "quarter": "90 Hari Terakhir"
+  },
+  "budgets": {
+    "active": "Budget Aktif",
+    "noSet": "Tiada Budget Ditetapkan",
+    "totalBudgeted": "Jumlah Dibajetkan",
+    "spent": "Dibelanjakan",
+    "remaining": "Baki",
+    "over": "lebih",
+    "left": "baki",
+    "budgetUsed": "budget digunakan"
+  },
+  "savingGoals": {
+    "contribute": "Tambah Sumbangan",
+    "goalName": "Nama Matlamat",
+    "toGo": "{{amount}} lagi",
+    "goalReached": "Matlamat tercapai!",
+    "target": "Sasaran: {{date}}",
+    "fillRemaining": "Isi baki: {{amount}}",
+    "messages": {
+      "contributionAdded": "Sumbangan berjaya ditambah",
+      "goalCreated": "Matlamat berjaya dicipta",
+      "goalUpdated": "Matlamat berjaya dikemaskini",
+      "goalDeleted": "Matlamat berjaya dipadam",
+      "deleteFailed": "Gagal memadam matlamat"
+    },
+    "deleteConfirmation": {
+      "title": "Padam Matlamat",
+      "description": "Adakah anda pasti mahu memadam \"{{name}}\"? Tindakan ini tidak boleh dibatalkan."
+    },
+    "targetAmount": "Jumlah Sasaran",
+    "targetDate": "Tarikh Sasaran"
   }
 }

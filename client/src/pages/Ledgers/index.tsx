@@ -75,9 +75,7 @@ function Ledgers() {
                 }}
               />
             )}
-            {ledgers.length > 0 && (
-              <FAB visibilityBreakpoint="md" onClick={handleCreateLedger} />
-            )}
+            <FAB visibilityBreakpoint="md" onClick={handleCreateLedger} />
           </>
         )}
       </WithQuery>

@@ -19,7 +19,7 @@ function TransactionsCard() {
           <Icon className="text-xl" icon="tabler:chevron-right" />
         </Link>
       }
-      className="col-span-2 row-span-4"
+      className="col-span-2 row-span-4 min-h-0"
       icon="tabler:list"
       namespace="apps.wallet"
       title="Recent Transactions"

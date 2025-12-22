@@ -35,7 +35,7 @@ function BreakdownContent({
     options: { years: yearsOptions, months: monthsOptions },
     setYearMonth,
     isLoading: isYearMonthLoading
-  } = useYearMonthState()
+  } = useYearMonthState(forgeAPI.wallet.analytics.getAvailableYearMonths)
 
   const categoriesBreakdownQuery = useQuery(
     forgeAPI.wallet.analytics.getCategoriesBreakdown

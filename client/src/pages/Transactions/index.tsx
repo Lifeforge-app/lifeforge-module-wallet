@@ -190,39 +190,37 @@ function Transactions() {
                 )
               }
             </WithQuery>
-            {(transactionsQuery.data ?? []).length > 0 && (
-              <ContextMenu
-                buttonComponent={
-                  <FAB className="static!" visibilityBreakpoint="md" />
-                }
-                classNames={{
-                  wrapper: 'w-min! fixed right-6 bottom-6'
+            <ContextMenu
+              buttonComponent={
+                <FAB className="static!" visibilityBreakpoint="md" />
+              }
+              classNames={{
+                wrapper: 'w-min! fixed right-6 bottom-6'
+              }}
+            >
+              <ContextMenuItem
+                icon="tabler:plus"
+                label="Add Manually"
+                namespace="apps.wallet"
+                onClick={handleCreateTransaction}
+              />
+              <ContextMenuItem
+                icon="tabler:template"
+                label="From Template"
+                namespace="apps.wallet"
+                onClick={() => {
+                  open(ManageTemplatesModal, {
+                    choosing: true
+                  })
                 }}
-              >
-                <ContextMenuItem
-                  icon="tabler:plus"
-                  label="Add Manually"
-                  namespace="apps.wallet"
-                  onClick={handleCreateTransaction}
-                />
-                <ContextMenuItem
-                  icon="tabler:template"
-                  label="From Template"
-                  namespace="apps.wallet"
-                  onClick={() => {
-                    open(ManageTemplatesModal, {
-                      choosing: true
-                    })
-                  }}
-                />
-                <ContextMenuItem
-                  icon="tabler:scan"
-                  label="Scan Receipt"
-                  namespace="apps.wallet"
-                  onClick={handleUploadReceipt}
-                />
-              </ContextMenu>
-            )}
+              />
+              <ContextMenuItem
+                icon="tabler:scan"
+                label="Scan Receipt"
+                namespace="apps.wallet"
+                onClick={handleUploadReceipt}
+              />
+            </ContextMenu>
           </div>
         </div>
       </div>

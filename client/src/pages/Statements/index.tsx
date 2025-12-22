@@ -1,10 +1,11 @@
+import YearMonthInput from '@/components/YearMonthInput'
 import useYearMonthState from '@/hooks/useYearMonthState'
+import forgeAPI from '@/utils/forgeAPI'
 import { EmptyStateScreen, LoadingScreen, ModuleHeader } from 'lifeforge-ui'
 import { useRef, useState } from 'react'
 
 import PrintAndViewButton from './components/PrintAndViewButton'
 import StatementContent from './components/StatementContent'
-import YearMonthInput from './components/YearMonthInput'
 
 function Statements() {
   const {
@@ -12,7 +13,7 @@ function Statements() {
     setYearMonth,
     options: { years: yearsOptions, months: monthsOptions },
     isLoading
-  } = useYearMonthState()
+  } = useYearMonthState(forgeAPI.wallet.analytics.getAvailableYearMonths)
 
   const [showStatement, setShowStatement] = useState(false)
 
@@ -39,6 +40,7 @@ function Statements() {
       ) : (
         <>
           <YearMonthInput
+            className="mb-6"
             month={month}
             monthsOptions={monthsOptions}
             setMonth={(month: number | null) => setYearMonth({ month })}

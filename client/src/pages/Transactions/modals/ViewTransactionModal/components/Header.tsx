@@ -23,10 +23,11 @@ function Header({ transaction }: { transaction: WalletTransaction }) {
     <div className="flex-center flex flex-col">
       {category && (
         <div
-          className="shadow-custom mb-6 w-min rounded-lg p-4"
+          className="shadow-custom mb-6 w-min rounded-lg p-4 in-[.bordered]:border-2"
           style={{
             backgroundColor: category.color + (category.color ? '50' : ''),
-            color: category.color
+            color: category.color,
+            borderColor: category.color + '20'
           }}
         >
           <Icon className="size-8" icon={category.icon ?? ''} />

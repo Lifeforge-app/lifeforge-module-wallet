@@ -1,21 +1,24 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
+import type { ForgeAPIClientController } from 'shared'
 
 interface YearMonth {
   year: number | null
   month: number | null
 }
 
-export default function useYearMonthState() {
+export default function useYearMonthState(
+  controller: ForgeAPIClientController
+) {
   const [yearMonth, setYearMonthState] = useState<YearMonth>({
     year: null,
     month: null
   })
 
-  const yearMonthsQuery = useQuery(
-    forgeAPI.wallet.analytics.getAvailableYearMonths.queryOptions()
-  )
+  const yearMonthsQuery = useQuery<{
+    years: number[]
+    monthsByYear: Record<number, number[]>
+  }>(controller.queryOptions() as any)
 
   const yearsOptions = yearMonthsQuery.data?.years ?? []
 

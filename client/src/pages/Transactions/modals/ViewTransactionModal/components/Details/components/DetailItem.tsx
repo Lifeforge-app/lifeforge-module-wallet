@@ -1,5 +1,6 @@
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
+import { Card } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 
 function DetailItem({
@@ -16,9 +17,9 @@ function DetailItem({
   const { t } = useTranslation('apps.wallet')
 
   return (
-    <div
+    <Card
       className={clsx(
-        'bg-bg-50/50 dark:bg-bg-800/50 shadow-custom w-full min-w-0 rounded-lg p-4',
+        'component-bg-lighter w-full min-w-0',
         vertical ? 'space-y-3' : 'sm:flex-between gap-12 space-y-3 sm:space-y-0'
       )}
     >
@@ -29,7 +30,7 @@ function DetailItem({
         </h3>
       </div>
       {children}
-    </div>
+    </Card>
   )
 }
 

@@ -105,7 +105,7 @@ function StatisticChardCard() {
           setRange={setRange}
         />
       }
-      className="col-span-2 row-span-2 max-h-120"
+      className="col-span-2 row-span-2"
       icon="tabler:chart-dots"
       namespace="apps.wallet"
       title="Statistics"

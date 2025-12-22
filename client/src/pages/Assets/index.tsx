@@ -132,9 +132,7 @@ function Assets() {
                 }}
               />
             )}
-            {assets.length > 0 && (
-              <FAB icon="tabler:plus" onClick={handleCreateCategory} />
-            )}
+            <FAB icon="tabler:plus" onClick={handleCreateCategory} />
           </>
         )}
       </WithQuery>
