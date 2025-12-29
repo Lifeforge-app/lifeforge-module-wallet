@@ -8,7 +8,6 @@ const walletSchemas = {
       starting_balance: z.number()
     }),
     raw: {
-      id: 'jb4b93uex7fgql5',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -20,7 +19,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -34,7 +32,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '3dlavzvz',
           max: 0,
           min: 0,
           name: 'name',
@@ -48,7 +45,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'l5fof4bg',
           max: 0,
           min: 0,
           name: 'icon',
@@ -61,7 +57,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'vjgjle4c',
           max: null,
           min: null,
           name: 'starting_balance',
@@ -85,7 +80,6 @@ const walletSchemas = {
       color: z.string()
     }),
     raw: {
-      id: '7tug66h7onrjdu2',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -97,7 +91,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -111,7 +104,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'vy0zphs0',
           max: 0,
           min: 0,
           name: 'name',
@@ -125,7 +117,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'hocs7m6h',
           max: 0,
           min: 0,
           name: 'icon',
@@ -139,7 +130,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'cwnz67zi',
           max: 0,
           min: 0,
           name: 'color',
@@ -165,7 +155,6 @@ const walletSchemas = {
       type: z.enum(['income', 'expenses'])
     }),
     raw: {
-      id: 'vr4lv9hatzgmgfz',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -177,7 +166,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -191,7 +179,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '7r0hcrrv',
           max: 0,
           min: 0,
           name: 'name',
@@ -205,7 +192,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '7e68hxz8',
           max: 0,
           min: 0,
           name: 'icon',
@@ -219,7 +205,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'gwfvhe0f',
           max: 0,
           min: 0,
           name: 'color',
@@ -232,7 +217,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '4rbyorhf',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -258,7 +242,6 @@ const walletSchemas = {
       updated: z.string()
     }),
     raw: {
-      id: 'nk4p9hnqedrvmdi',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -270,7 +253,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -283,7 +265,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'ivm559pc',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -294,7 +275,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '2wrkslxv',
           max: null,
           min: null,
           name: 'amount',
@@ -306,7 +286,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '09rysqhc',
           max: '',
           min: '',
           name: 'date',
@@ -317,7 +296,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'gmdk5guf',
           maxSelect: 1,
           maxSize: 524288000,
           mimeTypes: null,
@@ -331,7 +309,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'autodate2990389176',
           name: 'created',
           onCreate: true,
           onUpdate: false,
@@ -341,7 +318,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'autodate3332085495',
           name: 'updated',
           onCreate: true,
           onUpdate: true,
@@ -363,7 +339,6 @@ const walletSchemas = {
       amount: z.number()
     }),
     raw: {
-      id: 'pbc_1833454015',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -375,7 +350,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -388,7 +362,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_43ie',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -400,7 +373,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_KAav',
           max: 0,
           min: 0,
           name: 'name',
@@ -414,7 +386,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_R7zw',
           max: 0,
           min: 0,
           name: 'icon',
@@ -428,7 +399,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_HxE1',
           max: 0,
           min: 0,
           name: 'color',
@@ -441,7 +411,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2392944706',
           max: null,
           min: null,
           name: 'amount',
@@ -467,7 +436,6 @@ const walletSchemas = {
       current_balance: z.any()
     }),
     raw: {
-      id: 'pbc_1777026265',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -479,7 +447,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -493,7 +460,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_eWH4',
           max: 0,
           min: 0,
           name: 'name',
@@ -507,7 +473,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_qOLM',
           max: 0,
           min: 0,
           name: 'icon',
@@ -520,7 +485,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_cXlX',
           max: null,
           min: null,
           name: 'starting_balance',
@@ -532,7 +496,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number619353122',
           max: null,
           min: null,
           name: 'transaction_count',
@@ -544,7 +507,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json117021307',
           maxSize: 1,
           name: 'current_balance',
           presentable: false,
@@ -567,7 +529,6 @@ const walletSchemas = {
       amount: z.number()
     }),
     raw: {
-      id: 'pbc_192729987',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -579,7 +540,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -593,7 +553,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_FWIh',
           max: 0,
           min: 0,
           name: 'name',
@@ -607,7 +566,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_3nKF',
           max: 0,
           min: 0,
           name: 'color',
@@ -621,7 +579,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_4Inc',
           max: 0,
           min: 0,
           name: 'icon',
@@ -634,7 +591,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2392944706',
           max: null,
           min: null,
           name: 'amount',
@@ -658,7 +614,6 @@ const walletSchemas = {
       accumulated_amount: z.any()
     }),
     raw: {
-      id: 'pbc_4127888515',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -670,7 +625,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -683,7 +637,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json1579384326',
           maxSize: 1,
           name: 'name',
           presentable: false,
@@ -693,7 +646,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number619353122',
           max: null,
           min: null,
           name: 'transaction_count',
@@ -705,7 +657,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json492355399',
           maxSize: 1,
           name: 'accumulated_amount',
           presentable: false,
@@ -732,7 +683,6 @@ const walletSchemas = {
       location_coords: z.object({ lat: z.number(), lon: z.number() })
     }),
     raw: {
-      id: 'pbc_1561892026',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -744,7 +694,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -757,9 +706,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'nk4p9hnqedrvmdi',
+          collectionId: 'wallet__transactions',
           hidden: false,
-          id: 'relation2064839465',
           maxSelect: 1,
           minSelect: 0,
           name: 'base_transaction',
@@ -770,7 +718,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'select2363381545',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -782,7 +729,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text2250334671',
           max: 0,
           min: 0,
           name: 'particulars',
@@ -795,9 +741,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'jb4b93uex7fgql5',
+          collectionId: 'wallet__assets',
           hidden: false,
-          id: 'relation45046364',
           maxSelect: 1,
           minSelect: 0,
           name: 'asset',
@@ -808,9 +753,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: false,
-          collectionId: 'vr4lv9hatzgmgfz',
+          collectionId: 'wallet__categories',
           hidden: false,
-          id: 'relation105650625',
           maxSelect: 1,
           minSelect: 0,
           name: 'category',
@@ -821,9 +765,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: false,
-          collectionId: '7tug66h7onrjdu2',
+          collectionId: 'wallet__ledgers',
           hidden: false,
-          id: 'relation3642313480',
           maxSelect: 999,
           minSelect: 0,
           name: 'ledgers',
@@ -835,7 +778,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3727149894',
           max: 0,
           min: 0,
           name: 'location_name',
@@ -848,7 +790,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'geoPoint2468307335',
           name: 'location_coords',
           presentable: false,
           required: false,
@@ -869,7 +810,6 @@ const walletSchemas = {
       to: z.string()
     }),
     raw: {
-      id: 'pbc_3108707677',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -881,7 +821,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -894,9 +833,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'nk4p9hnqedrvmdi',
+          collectionId: 'wallet__transactions',
           hidden: false,
-          id: 'relation2064839465',
           maxSelect: 1,
           minSelect: 0,
           name: 'base_transaction',
@@ -907,9 +845,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'jb4b93uex7fgql5',
+          collectionId: 'wallet__assets',
           hidden: false,
-          id: 'relation3957184672',
           maxSelect: 1,
           minSelect: 0,
           name: 'from',
@@ -920,9 +857,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'jb4b93uex7fgql5',
+          collectionId: 'wallet__assets',
           hidden: false,
-          id: 'relation2040861836',
           maxSelect: 1,
           minSelect: 0,
           name: 'to',
@@ -951,7 +887,6 @@ const walletSchemas = {
       location_coords: z.object({ lat: z.number(), lon: z.number() })
     }),
     raw: {
-      id: 'pbc_3992347949',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -963,7 +898,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -977,7 +911,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text1579384326',
           max: 0,
           min: 0,
           name: 'name',
@@ -990,7 +923,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'select2363381545',
           maxSelect: 1,
           name: 'type',
           presentable: false,
@@ -1001,7 +933,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2392944706',
           max: null,
           min: null,
           name: 'amount',
@@ -1014,7 +945,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text273887563',
           max: 0,
           min: 0,
           name: 'particulars',
@@ -1027,9 +957,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'jb4b93uex7fgql5',
+          collectionId: 'wallet__assets',
           hidden: false,
-          id: 'relation45046364',
           maxSelect: 1,
           minSelect: 0,
           name: 'asset',
@@ -1040,9 +969,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: false,
-          collectionId: 'vr4lv9hatzgmgfz',
+          collectionId: 'wallet__categories',
           hidden: false,
-          id: 'relation105650625',
           maxSelect: 1,
           minSelect: 0,
           name: 'category',
@@ -1053,9 +981,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: false,
-          collectionId: '7tug66h7onrjdu2',
+          collectionId: 'wallet__ledgers',
           hidden: false,
-          id: 'relation3642313480',
           maxSelect: 999,
           minSelect: 0,
           name: 'ledgers',
@@ -1067,7 +994,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3727149894',
           max: 0,
           min: 0,
           name: 'location_name',
@@ -1080,7 +1006,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'geoPoint2468307335',
           name: 'location_coords',
           presentable: false,
           required: false,
@@ -1098,7 +1023,6 @@ const walletSchemas = {
       expenses: z.string()
     }),
     raw: {
-      id: 'pbc_4111428197',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -1110,7 +1034,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -1124,7 +1047,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text1067999952',
           max: 999999999999999,
           min: 0,
           name: 'income',
@@ -1138,7 +1060,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text613872475',
           max: 999999999999999,
           min: 0,
           name: 'expenses',
@@ -1163,7 +1084,6 @@ const walletSchemas = {
       count: z.number()
     }),
     raw: {
-      id: 'pbc_3200607087',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -1175,7 +1095,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -1188,7 +1107,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json2499937429',
           maxSize: 1,
           name: 'lat',
           presentable: false,
@@ -1198,7 +1116,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json2518964612',
           maxSize: 1,
           name: 'lng',
           presentable: false,
@@ -1209,7 +1126,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: '_clone_QE0d',
           max: 0,
           min: 0,
           name: 'locationName',
@@ -1222,7 +1138,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json2392944706',
           maxSize: 1,
           name: 'amount',
           presentable: false,
@@ -1232,7 +1147,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2245608546',
           max: null,
           min: null,
           name: 'count',
@@ -1262,7 +1176,6 @@ const walletSchemas = {
       transfer_count: z.any()
     }),
     raw: {
-      id: 'pbc_322615261',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -1274,7 +1187,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -1287,7 +1199,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number3145888567',
           max: null,
           min: null,
           name: 'year',
@@ -1299,7 +1210,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2394296326',
           max: null,
           min: null,
           name: 'month',
@@ -1311,7 +1221,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2862495610',
           max: null,
           min: null,
           name: 'date',
@@ -1323,7 +1232,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json1067999952',
           maxSize: 1,
           name: 'income',
           presentable: false,
@@ -1333,7 +1241,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json613872475',
           maxSize: 1,
           name: 'expenses',
           presentable: false,
@@ -1343,7 +1250,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json1077191616',
           maxSize: 1,
           name: 'transfer',
           presentable: false,
@@ -1353,7 +1259,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json1506083771',
           maxSize: 1,
           name: 'income_count',
           presentable: false,
@@ -1363,7 +1268,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json3243452931',
           maxSize: 1,
           name: 'expenses_count',
           presentable: false,
@@ -1373,7 +1277,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json643674426',
           maxSize: 1,
           name: 'transfer_count',
           presentable: false,
@@ -1402,7 +1305,6 @@ const walletSchemas = {
       updated: z.string()
     }),
     raw: {
-      id: 'pbc_wallet_budgets',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -1414,7 +1316,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -1427,9 +1328,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'vr4lv9hatzgmgfz',
+          collectionId: 'wallet__categories',
           hidden: false,
-          id: 'relation_budget_category',
           maxSelect: 1,
           minSelect: 0,
           name: 'category',
@@ -1440,7 +1340,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number_budget_amount',
           max: null,
           min: 0,
           name: 'amount',
@@ -1452,7 +1351,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'bool_budget_rollover_enabled',
           name: 'rollover_enabled',
           presentable: false,
           required: false,
@@ -1461,7 +1359,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number_budget_rollover_cap',
           max: null,
           min: 0,
           name: 'rollover_cap',
@@ -1473,7 +1370,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json_budget_alert_thresholds',
           maxSize: 2000000,
           name: 'alert_thresholds',
           presentable: false,
@@ -1483,7 +1379,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'bool_budget_is_active',
           name: 'is_active',
           presentable: false,
           required: false,
@@ -1492,7 +1387,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number3145888567',
           max: null,
           min: null,
           name: 'year',
@@ -1504,7 +1398,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'number2394296326',
           max: null,
           min: null,
           name: 'month',
@@ -1516,7 +1409,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'autodate2990389176',
           name: 'created',
           onCreate: true,
           onUpdate: false,
@@ -1526,7 +1418,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'autodate3332085495',
           name: 'updated',
           onCreate: true,
           onUpdate: true,
@@ -1557,7 +1448,6 @@ const walletSchemas = {
       rollover_amount: z.any()
     }),
     raw: {
-      id: 'pbc_230479806',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: null,
@@ -1569,7 +1459,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3208210256',
           max: 0,
           min: 0,
           name: 'id',
@@ -1582,9 +1471,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: true,
-          collectionId: 'vr4lv9hatzgmgfz',
+          collectionId: 'wallet__categories',
           hidden: false,
-          id: '_clone_Dj49',
           maxSelect: 1,
           minSelect: 0,
           name: 'category',
@@ -1595,7 +1483,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_rw2F',
           max: null,
           min: 0,
           name: 'amount',
@@ -1607,7 +1494,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_H8Yn',
           max: null,
           min: null,
           name: 'year',
@@ -1619,7 +1505,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_SNDn',
           max: null,
           min: null,
           name: 'month',
@@ -1631,7 +1516,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_xmka',
           name: 'rollover_enabled',
           presentable: false,
           required: false,
@@ -1640,7 +1524,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_L87d',
           max: null,
           min: 0,
           name: 'rollover_cap',
@@ -1652,7 +1535,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_p8T7',
           maxSize: 2000000,
           name: 'alert_thresholds',
           presentable: false,
@@ -1662,7 +1544,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_PVz3',
           name: 'is_active',
           presentable: false,
           required: false,
@@ -1671,7 +1552,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_BYRJ',
           name: 'created',
           onCreate: true,
           onUpdate: false,
@@ -1681,7 +1561,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: '_clone_8osV',
           name: 'updated',
           onCreate: true,
           onUpdate: true,
@@ -1691,7 +1570,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json3081274703',
           maxSize: 1,
           name: 'spent_amount',
           presentable: false,
@@ -1701,7 +1579,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'json810917041',
           maxSize: 1,
           name: 'rollover_amount',
           presentable: false,
@@ -1723,12 +1600,13 @@ const walletSchemas = {
       color: z.string(),
       target_amount: z.number(),
       current_amount: z.number(),
-      target_date: z.string().optional(),
-      asset: z.string().optional(),
-      is_active: z.boolean()
+      target_date: z.string(),
+      asset: z.string(),
+      is_active: z.boolean(),
+      created: z.string(),
+      updated: z.string()
     }),
     raw: {
-      id: 'savings_goals_001',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -1740,7 +1618,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -1754,7 +1631,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'savings_goal_name',
           max: 0,
           min: 0,
           name: 'name',
@@ -1768,7 +1644,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'savings_goal_icon',
           max: 0,
           min: 0,
           name: 'icon',
@@ -1782,7 +1657,6 @@ const walletSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'savings_goal_color',
           max: 0,
           min: 0,
           name: 'color',
@@ -1795,7 +1669,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_target_amount',
           max: null,
           min: 0,
           name: 'target_amount',
@@ -1807,7 +1680,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_current_amount',
           max: null,
           min: 0,
           name: 'current_amount',
@@ -1819,7 +1691,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_target_date',
           max: '',
           min: '',
           name: 'target_date',
@@ -1830,9 +1701,8 @@ const walletSchemas = {
         },
         {
           cascadeDelete: false,
-          collectionId: 'jb4b93uex7fgql5',
+          collectionId: 'wallet__assets',
           hidden: false,
-          id: 'savings_goal_asset',
           maxSelect: 1,
           minSelect: 0,
           name: 'asset',
@@ -1843,7 +1713,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_is_active',
           name: 'is_active',
           presentable: false,
           required: false,
@@ -1852,7 +1721,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_created',
           name: 'created',
           onCreate: true,
           onUpdate: false,
@@ -1862,7 +1730,6 @@ const walletSchemas = {
         },
         {
           hidden: false,
-          id: 'savings_goal_updated',
           name: 'updated',
           onCreate: true,
           onUpdate: true,
