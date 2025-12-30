@@ -1,9 +1,10 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormModal, defineForm } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import type { Budget, Category } from '..'
 
@@ -64,7 +65,21 @@ function ModifyBudgetModal({
   const { formProps } = defineForm<BudgetFormData>({
     namespace: 'apps.wallet',
     icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: '',
+    title: (
+      <div className="flex items-center gap-3">
+        <span
+          className="rounded-md p-2"
+          style={{ backgroundColor: category.color + '20' }}
+        >
+          <Icon
+            className="size-5"
+            icon={category.icon}
+            style={{ color: category.color }}
+          />
+        </span>
+        <span>{t(`modals.budget.${type}`, { category: category.name })}</span>
+      </div>
+    ),
     submitButton: type,
     onClose
   })
@@ -108,31 +123,7 @@ function ModifyBudgetModal({
     })
     .build()
 
-  return (
-    <FormModal
-      {...formProps}
-      ui={{
-        ...formProps.ui,
-        title: (
-          <div className="flex items-center gap-3">
-            <span
-              className="rounded-md p-2"
-              style={{ backgroundColor: category.color + '20' }}
-            >
-              <Icon
-                className="size-5"
-                icon={category.icon}
-                style={{ color: category.color }}
-              />
-            </span>
-            <span>
-              {t(`modals.budget.${type}`, { category: category.name })}
-            </span>
-          </div>
-        )
-      }}
-    />
-  )
+  return <FormModal {...formProps} />
 }
 
 export default ModifyBudgetModal
