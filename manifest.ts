@@ -2,14 +2,11 @@ import { lazy } from 'react'
 import type { ModuleConfig } from 'shared'
 
 export default {
-  name: 'Wallet',
-  icon: 'tabler:currency-dollar',
   hasAI: true,
   subsection: [
     { label: 'Dashboard', icon: 'tabler:dashboard', path: '' },
     {
       label: 'Transactions',
-      icon: 'tabler:arrows-exchange',
       path: 'transactions'
     },
     { label: 'Budgets', icon: 'tabler:chart-pie', path: 'budgets' },
@@ -18,12 +15,10 @@ export default {
     { label: 'Saving Goals', icon: 'tabler:target', path: 'saving-goals' },
     {
       label: 'Spending Heatmap',
-      icon: 'tabler:map-pin',
       path: 'spending-heatmap'
     },
     {
       label: 'Financial Statements',
-      icon: 'tabler:file-text',
       path: 'statements'
     }
   ],
@@ -37,5 +32,4 @@ export default {
     '/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
     '/statements': lazy(() => import('@/pages/Statements'))
   },
-  category: 'Finance'
 } satisfies ModuleConfig
