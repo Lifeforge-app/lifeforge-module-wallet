@@ -1,0 +1,327 @@
+{
+  "title": "Wallet",
+  "description": "Become your own financial superhero.",
+  "subsections": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "assets": "Assets",
+    "ledgers": "Ledgers",
+    "budgets": "Budgets",
+    "savingGoals": "Saving Goals",
+    "financialStatements": "Financial Statements",
+    "spendingHeatmap": "Spending Heatmap"
+  },
+  "header": {
+    "allTransactions": "All Transactions",
+    "filteredTransactions": "Filtered Transactions"
+  },
+  "widgets": {
+    "categoriesBreakdown": {
+      "title": "Categories Breakdown",
+      "thisMonthsExpenses": "This Month's Spending",
+      "thisMonthsIncome": "This Month's Income"
+    },
+    "income": {
+      "title": "Income"
+    },
+    "assetsBalance": {
+      "title": "Assets Balance",
+      "description": "Track your assets balance.",
+      "empty": {
+        "assets": {
+          "title": "No Assets Found",
+          "description": "You haven't created any assets yet."
+        }
+      }
+    },
+    "statistics": {
+      "title": "Statistics"
+    },
+    "expenses": {
+      "title": "Expenses"
+    },
+    "recentTransactions": {
+      "title": "Recent Transactions"
+    },
+    "transactionsCount": {
+      "title": "Transactions Count"
+    },
+    "totalAssets": "Total Assets",
+    "budgets": "Budgets"
+  },
+  "transactionCount": "Transactions",
+  "receiptUploadInfo": "Only PDF and image files are accepted",
+  "empty": {
+    "transactions": {
+      "title": "No Transactions Found",
+      "description": "You haven't recorded any transactions yet. Click the button above to add one."
+    },
+    "categories": {
+      "title": "No Categories Found",
+      "description": "You haven't created any categories yet. Click the button below to add one."
+    },
+    "results": {
+      "title": "No Results Found",
+      "description": "No transactions found, please try other keywords."
+    },
+    "assets": {
+      "title": "No Assets Found",
+      "description": "You haven't created any assets yet. Click the button above to add one."
+    },
+    "ledger": {
+      "title": "No Ledgers Found",
+      "description": "You haven't created any ledgers yet. Click the button above to add one."
+    },
+    "location": {
+      "title": "No Location Available",
+      "description": "No location data found in any transactions. Please add a transaction with a location."
+    },
+    "templates": {
+      "title": "No Templates Found",
+      "description": "You haven't created any transaction templates yet. Click the button below to add one."
+    },
+    "mapKey": {
+      "description": "A Google Map API key is required for the map to display properly. Please add it to your API key vault under the key \"gcloud\".",
+      "title": "Missing Google Map API Key"
+    },
+    "statements": {
+      "title": "No Data for Financial Statement",
+      "description": "No transactions found to generate the financial statement. Please add some transactions first."
+    },
+    "budgets": {
+      "title": "No Active Budgets",
+      "description": "You haven't set any budgets yet. Switch to the 'No Budget Set' tab to create one."
+    },
+    "allCategoriesHaveBudgetsSet": {
+      "title": "All Set!",
+      "description": "All your expense categories have budgets configured."
+    },
+    "savingGoals": {
+      "title": "No Saving Goals",
+      "description": "You haven't created any saving goals yet. Click the button above to add one."
+    }
+  },
+  "sidebar": {
+    "allTransactions": "All Transactions",
+    "allType": "All Types",
+    "allLedgers": "All Ledgers",
+    "allAssets": "All Assets",
+    "allCategories": "All Categories",
+    "allTypes": "All Types",
+    "transactionTypes": "Transaction Types",
+    "ledgers": "Ledgers",
+    "assets": "Assets",
+    "categories": "Categories",
+    "dateRange": "Date Range",
+    "calendarHeatmap": "Calendar Heatmap"
+  },
+  "table": {
+    "date": "Date",
+    "type": "Type",
+    "asset": "Asset",
+    "ledger": "Ledger",
+    "particulars": "Particulars",
+    "category": "Category",
+    "amount": "Amount",
+    "receipt": "Receipt",
+    "location": "Location"
+  },
+  "buttons": {
+    "scanReceipt": "Scan Receipt",
+    "removeReceipt": "Remove Receipt",
+    "uploadReceipt": "Upload Receipt",
+    "viewTransactions": "View Transactions",
+    "hideAmount": "Hide Amount",
+    "showStatement": "Show Statement",
+    "hideStatement": "Hide Statement",
+    "addManually": "Add Manually",
+    "manageCategories": "Manage Categories",
+    "viewBalanceChart": "View Balance Chart",
+    "viewReceipt": "View Receipt",
+    "manageTemplates": "Manage Templates",
+    "fromTemplate": "From Template",
+    "autoGenerate": "Auto Generate",
+    "savePrompts": "Save Prompts",
+    "contribute": "Contribute"
+  },
+  "modals": {
+    "transactions": {
+      "create": "Create Transaction",
+      "update": "Update Transaction",
+      "view": "Transaction Details"
+    },
+    "assets": {
+      "create": "Create Asset",
+      "update": "Update Asset"
+    },
+    "ledgers": {
+      "create": "Create Ledger",
+      "update": "Update Ledger"
+    },
+    "categories": {
+      "create": "Create Category",
+      "update": "Update Category",
+      "manage": "Manage Categories"
+    },
+    "receipts": {
+      "scan": "Scan Receipt",
+      "view": "View Receipt"
+    },
+    "assetsBalanceChart": "Assets Balance Chart",
+    "templates": {
+      "create": "Create Template",
+      "update": "Update Template",
+      "manage": "Manage Templates",
+      "choose": "Choose Template"
+    },
+    "managePrompts": "Manage Prompts",
+    "budget": {
+      "create": "Create Budget - {{category}}",
+      "update": "Update Budget - {{category}}"
+    },
+    "savingGoal": {
+      "create": "Create Saving Goal",
+      "update": "Edit Saving Goal"
+    }
+  },
+  "transactionTypes": {
+    "income": "Income",
+    "expenses": "Expenses",
+    "transfer": "Transfer"
+  },
+  "inputs": {
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "assetIcon": "Asset Icon",
+    "ledgerIcon": "Ledger Icon",
+    "date": "Date",
+    "amount": "Amount",
+    "transactionType": "Transaction Type",
+    "location": "Location",
+    "asset": "Asset",
+    "ledger": "Ledger",
+    "category": "Category",
+    "receipt": "Receipt",
+    "balance": "Balance",
+    "particulars": "Particulars",
+    "ledgerColor": "Ledger Color",
+    "assetName": "Asset Name",
+    "ledgerName": "Ledger Name",
+    "categoryName": {
+      "label": "Category Name",
+      "placeholder": "e.g. Groceries, Salary, Rent"
+    },
+    "categoryIcon": "Category Icon",
+    "categoryColor": "Category Color",
+    "categoryType": "Category Type",
+    "initialBalance": "Initial Balance",
+    "fromAsset": "From Asset",
+    "toAsset": "To Asset",
+    "month": "Month",
+    "year": "Year",
+    "templateName": "Template Name",
+    "incomePrompt": "Income Prompt",
+    "expensesPrompt": "Expenses Prompt",
+    "rangeMode": "Range Mode",
+    "monthlyBudget": "Monthly Budget",
+    "enableRollover": "Enable Rollover (carry unused budget to next month)",
+    "rolloverCap": "Rollover Cap",
+    "alertThreshold": "Alert Threshold",
+    "contributeAmount": "Contribution Amount",
+    "goalName": "Goal Name",
+    "goalIcon": "Goal Icon",
+    "goalColor": "Goal Color",
+    "goalTargetAmount": "Target Amount",
+    "goalTargetDate": "Target Date"
+  },
+  "items": {
+    "transaction": "Transaction",
+    "asset": "Asset",
+    "ledger": "Ledger",
+    "category": "Category",
+    "receipt": "Receipt",
+    "template": "Template",
+    "savingGoal": "Saving Goal"
+  },
+  "receipts": {
+    "keepAfterScan": "Keep Receipt After Scan"
+  },
+  "subsectionsTitleAndDesc": {
+    "assets": {
+      "title": "Assets",
+      "description": "Manage your assets securely and efficiently in your wallet."
+    },
+    "budgets": {
+      "title": "Budgets",
+      "description": "Manage your budgets securely and efficiently in your wallet."
+    },
+    "ledgers": {
+      "title": "Ledgers",
+      "description": "Manage and view your financial transactions and accounts in the ledger."
+    },
+    "transactions": {
+      "title": "Transactions",
+      "description": "View your transaction history and details."
+    },
+    "financialStatements": {
+      "title": "Financial Statements",
+      "description": "View detailed financial statements that provide insights into your account's transactions and balances."
+    },
+    "spendingHeatmap": {
+      "title": "Spending Heatmap",
+      "description": "Visual representation of your spending habits over time."
+    },
+    "savingGoals": {
+      "title": "Saving Goals",
+      "description": "Track progress towards your financial goals."
+    }
+  },
+  "timeRanges": {
+    "week": "This Week",
+    "month": "This Month",
+    "ytd": "Year To Date"
+  },
+  "messages": {
+    "aiAccuracy": "When scanning receipt using AI, the AI will attempt to use these templates that you have created when deemed appropriate. Therefore, the accuracy of the AI in scanning receipts will improve as you create more templates.",
+    "promptAutoGeneration": "When you click on the 'Auto Generate' button, the AI will analyze your existing transaction particulars and generate a prompt message that will be used during receipt scanning to enhance accuracy."
+  },
+  "rangeModes": {
+    "week": "Last 7 Days",
+    "month": "Last 30 Days",
+    "year": "Last 365 Days",
+    "all": "All Time",
+    "custom": "Custom Range",
+    "quarter": "Last 90 Days"
+  },
+  "budgets": {
+    "active": "Active Budgets",
+    "noSet": "No Budget Set",
+    "totalBudgeted": "Total Budgeted",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "over": "over",
+    "left": "left",
+    "budgetUsed": "of budget used"
+  },
+  "savingGoals": {
+    "contribute": "Add Contribution",
+    "goalName": "Goal Name",
+    "toGo": "{{amount}} to go",
+    "goalReached": "Goal reached!",
+    "target": "Target: {{date}}",
+    "fillRemaining": "Fill remaining: {{amount}}",
+    "messages": {
+      "contributionAdded": "Contribution added successfully",
+      "goalCreated": "Goal created successfully",
+      "goalUpdated": "Goal updated successfully",
+      "goalDeleted": "Goal deleted successfully",
+      "deleteFailed": "Failed to delete goal"
+    },
+    "deleteConfirmation": {
+      "title": "Delete Goal",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "targetAmount": "Target Amount",
+    "targetDate": "Target Date"
+  }
+}
