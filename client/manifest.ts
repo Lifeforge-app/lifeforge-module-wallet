@@ -33,5 +33,6 @@ export default {
     '/ledgers': lazy(() => import('@/pages/Ledgers')),
     '/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
     '/statements': lazy(() => import('@/pages/Statements'))
-  }
+  },
+  widgets: [() => import('@/widgets/AssetsBalance')]
 } satisfies ModuleConfig
