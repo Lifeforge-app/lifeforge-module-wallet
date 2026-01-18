@@ -1,30 +1,30 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default function getDateRange(
   rangeMode: 'week' | 'month' | 'year' | 'all' | 'custom' | 'quarter',
   startDate?: string,
   endDate?: string
 ): { startDate: string | null; endDate: string | null } {
-  let start: moment.Moment | null = null
-  let end: moment.Moment | null = null
+  let start: dayjs.Dayjs | null = null
+  let end: dayjs.Dayjs | null = null
 
-  const today = moment().endOf('day')
+  const today = dayjs().endOf('day')
 
   switch (rangeMode) {
     case 'week':
-      start = moment().subtract(7, 'days').startOf('day')
+      start = dayjs().subtract(7, 'days').startOf('day')
       end = today
       break
     case 'month':
-      start = moment().subtract(1, 'month').startOf('day')
+      start = dayjs().subtract(1, 'month').startOf('day')
       end = today
       break
     case 'quarter':
-      start = moment().subtract(3, 'months').startOf('day')
+      start = dayjs().subtract(3, 'months').startOf('day')
       end = today
       break
     case 'year':
-      start = moment().subtract(1, 'year').startOf('day')
+      start = dayjs().subtract(1, 'year').startOf('day')
       end = today
       break
     case 'all':
@@ -33,11 +33,11 @@ export default function getDateRange(
       break
     case 'custom':
       if (startDate) {
-        start = moment(startDate).startOf('day')
+        start = dayjs(startDate).startOf('day')
       }
 
       if (endDate) {
-        end = moment(endDate).endOf('day')
+        end = dayjs(endDate).endOf('day')
       }
       break
   }

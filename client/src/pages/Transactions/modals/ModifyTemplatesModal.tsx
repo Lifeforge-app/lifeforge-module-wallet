@@ -1,11 +1,12 @@
-import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormModal, defineForm } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { type InferInput } from 'shared'
 import colors from 'tailwindcss/colors'
+
+import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 
 function ModifyTemplatesModal({
   onClose,
@@ -31,8 +32,8 @@ function ModifyTemplatesModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.templates.create
-      : forgeAPI.wallet.templates.update.input({
+      ? forgeAPI.templates.create
+      : forgeAPI.templates.update.input({
           id: initialData?.id || ''!
         })
     ).mutationOptions({
@@ -48,7 +49,7 @@ function ModifyTemplatesModal({
   )
 
   const { formProps } = defineForm<
-    InferInput<(typeof forgeAPI.wallet.templates)[typeof type]>['body']
+    InferInput<(typeof forgeAPI.templates)[typeof type]>['body']
   >({
     namespace: 'apps.wallet',
     title: `templates.${type}`,

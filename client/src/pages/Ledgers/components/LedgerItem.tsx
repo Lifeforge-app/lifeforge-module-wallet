@@ -26,7 +26,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   const queryClient = useQueryClient()
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.ledgers.remove.input({ id: ledger.id }).mutationOptions({
+    forgeAPI.ledgers.remove.input({ id: ledger.id }).mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ['wallet', 'ledgers']

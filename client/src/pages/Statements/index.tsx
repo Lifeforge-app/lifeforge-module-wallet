@@ -5,9 +5,9 @@ import YearMonthInput from '@/components/YearMonthInput'
 import useYearMonthState from '@/hooks/useYearMonthState'
 import forgeAPI from '@/utils/forgeAPI'
 
+import '../../index.css'
 import PrintAndViewButton from './components/PrintAndViewButton'
 import StatementContent from './components/StatementContent'
-import '../../index.css'
 
 function Statements() {
   const {
@@ -15,7 +15,7 @@ function Statements() {
     setYearMonth,
     options: { years: yearsOptions, months: monthsOptions },
     isLoading
-  } = useYearMonthState(forgeAPI.wallet.analytics.getAvailableYearMonths)
+  } = useYearMonthState(forgeAPI.analytics.getAvailableYearMonths)
 
   const [showStatement, setShowStatement] = useState(false)
 

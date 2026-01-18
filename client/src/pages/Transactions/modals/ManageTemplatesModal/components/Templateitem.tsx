@@ -28,9 +28,7 @@ function TemplateItem({
 }) {
   const queryClient = useQueryClient()
 
-  const categoriesQuery = useQuery(
-    forgeAPI.wallet.categories.list.queryOptions()
-  )
+  const categoriesQuery = useQuery(forgeAPI.categories.list.queryOptions())
 
   const categories = categoriesQuery.data ?? []
 
@@ -44,18 +42,16 @@ function TemplateItem({
   }, [template])
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.templates.remove
-      .input({ id: template.id })
-      .mutationOptions({
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: ['wallet', 'templates']
-          })
-        },
-        onError: () => {
-          toast.error('Failed to delete template')
-        }
-      })
+    forgeAPI.templates.remove.input({ id: template.id }).mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['wallet', 'templates']
+        })
+      },
+      onError: () => {
+        toast.error('Failed to delete template')
+      }
+    })
   )
 
   const handleDeleteTemplate = useCallback(() => {

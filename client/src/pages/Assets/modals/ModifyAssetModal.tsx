@@ -1,9 +1,10 @@
-import type { WalletAsset } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormModal, defineForm } from 'lifeforge-ui'
 import { toast } from 'react-toastify'
 import { type InferInput } from 'shared'
+
+import type { WalletAsset } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 
 function ModifyAssetModal({
   data: { type, initialData },
@@ -19,8 +20,8 @@ function ModifyAssetModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.assets.create
-      : forgeAPI.wallet.assets.update.input({
+      ? forgeAPI.assets.create
+      : forgeAPI.assets.update.input({
           id: initialData?.id || ''
         })
     ).mutationOptions({
@@ -38,7 +39,7 @@ function ModifyAssetModal({
   )
 
   const { formProps } = defineForm<
-    InferInput<(typeof forgeAPI.wallet.assets)[typeof type]>['body']
+    InferInput<(typeof forgeAPI.assets)[typeof type]>['body']
   >({
     namespace: 'apps.wallet',
     icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',

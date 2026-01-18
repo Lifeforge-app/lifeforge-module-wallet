@@ -32,11 +32,11 @@ function TransactionIncomeExpensesItem({
       e.preventDefault()
 
       open(ViewReceiptModal, {
-        src: forgeAPI.media.input({
+        src: forgeAPI.getMedia({
           collectionId: transaction.collectionId,
           recordId: transaction.id,
           fieldId: transaction.receipt
-        }).endpoint
+        })
       })
     },
     [transaction]

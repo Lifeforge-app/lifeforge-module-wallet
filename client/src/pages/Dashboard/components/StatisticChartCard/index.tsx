@@ -1,6 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
-import getChartScale from '@/utils/getChartScale'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { useQuery } from '@tanstack/react-query'
 import { Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
@@ -16,6 +13,10 @@ import {
 } from 'recharts'
 import { usePersonalization } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+import getChartScale from '@/utils/getChartScale'
+import numberToCurrency from '@/utils/numberToCurrency'
+
 import RangeSelector from './components/RangeSelector'
 
 function StatisticChardCard() {
@@ -26,7 +27,7 @@ function StatisticChardCard() {
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
   const chartDataQuery = useQuery(
-    forgeAPI.wallet.analytics.getChartData.input({ range }).queryOptions()
+    forgeAPI.analytics.getChartData.input({ range }).queryOptions()
   )
 
   const data = chartDataQuery.data ?? []
@@ -150,7 +151,6 @@ function StatisticChardCard() {
                       `${numberToCurrency(Math.abs(value))}`
                     }
                     tickLine={false}
-                    width="auto"
                   />
 
                   <Tooltip

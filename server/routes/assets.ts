@@ -1,39 +1,26 @@
-import { SCHEMAS } from '@schema'
-import Moment from 'moment'
-import MomentRange from 'moment-range'
+import dayjs from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
-
+import forge from '../forge'
+import walletSchemas from '../schema'
 import getDateRange from '../utils/getDateRange'
 
-// @ts-expect-error - MomentRange types are not fully compatible with Moment
-const moment = MomentRange.extendMoment(Moment)
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all wallet assets',
-    ms: 'Dapatkan semua aset dompet',
-    'zh-CN': '获取所有钱包资产',
-    'zh-TW': '獲取所有錢包資產'
-  })
+  .description('Get all wallet assets')
   .input({})
   .callback(({ pb }) =>
-    pb.getFullList
-      .collection('wallet__assets_aggregated')
-      .sort(['name'])
-      .execute()
+    pb.getFullList.collection('assets_aggregated').sort(['name']).execute()
   )
 
-const getAssetAccumulatedBalance = forgeController
+export const getAssetAccumulatedBalance = forge
   .query()
-  .description({
-    en: 'Get asset balance over time',
-    ms: 'Dapatkan baki aset mengikut masa',
-    'zh-CN': '获取资产随时间的余额',
-    'zh-TW': '獲取資產隨時間的餘額'
-  })
+  .description('Get asset balance over time')
   .input({
     query: z.object({
       id: z.string(),
@@ -43,13 +30,13 @@ const getAssetAccumulatedBalance = forgeController
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__assets'
+    id: 'assets'
   })
   .callback(async ({ pb, query: { id, rangeMode, startDate, endDate } }) => {
     const dateRange = getDateRange(rangeMode, startDate, endDate)
 
     const { starting_balance } = await pb.getOne
-      .collection('wallet__assets')
+      .collection('assets')
       .id(id)
       .fields({
         starting_balance: true
@@ -57,9 +44,9 @@ const getAssetAccumulatedBalance = forgeController
       .execute()
 
     const allIncomeExpensesTransactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .filter([
         {
@@ -76,9 +63,9 @@ const getAssetAccumulatedBalance = forgeController
       .execute()
 
     const allTransferTransactions = await pb.getFullList
-      .collection('wallet__transactions_transfer')
+      .collection('transactions_transfer')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .filter([
         {
@@ -126,9 +113,20 @@ const getAssetAccumulatedBalance = forgeController
 
     const accumulatedBalance: Record<string, number> = {}
 
-    const allDateInBetween = moment
-      .range(moment(allTransactions[allTransactions.length - 1].date), moment())
-      .by('day')
+    const allDateInBetween = []
+
+    const start = dayjs(
+      dateRange.startDate || allTransactions[allTransactions.length - 1].date
+    )
+
+    const end = dayjs(dateRange.endDate || allTransactions[0].date)
+
+    let currDate = start.clone()
+
+    while (currDate.isSameOrBefore(end, 'day')) {
+      allDateInBetween.push(currDate.clone())
+      currDate = currDate.add(1, 'day')
+    }
 
     for (const date of allDateInBetween) {
       const dateStr = date.format('YYYY-MM-DD')
@@ -136,7 +134,7 @@ const getAssetAccumulatedBalance = forgeController
       accumulatedBalance[dateStr] = parseFloat(currentBalance.toFixed(2))
 
       const transactionsOnDate = allTransactions.filter(t =>
-        moment(t.date).isSame(date, 'day')
+        dayjs(t.date).isSame(date, 'day')
       )
 
       for (const transaction of transactionsOnDate) {
@@ -150,14 +148,14 @@ const getAssetAccumulatedBalance = forgeController
 
     return Object.fromEntries(
       Object.entries(accumulatedBalance).filter(([date]) => {
-        const dateMoment = moment(date)
+        const dateMoment = dayjs(date)
 
         const isAfterStartDate = dateRange.startDate
-          ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
+          ? dateMoment.isSameOrAfter(dayjs(dateRange.startDate), 'day')
           : true
 
         const isBeforeEndDate = dateRange.endDate
-          ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
+          ? dateMoment.isSameOrBefore(dayjs(dateRange.endDate), 'day')
           : true
 
         return isAfterStartDate && isBeforeEndDate
@@ -165,14 +163,9 @@ const getAssetAccumulatedBalance = forgeController
     )
   })
 
-const getAllAssetAccumulatedBalance = forgeController
+export const getAllAssetAccumulatedBalance = forge
   .query()
-  .description({
-    en: 'Get all asset balances for a specific month',
-    ms: 'Dapatkan semua baki aset untuk bulan tertentu',
-    'zh-CN': '获取特定月份的所有资产余额',
-    'zh-TW': '獲取特定月份的所有資產餘額'
-  })
+  .description('Get all asset balances for a specific month')
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -181,12 +174,12 @@ const getAllAssetAccumulatedBalance = forgeController
   })
   .callback(async ({ pb, query: { year, month } }) => {
     // Calculate dates
-    const currentMonthEnd = moment()
+    const currentMonthEnd = dayjs()
       .year(year)
       .month(month - 1)
       .endOf('month')
 
-    const prevMonthEnd = moment()
+    const prevMonthEnd = dayjs()
       .year(year)
       .month(month - 1)
       .startOf('month')
@@ -194,7 +187,7 @@ const getAllAssetAccumulatedBalance = forgeController
 
     // Get all assets
     const assets = await pb.getFullList
-      .collection('wallet__assets')
+      .collection('assets')
       .fields({
         id: true,
         starting_balance: true
@@ -203,9 +196,9 @@ const getAllAssetAccumulatedBalance = forgeController
 
     // Get all income/expenses transactions
     const allIncomeExpensesTransactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .fields({
         type: true,
@@ -217,9 +210,9 @@ const getAllAssetAccumulatedBalance = forgeController
 
     // Get all transfer transactions
     const allTransferTransactions = await pb.getFullList
-      .collection('wallet__transactions_transfer')
+      .collection('transactions_transfer')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .fields({
         'expand.base_transaction.amount': true,
@@ -261,7 +254,7 @@ const getAllAssetAccumulatedBalance = forgeController
       let currentMonthBalance = asset.starting_balance
 
       for (const transaction of allTransactions) {
-        const txDate = moment(transaction.date)
+        const txDate = dayjs(transaction.date)
 
         if (transaction.type === 'income') {
           balance += transaction.amount
@@ -289,69 +282,45 @@ const getAllAssetAccumulatedBalance = forgeController
     return result
   })
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new wallet asset',
-    ms: 'Cipta aset dompet baharu',
-    'zh-CN': '创建新钱包资产',
-    'zh-TW': '創建新錢包資產'
-  })
+  .description('Create a new wallet asset')
   .input({
-    body: SCHEMAS.wallet.assets.schema
+    body: walletSchemas.assets
   })
   .statusCode(201)
   .callback(({ pb, body }) =>
-    pb.create.collection('wallet__assets').data(body).execute()
+    pb.create.collection('assets').data(body).execute()
   )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update asset details',
-    ms: 'Kemas kini butiran aset',
-    'zh-CN': '更新资产详情',
-    'zh-TW': '更新資產詳情'
-  })
+  .description('Update asset details')
   .input({
     query: z.object({
       id: z.string()
     }),
-    body: SCHEMAS.wallet.assets.schema
+    body: walletSchemas.assets
   })
   .existenceCheck('query', {
-    id: 'wallet__assets'
+    id: 'assets'
   })
   .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('wallet__assets').id(id).data(body).execute()
+    pb.update.collection('assets').id(id).data(body).execute()
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a wallet asset',
-    ms: 'Padam aset dompet',
-    'zh-CN': '删除钱包资产',
-    'zh-TW': '刪除錢包資產'
-  })
+  .description('Delete a wallet asset')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__assets'
+    id: 'assets'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('wallet__assets').id(id).execute()
+    pb.delete.collection('assets').id(id).execute()
   )
-
-export default forgeRouter({
-  list,
-  getAssetAccumulatedBalance,
-  getAllAssetAccumulatedBalance,
-  create,
-  update,
-  remove
-})

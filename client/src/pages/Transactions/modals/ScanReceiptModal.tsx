@@ -30,7 +30,7 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
     }
 
     try {
-      const data = await forgeAPI.wallet.transactions.scanReceipt.mutate({
+      const data = await forgeAPI.transactions.scanReceipt.mutate({
         file
       })
 

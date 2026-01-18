@@ -17,16 +17,14 @@ import '../../index.css'
 import GoalCard from './components/GoalCard'
 import ModifyGoalModal from './modals/ModifyGoalModal'
 
-export type SavingGoal = InferOutput<
-  typeof forgeAPI.wallet.savingsGoals.list
->[number]
+export type SavingGoal = InferOutput<typeof forgeAPI.savingsGoals.list>[number]
 
 function SavingGoals() {
   const { t } = useTranslation('apps.wallet')
 
   const { open } = useModalStore()
 
-  const goalsQuery = useQuery(forgeAPI.wallet.savingsGoals.list.queryOptions())
+  const goalsQuery = useQuery(forgeAPI.savingsGoals.list.queryOptions())
 
   const handleCreate = () => {
     open(ModifyGoalModal, { type: 'create' })

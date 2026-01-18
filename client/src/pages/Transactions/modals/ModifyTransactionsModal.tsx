@@ -44,8 +44,8 @@ function ModifyTransactionsModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.transactions.create
-      : forgeAPI.wallet.transactions.update.input({
+      ? forgeAPI.transactions.create
+      : forgeAPI.transactions.update.input({
           id: initialData?.id || ''!
         })
     ).mutationOptions({
@@ -59,7 +59,7 @@ function ModifyTransactionsModal({
   )
 
   const { formProps, formStateStore } = defineForm<
-    InferInput<(typeof forgeAPI.wallet.transactions)[typeof type]>['body']
+    InferInput<(typeof forgeAPI.transactions)[typeof type]>['body']
   >({
     namespace: 'apps.wallet',
     icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',

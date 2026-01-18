@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -10,10 +9,12 @@ import {
 } from 'lifeforge-ui'
 import { Link, useNavigate } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 function SavingGoalsCard() {
   const navigate = useNavigate()
 
-  const goalsQuery = useQuery(forgeAPI.wallet.savingsGoals.list.queryOptions())
+  const goalsQuery = useQuery(forgeAPI.savingsGoals.list.queryOptions())
 
   return (
     <Widget

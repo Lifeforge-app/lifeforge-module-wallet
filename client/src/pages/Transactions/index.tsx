@@ -17,22 +17,22 @@ import type { InferOutput } from 'shared'
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'
 
+import '../../index.css'
 import HeaderMenu from './components/HeaderMenu'
 import InnerHeader from './components/InnerHeader'
 import SearchBar from './components/SearchBar'
 import Sidebar from './components/Sidebar'
 import TransactionList from './components/TransactionList'
-import '../../index.css'
 import ManageTemplatesModal from './modals/ManageTemplatesModal'
 import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
 import ScanReceiptModal from './modals/ScanReceiptModal'
 
 export type WalletTransaction = InferOutput<
-  typeof forgeAPI.wallet.transactions.list
+  typeof forgeAPI.transactions.list
 >[number]
 
 export type WalletCategory = InferOutput<
-  typeof forgeAPI.wallet.categories.list
+  typeof forgeAPI.categories.list
 >[number]
 
 function Transactions() {
@@ -51,9 +51,7 @@ function Transactions() {
 
   const navigate = useNavigate()
 
-  const transactionsQuery = useQuery(
-    forgeAPI.wallet.transactions.list.queryOptions()
-  )
+  const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
 
   const [searchParams] = useSearchParams()
 

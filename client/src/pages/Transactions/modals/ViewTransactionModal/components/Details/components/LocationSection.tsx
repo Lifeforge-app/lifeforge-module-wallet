@@ -1,8 +1,9 @@
-import type { WalletTransaction } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { EmptyStateScreen, WithQuery } from 'lifeforge-ui'
+
+import type { WalletTransaction } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
 
 import DetailItem from './DetailItem'
 
@@ -14,13 +15,9 @@ function LocationSection({
   }
 }) {
   const googleMapAPIKey = useQuery(
-    forgeAPI.apiKeys.entries.get
-      .input({
-        keyId: 'gcloud'
-      })
-      .queryOptions({
-        retry: false
-      })
+    forgeAPI.getAPIKeys({ keyId: 'gcloud' }).queryOptions({
+      retry: false
+    })
   )
 
   return (

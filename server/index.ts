@@ -1,14 +1,14 @@
-import { forgeRouter } from '@functions/routes'
+import { forgeRouter } from '@lifeforge/server-utils'
 
-import analyticsRouter from './routes/analytics'
-import assetsRouter from './routes/assets'
-import budgetsRouter from './routes/budgets'
-import categoriesRouter from './routes/categories'
-import ledgersRouter from './routes/ledgers'
-import promptsRouter from './routes/prompts'
-import savingsGoalsRouter from './routes/savings-goals'
-import templatesRouter from './routes/templates'
-import transactionsRouter from './routes/transactions'
+import * as analyticsRouter from './routes/analytics'
+import * as assetsRouter from './routes/assets'
+import * as budgetsRouter from './routes/budgets'
+import * as categoriesRouter from './routes/categories'
+import * as ledgersRouter from './routes/ledgers'
+import * as promptsRouter from './routes/prompts'
+import * as savingsGoalsRouter from './routes/savings-goals'
+import * as templatesRouter from './routes/templates'
+import * as transactionsRouter from './routes/transactions'
 
 export default forgeRouter({
   transactions: {

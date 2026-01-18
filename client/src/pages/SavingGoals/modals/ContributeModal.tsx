@@ -1,10 +1,11 @@
-import forgeAPI from '@/utils/forgeAPI'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, ModalHeader, NumberInput, TagChip } from 'lifeforge-ui'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+
+import forgeAPI from '@/utils/forgeAPI'
+import numberToCurrency from '@/utils/numberToCurrency'
 
 import type { SavingGoal } from '..'
 import GoalProgress from '../components/GoalProgress'
@@ -27,19 +28,17 @@ function ContributeModal({
   const queryClient = useQueryClient()
 
   const mutation = useMutation(
-    forgeAPI.wallet.savingsGoals.contribute
-      .input({ id: goal.id })
-      .mutationOptions({
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: ['wallet', 'savingsGoals']
-          })
+    forgeAPI.savingsGoals.contribute.input({ id: goal.id }).mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['wallet', 'savingsGoals']
+        })
 
-          toast.success(t('savingGoals.messages.contributionAdded'))
+        toast.success(t('savingGoals.messages.contributionAdded'))
 
-          onClose()
-        }
-      })
+        onClose()
+      }
+    })
   )
 
   const handleSubmit = () => {

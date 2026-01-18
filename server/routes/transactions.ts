@@ -1,23 +1,15 @@
-import { Location } from '@lib/locations/typescript/location.types'
-import { SCHEMAS } from '@schema'
+import { LocationSchema } from '@lifeforge/server-utils'
+import dayjs from 'dayjs'
 import fs from 'fs'
-import moment from 'moment'
 import z from 'zod'
 
-import parseOCR from '@functions/external/ocr'
-import { forgeController, forgeRouter } from '@functions/routes'
-import convertPDFToImage from '@functions/utils/convertPDFToImage'
-
+import forge from '../forge'
+import walletSchemas from '../schema'
 import { getTransactionDetails } from '../utils/transactions'
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all wallet transactions',
-    ms: 'Dapatkan semua transaksi dompet',
-    'zh-CN': '获取所有钱包交易',
-    'zh-TW': '獲取所有錢包交易'
-  })
+  .description('Get all wallet transactions')
   .input({
     query: z.object({
       q: z.string().optional(),
@@ -40,7 +32,7 @@ const list = forgeController
             {
               field: 'base_transaction.date' as const,
               operator: '>=' as const,
-              value: moment()
+              value: dayjs()
                 .year(year)
                 .month(month - 1)
                 .startOf('month')
@@ -49,7 +41,7 @@ const list = forgeController
             {
               field: 'base_transaction.date' as const,
               operator: '<=' as const,
-              value: moment()
+              value: dayjs()
                 .year(year)
                 .month(month - 1)
                 .endOf('month')
@@ -59,9 +51,9 @@ const list = forgeController
         : []
 
     const incomeExpensesTransactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .filter([
         q
@@ -76,9 +68,9 @@ const list = forgeController
       .execute()
 
     const transferTransactions = await pb.getFullList
-      .collection('wallet__transactions_transfer')
+      .collection('transactions_transfer')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .filter([...dateFilters])
       .execute()
@@ -122,31 +114,26 @@ const list = forgeController
       })
   })
 
-const getById = forgeController
+export const getById = forge
   .query()
-  .description({
-    en: 'Get wallet transaction by ID',
-    ms: 'Dapatkan transaksi dompet mengikut ID',
-    'zh-CN': '通过ID获取钱包交易',
-    'zh-TW': '通過ID獲取錢包交易'
-  })
+  .description('Get wallet transaction by ID')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__transactions'
+    id: 'transactions'
   })
   .callback(async ({ pb, query: { id } }) => {
     const baseTransaction = await pb.getOne
-      .collection('wallet__transactions')
+      .collection('transactions')
       .id(id)
       .execute()
 
     if (baseTransaction.type === 'transfer') {
       const transferTransaction = await pb.getFirstListItem
-        .collection('wallet__transactions_transfer')
+        .collection('transactions_transfer')
         .filter([
           {
             field: 'base_transaction',
@@ -164,7 +151,7 @@ const getById = forgeController
       }
     } else {
       const incomeExpensesTransaction = await pb.getFirstListItem
-        .collection('wallet__transactions_income_expenses')
+        .collection('transactions_income_expenses')
         .filter([
           {
             field: 'base_transaction',
@@ -187,7 +174,7 @@ const getById = forgeController
     }
   })
 
-const CreateTransactionInputSchema = SCHEMAS.wallet.transactions.schema
+const CreateTransactionInputSchema = walletSchemas.transactions
   .omit({
     type: true,
     receipt: true,
@@ -196,16 +183,16 @@ const CreateTransactionInputSchema = SCHEMAS.wallet.transactions.schema
   })
   .and(
     z.union([
-      SCHEMAS.wallet.transactions_income_expenses.schema
+      walletSchemas.transactions_income_expenses
         .omit({
           base_transaction: true,
           location_name: true,
           location_coords: true
         })
         .extend({
-          location: Location.optional().nullable()
+          location: LocationSchema.optional().nullable()
         }),
-      SCHEMAS.wallet.transactions_transfer.schema
+      walletSchemas.transactions_transfer
         .omit({
           base_transaction: true
         })
@@ -215,14 +202,9 @@ const CreateTransactionInputSchema = SCHEMAS.wallet.transactions.schema
     ])
   )
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new transaction with receipt',
-    ms: 'Cipta transaksi baharu dengan resit',
-    'zh-CN': '创建新交易并上传收据',
-    'zh-TW': '創建新交易並上傳收據'
-  })
+  .description('Create a new transaction with receipt')
   .input({
     body: CreateTransactionInputSchema
   })
@@ -232,72 +214,76 @@ const create = forgeController
     }
   })
   .existenceCheck('body', {
-    category: '[wallet__categories]',
-    asset: '[wallet__assets]',
-    ledger: '[wallet__ledgers]',
-    fromAsset: '[wallet__assets]',
-    toAsset: '[wallet__assets]'
+    category: '[categories]',
+    asset: '[assets]',
+    ledger: '[ledgers]',
+    fromAsset: '[assets]',
+    toAsset: '[assets]'
   })
   .statusCode(201)
-  .callback(async ({ pb, body, media: { receipt: rawReceipt } }) => {
-    const data = body as z.infer<typeof CreateTransactionInputSchema>
+  .callback(
+    async ({
+      pb,
+      body,
+      media: { receipt: rawReceipt },
+      core: {
+        media: { convertPDFToImage }
+      }
+    }) => {
+      const data = body as z.infer<typeof CreateTransactionInputSchema>
 
-    const receipt =
-      rawReceipt && typeof rawReceipt !== 'string'
-        ? rawReceipt.originalname.endsWith('.pdf')
-          ? await convertPDFToImage(rawReceipt.path)
-          : new File([fs.readFileSync(rawReceipt.path)], 'receipt.jpg', {
-              type: rawReceipt.mimetype
-            })
-        : undefined
+      const receipt =
+        rawReceipt && typeof rawReceipt !== 'string'
+          ? rawReceipt.originalname.endsWith('.pdf')
+            ? await convertPDFToImage(rawReceipt.path)
+            : new File([fs.readFileSync(rawReceipt.path)], 'receipt.jpg', {
+                type: rawReceipt.mimetype
+              })
+          : undefined
 
-    const baseTransaction = await pb.create
-      .collection('wallet__transactions')
-      .data({
-        type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
-        amount: data.amount,
-        date: data.date,
-        receipt
-      })
-      .execute()
-
-    if (data.type === 'transfer') {
-      await pb.create
-        .collection('wallet__transactions_transfer')
+      const baseTransaction = await pb.create
+        .collection('transactions')
         .data({
-          from: data.from,
-          to: data.to,
-          base_transaction: baseTransaction.id
+          type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
+          amount: data.amount,
+          date: data.date,
+          receipt
         })
         .execute()
-    } else {
-      await pb.create
-        .collection('wallet__transactions_income_expenses')
-        .data({
-          base_transaction: baseTransaction.id,
-          type: data.type,
-          particulars: data.particulars,
-          asset: data.asset,
-          category: data.category,
-          ledgers: data.ledgers,
-          location_name: data.location?.name ?? '',
-          location_coords: {
-            lon: data.location?.location.longitude ?? 0,
-            lat: data.location?.location.latitude ?? 0
-          }
-        })
-        .execute()
+
+      if (data.type === 'transfer') {
+        await pb.create
+          .collection('transactions_transfer')
+          .data({
+            from: data.from,
+            to: data.to,
+            base_transaction: baseTransaction.id
+          })
+          .execute()
+      } else {
+        await pb.create
+          .collection('transactions_income_expenses')
+          .data({
+            base_transaction: baseTransaction.id,
+            type: data.type,
+            particulars: data.particulars,
+            asset: data.asset,
+            category: data.category,
+            ledgers: data.ledgers,
+            location_name: data.location?.name ?? '',
+            location_coords: {
+              lon: data.location?.location.longitude ?? 0,
+              lat: data.location?.location.latitude ?? 0
+            }
+          })
+          .execute()
+      }
     }
-  })
+  )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update transaction details',
-    ms: 'Kemas kini butiran transaksi',
-    'zh-CN': '更新交易详情',
-    'zh-TW': '更新交易詳情'
-  })
+  .description('Update transaction details')
   .input({
     query: z.object({
       id: z.string()
@@ -310,17 +296,25 @@ const update = forgeController
     }
   })
   .existenceCheck('query', {
-    id: 'wallet__transactions'
+    id: 'transactions'
   })
   .existenceCheck('body', {
-    category: '[wallet__categories]',
-    asset: '[wallet__assets]',
-    from: '[wallet__assets]',
-    to: '[wallet__assets]',
-    ledger: '[wallet__ledgers]'
+    category: '[categories]',
+    asset: '[assets]',
+    from: '[assets]',
+    to: '[assets]',
+    ledger: '[ledgers]'
   })
   .callback(
-    async ({ pb, query: { id }, body, media: { receipt: rawReceipt } }) => {
+    async ({
+      pb,
+      query: { id },
+      body,
+      media: { receipt: rawReceipt },
+      core: {
+        media: { convertPDFToImage }
+      }
+    }) => {
       const data = body as z.infer<typeof CreateTransactionInputSchema>
 
       const receipt =
@@ -333,7 +327,7 @@ const update = forgeController
           : undefined
 
       const baseTransaction = await pb.update
-        .collection('wallet__transactions')
+        .collection('transactions')
         .id(id)
         .data({
           type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
@@ -347,7 +341,7 @@ const update = forgeController
 
       if (data.type === 'transfer') {
         const target = await pb.getFirstListItem
-          .collection('wallet__transactions_transfer')
+          .collection('transactions_transfer')
           .filter([
             {
               field: 'base_transaction',
@@ -358,7 +352,7 @@ const update = forgeController
           .execute()
 
         await pb.update
-          .collection('wallet__transactions_transfer')
+          .collection('transactions_transfer')
           .id(target.id)
           .data({
             from: data.from,
@@ -368,7 +362,7 @@ const update = forgeController
           .execute()
       } else {
         const target = await pb.getFirstListItem
-          .collection('wallet__transactions_income_expenses')
+          .collection('transactions_income_expenses')
           .filter([
             {
               field: 'base_transaction',
@@ -379,7 +373,7 @@ const update = forgeController
           .execute()
 
         await pb.update
-          .collection('wallet__transactions_income_expenses')
+          .collection('transactions_income_expenses')
           .id(target.id)
           .data({
             type: data.type,
@@ -398,80 +392,76 @@ const update = forgeController
     }
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a transaction',
-    ms: 'Padam transaksi',
-    'zh-CN': '删除交易',
-    'zh-TW': '刪除交易'
-  })
+  .description('Delete a transaction')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__transactions'
+    id: 'transactions'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('wallet__transactions').id(id).execute()
+    pb.delete.collection('transactions').id(id).execute()
   )
 
-const scanReceipt = forgeController
+export const scanReceipt = forge
   .mutation()
-  .description({
-    en: 'Extract transaction data from receipt using OCR',
-    ms: 'Ekstrak data transaksi dari resit menggunakan OCR',
-    'zh-CN': '使用 OCR 从收据中提取交易数据',
-    'zh-TW': '使用 OCR 從收據中提取交易數據'
-  })
+  .description('Extract transaction data from receipt using OCR')
   .input({})
   .media({
     file: {
       optional: false
     }
   })
-  .callback(async ({ pb, media: { file } }) => {
-    if (!file || typeof file === 'string') {
-      throw new Error('No file uploaded')
-    }
-
-    if (file.originalname.endsWith('.pdf')) {
-      const image = await convertPDFToImage(file.path)
-
-      if (!image) {
-        throw new Error('Failed to convert PDF to image')
+  .callback(
+    async ({
+      pb,
+      media: { file },
+      core: {
+        media: { convertPDFToImage, parseOCR },
+        api: { fetchAI, getAPIKey, searchLocations }
+      }
+    }) => {
+      if (!file || typeof file === 'string') {
+        throw new Error('No file uploaded')
       }
 
-      const buffer = await image.arrayBuffer()
+      if (file.originalname.endsWith('.pdf')) {
+        const image = await convertPDFToImage(file.path)
 
-      fs.writeFileSync('medium/receipt.png', Buffer.from(buffer))
-    } else {
-      fs.renameSync(file.path, 'medium/receipt.png')
+        if (!image) {
+          throw new Error('Failed to convert PDF to image')
+        }
+
+        const buffer = await image.arrayBuffer()
+
+        fs.writeFileSync('medium/receipt.png', Buffer.from(buffer))
+      } else {
+        fs.renameSync(file.path, 'medium/receipt.png')
+      }
+
+      if (!fs.existsSync('medium/receipt.png')) {
+        throw new Error('Receipt image not found')
+      }
+
+      const OCRResult = await parseOCR('medium/receipt.png')
+
+      if (!OCRResult) {
+        throw new Error('OCR parsing failed')
+      }
+
+      fs.unlinkSync('medium/receipt.png')
+
+      return await getTransactionDetails(
+        OCRResult,
+        pb,
+        fetchAI,
+        getAPIKey,
+        searchLocations
+      )
     }
-
-    if (!fs.existsSync('medium/receipt.png')) {
-      throw new Error('Receipt image not found')
-    }
-
-    const OCRResult = await parseOCR('medium/receipt.png')
-
-    if (!OCRResult) {
-      throw new Error('OCR parsing failed')
-    }
-
-    fs.unlinkSync('medium/receipt.png')
-
-    return await getTransactionDetails(OCRResult, pb)
-  })
-
-export default forgeRouter({
-  list,
-  getById,
-  create,
-  update,
-  remove,
-  scanReceipt
-})
+  )

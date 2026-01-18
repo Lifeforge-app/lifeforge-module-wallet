@@ -80,7 +80,7 @@ A comprehensive analysis of the existing wallet module features and proposed enh
 - **Visual progress bars** - Show budget consumption on dashboard
 
 ```
-New Schema: wallet__budgets
+New Schema: budgets
 - id, category, amount, period (monthly/yearly), rollover (boolean)
 - start_date, end_date (for custom periods)
 ``` -->
@@ -92,7 +92,7 @@ New Schema: wallet__budgets
 - Automatic contribution reminders
 
 ```
-New Schema: wallet__savings_goals
+New Schema: savings_goals
 - id, name, target_amount, current_amount, target_date
 - asset (optional), icon, color
 ```
@@ -109,7 +109,7 @@ New Schema: wallet__savings_goals
 - End date or number of occurrences limit
 
 ```
-New Schema: wallet__recurring_transactions
+New Schema: recurring_transactions
 - id, template (relation), frequency, interval, next_due_date
 - end_date, occurrences_remaining, auto_create (boolean)
 - last_created, notification_days_before
@@ -155,8 +155,8 @@ New Schema: wallet__recurring_transactions
 
 ```
 Schema Updates:
-- wallet__assets: Add `currency` field
-- wallet__exchange_rates: id, from_currency, to_currency, rate, date
+- assets: Add `currency` field
+- exchange_rates: id, from_currency, to_currency, rate, date
 ```
 
 #### 4.2 Currency Dashboard
@@ -176,7 +176,7 @@ Schema Updates:
 - Snowball vs avalanche comparison
 
 ```
-New Schema: wallet__debts
+New Schema: debts
 - id, name, principal, interest_rate, type (loan/credit/mortgage)
 - minimum_payment, due_day, start_date, payoff_strategy
 ```
@@ -214,9 +214,9 @@ New Schema: wallet__debts
 - Color-coded tag labels
 
 ```
-New Schema: wallet__tags
+New Schema: tags
 - id, name, color, parent_tag (optional)
-New Junction: wallet__transaction_tags
+New Junction: transaction_tags
 ```
 
 #### 7.2 Smart Filters / Saved Views
@@ -235,7 +235,7 @@ New Junction: wallet__transaction_tags
 - Spending per merchant analytics
 
 ```
-New Schema: wallet__merchants
+New Schema: merchants
 - id, name, icon, default_category, location (optional)
 ```
 
@@ -250,9 +250,9 @@ New Schema: wallet__merchants
 - Settlement tracking (IOUs)
 
 ```
-New Schema: wallet__transaction_splits
+New Schema: transaction_splits
 - id, base_transaction, category, amount, percentage
-wallet__shared_expenses
+shared_expenses
 - id, transaction, payer_name, amount, is_settled
 ```
 
@@ -283,8 +283,8 @@ wallet__shared_expenses
 
 ```
 New Schemas:
-- wallet__investments (id, name, type, quantity, purchase_price, asset)
-- wallet__investment_prices (id, investment, price, date)
+- investments (id, name, type, quantity, purchase_price, asset)
+- investment_prices (id, investment, price, date)
 ```
 
 ---

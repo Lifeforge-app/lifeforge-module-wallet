@@ -1,9 +1,10 @@
-import { useWalletStore } from '@/stores/useWalletStore'
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { Widget, WithQuery } from 'lifeforge-ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
+import forgeAPI from '@/utils/forgeAPI'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -13,7 +14,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const { isAmountHidden } = useWalletStore()
 
   const incomeExpensesQuery = useQuery(
-    forgeAPI.wallet.analytics.getIncomeExpensesSummary
+    forgeAPI.analytics.getIncomeExpensesSummary
       .input({
         year: new Date().getFullYear().toString(),
         month: (new Date().getMonth() + 1).toString()

@@ -1,10 +1,11 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormModal, defineForm } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import type { InferInput } from 'shared'
 import colors from 'tailwindcss/colors'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import type { WalletCategory } from '..'
 
@@ -24,8 +25,8 @@ function ModifyCategoryModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.categories.create
-      : forgeAPI.wallet.categories.update.input({
+      ? forgeAPI.categories.create
+      : forgeAPI.categories.update.input({
           id: initialData?.id || ''!
         })
     ).mutationOptions({
@@ -44,7 +45,7 @@ function ModifyCategoryModal({
 
   const { formProps } = defineForm<
     InferInput<
-      (typeof forgeAPI.wallet.categories)[typeof type extends 'update'
+      (typeof forgeAPI.categories)[typeof type extends 'update'
         ? 'update'
         : 'create']
     >['body']

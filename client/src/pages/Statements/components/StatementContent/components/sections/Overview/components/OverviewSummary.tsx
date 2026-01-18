@@ -1,12 +1,13 @@
-import forgeAPI from '@/utils/forgeAPI'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { WithQuery } from 'lifeforge-ui'
 
+import forgeAPI from '@/utils/forgeAPI'
+import numberToCurrency from '@/utils/numberToCurrency'
+
 function OverviewSummary({ month, year }: { month: number; year: number }) {
   const incomeExpensesQuery = useQuery(
-    forgeAPI.wallet.analytics.getIncomeExpensesSummary
+    forgeAPI.analytics.getIncomeExpensesSummary
       .input({
         year: year.toString(),
         month: (month + 1).toString()

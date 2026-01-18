@@ -1,9 +1,10 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { WithQuery } from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
 import { usePersonalization } from 'shared'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import MiniCalendarDateItem from './MiniCalendarDateItem'
 
@@ -21,7 +22,7 @@ function MiniCalendarContent({
   const [nextToSelect, setNextToSelect] = useState<'start' | 'end'>('start')
 
   const transactionCountQuery = useQuery(
-    forgeAPI.wallet.analytics.getTransactionCountByDay
+    forgeAPI.analytics.getTransactionCountByDay
       .input({
         year: currentYear.toString(),
         month: currentMonth.toString(),

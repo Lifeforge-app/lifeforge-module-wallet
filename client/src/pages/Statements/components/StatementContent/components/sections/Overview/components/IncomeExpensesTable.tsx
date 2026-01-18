@@ -1,11 +1,12 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
+
+import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
+import numberToCurrency from '@/utils/numberToCurrency'
 
 function IncomeExpensesTable({
   month,
@@ -32,7 +33,7 @@ function IncomeExpensesTable({
 
   // Current month breakdown
   const currentMonthQuery = useQuery(
-    forgeAPI.wallet.analytics.getCategoriesBreakdown
+    forgeAPI.analytics.getCategoriesBreakdown
       .input({
         year: year.toString(),
         month: (month + 1).toString() // API expects 1-indexed
@@ -42,7 +43,7 @@ function IncomeExpensesTable({
 
   // Previous month breakdown
   const prevMonthQuery = useQuery(
-    forgeAPI.wallet.analytics.getCategoriesBreakdown
+    forgeAPI.analytics.getCategoriesBreakdown
       .input({
         year: prevMonth.year.toString(),
         month: prevMonth.month.toString()

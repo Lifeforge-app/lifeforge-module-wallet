@@ -31,18 +31,16 @@ function CategoryItem({ category }: { category: WalletCategory }) {
   }, [category])
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.categories.remove
-      .input({ id: category.id })
-      .mutationOptions({
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: ['wallet', 'categories']
-          })
-        },
-        onError: err => {
-          toast.error(`Failed to delete category: ${err.message}`)
-        }
-      })
+    forgeAPI.categories.remove.input({ id: category.id }).mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['wallet', 'categories']
+        })
+      },
+      onError: err => {
+        toast.error(`Failed to delete category: ${err.message}`)
+      }
+    })
   )
 
   const handleDeleteCategory = useCallback(() => {

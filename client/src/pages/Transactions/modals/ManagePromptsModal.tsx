@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   Alert,
@@ -13,16 +12,18 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { usePromiseLoading } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 function ManagePromptsModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation('apps.wallet')
 
   const messagesQuery = useQuery(
-    forgeAPI.wallet.transactions.prompts.get.queryOptions()
+    forgeAPI.transactions.prompts.get.queryOptions()
   )
 
   const openaiAPIKeyAvailabilityQuery = useQuery(
-    forgeAPI.apiKeys.entries.checkKeys
-      .input({
+    forgeAPI
+      .checkAPIKeys({
         keys: 'openai'
       })
       .queryOptions()
@@ -34,7 +35,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
   })
 
   const savePromptsMutation = useMutation(
-    forgeAPI.wallet.transactions.prompts.update.mutationOptions({
+    forgeAPI.transactions.prompts.update.mutationOptions({
       onSuccess: () => {
         toast.success('Prompts saved successfully')
         messagesQuery.refetch()
@@ -52,11 +53,10 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
 
   async function handleAutoGeneratePrompt(field: 'income' | 'expenses') {
     try {
-      const response =
-        await forgeAPI.wallet.transactions.prompts.autoGenerate.mutate({
-          type: field,
-          count: 50
-        })
+      const response = await forgeAPI.transactions.prompts.autoGenerate.mutate({
+        type: field,
+        count: 50
+      })
 
       setPrompts(prev => ({ ...prev, [field]: response }))
     } catch {

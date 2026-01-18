@@ -1,15 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
-import type { ForgeAPIClientController } from 'shared'
+import type { ForgeEndpoint } from 'shared'
 
 interface YearMonth {
   year: number | null
   month: number | null
 }
 
-export default function useYearMonthState(
-  controller: ForgeAPIClientController
-) {
+export default function useYearMonthState(controller: ForgeEndpoint) {
   const [yearMonth, setYearMonthState] = useState<YearMonth>({
     year: null,
     month: null

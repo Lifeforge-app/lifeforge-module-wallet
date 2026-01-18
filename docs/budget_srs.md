@@ -378,10 +378,10 @@
 ### 4.1 Budget Schema
 
 ```typescript
-// wallet__budgets
+// budgets
 {
   id: string           // Auto-generated, 15 chars
-  category: relation   // -> wallet__categories (expenses only)
+  category: relation   // -> categories (expenses only)
   amount: number       // Budget limit
   period: 'monthly' | 'quarterly' | 'yearly'
   rollover_enabled: boolean
@@ -397,10 +397,10 @@
 ### 4.2 Budget Period History Schema
 
 ```typescript
-// wallet__budget_periods
+// budget_periods
 {
   id: string
-  budget: relation     // -> wallet__budgets
+  budget: relation     // -> budgets
   period_start: date   // Start of this budget period
   period_end: date     // End of this budget period
   base_amount: number  // Original budget for this period
@@ -414,7 +414,7 @@
 ### 4.3 Savings Goal Schema
 
 ```typescript
-// wallet__savings_goals
+// savings_goals
 {
   id: string
   name: string
@@ -423,7 +423,7 @@
   target_amount: number
   current_amount: number  // Sum of contributions
   target_date: date       // Optional
-  linked_asset: relation  // -> wallet__assets, optional
+  linked_asset: relation  // -> assets, optional
   status: 'active' | 'achieved' | 'abandoned'
   created: datetime
   updated: datetime
@@ -433,13 +433,13 @@
 ### 4.4 Savings Contribution Schema
 
 ```typescript
-// wallet__savings_contributions
+// savings_contributions
 {
   id: string
-  goal: relation         // -> wallet__savings_goals
+  goal: relation         // -> savings_goals
   amount: number
   date: date
-  transaction: relation  // -> wallet__transactions, optional
+  transaction: relation  // -> transactions, optional
   note: string
   created: datetime
 }
@@ -609,8 +609,8 @@
 
 | Dependency | Type | Notes |
 |------------|------|-------|
-| wallet__categories | Existing | Budgets link to expense categories |
-| wallet__transactions | Existing | Calculate spent amounts |
+| categories | Existing | Budgets link to expense categories |
+| transactions | Existing | Calculate spent amounts |
 | Notification system | New/Existing | For budget alerts |
 | React Query | Existing | Data fetching |
 | Recharts | Existing | Charts and graphs |

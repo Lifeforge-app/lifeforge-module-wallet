@@ -1,85 +1,55 @@
-import { SCHEMAS } from '@schema'
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
+import walletSchemas from '../schema'
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all ledgers',
-    ms: 'Dapatkan semua lejar',
-    'zh-CN': '获取所有分类账',
-    'zh-TW': '獲取所有分類帳'
-  })
+  .description('Get all ledgers')
   .input({})
   .callback(({ pb }) =>
-    pb.getFullList
-      .collection('wallet__ledgers_aggregated')
-      .sort(['name'])
-      .execute()
+    pb.getFullList.collection('ledgers_aggregated').sort(['name']).execute()
   )
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new ledger',
-    ms: 'Cipta lejar baharu',
-    'zh-CN': '创建新分类账',
-    'zh-TW': '創建新分類帳'
-  })
+  .description('Create a new ledger')
   .input({
-    body: SCHEMAS.wallet.ledgers.schema
+    body: walletSchemas.ledgers
   })
   .statusCode(201)
   .callback(({ pb, body }) =>
-    pb.create.collection('wallet__ledgers').data(body).execute()
+    pb.create.collection('ledgers').data(body).execute()
   )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update ledger details',
-    ms: 'Kemas kini butiran lejar',
-    'zh-CN': '更新分类账详情',
-    'zh-TW': '更新分類帳詳情'
-  })
+  .description('Update ledger details')
   .input({
     query: z.object({
       id: z.string()
     }),
-    body: SCHEMAS.wallet.ledgers.schema
+    body: walletSchemas.ledgers
   })
   .existenceCheck('query', {
-    id: 'wallet__ledgers'
+    id: 'ledgers'
   })
   .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('wallet__ledgers').id(id).data(body).execute()
+    pb.update.collection('ledgers').id(id).data(body).execute()
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a ledger',
-    ms: 'Padam lejar',
-    'zh-CN': '删除分类账',
-    'zh-TW': '刪除分類帳'
-  })
+  .description('Delete a ledger')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__ledgers'
+    id: 'ledgers'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('wallet__ledgers').id(id).execute()
+    pb.delete.collection('ledgers').id(id).execute()
   )
-
-export default forgeRouter({
-  list,
-  create,
-  update,
-  remove
-})

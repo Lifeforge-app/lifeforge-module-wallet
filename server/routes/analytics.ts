@@ -1,16 +1,16 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
 
-const getTypesCount = forgeController
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
+
+export const getTypesCount = forge
   .query()
-  .description({
-    en: 'Get transaction counts and totals by type',
-    ms: 'Dapatkan kiraan dan jumlah transaksi mengikut jenis',
-    'zh-CN': '按类型获取交易数量和总额',
-    'zh-TW': '按類型獲取交易數量和總額'
-  })
+  .description('Get transaction counts and totals by type')
   .input({
     query: z.object({
       year: z
@@ -27,7 +27,7 @@ const getTypesCount = forgeController
     // If year/month provided, fetch from amount_aggregated with filter
     if (year !== undefined && month !== undefined) {
       const data = await pb.getFullList
-        .collection('wallet__transactions_amount_aggregated')
+        .collection('transactions_amount_aggregated')
         .filter([
           {
             field: 'year',
@@ -66,7 +66,7 @@ const getTypesCount = forgeController
 
     // Otherwise, fetch all-time totals from types_aggregated
     const types = await pb.getFullList
-      .collection('wallet__transaction_types_aggregated')
+      .collection('transaction_types_aggregated')
       .execute()
 
     const typesCount = types.reduce(
@@ -86,14 +86,9 @@ const getTypesCount = forgeController
     return typesCount
   })
 
-const getIncomeExpensesSummary = forgeController
+export const getIncomeExpensesSummary = forge
   .query()
-  .description({
-    en: 'Get income and expenses summary for a month',
-    ms: 'Dapatkan ringkasan pendapatan dan perbelanjaan untuk sebulan',
-    'zh-CN': '获取月度收入和支出摘要',
-    'zh-TW': '獲取月度收入和支出摘要'
-  })
+  .description('Get income and expenses summary for a month')
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -101,18 +96,16 @@ const getIncomeExpensesSummary = forgeController
     })
   })
   .callback(async ({ pb, query: { year, month } }) => {
-    const start = moment(`${year}-${month}-01`)
+    const start = dayjs(`${year}-${month}-01`)
       .startOf('month')
       .format('YYYY-MM-DD')
 
-    const end = moment(`${year}-${month}-01`)
-      .endOf('month')
-      .format('YYYY-MM-DD')
+    const end = dayjs(`${year}-${month}-01`).endOf('month').format('YYYY-MM-DD')
 
     const transactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .fields({
         type: true,
@@ -123,13 +116,13 @@ const getIncomeExpensesSummary = forgeController
 
     const inThisMonth = transactions.filter(
       transaction =>
-        moment(
-          moment(transaction.expand!.base_transaction!.date!).format(
+        dayjs(
+          dayjs(transaction.expand!.base_transaction!.date!).format(
             'YYYY-MM-DD'
           )
         ).isSameOrAfter(start) &&
-        moment(
-          moment(transaction.expand!.base_transaction!.date!).format(
+        dayjs(
+          dayjs(transaction.expand!.base_transaction!.date!).format(
             'YYYY-MM-DD'
           )
         ).isSameOrBefore(end)
@@ -175,14 +168,9 @@ const getIncomeExpensesSummary = forgeController
     }
   })
 
-const getCategoriesBreakdown = forgeController
+export const getCategoriesBreakdown = forge
   .query()
-  .description({
-    en: 'Get income and expenses breakdown by category for a month',
-    ms: 'Dapatkan pecahan pendapatan dan perbelanjaan mengikut kategori untuk sebulan',
-    'zh-CN': '按类别获取月度收入和支出明细',
-    'zh-TW': '按類別獲取月度收入和支出明細'
-  })
+  .description('Get income and expenses breakdown by category for a month')
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -190,23 +178,23 @@ const getCategoriesBreakdown = forgeController
     })
   })
   .callback(async ({ pb, query: { year, month } }) => {
-    const startDate = moment()
+    const startDate = dayjs()
       .year(year)
       .month(month - 1)
       .startOf('month')
       .format('YYYY-MM-DD')
 
-    const endDate = moment()
+    const endDate = dayjs()
       .year(year)
       .month(month - 1)
       .endOf('month')
       .format('YYYY-MM-DD')
 
     const transactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        category: 'wallet__categories',
-        base_transaction: 'wallet__transactions'
+        category: 'categories',
+        base_transaction: 'transactions'
       })
       .filter([
         {
@@ -297,31 +285,21 @@ const getCategoriesBreakdown = forgeController
     }
   })
 
-const getSpendingByLocation = forgeController
+export const getSpendingByLocation = forge
   .query()
-  .description({
-    en: 'Get spending aggregated by location for heatmap',
-    ms: 'Dapatkan perbelanjaan yang diagregatkan mengikut lokasi untuk peta haba',
-    'zh-CN': '获取按位置汇总的支出（用于热力图）',
-    'zh-TW': '獲取按位置匯總的支出（用於熱力圖）'
-  })
+  .description('Get spending aggregated by location for heatmap')
   .input({})
   .callback(async ({ pb }) =>
-    pb.getFullList.collection('wallet__expenses_location_aggregated').execute()
+    pb.getFullList.collection('expenses_location_aggregated').execute()
   )
 
-const getAvailableYearMonths = forgeController
+export const getAvailableYearMonths = forge
   .query()
-  .description({
-    en: 'Get available years and months from transaction dates',
-    ms: 'Dapatkan tahun dan bulan yang tersedia daripada tarikh transaksi',
-    'zh-CN': '获取交易日期中可用的年份和月份',
-    'zh-TW': '獲取交易日期中可用的年份和月份'
-  })
+  .description('Get available years and months from transaction dates')
   .input({})
   .callback(async ({ pb }) => {
     const transactions = await pb.getFullList
-      .collection('wallet__transactions')
+      .collection('transactions')
       .fields({
         date: true
       })
@@ -330,7 +308,7 @@ const getAvailableYearMonths = forgeController
     const yearMonthMap: Record<number, Set<number>> = {}
 
     for (const transaction of transactions) {
-      const date = moment(transaction.date)
+      const date = dayjs(transaction.date)
 
       const year = date.year()
 
@@ -356,14 +334,9 @@ const getAvailableYearMonths = forgeController
     return { years, monthsByYear }
   })
 
-const getTransactionCountByDay = forgeController
+export const getTransactionCountByDay = forge
   .query()
-  .description({
-    en: 'Get transaction counts by day for a specific month',
-    ms: 'Dapatkan bilangan transaksi mengikut hari untuk bulan tertentu',
-    'zh-CN': '获取特定月份每天的交易数量',
-    'zh-TW': '獲取特定月份每天的交易數量'
-  })
+  .description('Get transaction counts by day for a specific month')
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -388,7 +361,7 @@ const getTransactionCountByDay = forgeController
   })
   .callback(async ({ pb, query: { year, month, viewFilter } }) => {
     const data = await pb.getFullList
-      .collection('wallet__transactions_amount_aggregated')
+      .collection('transactions_amount_aggregated')
       .filter([
         {
           field: 'year',
@@ -442,21 +415,16 @@ const getTransactionCountByDay = forgeController
     return countMap
   })
 
-const getChartData = forgeController
+export const getChartData = forge
   .query()
-  .description({
-    en: 'Get chart data for income/expenses by date range',
-    ms: 'Dapatkan data carta untuk pendapatan/perbelanjaan mengikut julat tarikh',
-    'zh-CN': '获取收入/支出按日期范围的图表数据',
-    'zh-TW': '獲取收入/支出按日期範圍的圖表數據'
-  })
+  .description('Get chart data for income/expenses by date range')
   .input({
     query: z.object({
       range: z.enum(['week', 'month', 'ytd'])
     })
   })
   .callback(async ({ pb, query: { range } }) => {
-    const now = moment()
+    const now = dayjs()
 
     const currentYear = now.year()
 
@@ -468,10 +436,10 @@ const getChartData = forgeController
 
     switch (range) {
       case 'week': {
-        const startOfWeek = moment().startOf('week')
+        const startOfWeek = dayjs().startOf('week')
 
         startDate = startOfWeek.format('YYYY-MM-DD')
-        endDate = moment().endOf('week').format('YYYY-MM-DD')
+        endDate = dayjs().endOf('week').format('YYYY-MM-DD')
         groupBy = 'day'
 
         for (let i = 0; i <= 6; i++) {
@@ -481,9 +449,9 @@ const getChartData = forgeController
       }
 
       case 'month': {
-        const startOfMonth = moment().startOf('month')
+        const startOfMonth = dayjs().startOf('month')
 
-        const endOfMonth = moment().endOf('month')
+        const endOfMonth = dayjs().endOf('month')
 
         startDate = startOfMonth.format('YYYY-MM-DD')
         endDate = endOfMonth.format('YYYY-MM-DD')
@@ -496,12 +464,12 @@ const getChartData = forgeController
       }
 
       case 'ytd': {
-        startDate = moment().startOf('year').format('YYYY-MM-DD')
-        endDate = moment().endOf('month').format('YYYY-MM-DD')
+        startDate = dayjs().startOf('year').format('YYYY-MM-DD')
+        endDate = dayjs().endOf('month').format('YYYY-MM-DD')
         groupBy = 'month'
 
         for (let i = 0; i <= now.month(); i++) {
-          labels.push(moment().month(i).format('MMM'))
+          labels.push(dayjs().month(i).format('MMM'))
         }
         break
       }
@@ -509,9 +477,9 @@ const getChartData = forgeController
 
     // Fetch transactions for the date range
     const transactions = await pb.getFullList
-      .collection('wallet__transactions_income_expenses')
+      .collection('transactions_income_expenses')
       .expand({
-        base_transaction: 'wallet__transactions'
+        base_transaction: 'transactions'
       })
       .filter([
         {
@@ -540,16 +508,16 @@ const getChartData = forgeController
       if (!base) continue
 
       // Only include transactions from current year
-      const transactionYear = moment(base.date).year()
+      const transactionYear = dayjs(base.date).year()
 
       if (transactionYear !== currentYear) continue
 
       let dateKey: string
 
       if (groupBy === 'day') {
-        dateKey = moment(base.date).format('MMM DD')
+        dateKey = dayjs(base.date).format('MMM DD')
       } else {
-        dateKey = moment(base.date).format('MMM')
+        dateKey = dayjs(base.date).format('MMM')
       }
 
       if (resultMap[dateKey]) {
@@ -568,13 +536,3 @@ const getChartData = forgeController
       expenses: resultMap[date].expenses > 0 ? -resultMap[date].expenses : 0
     }))
   })
-
-export default forgeRouter({
-  getTypesCount,
-  getIncomeExpensesSummary,
-  getCategoriesBreakdown,
-  getSpendingByLocation,
-  getAvailableYearMonths,
-  getTransactionCountByDay,
-  getChartData
-})

@@ -25,7 +25,7 @@ function GoalCard({ goal }: { goal: SavingGoal }) {
   const { open } = useModalStore()
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.savingsGoals.remove.input({ id: goal.id }).mutationOptions({
+    forgeAPI.savingsGoals.remove.input({ id: goal.id }).mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['wallet', 'savingsGoals'] })
         toast.success(t('savingGoals.messages.goalDeleted'))

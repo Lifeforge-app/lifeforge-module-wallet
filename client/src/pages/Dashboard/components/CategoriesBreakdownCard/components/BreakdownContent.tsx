@@ -1,6 +1,3 @@
-import { type WalletCategory, useWalletData } from '@/hooks/useWalletData'
-import useYearMonthState from '@/hooks/useYearMonthState'
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
@@ -13,6 +10,10 @@ import {
 } from 'lifeforge-ui'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { type WalletCategory, useWalletData } from '@/hooks/useWalletData'
+import useYearMonthState from '@/hooks/useYearMonthState'
+import forgeAPI from '@/utils/forgeAPI'
 
 import { CategoriesBreakdownContext } from '..'
 import BreakdownChartLegend from './BreakdownChartLegend'
@@ -35,10 +36,10 @@ function BreakdownContent({
     options: { years: yearsOptions, months: monthsOptions },
     setYearMonth,
     isLoading: isYearMonthLoading
-  } = useYearMonthState(forgeAPI.wallet.analytics.getAvailableYearMonths)
+  } = useYearMonthState(forgeAPI.analytics.getAvailableYearMonths)
 
   const categoriesBreakdownQuery = useQuery(
-    forgeAPI.wallet.analytics.getCategoriesBreakdown
+    forgeAPI.analytics.getCategoriesBreakdown
       .input({
         year: year?.toString() ?? '',
         month: ((month ?? 0) + 1).toString()

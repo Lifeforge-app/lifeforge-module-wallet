@@ -34,12 +34,12 @@ function ModifyBudgetModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.budgets.create.input({
+      ? forgeAPI.budgets.create.input({
           category: category.id,
           year: year.toString(),
           month: month.toString()
         })
-      : forgeAPI.wallet.budgets.update.input({
+      : forgeAPI.budgets.update.input({
           id: existingBudget?.id || ''
         })
     ).mutationOptions({

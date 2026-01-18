@@ -1,85 +1,55 @@
-import { SCHEMAS } from '@schema'
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
+import walletSchemas from '../schema'
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all transaction categories',
-    ms: 'Dapatkan semua kategori transaksi',
-    'zh-CN': '获取所有交易类别',
-    'zh-TW': '獲取所有交易類別'
-  })
+  .description('Get all transaction categories')
   .input({})
   .callback(({ pb }) =>
-    pb.getFullList
-      .collection('wallet__categories_aggregated')
-      .sort(['name'])
-      .execute()
+    pb.getFullList.collection('categories_aggregated').sort(['name']).execute()
   )
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new transaction category',
-    ms: 'Cipta kategori transaksi baharu',
-    'zh-CN': '创建新交易类别',
-    'zh-TW': '創建新交易類別'
-  })
+  .description('Create a new transaction category')
   .input({
-    body: SCHEMAS.wallet.categories.schema
+    body: walletSchemas.categories
   })
   .statusCode(201)
   .callback(({ pb, body }) =>
-    pb.create.collection('wallet__categories').data(body).execute()
+    pb.create.collection('categories').data(body).execute()
   )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update category details',
-    ms: 'Kemas kini butiran kategori',
-    'zh-CN': '更新类别详情',
-    'zh-TW': '更新類別詳情'
-  })
+  .description('Update category details')
   .input({
     query: z.object({
       id: z.string()
     }),
-    body: SCHEMAS.wallet.categories.schema
+    body: walletSchemas.categories
   })
   .existenceCheck('query', {
-    id: 'wallet__categories'
+    id: 'categories'
   })
   .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('wallet__categories').id(id).data(body).execute()
+    pb.update.collection('categories').id(id).data(body).execute()
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a transaction category',
-    ms: 'Padam kategori transaksi',
-    'zh-CN': '删除交易类别',
-    'zh-TW': '刪除交易類別'
-  })
+  .description('Delete a transaction category')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__categories'
+    id: 'categories'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('wallet__categories').id(id).execute()
+    pb.delete.collection('categories').id(id).execute()
   )
-
-export default forgeRouter({
-  list,
-  create,
-  update,
-  remove
-})

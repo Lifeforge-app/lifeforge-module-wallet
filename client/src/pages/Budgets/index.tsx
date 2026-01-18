@@ -20,11 +20,9 @@ import BudgetCard from './components/BudgetCard'
 import NoBudgetCard from './components/NoBudgetCard'
 import SummaryCard from './components/SummaryCard'
 
-export type Category = InferOutput<
-  typeof forgeAPI.wallet.categories.list
->[number]
+export type Category = InferOutput<typeof forgeAPI.categories.list>[number]
 
-export type Budget = InferOutput<typeof forgeAPI.wallet.budgets.list>[number]
+export type Budget = InferOutput<typeof forgeAPI.budgets.list>[number]
 
 function Budgets() {
   const { t } = useTranslation('apps.wallet')
@@ -40,14 +38,12 @@ function Budgets() {
     yearMonth: { year, month },
     setYearMonth,
     options: { years: yearsOptions, months: monthsOptions }
-  } = useYearMonthState(forgeAPI.wallet.budgets.getAvailableYearMonths)
+  } = useYearMonthState(forgeAPI.budgets.getAvailableYearMonths)
 
-  const categoriesQuery = useQuery(
-    forgeAPI.wallet.categories.list.queryOptions()
-  )
+  const categoriesQuery = useQuery(forgeAPI.categories.list.queryOptions())
 
   const budgetsQuery = useQuery({
-    ...forgeAPI.wallet.budgets.list
+    ...forgeAPI.budgets.list
       .input({
         year: year?.toString() ?? '',
         month: month?.toString() ?? ''

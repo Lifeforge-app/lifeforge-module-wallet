@@ -144,11 +144,11 @@ function Details({ transaction }: { transaction: WalletTransaction }) {
             variant="secondary"
             onClick={() => {
               open(ViewReceiptModal, {
-                src: forgeAPI.media.input({
+                src: forgeAPI.getMedia({
                   collectionId: transaction.collectionId,
                   recordId: transaction.id,
                   fieldId: transaction.receipt
-                }).endpoint
+                })
               })
             }}
           >

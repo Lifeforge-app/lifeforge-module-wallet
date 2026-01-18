@@ -1,9 +1,10 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { FormModal, defineForm } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import type { SavingGoal } from '..'
 
@@ -31,8 +32,8 @@ function ModifyGoalModal({
 
   const mutation = useMutation(
     (type === 'create'
-      ? forgeAPI.wallet.savingsGoals.create
-      : forgeAPI.wallet.savingsGoals.update.input({
+      ? forgeAPI.savingsGoals.create
+      : forgeAPI.savingsGoals.update.input({
           id: existingGoal?.id || ''
         })
     ).mutationOptions({

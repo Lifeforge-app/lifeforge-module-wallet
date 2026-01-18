@@ -28,11 +28,11 @@ export default function getFormFileFieldInitialData(
 
   if (typeof file === 'string') {
     // Generate preview URL for existing file
-    preview = forgeAPI.media.input({
+    preview = forgeAPI.getMedia({
       collectionId: initialData.collectionId!,
       recordId: initialData.id!,
       fieldId: file
-    }).endpoint
+    })
   } else if (file instanceof File) {
     if (file.type.startsWith('image/')) {
       // Generate preview URL for new image file

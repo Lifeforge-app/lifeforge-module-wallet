@@ -1,16 +1,14 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
 
-const list = forgeController
+dayjs.extend(isSameOrBefore)
+
+export const list = forge
   .query()
-  .description({
-    en: 'Get all budgets for a specific month with spent amounts',
-    ms: 'Dapatkan semua bajet untuk bulan tertentu dengan jumlah perbelanjaan',
-    'zh-CN': '获取特定月份的所有预算及其支出金额',
-    'zh-TW': '獲取特定月份的所有預算及其支出金額'
-  })
+  .description('Get all budgets for a specific month with spent amounts')
   .input({
     query: z.object({
       year: z.string().transform(val => parseInt(val)),
@@ -19,7 +17,7 @@ const list = forgeController
   })
   .callback(async ({ pb, query: { year, month } }) =>
     pb.getFullList
-      .collection('wallet__budgets_aggregated')
+      .collection('budgets_aggregated')
       .filter([
         {
           field: 'year',
@@ -33,7 +31,7 @@ const list = forgeController
         }
       ])
       .expand({
-        category: 'wallet__categories'
+        category: 'categories'
       })
       .execute()
   )
@@ -45,14 +43,9 @@ const ModifyBudgetSchema = z.object({
   alert_threshold: z.number().min(0).max(200).optional().default(80)
 })
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new budget',
-    ms: 'Cipta bajet baharu',
-    'zh-CN': '创建新预算',
-    'zh-TW': '創建新預算'
-  })
+  .description('Create a new budget')
   .input({
     query: z.object({
       category: z.string(),
@@ -62,13 +55,13 @@ const create = forgeController
     body: ModifyBudgetSchema
   })
   .existenceCheck('query', {
-    category: 'wallet__categories'
+    category: 'categories'
   })
   .statusCode(201)
   .callback(async ({ pb, body, query: { category, year, month } }) => {
     // Check if budget already exists for this category in the same year/month
     const existingBudget = await pb.getFirstListItem
-      .collection('wallet__budgets')
+      .collection('budgets')
       .filter([
         {
           field: 'category',
@@ -101,7 +94,7 @@ const create = forgeController
     }
 
     return pb.create
-      .collection('wallet__budgets')
+      .collection('budgets')
       .data({
         category,
         amount: body.amount,
@@ -115,14 +108,9 @@ const create = forgeController
       .execute()
   })
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update budget settings',
-    ms: 'Kemas kini tetapan bajet',
-    'zh-CN': '更新预算设置',
-    'zh-TW': '更新預算設置'
-  })
+  .description('Update budget settings')
   .input({
     query: z.object({
       id: z.string()
@@ -130,49 +118,35 @@ const update = forgeController
     body: ModifyBudgetSchema
   })
   .existenceCheck('query', {
-    id: 'wallet__budgets'
+    id: 'budgets'
   })
   .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('wallet__budgets').id(id).data(body).execute()
+    pb.update.collection('budgets').id(id).data(body).execute()
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a budget (soft delete)',
-    ms: 'Padam bajet (padam lembut)',
-    'zh-CN': '删除预算（软删除）',
-    'zh-TW': '刪除預算（軟刪除）'
-  })
+  .description('Delete a budget (soft delete)')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__budgets'
+    id: 'budgets'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.update
-      .collection('wallet__budgets')
-      .id(id)
-      .data({ is_active: false })
-      .execute()
+    pb.update.collection('budgets').id(id).data({ is_active: false }).execute()
   )
 
-const getAvailableYearMonths = forgeController
+export const getAvailableYearMonths = forge
   .query()
-  .description({
-    en: 'Get available year/months for budget viewing',
-    ms: 'Dapatkan tahun/bulan yang tersedia untuk paparan bajet',
-    'zh-CN': '获取可用的年/月以查看预算',
-    'zh-TW': '獲取可用的年/月以查看預算'
-  })
+  .description('Get available year/months for budget viewing')
   .input({})
   .callback(async ({ pb }) => {
     const earliestBudget = await pb.getFirstListItem
-      .collection('wallet__budgets')
+      .collection('budgets')
       .filter([
         {
           field: 'is_active',
@@ -187,7 +161,7 @@ const getAvailableYearMonths = forgeController
       .execute()
       .catch(() => null)
 
-    const now = moment()
+    const now = dayjs()
 
     const nextMonth = now.clone().add(1, 'month')
 
@@ -202,7 +176,7 @@ const getAvailableYearMonths = forgeController
       }
     }
 
-    const startDate = moment(earliestBudget.created).startOf('month')
+    const startDate = dayjs(earliestBudget.created).startOf('month')
 
     const endDate = nextMonth.clone().endOf('month')
 
@@ -231,11 +205,3 @@ const getAvailableYearMonths = forgeController
 
     return { years, monthsByYear }
   })
-
-export default forgeRouter({
-  list,
-  create,
-  update,
-  remove,
-  getAvailableYearMonths
-})

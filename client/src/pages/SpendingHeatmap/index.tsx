@@ -11,17 +11,17 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import '../../index.css'
 
 type SpendingLocationData = InferOutput<
-  typeof forgeAPI.wallet.analytics.getSpendingByLocation
+  typeof forgeAPI.analytics.getSpendingByLocation
 >[number]
 
 function SpendingHeatmap() {
   const spendingDataQuery = useQuery(
-    forgeAPI.wallet.analytics.getSpendingByLocation.queryOptions()
+    forgeAPI.analytics.getSpendingByLocation.queryOptions()
   )
 
   const googleMapAPIKeyQuery = useQuery(
-    forgeAPI.apiKeys.entries.get
-      .input({
+    forgeAPI
+      .getAPIKeys({
         keyId: 'gcloud'
       })
       .queryOptions({

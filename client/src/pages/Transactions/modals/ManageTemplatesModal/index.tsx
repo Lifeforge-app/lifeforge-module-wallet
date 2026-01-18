@@ -33,7 +33,7 @@ function ManageTemplatesModal({
   )
 
   const transactionTemplatesQuery = useQuery(
-    forgeAPI.wallet.templates.list.queryOptions()
+    forgeAPI.templates.list.queryOptions()
   )
 
   return (

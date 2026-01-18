@@ -1,17 +1,17 @@
-import { SCHEMAS } from '@schema'
 import z from 'zod'
 
-import { PBService, getAPIKey } from '@functions/database'
-import { fetchAI } from '@functions/external/ai'
-import searchLocations from '@functions/external/location'
+import walletSchemas from '../schema'
 
-export async function getTransactionDetails(ocrResult: string, pb: PBService) {
-  type FinalResult = Omit<
-    z.infer<typeof SCHEMAS.wallet.transactions.schema>,
-    'type'
-  > &
+export async function getTransactionDetails(
+  ocrResult: string,
+  pb: any,
+  fetchAI: any,
+  getAPIKey: any,
+  searchLocations: any
+) {
+  type FinalResult = Omit<z.infer<typeof walletSchemas.transactions>, 'type'> &
     Omit<
-      z.infer<typeof SCHEMAS.wallet.transactions_income_expenses.schema>,
+      z.infer<typeof walletSchemas.transactions_income_expenses>,
       'base_transaction' | 'type'
     > & {
       type: 'income' | 'expenses'
@@ -20,10 +20,10 @@ export async function getTransactionDetails(ocrResult: string, pb: PBService) {
   // Fetch all data in parallel
   const [particularPrompt, categories, key] = await Promise.all([
     pb.getFirstListItem
-      .collection('wallet__transactions_prompts')
+      .collection('transactions_prompts')
       .execute()
       .catch(() => null),
-    pb.getFullList.collection('wallet__categories').execute(),
+    pb.getFullList.collection('categories').execute() as any[],
     getAPIKey('gcloud', pb)
   ])
 
@@ -69,15 +69,17 @@ export async function getTransactionDetails(ocrResult: string, pb: PBService) {
     category: categoryMap.get(extractedData.category)
   }
 
-  const particularsPrompt = particularPrompt?.[extractedData.type]
-    ? `${particularPrompt[extractedData.type]}`
+  const particularsPrompt = particularPrompt?.[
+    extractedData.type as 'income' | 'expenses'
+  ]
+    ? `${particularPrompt[extractedData.type as 'income' | 'expenses']}`
     : 'Generate brief transaction description (5-10 words).'
 
   // Fetch templates matching the transaction type
-  const templates = await pb.getFullList
-    .collection('wallet__transaction_templates')
+  const templates = (await pb.getFullList
+    .collection('transaction_templates')
     .filter([{ field: 'type', operator: '=', value: extractedData.type }])
-    .execute()
+    .execute()) as any[]
 
   // Match template and generate particulars in one AI call (only if templates exist)
   if (templates.length > 0) {

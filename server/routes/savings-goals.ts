@@ -1,19 +1,14 @@
 import z from 'zod'
 
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all active saving goals',
-    ms: 'Dapatkan semua matlamat simpanan aktif',
-    'zh-CN': '获取所有活动储蓄目标',
-    'zh-TW': '獲取所有活動儲蓄目標'
-  })
+  .description('Get all active saving goals')
   .input({})
   .callback(async ({ pb }) =>
     pb.getFullList
-      .collection('wallet__savings_goals')
+      .collection('savings_goals')
       .filter([
         {
           field: 'is_active',
@@ -22,33 +17,28 @@ const list = forgeController
         }
       ])
       .expand({
-        asset: 'wallet__assets'
+        asset: 'assets'
       })
       .execute()
   )
 
-const getById = forgeController
+export const getById = forge
   .query()
-  .description({
-    en: 'Get saving goal by ID',
-    ms: 'Dapatkan matlamat simpanan mengikut ID',
-    'zh-CN': '按ID获取储蓄目标',
-    'zh-TW': '按ID獲取儲蓄目標'
-  })
+  .description('Get saving goal by ID')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__savings_goals'
+    id: 'savings_goals'
   })
   .callback(async ({ pb, query: { id } }) =>
     pb.getOne
-      .collection('wallet__savings_goals')
+      .collection('savings_goals')
       .id(id)
       .expand({
-        asset: 'wallet__assets'
+        asset: 'assets'
       })
       .execute()
   )
@@ -62,21 +52,16 @@ const ModifyGoalSchema = z.object({
   asset: z.string().optional()
 })
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new saving goal',
-    ms: 'Cipta matlamat simpanan baharu',
-    'zh-CN': '创建新储蓄目标',
-    'zh-TW': '創建新儲蓄目標'
-  })
+  .description('Create a new saving goal')
   .input({
     body: ModifyGoalSchema
   })
   .statusCode(201)
   .callback(async ({ pb, body }) =>
     pb.create
-      .collection('wallet__savings_goals')
+      .collection('savings_goals')
       .data({
         ...body,
         current_amount: 0,
@@ -85,14 +70,9 @@ const create = forgeController
       .execute()
   )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update a saving goal',
-    ms: 'Kemaskini matlamat simpanan',
-    'zh-CN': '更新储蓄目标',
-    'zh-TW': '更新儲蓄目標'
-  })
+  .description('Update a saving goal')
   .input({
     query: z.object({
       id: z.string()
@@ -100,20 +80,15 @@ const update = forgeController
     body: ModifyGoalSchema.partial()
   })
   .existenceCheck('query', {
-    id: 'wallet__savings_goals'
+    id: 'savings_goals'
   })
   .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('wallet__savings_goals').id(id).data(body).execute()
+    pb.update.collection('savings_goals').id(id).data(body).execute()
   )
 
-const contribute = forgeController
+export const contribute = forge
   .mutation()
-  .description({
-    en: 'Add or withdraw from a saving goal',
-    ms: 'Tambah atau keluarkan dari matlamat simpanan',
-    'zh-CN': '向储蓄目标存入或取出',
-    'zh-TW': '向儲蓄目標存入或取出'
-  })
+  .description('Add or withdraw from a saving goal')
   .input({
     query: z.object({
       id: z.string()
@@ -123,53 +98,36 @@ const contribute = forgeController
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__savings_goals'
+    id: 'savings_goals'
   })
   .callback(async ({ pb, query: { id }, body: { amount } }) => {
-    const goal = await pb.getOne
-      .collection('wallet__savings_goals')
-      .id(id)
-      .execute()
+    const goal = await pb.getOne.collection('savings_goals').id(id).execute()
 
     const newAmount = Math.max(0, (goal.current_amount || 0) + amount)
 
     return pb.update
-      .collection('wallet__savings_goals')
+      .collection('savings_goals')
       .id(id)
       .data({ current_amount: newAmount })
       .execute()
   })
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a saving goal',
-    ms: 'Padam matlamat simpanan',
-    'zh-CN': '删除储蓄目标',
-    'zh-TW': '刪除儲蓄目標'
-  })
+  .description('Delete a saving goal')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__savings_goals'
+    id: 'savings_goals'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
     pb.update
-      .collection('wallet__savings_goals')
+      .collection('savings_goals')
       .id(id)
       .data({ is_active: false })
       .execute()
   )
-
-export default forgeRouter({
-  list,
-  getById,
-  create,
-  update,
-  contribute,
-  remove
-})

@@ -39,16 +39,14 @@ function TransactionItem({
   }, [transaction])
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.transactions.remove
-      .input({ id: transaction.id })
-      .mutationOptions({
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['wallet'] })
-        },
-        onError: () => {
-          toast.error('Failed to delete transaction')
-        }
-      })
+    forgeAPI.transactions.remove.input({ id: transaction.id }).mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['wallet'] })
+      },
+      onError: () => {
+        toast.error('Failed to delete transaction')
+      }
+    })
   )
 
   const handleDeleteTransaction = useCallback(() => {

@@ -40,7 +40,7 @@ function BudgetCard({
   const { open } = useModalStore()
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.budgets.remove.input({ id: budget.id }).mutationOptions({
+    forgeAPI.budgets.remove.input({ id: budget.id }).mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['wallet', 'budgets'] })
         toast.success('Budget deleted successfully')

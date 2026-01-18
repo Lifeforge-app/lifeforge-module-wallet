@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -9,6 +8,8 @@ import {
   WithQuery
 } from 'lifeforge-ui'
 import { Link, useNavigate } from 'shared'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 function getProgressColor(percentage: number): string {
   if (percentage >= 100) return '#ef4444'
@@ -23,7 +24,7 @@ function BudgetsCard() {
   const now = new Date()
 
   const budgetsQuery = useQuery(
-    forgeAPI.wallet.budgets.list
+    forgeAPI.budgets.list
       .input({
         year: now.getFullYear().toString(),
         month: now.getMonth().toString()

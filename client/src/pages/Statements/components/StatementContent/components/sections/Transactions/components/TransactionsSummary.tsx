@@ -1,11 +1,12 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import { WithQuery } from 'lifeforge-ui'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 function TransactionsSummary({ month, year }: { month: number; year: number }) {
   const typesCountQuery = useQuery(
-    forgeAPI.wallet.analytics.getTypesCount
+    forgeAPI.analytics.getTypesCount
       .input({
         year: year.toString(),
         month: (month + 1).toString() // API expects 1-indexed

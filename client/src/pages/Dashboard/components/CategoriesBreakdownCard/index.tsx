@@ -1,15 +1,16 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { Widget } from 'lifeforge-ui'
 import { createContext, useState } from 'react'
 import { Link } from 'shared'
 import type { InferOutput } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 import type { WalletCategory } from '../../../Transactions'
 import BreakdownContent from './components/BreakdownContent'
 
 type CategoryBreakdown = InferOutput<
-  typeof forgeAPI.wallet.analytics.getCategoriesBreakdown
+  typeof forgeAPI.analytics.getCategoriesBreakdown
 >['income']
 
 export const CategoriesBreakdownContext = createContext<{

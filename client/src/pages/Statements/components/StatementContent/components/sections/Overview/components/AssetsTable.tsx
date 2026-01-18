@@ -1,17 +1,18 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { WithQuery } from 'lifeforge-ui'
 
+import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
+import numberToCurrency from '@/utils/numberToCurrency'
+
 function AssetsTable({ month, year }: { month: number; year: number }) {
   const { assetsQuery } = useWalletData()
 
   const balancesQuery = useQuery(
-    forgeAPI.wallet.assets.getAllAssetAccumulatedBalance
+    forgeAPI.assets.getAllAssetAccumulatedBalance
       .input({
         year: year.toString(),
         month: (month + 1).toString() // API expects 1-indexed

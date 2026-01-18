@@ -1,6 +1,7 @@
+import { cleanSchemas } from '@lifeforge/server-utils'
 import z from 'zod'
 
-const walletSchemas = {
+export const schemas = {
   assets: {
     schema: z.object({
       name: z.string(),
@@ -1744,4 +1745,4 @@ const walletSchemas = {
   }
 }
 
-export default walletSchemas
+export default cleanSchemas(schemas)

@@ -29,7 +29,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
   const { derivedThemeColor } = usePersonalization()
 
   const assetBalanceQuery = useQuery(
-    forgeAPI.wallet.assets.getAssetAccumulatedBalance
+    forgeAPI.assets.getAssetAccumulatedBalance
       .input({
         id: asset.id,
         rangeMode: 'month'
@@ -78,7 +78,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
   }, [chartScale, chartData])
 
   const deleteMutation = useMutation(
-    forgeAPI.wallet.assets.remove
+    forgeAPI.assets.remove
       .input({
         id: asset.id
       })

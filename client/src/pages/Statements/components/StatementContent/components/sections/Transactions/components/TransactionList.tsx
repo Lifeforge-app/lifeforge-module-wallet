@@ -1,11 +1,12 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { TagChip } from 'lifeforge-ui'
 import { useMemo } from 'react'
+
+import { useWalletData } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
+import numberToCurrency from '@/utils/numberToCurrency'
 
 function TransactionList({
   type,
@@ -20,7 +21,7 @@ function TransactionList({
 
   // Fetch transactions filtered by year/month from API
   const transactionsQuery = useQuery(
-    forgeAPI.wallet.transactions.list
+    forgeAPI.transactions.list
       .input({
         year: year.toString(),
         month: (month + 1).toString(), // API expects 1-indexed

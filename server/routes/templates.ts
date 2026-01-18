@@ -1,23 +1,17 @@
-import { Location } from '@lib/locations/typescript/location.types'
-import COLLECTION_SCHEMAS from '@schema'
+import { LocationSchema, type SchemaWithPB } from '@lifeforge/server-utils'
 import z from 'zod'
 
-import { SchemaWithPB } from '@functions/database/PBService/typescript/pb_service'
-import { forgeController, forgeRouter } from '@functions/routes'
+import forge from '../forge'
+import walletSchemas from '../schema'
 
-const list = forgeController
+export const list = forge
   .query()
-  .description({
-    en: 'Get all transaction templates',
-    ms: 'Dapatkan semua templat transaksi',
-    'zh-CN': '获取所有交易模板',
-    'zh-TW': '獲取所有交易模板'
-  })
+  .description('Get all transaction templates')
   .input({})
   .callback(async ({ pb }) =>
     (
       await pb.getFullList
-        .collection('wallet__transaction_templates')
+        .collection('transaction_templates')
         .sort(['type', 'name'])
         .execute()
     ).reduce(
@@ -36,40 +30,33 @@ const list = forgeController
         expenses: []
       } as Record<
         'income' | 'expenses',
-        SchemaWithPB<
-          z.infer<typeof COLLECTION_SCHEMAS.wallet__transaction_templates>
-        >[]
+        SchemaWithPB<z.infer<typeof walletSchemas.transaction_templates>>[]
       >
     )
   )
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a new transaction template',
-    ms: 'Cipta templat transaksi baharu',
-    'zh-CN': '创建新交易模板',
-    'zh-TW': '創建新交易模板'
-  })
+  .description('Create a new transaction template')
   .input({
-    body: COLLECTION_SCHEMAS.wallet__transaction_templates
+    body: walletSchemas.transaction_templates
       .omit({
         location_coords: true,
         location_name: true
       })
       .extend({
-        location: Location.optional()
+        location: LocationSchema.optional()
       })
   })
   .existenceCheck('body', {
-    asset: 'wallet__assets',
-    category: 'wallet__categories',
-    ledgers: '[wallet__ledgers]'
+    asset: 'assets',
+    category: 'categories',
+    ledgers: '[ledgers]'
   })
   .statusCode(201)
   .callback(({ pb, body }) =>
     pb.create
-      .collection('wallet__transaction_templates')
+      .collection('transaction_templates')
       .data({
         ...body,
         location_coords: {
@@ -81,38 +68,33 @@ const create = forgeController
       .execute()
   )
 
-const update = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update transaction template',
-    ms: 'Kemas kini templat transaksi',
-    'zh-CN': '更新交易模板',
-    'zh-TW': '更新交易模板'
-  })
+  .description('Update transaction template')
   .input({
     query: z.object({
       id: z.string()
     }),
-    body: COLLECTION_SCHEMAS.wallet__transaction_templates
+    body: walletSchemas.transaction_templates
       .omit({
         location_coords: true,
         location_name: true
       })
       .extend({
-        location: Location.optional()
+        location: LocationSchema.optional()
       })
   })
   .existenceCheck('query', {
-    id: 'wallet__transaction_templates'
+    id: 'transaction_templates'
   })
   .existenceCheck('body', {
-    asset: 'wallet__assets',
-    category: 'wallet__categories',
-    ledgers: '[wallet__ledgers]'
+    asset: 'assets',
+    category: 'categories',
+    ledgers: '[ledgers]'
   })
   .callback(({ pb, query: { id }, body }) =>
     pb.update
-      .collection('wallet__transaction_templates')
+      .collection('transaction_templates')
       .id(id)
       .data({
         ...body,
@@ -125,30 +107,18 @@ const update = forgeController
       .execute()
   )
 
-const remove = forgeController
+export const remove = forge
   .mutation()
-  .description({
-    en: 'Delete a transaction template',
-    ms: 'Padam templat transaksi',
-    'zh-CN': '删除交易模板',
-    'zh-TW': '刪除交易模板'
-  })
+  .description('Delete a transaction template')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'wallet__transaction_templates'
+    id: 'transaction_templates'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('wallet__transaction_templates').id(id).execute()
+    pb.delete.collection('transaction_templates').id(id).execute()
   )
-
-export default forgeRouter({
-  list,
-  create,
-  update,
-  remove
-})

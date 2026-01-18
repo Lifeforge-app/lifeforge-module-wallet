@@ -1,6 +1,3 @@
-import type { WalletAsset } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
-import getChartScale from '@/utils/getChartScale'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import {
@@ -24,6 +21,10 @@ import {
   YAxis
 } from 'recharts'
 import { usePersonalization } from 'shared'
+
+import type { WalletAsset } from '@/hooks/useWalletData'
+import forgeAPI from '@/utils/forgeAPI'
+import getChartScale from '@/utils/getChartScale'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 
@@ -59,7 +60,7 @@ function BalanceChartModal({
   const [endDate, setEndDate] = useState<Date | null>(new Date())
 
   const assetBalanceQuery = useQuery(
-    forgeAPI.wallet.assets.getAssetAccumulatedBalance
+    forgeAPI.assets.getAssetAccumulatedBalance
       .input({
         id: initialData.id,
         rangeMode: rangeMode,
@@ -257,7 +258,6 @@ function BalanceChartModal({
                       tick={{ fill: 'currentColor' }}
                       tickFormatter={value => `${numberToCurrency(value)}`}
                       tickLine={false}
-                      width="auto"
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Area
