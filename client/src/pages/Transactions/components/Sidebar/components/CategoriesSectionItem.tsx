@@ -1,6 +1,8 @@
-import { useWalletStore } from '@/stores/useWalletStore'
-import { SidebarItem } from 'lifeforge-ui'
 import { useCallback, useMemo } from 'react'
+
+import { SidebarItem } from '@lifeforge/ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
 
 import CategoriesSectionItemIcon from './CategoriesSectionItemIcon'
 

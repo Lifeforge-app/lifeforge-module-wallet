@@ -1,7 +1,9 @@
-import { useWalletData } from '@/hooks/useWalletData'
 import { Icon } from '@iconify/react'
-import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from 'lifeforge-ui'
-import { Link } from 'shared'
+
+import { Link } from '@lifeforge/shared'
+import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
 
 import ListView from './views/ListView'
 import TableView from './views/TableView'

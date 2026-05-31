@@ -1,14 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import {
-  Card,
-  DateInput,
-  EmptyStateScreen,
-  ListboxInput,
-  ListboxOption,
-  ModalHeader,
-  WithQuery
-} from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -20,7 +11,17 @@ import {
   XAxis,
   YAxis
 } from 'recharts'
-import { usePersonalization } from 'shared'
+
+import { usePersonalization } from '@lifeforge/shared'
+import {
+  Card,
+  DateInput,
+  EmptyStateScreen,
+  ListboxInput,
+  ListboxOption,
+  ModalHeader,
+  WithQuery
+} from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

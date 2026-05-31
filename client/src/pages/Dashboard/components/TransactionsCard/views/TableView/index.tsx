@@ -1,9 +1,11 @@
-import { useWalletData } from '@/hooks/useWalletData'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { TagChip, WithQuery } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'shared'
+
+import { useNavigate } from '@lifeforge/shared'
+import { TagChip, WithQuery } from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
 
 import TransactionAmount from '../../components/TransactionAmount'
 import TransactionParticular from '../../components/TransactionParticular'

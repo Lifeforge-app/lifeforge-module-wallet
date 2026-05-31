@@ -1,6 +1,8 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import { SidebarTitle } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
+
+import { SidebarTitle } from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
 
 import TypeSectionItem from './TypeSectionItem'
 

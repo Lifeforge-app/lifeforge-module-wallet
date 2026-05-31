@@ -1,5 +1,6 @@
 import { Icon } from '@iconify/react'
-import { Card, useModalStore } from 'lifeforge-ui'
+
+import { Card, useModalStore } from '@lifeforge/ui'
 
 import type { Category } from '..'
 import ModifyBudgetModal from '../modals/ModifyBudgetModal'

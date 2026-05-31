@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Button, ModalHeader, NumberInput, TagChip } from 'lifeforge-ui'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+
+import { Button, ModalHeader, NumberInput, TagChip } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'

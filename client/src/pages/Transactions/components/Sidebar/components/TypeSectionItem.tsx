@@ -1,10 +1,12 @@
-import { useWalletStore } from '@/stores/useWalletStore'
-import { SidebarItem } from 'lifeforge-ui'
 import _ from 'lodash'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { usePersonalization } from 'shared'
 import colors from 'tailwindcss/colors'
+
+import { usePersonalization } from '@lifeforge/shared'
+import { SidebarItem } from '@lifeforge/ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
 
 function TypeSectionItem({
   icon,

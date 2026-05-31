@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FormModal, defineForm } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { type InferInput } from 'shared'
 import colors from 'tailwindcss/colors'
+
+import { type InferInput } from '@lifeforge/shared'
+import { FormModal, defineForm } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

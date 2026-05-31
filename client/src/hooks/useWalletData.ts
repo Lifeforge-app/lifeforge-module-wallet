@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import type { InferOutput } from 'shared'
+
+import type { InferOutput } from '@lifeforge/shared'
 
 import forgeAPI from '@/utils/forgeAPI'
 

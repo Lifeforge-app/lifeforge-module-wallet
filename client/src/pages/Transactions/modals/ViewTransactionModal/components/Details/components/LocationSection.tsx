@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
-import { EmptyStateScreen, WithQuery } from 'lifeforge-ui'
+
+import { EmptyStateScreen, WithQuery } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

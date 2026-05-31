@@ -1,15 +1,16 @@
 import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+
+import { useNavigate } from '@lifeforge/shared'
 import {
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
   useModalStore
-} from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
-import { useNavigate } from 'shared'
+} from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

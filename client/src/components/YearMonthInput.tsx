@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { ListboxInput, ListboxOption } from 'lifeforge-ui'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { ListboxInput, ListboxOption } from '@lifeforge/ui'
 
 function YearMonthInput({
   month,
@@ -36,7 +37,10 @@ function YearMonthInput({
 
   return (
     <div
-      className={clsx('flex flex-col items-center gap-3 sm:flex-row', className)}
+      className={clsx(
+        'flex flex-col items-center gap-3 sm:flex-row',
+        className
+      )}
     >
       <ListboxInput
         buttonContent={

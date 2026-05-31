@@ -1,5 +1,10 @@
 import { Icon } from '@iconify/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { toast } from 'react-toastify'
+import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
+
+import { usePersonalization } from '@lifeforge/shared'
 import {
   Card,
   ConfirmationModal,
@@ -7,11 +12,7 @@ import {
   ContextMenuItem,
   WithQuery,
   useModalStore
-} from 'lifeforge-ui'
-import { useMemo } from 'react'
-import { toast } from 'react-toastify'
-import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
-import { usePersonalization } from 'shared'
+} from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

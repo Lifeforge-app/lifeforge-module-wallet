@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { Card } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
+
+import { Card } from '@lifeforge/ui'
 
 function DetailItem({
   icon,

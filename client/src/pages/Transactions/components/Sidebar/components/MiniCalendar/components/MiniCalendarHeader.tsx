@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
-import { usePersonalization } from 'shared'
+
+import { usePersonalization } from '@lifeforge/shared'
 
 function MiniCalendarHeader({
   currentMonth,

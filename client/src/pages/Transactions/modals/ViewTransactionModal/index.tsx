@@ -1,4 +1,4 @@
-import { ModalHeader, WithQueryData } from 'lifeforge-ui'
+import { ModalHeader, WithQueryData } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

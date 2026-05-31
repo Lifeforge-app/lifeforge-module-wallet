@@ -1,4 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useLocation, useNavigate, useSearchParams } from '@lifeforge/shared'
+import type { InferOutput } from '@lifeforge/shared'
 import {
   Button,
   ContextMenu,
@@ -7,12 +12,8 @@ import {
   FAB,
   ModuleHeader,
   WithQuery
-} from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
-import { useCallback, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate, useSearchParams } from 'shared'
-import type { InferOutput } from 'shared'
+} from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'

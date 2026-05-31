@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { FormModal, defineForm, useModalStore } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import type { InferInput } from 'shared'
 import colors from 'tailwindcss/colors'
 import z from 'zod'
+
+import type { InferInput } from '@lifeforge/shared'
+import { FormModal, defineForm, useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'

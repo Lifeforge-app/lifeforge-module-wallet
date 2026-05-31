@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
-import { useModalStore } from 'lifeforge-ui'
 import { useCallback } from 'react'
+
+import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

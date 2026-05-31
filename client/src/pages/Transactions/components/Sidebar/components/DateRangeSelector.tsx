@@ -1,8 +1,10 @@
-import { useWalletStore } from '@/stores/useWalletStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { DateInput, SidebarTitle } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
+
+import { DateInput, SidebarTitle } from '@lifeforge/ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
 
 function DateRangeSelector() {
   const { t } = useTranslation('apps.wallet')

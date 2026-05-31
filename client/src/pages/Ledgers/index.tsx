@@ -1,14 +1,15 @@
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useLocation } from '@lifeforge/shared'
 import {
   Button,
   EmptyStateScreen,
   FAB,
   ModuleHeader,
   WithQuery
-} from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useLocation } from 'shared'
+} from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 

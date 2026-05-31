@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { WithQuery } from 'lifeforge-ui'
+
+import { WithQuery } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
-import { EmptyStateScreen, ModuleHeader, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
-import { type InferOutput, useNavigate } from 'shared'
 import colors from 'tailwindcss/colors'
+
+import { type InferOutput, useNavigate } from '@lifeforge/shared'
+import { EmptyStateScreen, ModuleHeader, WithQuery } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'

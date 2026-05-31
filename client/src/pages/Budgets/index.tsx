@@ -1,4 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import type { InferOutput } from '@lifeforge/shared'
 import {
   EmptyStateScreen,
   FAB,
@@ -6,10 +10,7 @@ import {
   Scrollbar,
   Tabs,
   WithQuery
-} from 'lifeforge-ui'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { InferOutput } from 'shared'
+} from '@lifeforge/ui'
 
 import YearMonthInput from '@/components/YearMonthInput'
 import useYearMonthState from '@/hooks/useYearMonthState'

@@ -1,15 +1,16 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+
 import {
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
   useModalStore
-} from 'lifeforge-ui'
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

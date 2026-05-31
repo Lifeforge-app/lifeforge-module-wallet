@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
+
+import { EmptyStateScreen, Pagination, Scrollbar } from '@lifeforge/ui'
+
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
-import { EmptyStateScreen, Pagination, Scrollbar } from 'lifeforge-ui'
-import { useEffect, useState } from 'react'
 
 import TransactionItem from './components/TransactionItem'
 

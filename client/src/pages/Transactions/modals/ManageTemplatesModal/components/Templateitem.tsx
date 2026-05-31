@@ -1,15 +1,16 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { useCallback } from 'react'
+import { toast } from 'react-toastify'
+
 import {
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
   useModalStore
-} from 'lifeforge-ui'
-import { useCallback } from 'react'
-import { toast } from 'react-toastify'
+} from '@lifeforge/ui'
 
 import type { WalletTemplate } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

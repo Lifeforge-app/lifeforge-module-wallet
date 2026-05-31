@@ -1,4 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useLocation } from '@lifeforge/shared'
 import {
   Button,
   ContextMenuItem,
@@ -7,11 +11,8 @@ import {
   ModuleHeader,
   Widget,
   WithQuery
-} from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
-import { useCallback, useEffect, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useLocation } from 'shared'
+} from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'

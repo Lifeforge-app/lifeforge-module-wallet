@@ -1,10 +1,11 @@
 import { Icon } from '@iconify/react'
-import { Button, FileInput, ModalHeader, Switch } from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { usePromiseLoading } from 'shared'
+
+import { usePromiseLoading } from '@lifeforge/shared'
+import { Button, FileInput, ModalHeader, Switch } from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

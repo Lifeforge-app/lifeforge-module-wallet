@@ -1,7 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { ContextMenuItem } from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
 import { useCallback } from 'react'
+
+import { ContextMenuItem } from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 
 import ManageCategoriesModal from '../modals/ManageCategoriesModal'
 import ManageTemplatesModal from '../modals/ManageTemplatesModal'

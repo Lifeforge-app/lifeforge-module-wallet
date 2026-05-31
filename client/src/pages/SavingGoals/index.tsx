@@ -1,4 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+
+import type { InferOutput } from '@lifeforge/shared'
 import {
   Button,
   EmptyStateScreen,
@@ -7,9 +10,7 @@ import {
   Scrollbar,
   WithQuery,
   useModalStore
-} from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
-import type { InferOutput } from 'shared'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

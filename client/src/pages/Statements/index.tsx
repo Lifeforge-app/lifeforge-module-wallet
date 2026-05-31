@@ -1,5 +1,6 @@
-import { EmptyStateScreen, LoadingScreen, ModuleHeader } from 'lifeforge-ui'
 import { useRef, useState } from 'react'
+
+import { EmptyStateScreen, LoadingScreen, ModuleHeader } from '@lifeforge/ui'
 
 import YearMonthInput from '@/components/YearMonthInput'
 import useYearMonthState from '@/hooks/useYearMonthState'

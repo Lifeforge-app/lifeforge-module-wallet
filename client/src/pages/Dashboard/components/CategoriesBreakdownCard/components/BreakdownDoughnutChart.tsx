@@ -1,11 +1,13 @@
-import { useWalletStore } from '@/stores/useWalletStore'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { Card } from 'lifeforge-ui'
 import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+
+import { Card } from '@lifeforge/ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
+import numberToCurrency from '@/utils/numberToCurrency'
 
 import { CategoriesBreakdownContext } from '..'
 

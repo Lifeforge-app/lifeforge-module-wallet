@@ -1,8 +1,9 @@
 import { Icon } from '@iconify/react'
-import { Widget } from 'lifeforge-ui'
 import { createContext, useState } from 'react'
-import { Link } from 'shared'
-import type { InferOutput } from 'shared'
+
+import { Link } from '@lifeforge/shared'
+import type { InferOutput } from '@lifeforge/shared'
+import { Widget } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

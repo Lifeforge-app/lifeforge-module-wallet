@@ -1,15 +1,16 @@
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import {
   EmptyStateScreen,
   Listbox,
   ListboxOption,
   LoadingScreen,
   WithQuery
-} from 'lifeforge-ui'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+} from '@lifeforge/ui'
 
 import { type WalletCategory, useWalletData } from '@/hooks/useWalletData'
 import useYearMonthState from '@/hooks/useYearMonthState'

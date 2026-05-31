@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import clsx from 'clsx'
-import { Listbox, ListboxOption } from 'lifeforge-ui'
 import { useTranslation } from 'react-i18next'
+
+import { Listbox, ListboxOption } from '@lifeforge/ui'
 
 function RangeSelector({
   range,

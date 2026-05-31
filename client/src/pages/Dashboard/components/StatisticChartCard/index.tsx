@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -11,7 +10,9 @@ import {
   XAxis,
   YAxis
 } from 'recharts'
-import { usePersonalization } from 'shared'
+
+import { usePersonalization } from '@lifeforge/shared'
+import { Card, EmptyStateScreen, Widget, WithQuery } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import getChartScale from '@/utils/getChartScale'

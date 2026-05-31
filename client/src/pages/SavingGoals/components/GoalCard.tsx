@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+
 import {
   Button,
   Card,
@@ -6,9 +9,7 @@ import {
   ContextMenu,
   ContextMenuItem,
   useModalStore
-} from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

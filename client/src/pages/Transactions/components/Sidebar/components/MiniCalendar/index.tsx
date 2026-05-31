@@ -1,8 +1,10 @@
-import type { WalletTransaction } from '@/pages/Transactions'
 import dayjs from 'dayjs'
-import { SidebarTitle } from 'lifeforge-ui'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { SidebarTitle } from '@lifeforge/ui'
+
+import type { WalletTransaction } from '@/pages/Transactions'
 
 import MiniCalendarContent from './components/MiniCalendarContent'
 import MiniCalendarHeader from './components/MiniCalendarHeader'

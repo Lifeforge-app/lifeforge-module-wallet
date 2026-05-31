@@ -1,8 +1,9 @@
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { TagChip } from 'lifeforge-ui'
 import { useMemo } from 'react'
+
+import { TagChip } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

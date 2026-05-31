@@ -1,5 +1,9 @@
 import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import COLORS from 'tailwindcss/colors'
+
+import { anyColorToHex } from '@lifeforge/shared'
 import {
   Card,
   ConfirmationModal,
@@ -7,10 +11,7 @@ import {
   ContextMenuItem,
   TagChip,
   useModalStore
-} from 'lifeforge-ui'
-import { toast } from 'react-toastify'
-import { anyColorToHex } from 'shared'
-import COLORS from 'tailwindcss/colors'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

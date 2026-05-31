@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { Button, TagChip, useModalStore } from 'lifeforge-ui'
+
+import { Button, TagChip, useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import type { WalletTransaction } from '@/pages/Transactions'

@@ -2,7 +2,8 @@ import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { WithQuery } from 'lifeforge-ui'
+
+import { WithQuery } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

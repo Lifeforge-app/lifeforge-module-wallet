@@ -1,16 +1,18 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
+import { useTranslation } from 'react-i18next'
+
+import { Link, useNavigate } from '@lifeforge/shared'
 import {
   Card,
   EmptyStateScreen,
   Scrollbar,
   Widget,
   WithQuery
-} from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'shared'
+} from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
+import { useWalletStore } from '@/stores/useWalletStore'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 

@@ -1,9 +1,16 @@
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { Button, Card, EmptyStateScreen, Widget, WithQuery } from 'lifeforge-ui'
 import { useRef, useState } from 'react'
-import { Link, useDivSize } from 'shared'
-import type { WidgetConfig } from 'shared'
+
+import { Link, useDivSize } from '@lifeforge/shared'
+import type { WidgetConfig } from '@lifeforge/shared'
+import {
+  Button,
+  Card,
+  EmptyStateScreen,
+  Widget,
+  WithQuery
+} from '@lifeforge/ui'
 
 import { useWalletData } from '../hooks/useWalletData'
 import numberToCurrency from '../utils/numberToCurrency'

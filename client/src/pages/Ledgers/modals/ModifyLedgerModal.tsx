@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FormModal, defineForm } from 'lifeforge-ui'
 import { toast } from 'react-toastify'
-import { type InferInput } from 'shared'
+
+import { type InferInput } from '@lifeforge/shared'
+import { FormModal, defineForm } from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'

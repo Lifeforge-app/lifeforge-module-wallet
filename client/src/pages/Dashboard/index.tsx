@@ -11,15 +11,16 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
+import { useTranslation } from 'react-i18next'
+
+import { useNavigate } from '@lifeforge/shared'
 import {
   Button,
   ContextMenu,
   ContextMenuItem,
   FAB,
   ModuleHeader
-} from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'shared'
+} from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 

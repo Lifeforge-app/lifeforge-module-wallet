@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
-import type { ForgeEndpoint } from 'shared'
+
+import type { ForgeEndpoint } from '@lifeforge/shared'
 
 interface YearMonth {
   year: number | null

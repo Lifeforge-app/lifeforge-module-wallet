@@ -1,5 +1,6 @@
+import { SearchInput } from '@lifeforge/ui'
+
 import { useWalletStore } from '@/stores/useWalletStore'
-import { SearchInput } from 'lifeforge-ui'
 
 function SearchBar() {
   const { searchQuery, setSearchQuery } = useWalletStore()

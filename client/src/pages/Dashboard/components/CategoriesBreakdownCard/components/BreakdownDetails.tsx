@@ -1,10 +1,12 @@
-import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { Scrollbar } from 'lifeforge-ui'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'shared'
+
+import { Link } from '@lifeforge/shared'
+import { Scrollbar } from '@lifeforge/ui'
+
+import { useWalletStore } from '@/stores/useWalletStore'
 
 import { CategoriesBreakdownContext } from '..'
 import numberToCurrency from '../../../../../utils/numberToCurrency'

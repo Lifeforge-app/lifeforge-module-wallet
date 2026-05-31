@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { useCallback } from 'react'
+import { toast } from 'react-toastify'
+
 import {
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
   useModalStore
-} from 'lifeforge-ui'
-import { useCallback } from 'react'
-import { toast } from 'react-toastify'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

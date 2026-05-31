@@ -1,8 +1,10 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import { SidebarTitle } from 'lifeforge-ui'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'shared'
+
+import { useNavigate } from '@lifeforge/shared'
+import { SidebarTitle } from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
 
 import AssetsSectionItem from './AssetsSectionItem'
 

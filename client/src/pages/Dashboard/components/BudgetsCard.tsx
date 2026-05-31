@@ -1,13 +1,14 @@
 import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
+
+import { Link, useNavigate } from '@lifeforge/shared'
 import {
   Card,
   EmptyStateScreen,
   Scrollbar,
   Widget,
   WithQuery
-} from 'lifeforge-ui'
-import { Link, useNavigate } from 'shared'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 

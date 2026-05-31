@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
+
+import { Button, TagsFilter, useModuleSidebarState } from '@lifeforge/ui'
+
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
-import { Button, TagsFilter, useModuleSidebarState } from 'lifeforge-ui'
-import { useTranslation } from 'react-i18next'
 
 function InnerHeader() {
   const { transactionsQuery, assetsQuery, categoriesQuery, ledgersQuery } =

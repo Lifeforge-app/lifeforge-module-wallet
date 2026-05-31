@@ -1,9 +1,11 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import { useWalletStore } from '@/stores/useWalletStore'
-import { SidebarTitle, WithQuery } from 'lifeforge-ui'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'shared'
+
+import { useNavigate } from '@lifeforge/shared'
+import { SidebarTitle, WithQuery } from '@lifeforge/ui'
+
+import { useWalletData } from '@/hooks/useWalletData'
+import { useWalletStore } from '@/stores/useWalletStore'
 
 import LedgerSectionItem from './LedgerSectionItem'
 

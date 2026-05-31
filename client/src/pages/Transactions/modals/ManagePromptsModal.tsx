@@ -1,4 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+
+import { usePromiseLoading } from '@lifeforge/shared'
 import {
   Alert,
   Button,
@@ -6,11 +11,7 @@ import {
   ModalHeader,
   TextAreaInput,
   WithQuery
-} from 'lifeforge-ui'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
-import { usePromiseLoading } from 'shared'
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
