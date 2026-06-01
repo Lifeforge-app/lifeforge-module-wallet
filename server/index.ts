@@ -1,4 +1,4 @@
-import { forgeRouter } from '@lifeforge/server-utils'
+import { forgeRouter, writeContractFileToClient } from '@lifeforge/server-utils'
 
 import * as analyticsRouter from './routes/analytics'
 import * as assetsRouter from './routes/assets'
@@ -10,7 +10,7 @@ import * as savingsGoalsRouter from './routes/savings-goals'
 import * as templatesRouter from './routes/templates'
 import * as transactionsRouter from './routes/transactions'
 
-export default forgeRouter({
+const routes = forgeRouter({
   transactions: {
     ...transactionsRouter,
     prompts: promptsRouter
@@ -23,3 +23,7 @@ export default forgeRouter({
   budgets: budgetsRouter,
   savingsGoals: savingsGoalsRouter
 })
+
+writeContractFileToClient(routes, import.meta.dirname)
+
+export default routes

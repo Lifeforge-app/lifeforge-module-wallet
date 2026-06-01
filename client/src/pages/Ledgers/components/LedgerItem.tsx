@@ -52,7 +52,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
       confirmationButton: 'delete',
       confirmationPrompt: ledger.name,
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
 

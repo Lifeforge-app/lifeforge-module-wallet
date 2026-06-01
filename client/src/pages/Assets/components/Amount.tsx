@@ -1,7 +1,8 @@
-import { useWalletStore } from '@/stores/useWalletStore'
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import clsx from 'clsx'
+
+import { useWalletStore } from '@/stores/useWalletStore'
+import numberToCurrency from '@/utils/numberToCurrency'
 
 function Amount({ amount, className }: { amount: number; className?: string }) {
   const { isAmountHidden } = useWalletStore()

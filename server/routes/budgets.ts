@@ -3,38 +3,9 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
 import forge from '../forge'
+import walletSchemas from '../schema'
 
 dayjs.extend(isSameOrBefore)
-
-export const list = forge
-  .query()
-  .description('Get all budgets for a specific month with spent amounts')
-  .input({
-    query: z.object({
-      year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val))
-    })
-  })
-  .callback(async ({ pb, query: { year, month } }) =>
-    pb.getFullList
-      .collection('budgets_aggregated')
-      .filter([
-        {
-          field: 'year',
-          operator: '=',
-          value: year
-        },
-        {
-          field: 'month',
-          operator: '=',
-          value: month
-        }
-      ])
-      .expand({
-        category: 'categories'
-      })
-      .execute()
-  )
 
 const ModifyBudgetSchema = z.object({
   amount: z.number().min(0),
@@ -43,120 +14,167 @@ const ModifyBudgetSchema = z.object({
   alert_threshold: z.number().min(0).max(200).optional().default(80)
 })
 
-export const create = forge
-  .mutation()
-  .description('Create a new budget')
-  .input({
-    query: z.object({
-      category: z.string(),
-      year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val))
-    }),
-    body: ModifyBudgetSchema
-  })
-  .existenceCheck('query', {
-    category: 'categories'
-  })
-  .statusCode(201)
-  .callback(async ({ pb, body, query: { category, year, month } }) => {
-    // Check if budget already exists for this category in the same year/month
-    const existingBudget = await pb.getFirstListItem
-      .collection('budgets')
-      .filter([
-        {
-          field: 'category',
-          operator: '=',
-          value: category
-        },
-        {
-          field: 'year',
-          operator: '=',
-          value: year
-        },
-        {
-          field: 'month',
-          operator: '=',
-          value: month
-        },
-        {
-          field: 'is_active',
-          operator: '=',
-          value: true
-        }
-      ])
-      .execute()
-      .catch(() => null)
-
-    if (existingBudget) {
-      throw new Error(
-        'A budget for this category already exists for this month'
+export const list = forge
+  .query({
+    description: 'Get all budgets for a specific month with spent amounts',
+    input: {
+      query: z.object({
+        year: z.string(),
+        month: z.string()
+      })
+    },
+    output: {
+      OK: z.array(
+        walletSchemas.budgets_aggregated.extend({
+          rollover_amount: z.number(),
+          spent_amount: z.number(),
+          expand: z
+            .object({ category: walletSchemas.categories.optional() })
+            .optional()
+        })
       )
     }
-
-    return pb.create
-      .collection('budgets')
-      .data({
-        category,
-        amount: body.amount,
-        year,
-        month,
-        rollover_enabled: body.rollover_enabled,
-        rollover_cap: body.rollover_cap,
-        alert_thresholds: [body.alert_threshold],
-        is_active: true
-      })
-      .execute()
   })
+  .callback(async ({ pb, query: { year, month }, response }) =>
+    response.ok(
+      await pb.getFullList
+        .collection('budgets_aggregated')
+        .filter([
+          { field: 'year', operator: '=', value: parseInt(year) },
+          { field: 'month', operator: '=', value: parseInt(month) }
+        ])
+        .expand({ category: 'categories' })
+        .execute()
+    )
+  )
+
+export const create = forge
+  .mutation({
+    description: 'Create a new budget',
+    input: {
+      query: z.object({
+        category: z.string(),
+        year: z.string(),
+        month: z.string()
+      }),
+      body: ModifyBudgetSchema
+    },
+    existenceCheck: {
+      query: {
+        category: 'categories'
+      }
+    },
+    output: {
+      CREATED: walletSchemas.budgets_aggregated.omit({
+        spent_amount: true,
+        rollover_amount: true
+      }),
+      CONFLICT: true,
+      NOT_FOUND: true
+    }
+  })
+  .callback(
+    async ({ pb, body, query: { category, year, month }, response }) => {
+      const parsedYear = parseInt(year)
+
+      const parsedMonth = parseInt(month)
+
+      const existingBudget = await pb.getFirstListItem
+        .collection('budgets')
+        .filter([
+          { field: 'category', operator: '=', value: category },
+          { field: 'year', operator: '=', value: parsedYear },
+          { field: 'month', operator: '=', value: parsedMonth },
+          { field: 'is_active', operator: '=', value: true }
+        ])
+        .execute()
+        .catch(() => null)
+
+      if (existingBudget) {
+        return response.conflict()
+      }
+
+      return response.created(
+        await pb.create
+          .collection('budgets')
+          .data({
+            category,
+            amount: body.amount,
+            year: parsedYear,
+            month: parsedMonth,
+            rollover_enabled: body.rollover_enabled,
+            rollover_cap: body.rollover_cap,
+            alert_thresholds: [body.alert_threshold],
+            is_active: true
+          })
+          .execute()
+      )
+    }
+  )
 
 export const update = forge
-  .mutation()
-  .description('Update budget settings')
-  .input({
-    query: z.object({
-      id: z.string()
-    }),
-    body: ModifyBudgetSchema
+  .mutation({
+    description: 'Update budget settings',
+    input: {
+      query: z.object({ id: z.string() }),
+      body: ModifyBudgetSchema
+    },
+    existenceCheck: {
+      query: { id: 'budgets' }
+    },
+    output: {
+      OK: walletSchemas.budgets_aggregated.omit({
+        spent_amount: true,
+        rollover_amount: true
+      }),
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'budgets'
-  })
-  .callback(({ pb, query: { id }, body }) =>
-    pb.update.collection('budgets').id(id).data(body).execute()
+  .callback(async ({ pb, query: { id }, body, response }) =>
+    response.ok(
+      await pb.update.collection('budgets').id(id).data(body).execute()
+    )
   )
 
 export const remove = forge
-  .mutation()
-  .description('Delete a budget (soft delete)')
-  .input({
-    query: z.object({
-      id: z.string()
-    })
+  .mutation({
+    description: 'Delete a budget (soft delete)',
+    input: {
+      query: z.object({ id: z.string() })
+    },
+    existenceCheck: {
+      query: { id: 'budgets' }
+    },
+    output: {
+      NO_CONTENT: true,
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'budgets'
+  .callback(async ({ pb, query: { id }, response }) => {
+    await pb.update
+      .collection('budgets')
+      .id(id)
+      .data({ is_active: false })
+      .execute()
+
+    return response.noContent()
   })
-  .statusCode(204)
-  .callback(({ pb, query: { id } }) =>
-    pb.update.collection('budgets').id(id).data({ is_active: false }).execute()
-  )
 
 export const getAvailableYearMonths = forge
-  .query()
-  .description('Get available year/months for budget viewing')
-  .input({})
-  .callback(async ({ pb }) => {
+  .query({
+    description: 'Get available year/months for budget viewing',
+    output: {
+      OK: z.object({
+        years: z.array(z.number()),
+        monthsByYear: z.record(z.string(), z.array(z.number()))
+      })
+    }
+  })
+  .callback(async ({ pb, response }) => {
     const earliestBudget = await pb.getFirstListItem
       .collection('budgets')
-      .filter([
-        {
-          field: 'is_active',
-          operator: '=',
-          value: true
-        }
-      ])
-      .fields({
-        created: true
-      })
+      .filter([{ field: 'is_active', operator: '=', value: true }])
+      .fields({ created: true })
       .sort(['created'])
       .execute()
       .catch(() => null)
@@ -166,14 +184,14 @@ export const getAvailableYearMonths = forge
     const nextMonth = now.clone().add(1, 'month')
 
     if (!earliestBudget) {
-      return {
+      return response.ok({
         years: [now.year()],
         monthsByYear: {
           [now.year()]: [now.month(), nextMonth.month()].filter(
             (m, i, arr) => arr.indexOf(m) === i
           )
         }
-      }
+      })
     }
 
     const startDate = dayjs(earliestBudget.created).startOf('month')
@@ -203,5 +221,5 @@ export const getAvailableYearMonths = forge
       current.add(1, 'month')
     }
 
-    return { years, monthsByYear }
+    return response.ok({ years, monthsByYear })
   })

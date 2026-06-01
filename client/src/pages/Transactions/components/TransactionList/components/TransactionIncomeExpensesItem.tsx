@@ -32,6 +32,10 @@ function TransactionIncomeExpensesItem({
       e.stopPropagation()
       e.preventDefault()
 
+      if (!transaction.receipt) {
+        return
+      }
+
       open(ViewReceiptModal, {
         src: forgeAPI.getMedia({
           collectionId: transaction.collectionId,
@@ -75,7 +79,7 @@ function TransactionIncomeExpensesItem({
                 </>
               )}
             </div>
-            {transaction.receipt !== '' && (
+            {transaction.receipt && (
               <button onClick={handleViewReceipt}>
                 <Icon
                   className="text-bg-500 size-5 print:text-zinc-500"

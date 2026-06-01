@@ -92,7 +92,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
         title="Manage Prompts"
         onClose={onClose}
       />
-      <Alert className="mb-4" type="note">
+      <Alert mb="md" type="note">
         {t('messages.promptAutoGeneration')}
       </Alert>
       <WithQuery query={openaiAPIKeyAvailabilityQuery}>

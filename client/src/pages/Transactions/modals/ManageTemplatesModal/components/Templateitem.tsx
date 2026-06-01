@@ -61,7 +61,7 @@ function TemplateItem({
       description: 'Are you sure you want to delete this template?',
       confirmationButton: 'delete',
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }, [])

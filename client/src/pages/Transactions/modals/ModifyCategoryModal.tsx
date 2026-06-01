@@ -1,14 +1,32 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import colors from 'tailwindcss/colors'
+import z from 'zod'
 
-import type { InferInput } from '@lifeforge/shared'
-import { FormModal, defineForm } from '@lifeforge/ui'
+import {
+  ColorField,
+  FormModal,
+  IconField,
+  ListboxField,
+  TextField,
+  createDefaultValues
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
 import type { WalletCategory } from '..'
+
+const schema = z.object({
+  type: z.enum(['income', 'expenses']),
+  name: z.string().min(1, 'Category name is required'),
+  icon: z.string().min(1, 'Category icon is required'),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color (e.g. #FF0000)')
+})
 
 function ModifyCategoryModal({
   data: { type, initialData },
@@ -44,33 +62,37 @@ function ModifyCategoryModal({
     })
   )
 
-  const { formProps } = defineForm<
-    InferInput<
-      (typeof forgeAPI.categories)[typeof type extends 'update'
-        ? 'update'
-        : 'create']
-    >['body']
-  >({
-    namespace: 'apps.wallet',
-    icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
-    title: `categories.${type === 'update' ? 'update' : 'create'}`,
-    submitButton: type === 'update' ? 'update' : 'create',
-    onClose
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
+      ...initialData
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
   })
-    .typesMap({
-      type: 'listbox',
-      icon: 'icon',
-      name: 'text',
-      color: 'color'
-    })
-    .setupFields({
-      type: {
-        multiple: false,
-        required: true,
-        disabled: type === 'update',
-        label: t('categoryType'),
-        icon: 'tabler:apps',
-        options: [
+
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: mutation.mutateAsync,
+        template: type === 'update' ? 'update' : 'create'
+      }}
+      uiConfig={{
+        icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
+        namespace: 'apps.wallet',
+        title: `categories.${type === 'update' ? 'update' : 'create'}`,
+        onClose
+      }}
+    >
+      <ListboxField
+        required
+        control={form.control}
+        disabled={type === 'update'}
+        icon="tabler:apps"
+        label={t('categoryType')}
+        name="type"
+        options={[
           {
             value: 'income',
             text: t('transactionTypes.income'),
@@ -83,30 +105,30 @@ function ModifyCategoryModal({
             icon: 'tabler:logout',
             color: colors.red[500]
           }
-        ]
-      },
-      name: {
-        required: true,
-        label: t('categoryName'),
-        icon: 'tabler:pencil',
-        placeholder: t('inputs.categoryName.placeholder')
-      },
-      icon: {
-        required: true,
-        label: t('categoryIcon')
-      },
-      color: {
-        required: true,
-        label: t('categoryColor')
-      }
-    })
-    .initialData(initialData)
-    .onSubmit(async data => {
-      await mutation.mutateAsync(data)
-    })
-    .build()
-
-  return <FormModal {...formProps} />
+        ]}
+      />
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:pencil"
+        label={t('categoryName')}
+        name="name"
+        placeholder={t('inputs.categoryName.placeholder')}
+      />
+      <IconField
+        required
+        control={form.control}
+        label={t('categoryIcon')}
+        name="icon"
+      />
+      <ColorField
+        required
+        control={form.control}
+        label={t('categoryColor')}
+        name="color"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyCategoryModal

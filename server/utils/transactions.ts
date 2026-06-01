@@ -1,7 +1,5 @@
 import z from 'zod'
 
-import walletSchemas from '../schema'
-
 export async function getTransactionDetails(
   ocrResult: string,
   pb: any,
@@ -9,13 +7,18 @@ export async function getTransactionDetails(
   getAPIKey: any,
   searchLocations: any
 ) {
-  type FinalResult = Omit<z.infer<typeof walletSchemas.transactions>, 'type'> &
-    Omit<
-      z.infer<typeof walletSchemas.transactions_income_expenses>,
-      'base_transaction' | 'type'
-    > & {
-      type: 'income' | 'expenses'
+  type FinalResult = {
+    date: string
+    type: 'income' | 'expenses'
+    amount: number
+    category: string
+    particulars: string
+    location_coords: {
+      lon: number
+      lat: number
     }
+    location_name: string
+  }
 
   // Fetch all data in parallel
   const [particularPrompt, categories, key] = await Promise.all([
@@ -62,11 +65,17 @@ export async function getTransactionDetails(
     throw new Error('Failed to extract transaction details')
   }
 
-  let finalResult: Partial<FinalResult> = {
+  let finalResult: FinalResult = {
     date: extractedData.date,
     type: extractedData.type,
     amount: extractedData.amount,
-    category: categoryMap.get(extractedData.category)
+    category: categoryMap.get(extractedData.category),
+    particulars: '',
+    location_coords: {
+      lon: 0,
+      lat: 0
+    },
+    location_name: ''
   }
 
   const particularsPrompt = particularPrompt?.[

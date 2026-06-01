@@ -50,7 +50,7 @@ function CategoryItem({ category }: { category: WalletCategory }) {
       description: 'Are you sure you want to delete this category?',
       confirmationButton: 'delete',
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }, [])

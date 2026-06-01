@@ -1,21 +1,37 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
+import z from 'zod'
 
-import { FormModal, defineForm } from '@lifeforge/ui'
+import {
+  ColorField,
+  CurrencyField,
+  DateField,
+  FormModal,
+  IconField,
+  TextField,
+  createDefaultValues
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
 import type { SavingGoal } from '..'
 
-interface GoalFormData {
-  name: string
-  icon: string
-  color: string
-  target_amount: number
-  target_date: string
-}
+const schema = z.object({
+  name: z.string().min(1, 'Goal name is required'),
+  icon: z.string().min(1, 'Goal icon is required'),
+  color: z
+    .string()
+    .regex(
+      /^#[0-9A-Fa-f]{6}$/,
+      'Color must be a valid hex color (e.g. #FF0000)'
+    ),
+  target_amount: z.number().nonnegative(),
+  target_date: z.date()
+})
 
 function ModifyGoalModal({
   data: { type, existingGoal },
@@ -52,57 +68,63 @@ function ModifyGoalModal({
     })
   )
 
-  const { formProps } = defineForm<GoalFormData>({
-    namespace: 'apps.wallet',
-    icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: `modals.savingGoal.${type}`,
-    submitButton: type,
-    onClose
-  })
-    .typesMap({
-      name: 'text',
-      icon: 'icon',
-      color: 'color',
-      target_amount: 'number',
-      target_date: 'datetime'
-    })
-    .setupFields({
-      name: {
-        placeholder: 'Enter goal name',
-        required: true,
-        label: 'goalName',
-        icon: 'tabler:target'
-      },
-      icon: {
-        label: 'goalIcon'
-      },
-      color: {
-        label: 'goalColor',
-        icon: 'tabler:palette'
-      },
-      target_amount: {
-        required: true,
-        label: 'goalTargetAmount',
-        icon: 'tabler:coin'
-      },
-      target_date: {
-        label: 'goalTargetDate',
-        icon: 'tabler:calendar'
-      }
-    })
-    .initialData({
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
       name: existingGoal?.name || '',
       icon: existingGoal?.icon || 'tabler:target',
       color: existingGoal?.color || '#22c55e',
       target_amount: existingGoal?.target_amount || 0,
       target_date: dayjs(existingGoal?.target_date).toDate()
-    })
-    .onSubmit(async formData => {
-      await mutation.mutateAsync(formData)
-    })
-    .build()
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
+  })
 
-  return <FormModal {...formProps} />
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: async formData => {
+          await mutation.mutateAsync({
+            ...formData,
+            target_date: dayjs(formData.target_date).format('YYYY-MM-DD')
+          })
+        },
+        template: type
+      }}
+      uiConfig={{
+        icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
+        namespace: 'apps.wallet',
+        title: `modals.savingGoal.${type}`,
+        onClose
+      }}
+    >
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:target"
+        label="goalName"
+        name="name"
+        placeholder="Enter goal name"
+      />
+      <IconField control={form.control} label="goalIcon" name="icon" />
+      <ColorField control={form.control} label="goalColor" name="color" />
+      <CurrencyField
+        required
+        control={form.control}
+        icon="tabler:coin"
+        label="goalTargetAmount"
+        name="target_amount"
+      />
+      <DateField
+        control={form.control}
+        icon="tabler:calendar"
+        label="goalTargetDate"
+        name="target_date"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyGoalModal

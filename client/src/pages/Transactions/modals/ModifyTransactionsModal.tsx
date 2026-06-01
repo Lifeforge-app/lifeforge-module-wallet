@@ -1,21 +1,57 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import colors from 'tailwindcss/colors'
 import z from 'zod'
 
-import type { InferInput } from '@lifeforge/shared'
-import { FormModal, defineForm, useModalStore } from '@lifeforge/ui'
+import {
+  CurrencyField,
+  DateField,
+  FileField,
+  FormModal,
+  ListboxField,
+  LocationField,
+  TextField,
+  convertFormFileFieldData,
+  createDefaultValues,
+  fileValueSchema,
+  getFormFileFieldInitialData,
+  useModalStore
+} from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
 import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
 import forgeAPI from '@/utils/forgeAPI'
-import getFormFileFieldInitialData from '@/utils/getFileInitialData'
 
 import type { WalletTransaction } from '..'
 import ModifyCategoryModal from './ModifyCategoryModal'
+
+const schema = z.object({
+  type: z.enum(['income', 'expenses', 'transfer']),
+  date: z.date(),
+  amount: z.number().positive('Amount must be positive'),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  particulars: z.string().optional(),
+  category: z.string().optional(),
+  asset: z.string().optional(),
+  ledgers: z.array(z.string()).optional(),
+  location: z
+    .object({
+      name: z.string(),
+      formattedAddress: z.string(),
+      location: z.object({
+        latitude: z.number(),
+        longitude: z.number()
+      })
+    })
+    .optional(),
+  receipt: fileValueSchema
+})
 
 function ModifyTransactionsModal({
   data: { type, initialData },
@@ -59,33 +95,113 @@ function ModifyTransactionsModal({
     })
   )
 
-  const { formProps, formStateStore } = defineForm<
-    InferInput<(typeof forgeAPI.transactions)[typeof type]>['body']
-  >({
-    namespace: 'apps.wallet',
-    icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: `transactions.${type}`,
-    submitButton: type,
-    onClose
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
+      type: initialData?.type || 'income',
+      date: initialData ? dayjs(initialData.date).toDate() : dayjs().toDate(),
+      amount: initialData?.amount || 0,
+      receipt: getFormFileFieldInitialData(
+        forgeAPI,
+        initialData as Record<string, unknown> | undefined,
+        initialData?.receipt
+      ),
+      ...(initialData?.type === 'transfer'
+        ? {
+            from: initialData?.from,
+            to: initialData?.to
+          }
+        : {
+            asset: initialData?.asset,
+            category: initialData?.category,
+            ledgers: initialData?.ledgers,
+            particulars: initialData?.particulars,
+            location: initialData?.location_name
+              ? {
+                  name: initialData?.location_name || '',
+                  location: {
+                    latitude: initialData?.location_coords?.lat || 0,
+                    longitude: initialData?.location_coords?.lon || 0
+                  },
+                  formattedAddress: initialData?.location_name || ''
+                }
+              : undefined
+          })
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
   })
-    .typesMap({
-      type: 'listbox',
-      date: 'datetime',
-      amount: 'currency',
-      from: 'listbox',
-      to: 'listbox',
-      particulars: 'text',
-      category: 'listbox',
-      asset: 'listbox',
-      ledgers: 'listbox',
-      location: 'location',
-      receipt: 'file'
-    })
-    .setupFields({
-      type: {
-        multiple: false,
-        label: 'Transaction Type',
-        options: [
+
+  const watchedType = useWatch({ control: form.control, name: 'type' })
+
+  const isTransfer = watchedType === 'transfer'
+
+  const categoryOptions = categories
+    .filter(cat => cat.type === watchedType)
+    .map(category => ({
+      text: category.name,
+      value: category.id,
+      icon: category.icon,
+      color: category.color
+    }))
+
+  const assetOptions = assets.map(asset => ({
+    text: asset.name,
+    value: asset.id,
+    icon: asset.icon
+  }))
+
+  const ledgerOptions = ledgers.map(ledger => ({
+    text: ledger.name,
+    value: ledger.id,
+    icon: ledger.icon,
+    color: ledger.color
+  }))
+
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: async data => {
+          if (data.type === 'transfer') {
+            await mutation.mutateAsync({
+              type: 'transfer' as const,
+              date: dayjs(data.date).format('YYYY-MM-DD'),
+              from: data.from ?? '',
+              to: data.to ?? '',
+              receipt: convertFormFileFieldData(data.receipt),
+              amount: data.amount
+            })
+          } else {
+            await mutation.mutateAsync({
+              type: data.type,
+              date: dayjs(data.date).format('YYYY-MM-DD'),
+              asset: data.asset ?? '',
+              category: data.category ?? '',
+              ledgers: data.ledgers ?? [],
+              location: data.location ?? null,
+              particulars: data.particulars ?? '',
+              receipt: convertFormFileFieldData(data.receipt),
+              amount: data.amount
+            })
+          }
+        },
+        template: type
+      }}
+      uiConfig={{
+        icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
+        namespace: 'apps.wallet',
+        title: `transactions.${type}`,
+        onClose
+      }}
+    >
+      <ListboxField
+        required
+        control={form.control}
+        icon="tabler:exchange"
+        label="Transaction Type"
+        name="type"
+        options={[
           {
             text: t('transactionTypes.income'),
             value: 'income',
@@ -104,199 +220,126 @@ function ModifyTransactionsModal({
             icon: 'tabler:transfer',
             color: colors.blue[500]
           }
-        ],
-        icon: 'tabler:exchange',
-        required: true
-      },
-      date: {
-        required: true,
-        label: 'Date',
-        icon: 'tabler:calendar'
-      },
-      particulars: {
-        label: 'Particulars',
-        required: true,
-        icon: 'tabler:file-description',
-        placeholder: 'Enter details about the transaction'
-      },
-      amount: {
-        required: true,
-        label: 'Amount',
-        icon: 'tabler:currency-dollar',
-        placeholder: 'Enter amount',
-        validator: z
-          .number()
-          .nonnegative('Amount must be non-negative')
-          .refine(val => val > 0, 'Amount must be greater than zero')
-      },
-      from: {
-        required: true,
-        multiple: false,
-        label: 'From Asset',
-        options: assets.map(asset => ({
-          text: asset.name,
-          value: asset.id,
-          icon: asset.icon
-        })),
-        icon: 'tabler:arrow-left-circle'
-      },
-      to: {
-        required: true,
-        multiple: false,
-        label: 'To Asset',
-        options: assets.map(asset => ({
-          text: asset.name,
-          value: asset.id,
-          icon: asset.icon
-        })),
-        icon: 'tabler:arrow-right-circle'
-      },
-      category: {
-        multiple: false,
-        label: 'Category',
-        options: value =>
-          categories
-            .filter(cat => cat.type === value.type)
-            .map(category => ({
-              text: category.name,
-              value: category.id,
-              icon: category.icon,
-              color: category.color
-            })),
-        actionButtonOption: {
-          text: t('common.buttons:new', {
-            item: t('items.category')
-          }),
-          icon: 'tabler:plus',
-          onClick: () => {
-            open(ModifyCategoryModal, {
-              type: 'create',
-              initialData: {
-                type:
-                  formStateStore.getState().type === 'income'
-                    ? 'income'
-                    : 'expenses'
+        ]}
+      />
+      <DateField
+        required
+        control={form.control}
+        icon="tabler:calendar"
+        label="Date"
+        name="date"
+      />
+      <CurrencyField
+        required
+        control={form.control}
+        icon="tabler:currency-dollar"
+        label="Amount"
+        name="amount"
+      />
+      {isTransfer ? (
+        <>
+          <ListboxField
+            required
+            control={form.control}
+            icon="tabler:arrow-left-circle"
+            label="From Asset"
+            name="from"
+            options={assetOptions}
+          />
+          <ListboxField
+            required
+            control={form.control}
+            icon="tabler:arrow-right-circle"
+            label="To Asset"
+            name="to"
+            options={assetOptions}
+          />
+        </>
+      ) : (
+        <>
+          <TextField
+            required
+            control={form.control}
+            icon="tabler:file-description"
+            label="Particulars"
+            name="particulars"
+            placeholder="Enter details about the transaction"
+          />
+          <ListboxField
+            required
+            actionButtonOption={{
+              text: t('common.buttons:new', {
+                item: t('items.category')
+              }),
+              icon: 'tabler:plus',
+              onClick: () => {
+                open(ModifyCategoryModal, {
+                  type: 'create',
+                  initialData: {
+                    type: watchedType === 'income' ? 'income' : 'expenses'
+                  }
+                })
               }
-            })
-          }
-        },
-        icon: 'tabler:category',
-        required: true
-      },
-      asset: {
-        multiple: false,
-        label: 'Asset',
-        options: assets.map(asset => ({
-          text: asset.name,
-          value: asset.id,
-          icon: asset.icon
-        })),
-        icon: 'tabler:coin',
-        actionButtonOption: {
-          text: t('common.buttons:new', {
-            item: t('items.asset')
-          }),
-          icon: 'tabler:plus',
-          onClick: () => {
-            open(ModifyAssetModal, { type: 'create' })
-          }
-        },
-        required: true
-      },
-      ledgers: {
-        multiple: true,
-        label: 'Ledger',
-        options: ledgers.map(ledger => ({
-          text: ledger.name,
-          value: ledger.id,
-          icon: ledger.icon,
-          color: ledger.color
-        })),
-        icon: 'tabler:book',
-        actionButtonOption: {
-          text: t('common.buttons:new', {
-            item: t('items.ledger')
-          }),
-          icon: 'tabler:plus',
-          onClick: () => {
-            open(ModifyLedgerModal, { type: 'create' })
-          }
-        }
-      },
-      location: {
-        label: 'Location'
-      },
-      receipt: {
-        label: 'Receipt',
-        icon: 'tabler:receipt',
-        optional: true,
-        acceptedMimeTypes: {
+            }}
+            control={form.control}
+            icon="tabler:category"
+            label="Category"
+            name="category"
+            options={categoryOptions}
+          />
+          <ListboxField
+            required
+            actionButtonOption={{
+              text: t('common.buttons:new', {
+                item: t('items.asset')
+              }),
+              icon: 'tabler:plus',
+              onClick: () => {
+                open(ModifyAssetModal, { type: 'create' })
+              }
+            }}
+            control={form.control}
+            icon="tabler:coin"
+            label="Asset"
+            name="asset"
+            options={assetOptions}
+          />
+          <ListboxField
+            multiple
+            actionButtonOption={{
+              text: t('common.buttons:new', {
+                item: t('items.ledger')
+              }),
+              icon: 'tabler:plus',
+              onClick: () => {
+                open(ModifyLedgerModal, { type: 'create' })
+              }
+            }}
+            control={form.control}
+            icon="tabler:book"
+            label="Ledger"
+            name="ledgers"
+            options={ledgerOptions}
+          />
+          <LocationField
+            control={form.control}
+            label="Location"
+            name="location"
+          />
+        </>
+      )}
+      <FileField
+        control={form.control}
+        icon="tabler:receipt"
+        label="Receipt"
+        mimeTypes={{
           image: ['png', 'jpeg', 'webp'],
           application: ['pdf']
-        }
-      }
-    })
-    .conditionalFields({
-      asset: data => data.type !== 'transfer',
-      category: data => data.type !== 'transfer',
-      ledgers: data => data.type !== 'transfer',
-      particulars: data => data.type !== 'transfer',
-      location: data => data.type !== 'transfer',
-      from: data => data.type === 'transfer',
-      to: data => data.type === 'transfer'
-    })
-    .initialData({
-      type: initialData?.type || 'income',
-      date: initialData ? dayjs(initialData.date).toDate() : dayjs().toDate(),
-      amount: initialData?.amount || 0,
-      receipt: getFormFileFieldInitialData(initialData, initialData?.receipt),
-      ...(initialData?.type === 'transfer'
-        ? {
-            from: initialData?.from,
-            to: initialData?.to
-          }
-        : {
-            asset: initialData?.asset,
-            category: initialData?.category,
-            ledgers: initialData?.ledgers,
-            particulars: initialData?.particulars,
-            location: {
-              name: initialData?.location_name || '',
-              location: {
-                latitude: initialData?.location_coords?.lat || 0,
-                longitude: initialData?.location_coords?.lon || 0
-              },
-              formattedAddress: initialData?.location_name || ''
-            }
-          })
-    })
-    .onSubmit(async data => {
-      if (data.type === 'transfer') {
-        await mutation.mutateAsync({
-          type: 'transfer',
-          date: dayjs(data.date).format('YYYY-MM-DD'),
-          from: data.from,
-          to: data.to,
-          receipt: data.receipt,
-          amount: data.amount
-        })
-      } else {
-        await mutation.mutateAsync({
-          type: data.type,
-          date: dayjs(data.date).format('YYYY-MM-DD'),
-          asset: data.asset,
-          category: data.category,
-          ledgers: data.ledgers,
-          location: data.location,
-          particulars: data.particulars,
-          receipt: data.receipt,
-          amount: data.amount
-        })
-      }
-    })
-    .build()
-
-  return <FormModal {...formProps} />
+        }}
+        name="receipt"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyTransactionsModal

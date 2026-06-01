@@ -1,11 +1,27 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import z from 'zod'
 
-import { type InferInput } from '@lifeforge/shared'
-import { FormModal, defineForm } from '@lifeforge/ui'
+import {
+  ColorField,
+  FormModal,
+  IconField,
+  TextField,
+  createDefaultValues
+} from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+
+const schema = z.object({
+  name: z.string().min(1, 'Ledger name is required'),
+  icon: z.string().min(1, 'Ledger icon is required'),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color (e.g. #FF0000)')
+})
 
 function ModifyLedgerModal({
   data: { type, initialData },
@@ -39,43 +55,53 @@ function ModifyLedgerModal({
     })
   )
 
-  const { formProps } = defineForm<
-    InferInput<(typeof forgeAPI.ledgers)[typeof type]>['body']
-  >({
-    namespace: 'apps.wallet',
-    icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: `ledgers.${type}`,
-    submitButton: type,
-    onClose
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
+      ...initialData
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
   })
-    .typesMap({
-      icon: 'icon',
-      name: 'text',
-      color: 'color'
-    })
-    .setupFields({
-      name: {
-        required: true,
-        label: 'Ledger name',
-        icon: 'tabler:book',
-        placeholder: 'My Ledgers'
-      },
-      icon: {
-        required: true,
-        label: 'Ledger icon'
-      },
-      color: {
-        required: true,
-        label: 'Ledger color'
-      }
-    })
-    .initialData(initialData)
-    .onSubmit(async data => {
-      await mutation.mutateAsync(data)
-    })
-    .build()
 
-  return <FormModal {...formProps} />
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: async data => {
+          await mutation.mutateAsync(data)
+        },
+        template: type
+      }}
+      uiConfig={{
+        icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
+        namespace: 'apps.wallet',
+        title: `ledgers.${type}`,
+        onClose
+      }}
+    >
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:book"
+        label="Ledger name"
+        name="name"
+        placeholder="My Ledgers"
+      />
+      <IconField
+        required
+        control={form.control}
+        label="Ledger icon"
+        name="icon"
+      />
+      <ColorField
+        required
+        control={form.control}
+        label="Ledger color"
+        name="color"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyLedgerModal

@@ -56,7 +56,7 @@ function TransactionItem({
       description: 'Are you sure you want to delete this transaction?',
       confirmationButton: 'delete',
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }, [transaction])

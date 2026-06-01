@@ -159,7 +159,7 @@ function BalanceChartModal({
       />
       <div className="mb-6 space-y-4">
         <ListboxInput
-          buttonContent={<span>{t(`rangeModes.${rangeMode}`)}</span>}
+          renderContent={() => <span>{t(`rangeModes.${rangeMode}`)}</span>}
           icon="tabler:history"
           label="range mode"
           namespace="apps.wallet"

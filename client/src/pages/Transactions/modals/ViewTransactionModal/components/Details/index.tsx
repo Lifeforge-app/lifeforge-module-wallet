@@ -144,6 +144,10 @@ function Details({ transaction }: { transaction: WalletTransaction }) {
             namespace="apps.wallet"
             variant="secondary"
             onClick={() => {
+              if (!transaction.receipt) {
+                return
+              }
+
               open(ViewReceiptModal, {
                 src: forgeAPI.getMedia({
                   collectionId: transaction.collectionId,

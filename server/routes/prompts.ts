@@ -4,37 +4,50 @@ import { getPromptGenerationPrompt } from '../constants/prompts'
 import forge from '../forge'
 
 export const get = forge
-  .query()
-  .description('Get AI prompts for transaction generation')
-  .input({})
-  .callback(async ({ pb }) => {
+  .query({
+    description: 'Get AI prompts for transaction generation',
+    output: {
+      OK: z.object({
+        income: z.string(),
+        expenses: z.string()
+      })
+    }
+  })
+  .callback(async ({ pb, response }) => {
     const records = await pb.getFullList
       .collection('transactions_prompts')
       .execute()
 
     if (records.length === 0) {
-      return {
+      return response.ok({
         income: '',
         expenses: ''
-      }
+      })
     }
 
-    return {
+    return response.ok({
       income: records[0].income,
       expenses: records[0].expenses
-    }
+    })
   })
 
 export const update = forge
-  .mutation()
-  .description('Update AI generation prompts')
-  .input({
-    body: z.object({
-      income: z.string().min(1),
-      expenses: z.string().min(1)
-    })
+  .mutation({
+    description: 'Update AI generation prompts',
+    input: {
+      body: z.object({
+        income: z.string().min(1),
+        expenses: z.string().min(1)
+      })
+    },
+    output: {
+      OK: z.object({
+        income: z.string(),
+        expenses: z.string()
+      })
+    }
   })
-  .callback(async ({ pb, body }) => {
+  .callback(async ({ pb, body, response }) => {
     const records = await pb.getFullList
       .collection('transactions_prompts')
       .execute()
@@ -45,10 +58,10 @@ export const update = forge
         .data(body)
         .execute()
 
-      return {
+      return response.ok({
         income: newRecord.income,
         expenses: newRecord.expenses
-      }
+      })
     }
 
     const updatedRecord = await pb.update
@@ -57,20 +70,25 @@ export const update = forge
       .data(body)
       .execute()
 
-    return {
+    return response.ok({
       income: updatedRecord.income,
       expenses: updatedRecord.expenses
-    }
+    })
   })
 
 export const autoGenerate = forge
-  .mutation()
-  .description('Auto-generate prompt using AI')
-  .input({
-    body: z.object({
-      type: z.enum(['income', 'expenses']),
-      count: z.number().min(10).max(500)
-    })
+  .mutation({
+    description: 'Auto-generate prompt using AI',
+    input: {
+      body: z.object({
+        type: z.enum(['income', 'expenses']),
+        count: z.number().min(10).max(500)
+      })
+    },
+    output: {
+      OK: z.string(),
+      BAD_REQUEST: z.string()
+    }
   })
   .callback(
     async ({
@@ -78,10 +96,11 @@ export const autoGenerate = forge
       body: { type, count },
       core: {
         api: { fetchAI }
-      }
+      },
+      response
     }) => {
       const allTransactions = await pb.getFullList
-        .collection(`transactions_income_expenses`)
+        .collection('transactions_income_expenses')
         .expand({
           base_transaction: 'transactions'
         })
@@ -108,11 +127,9 @@ export const autoGenerate = forge
         }
       }
 
-      console.log('Sample Transactions:', sampleTransactions)
-
       const prompt = getPromptGenerationPrompt(type)
 
-      const response = await fetchAI({
+      const result = await fetchAI({
         provider: 'openai',
         model: 'gpt-4o',
         messages: [
@@ -128,10 +145,10 @@ export const autoGenerate = forge
         pb
       })
 
-      if (!response) {
-        throw new Error('Failed to generate prompt using AI')
+      if (!result) {
+        return response.badRequest('Failed to generate prompt using AI')
       }
 
-      return response
+      return response.ok(result)
     }
   )

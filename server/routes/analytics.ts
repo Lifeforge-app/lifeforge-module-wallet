@@ -4,45 +4,88 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
 import forge from '../forge'
+import walletSchemas from '../schema'
 
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isSameOrAfter)
 
-export const getTypesCount = forge
-  .query()
-  .description('Get transaction counts and totals by type')
-  .input({
-    query: z.object({
-      year: z
-        .string()
-        .optional()
-        .transform(val => (val ? parseInt(val) : undefined)),
-      month: z
-        .string()
-        .optional()
-        .transform(val => (val ? parseInt(val) : undefined))
-    })
+const TypesCountOutput = z.record(
+  z.string(),
+  z.object({
+    transactionCount: z.number(),
+    accumulatedAmount: z.number()
   })
-  .callback(async ({ pb, query: { year, month } }) => {
-    // If year/month provided, fetch from amount_aggregated with filter
-    if (year !== undefined && month !== undefined) {
+)
+
+const IncomeExpensesSummaryOutput = z.object({
+  totalIncome: z.number(),
+  totalExpenses: z.number(),
+  monthlyIncome: z.number(),
+  monthlyExpenses: z.number()
+})
+
+const CategoryBreakdownItem = z.object({
+  amount: z.number(),
+  count: z.number(),
+  percentage: z.number()
+})
+
+const CategoryBreakdownOutput = z.object({
+  income: z.record(z.string(), CategoryBreakdownItem),
+  expenses: z.record(z.string(), CategoryBreakdownItem)
+})
+
+const AvailableYearMonthsOutput = z.object({
+  years: z.array(z.number()),
+  monthsByYear: z.record(z.string(), z.array(z.number()))
+})
+
+const TransactionCountByDayOutput = z.record(
+  z.string(),
+  z.object({
+    income: z.number(),
+    expenses: z.number(),
+    transfer: z.number(),
+    total: z.number(),
+    count: z.number()
+  })
+)
+
+const ChartDataOutput = z.array(
+  z.object({
+    date: z.string(),
+    income: z.number(),
+    expenses: z.number()
+  })
+)
+
+export const getTypesCount = forge
+  .query({
+    description: 'Get transaction counts and totals by type',
+    input: {
+      query: z.object({
+        year: z.string().optional(),
+        month: z.string().optional()
+      })
+    },
+    output: {
+      OK: TypesCountOutput
+    }
+  })
+  .callback(async ({ pb, query: { year, month }, response }) => {
+    const parsedYear = year ? parseInt(year) : undefined
+
+    const parsedMonth = month ? parseInt(month) : undefined
+
+    if (parsedYear !== undefined && parsedMonth !== undefined) {
       const data = await pb.getFullList
         .collection('transactions_amount_aggregated')
         .filter([
-          {
-            field: 'year',
-            operator: '=' as const,
-            value: year
-          },
-          {
-            field: 'month',
-            operator: '=' as const,
-            value: month
-          }
+          { field: 'year', operator: '=', value: year },
+          { field: 'month', operator: '=', value: month }
         ])
         .execute()
 
-      // Aggregate by type
       const typesCount: Record<
         string,
         { transactionCount: number; accumulatedAmount: number }
@@ -61,10 +104,9 @@ export const getTypesCount = forge
         typesCount.transfer.accumulatedAmount += row.transfer || 0
       }
 
-      return typesCount
+      return response.ok(typesCount)
     }
 
-    // Otherwise, fetch all-time totals from types_aggregated
     const types = await pb.getFullList
       .collection('transaction_types_aggregated')
       .execute()
@@ -83,30 +125,38 @@ export const getTypesCount = forge
       >
     )
 
-    return typesCount
+    return response.ok(typesCount)
   })
 
 export const getIncomeExpensesSummary = forge
-  .query()
-  .description('Get income and expenses summary for a month')
-  .input({
-    query: z.object({
-      year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val))
-    })
+  .query({
+    description: 'Get income and expenses summary for a month',
+    input: {
+      query: z.object({
+        year: z.string(),
+        month: z.string()
+      })
+    },
+    output: {
+      OK: IncomeExpensesSummaryOutput
+    }
   })
-  .callback(async ({ pb, query: { year, month } }) => {
-    const start = dayjs(`${year}-${month}-01`)
+  .callback(async ({ pb, query: { year, month }, response }) => {
+    const parsedYear = parseInt(year)
+
+    const parsedMonth = parseInt(month)
+
+    const start = dayjs(`${parsedYear}-${parsedMonth}-01`)
       .startOf('month')
       .format('YYYY-MM-DD')
 
-    const end = dayjs(`${year}-${month}-01`).endOf('month').format('YYYY-MM-DD')
+    const end = dayjs(`${parsedYear}-${parsedMonth}-01`)
+      .endOf('month')
+      .format('YYYY-MM-DD')
 
     const transactions = await pb.getFullList
       .collection('transactions_income_expenses')
-      .expand({
-        base_transaction: 'transactions'
-      })
+      .expand({ base_transaction: 'transactions' })
       .fields({
         type: true,
         'expand.base_transaction.date': true,
@@ -129,84 +179,77 @@ export const getIncomeExpensesSummary = forge
     )
 
     const totalIncome = transactions.reduce((acc, cur) => {
-      if (cur.type === 'income') {
+      if (cur.type === 'income')
         return acc + cur.expand!.base_transaction!.amount!
-      }
 
       return acc
     }, 0)
 
     const totalExpenses = transactions.reduce((acc, cur) => {
-      if (cur.type === 'expenses') {
+      if (cur.type === 'expenses')
         return acc + cur.expand!.base_transaction!.amount!
-      }
 
       return acc
     }, 0)
 
     const monthlyIncome = inThisMonth.reduce((acc, cur) => {
-      if (cur.type === 'income') {
+      if (cur.type === 'income')
         return acc + cur.expand!.base_transaction!.amount!
-      }
 
       return acc
     }, 0)
 
     const monthlyExpenses = inThisMonth.reduce((acc, cur) => {
-      if (cur.type === 'expenses') {
+      if (cur.type === 'expenses')
         return acc + cur.expand!.base_transaction!.amount!
-      }
 
       return acc
     }, 0)
 
-    return {
+    return response.ok({
       totalIncome,
       totalExpenses,
       monthlyIncome,
       monthlyExpenses
-    }
+    })
   })
 
 export const getCategoriesBreakdown = forge
-  .query()
-  .description('Get income and expenses breakdown by category for a month')
-  .input({
-    query: z.object({
-      year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val))
-    })
+  .query({
+    description: 'Get income and expenses breakdown by category for a month',
+    input: {
+      query: z.object({
+        year: z.string(),
+        month: z.string()
+      })
+    },
+    output: {
+      OK: CategoryBreakdownOutput
+    }
   })
-  .callback(async ({ pb, query: { year, month } }) => {
+  .callback(async ({ pb, query: { year, month }, response }) => {
+    const parsedYear = parseInt(year)
+
+    const parsedMonth = parseInt(month)
+
     const startDate = dayjs()
-      .year(year)
-      .month(month - 1)
+      .year(parsedYear)
+      .month(parsedMonth - 1)
       .startOf('month')
       .format('YYYY-MM-DD')
 
     const endDate = dayjs()
-      .year(year)
-      .month(month - 1)
+      .year(parsedYear)
+      .month(parsedMonth - 1)
       .endOf('month')
       .format('YYYY-MM-DD')
 
     const transactions = await pb.getFullList
       .collection('transactions_income_expenses')
-      .expand({
-        category: 'categories',
-        base_transaction: 'transactions'
-      })
+      .expand({ category: 'categories', base_transaction: 'transactions' })
       .filter([
-        {
-          field: 'base_transaction.date',
-          operator: '>=',
-          value: startDate
-        },
-        {
-          field: 'base_transaction.date',
-          operator: '<=',
-          value: endDate
-        }
+        { field: 'base_transaction.date', operator: '>=', value: startDate },
+        { field: 'base_transaction.date', operator: '<=', value: endDate }
       ])
       .fields({
         type: true,
@@ -216,18 +259,15 @@ export const getCategoriesBreakdown = forge
       })
       .execute()
 
-    type CategoryBreakdown = Record<
+    const incomeByCategory: Record<
       string,
-      {
-        amount: number
-        count: number
-        percentage: number
-      }
-    >
+      { amount: number; count: number; percentage: number }
+    > = {}
 
-    const incomeByCategory: CategoryBreakdown = {}
-
-    const expensesByCategory: CategoryBreakdown = {}
+    const expensesByCategory: Record<
+      string,
+      { amount: number; count: number; percentage: number }
+    > = {}
 
     for (const transaction of transactions) {
       const categoryId = transaction.expand?.category?.id
@@ -245,15 +285,10 @@ export const getCategoriesBreakdown = forge
         targetMap[categoryId].amount += amount
         targetMap[categoryId].count += 1
       } else {
-        targetMap[categoryId] = {
-          amount,
-          count: 1,
-          percentage: 0
-        }
+        targetMap[categoryId] = { amount, count: 1, percentage: 0 }
       }
     }
 
-    // Calculate percentages for income
     const totalIncome = Object.values(incomeByCategory).reduce(
       (acc, { amount }) => acc + amount,
       0
@@ -266,7 +301,6 @@ export const getCategoriesBreakdown = forge
           : 0
     }
 
-    // Calculate percentages for expenses
     const totalExpenses = Object.values(expensesByCategory).reduce(
       (acc, { amount }) => acc + amount,
       0
@@ -279,30 +313,42 @@ export const getCategoriesBreakdown = forge
           : 0
     }
 
-    return {
+    return response.ok({
       income: incomeByCategory,
       expenses: expensesByCategory
-    }
+    })
   })
 
 export const getSpendingByLocation = forge
-  .query()
-  .description('Get spending aggregated by location for heatmap')
-  .input({})
-  .callback(async ({ pb }) =>
-    pb.getFullList.collection('expenses_location_aggregated').execute()
+  .query({
+    description: 'Get spending aggregated by location for heatmap',
+    output: {
+      OK: z.array(
+        walletSchemas.expenses_location_aggregated.extend({
+          lng: z.number(),
+          lat: z.number(),
+          amount: z.number()
+        })
+      )
+    }
+  })
+  .callback(async ({ pb, response }) =>
+    response.ok(
+      await pb.getFullList.collection('expenses_location_aggregated').execute()
+    )
   )
 
 export const getAvailableYearMonths = forge
-  .query()
-  .description('Get available years and months from transaction dates')
-  .input({})
-  .callback(async ({ pb }) => {
+  .query({
+    description: 'Get available years and months from transaction dates',
+    output: {
+      OK: AvailableYearMonthsOutput
+    }
+  })
+  .callback(async ({ pb, response }) => {
     const transactions = await pb.getFullList
       .collection('transactions')
-      .fields({
-        date: true
-      })
+      .fields({ date: true })
       .execute()
 
     const yearMonthMap: Record<number, Set<number>> = {}
@@ -320,63 +366,55 @@ export const getAvailableYearMonths = forge
       yearMonthMap[year].add(month)
     }
 
-    // Convert Sets to sorted arrays
     const years = Object.keys(yearMonthMap)
       .map(Number)
-      .sort((a, b) => b - a) // Sort years descending (newest first)
+      .sort((a, b) => b - a)
 
     const monthsByYear: Record<number, number[]> = {}
 
     for (const year of years) {
-      monthsByYear[year] = Array.from(yearMonthMap[year]).sort((a, b) => b - a) // Sort months descending
+      monthsByYear[year] = Array.from(yearMonthMap[year]).sort((a, b) => b - a)
     }
 
-    return { years, monthsByYear }
+    return response.ok({ years, monthsByYear })
   })
 
 export const getTransactionCountByDay = forge
-  .query()
-  .description('Get transaction counts by day for a specific month')
-  .input({
-    query: z.object({
-      year: z.string().transform(val => parseInt(val)),
-      month: z.string().transform(val => parseInt(val)),
-      viewFilter: z
-        .string()
-        .optional()
-        .transform((val): ('income' | 'expenses' | 'transfer')[] => {
-          if (!val) return ['income', 'expenses', 'transfer']
-
-          const types = val.split(',').map(v => v.trim())
-
-          if (
-            !types.every(t => ['income', 'expenses', 'transfer'].includes(t))
-          ) {
-            throw new Error('Invalid viewFilter types')
-          }
-
-          return types as ('income' | 'expenses' | 'transfer')[]
-        })
-    })
+  .query({
+    description: 'Get transaction counts by day for a specific month',
+    input: {
+      query: z.object({
+        year: z.string(),
+        month: z.string(),
+        viewFilter: z.string().optional()
+      })
+    },
+    output: {
+      OK: TransactionCountByDayOutput
+    }
   })
-  .callback(async ({ pb, query: { year, month, viewFilter } }) => {
+  .callback(async ({ pb, query: { year, month, viewFilter }, response }) => {
+    const parsedYear = parseInt(year)
+
+    const parsedMonth = parseInt(month) + 1
+
+    const parsedViewFilter: ('income' | 'expenses' | 'transfer')[] = (viewFilter
+      ?.split(',')
+      .map(v => v.trim())
+      .filter(t => ['income', 'expenses', 'transfer'].includes(t)) as (
+      | 'income'
+      | 'expenses'
+      | 'transfer'
+    )[]) ?? ['income', 'expenses', 'transfer']
+
     const data = await pb.getFullList
       .collection('transactions_amount_aggregated')
       .filter([
-        {
-          field: 'year',
-          operator: '=',
-          value: year
-        },
-        {
-          field: 'month',
-          operator: '=',
-          value: month + 1 // Convert 0-indexed to 1-indexed
-        }
+        { field: 'year', operator: '=', value: parsedYear },
+        { field: 'month', operator: '=', value: parsedMonth }
       ])
       .execute()
 
-    // Convert to the expected format keyed by date
     const countMap: Record<
       string,
       {
@@ -402,7 +440,7 @@ export const getTransactionCountByDay = forge
       const types = ['income', 'expenses', 'transfer'] as const
 
       for (const type of types) {
-        if (viewFilter.includes(type)) {
+        if (parsedViewFilter.includes(type)) {
           const count = row[`${type}_count`] || 0
 
           countMap[dateKey][type] = count
@@ -412,18 +450,22 @@ export const getTransactionCountByDay = forge
       }
     }
 
-    return countMap
+    return response.ok(countMap)
   })
 
 export const getChartData = forge
-  .query()
-  .description('Get chart data for income/expenses by date range')
-  .input({
-    query: z.object({
-      range: z.enum(['week', 'month', 'ytd'])
-    })
+  .query({
+    description: 'Get chart data for income/expenses by date range',
+    input: {
+      query: z.object({
+        range: z.enum(['week', 'month', 'ytd'])
+      })
+    },
+    output: {
+      OK: ChartDataOutput
+    }
   })
-  .callback(async ({ pb, query: { range } }) => {
+  .callback(async ({ pb, query: { range }, response }) => {
     const now = dayjs()
 
     const currentYear = now.year()
@@ -475,27 +517,15 @@ export const getChartData = forge
       }
     }
 
-    // Fetch transactions for the date range
     const transactions = await pb.getFullList
       .collection('transactions_income_expenses')
-      .expand({
-        base_transaction: 'transactions'
-      })
+      .expand({ base_transaction: 'transactions' })
       .filter([
-        {
-          field: 'base_transaction.date',
-          operator: '>=',
-          value: startDate
-        },
-        {
-          field: 'base_transaction.date',
-          operator: '<=',
-          value: endDate
-        }
+        { field: 'base_transaction.date', operator: '>=', value: startDate },
+        { field: 'base_transaction.date', operator: '<=', value: endDate }
       ])
       .execute()
 
-    // Build the result map
     const resultMap: Record<string, { income: number; expenses: number }> = {}
 
     for (const label of labels) {
@@ -507,7 +537,6 @@ export const getChartData = forge
 
       if (!base) continue
 
-      // Only include transactions from current year
       const transactionYear = dayjs(base.date).year()
 
       if (transactionYear !== currentYear) continue
@@ -529,10 +558,11 @@ export const getChartData = forge
       }
     }
 
-    // Convert to array format with expenses as negative
-    return labels.map(date => ({
-      date,
-      income: resultMap[date].income,
-      expenses: resultMap[date].expenses > 0 ? -resultMap[date].expenses : 0
-    }))
+    return response.ok(
+      labels.map(date => ({
+        date,
+        income: resultMap[date].income,
+        expenses: resultMap[date].expenses > 0 ? -resultMap[date].expenses : 0
+      }))
+    )
   })

@@ -5,6 +5,7 @@ import { AutoSizer } from 'react-virtualized'
 
 import {
   Alert,
+  Button,
   EmptyStateScreen,
   ModalHeader,
   Scrollbar,
@@ -40,17 +41,18 @@ function ManageTemplatesModal({
   return (
     <div className="flex min-h-[80vh] min-w-[40vw] flex-col">
       <ModalHeader
-        actionButtonProps={
-          !choosing
-            ? {
-                icon: 'tabler:plus',
-                onClick: () => {
-                  open(ModifyTemplatesModal, {
-                    type: 'create'
-                  })
-                }
-              }
-            : undefined
+        headerActions={
+          !choosing ? (
+            <Button
+              icon="tabler:plus"
+              variant="primary"
+              onClick={() => {
+                open(ModifyTemplatesModal, {
+                  type: 'create'
+                })
+              }}
+            />
+          ) : undefined
         }
         icon="tabler:template"
         namespace="apps.wallet"
@@ -58,7 +60,7 @@ function ManageTemplatesModal({
         onClose={onClose}
       />
       {!choosing && (
-        <Alert className="mb-4" type="note">
+        <Alert mb="md" type="note">
           {t('messages.aiAccuracy')}
         </Alert>
       )}

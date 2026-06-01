@@ -152,7 +152,6 @@ function TransactionList({
                               category => category.id === transaction.category
                             )?.icon
                           }
-                          iconClassName="print:hidden"
                           label={
                             categories.find(
                               category => category.id === transaction.category

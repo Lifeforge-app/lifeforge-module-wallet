@@ -100,7 +100,8 @@ function BreakdownContent({
     <CategoriesBreakdownContext value={memoizedContextValue}>
       <div className="mb-2 flex flex-col items-center gap-2">
         <Listbox
-          buttonContent={
+          className="component-bg-lighter w-full"
+          renderContent={() => (
             <div className="flex items-center gap-3">
               <Icon
                 className={clsx(
@@ -113,8 +114,7 @@ function BreakdownContent({
               />
               {t(`apps.wallet:transactionTypes.${selectedType}`)}
             </div>
-          }
-          className="component-bg-lighter w-full"
+          )}
           value={selectedType}
           onChange={(value: 'income' | 'expenses') => setSelectedType(value)}
         >
@@ -129,13 +129,13 @@ function BreakdownContent({
         </Listbox>
         <div className="flex w-full flex-col gap-2 min-[360px]:flex-row">
           <Listbox
-            buttonContent={
+            className="component-bg-lighter flex-1"
+            renderContent={() => (
               <div className="flex items-center gap-3">
                 <Icon className="text-bg-500 size-6" icon="tabler:calendar" />
                 {t('common.misc:dates.months.' + month)}
               </div>
-            }
-            className="component-bg-lighter flex-1"
+            )}
             value={month}
             onChange={(value: number | null) => setYearMonth({ month: value })}
           >
@@ -148,10 +148,10 @@ function BreakdownContent({
             ))}
           </Listbox>
           <Listbox
-            buttonContent={
-              <div className="flex items-center gap-3">{year}</div>
-            }
             className="component-bg-lighter min-[360px]:w-36!"
+            renderContent={() => (
+              <div className="flex items-center gap-3">{year}</div>
+            )}
             value={year}
             onChange={(value: number | null) => setYearMonth({ year: value })}
           >

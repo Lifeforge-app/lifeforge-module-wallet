@@ -42,7 +42,7 @@ export function useFilteredTransactions(transactions: WalletTransaction[]) {
 
         if (tx.type === 'transfer') return false
 
-        return tx.ledgers.includes(selectedLedger)
+        return tx.ledgers?.includes(selectedLedger)
       })
       .filter(
         tx =>

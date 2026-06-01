@@ -17,12 +17,12 @@ function RangeSelector({
 
   return (
     <Listbox
-      buttonContent={
+      renderContent={() => (
         <div className="flex items-center gap-3">
           <Icon className="text-bg-500 size-6" icon="tabler:history" />
           {t(`timeRanges.${range}`)}
         </div>
-      }
+      )}
       className={clsx(className, 'component-bg-lighter')}
       value={range}
       onChange={setRange}

@@ -27,6 +27,10 @@ function TransactionTransferItem({
       e.stopPropagation()
       e.preventDefault()
 
+      if (!transaction.receipt) {
+        return
+      }
+
       open(ViewReceiptModal, {
         src: forgeAPI.getMedia({
           collectionId: transaction.collectionId,

@@ -11,9 +11,9 @@ import {
   EmptyStateScreen,
   FAB,
   ModuleHeader,
-  WithQuery
+  WithQuery,
+  useModalStore
 } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'

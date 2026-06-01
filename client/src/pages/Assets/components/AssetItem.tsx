@@ -113,7 +113,7 @@ function AssetItem({ asset }: { asset: WalletAsset }) {
       confirmationButton: 'delete',
       confirmationPrompt: asset.name,
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
 

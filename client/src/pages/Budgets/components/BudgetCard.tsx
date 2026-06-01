@@ -69,7 +69,7 @@ function BudgetCard({
       confirmationButton: 'delete',
       confirmationPrompt: category.name,
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }

@@ -1,7 +1,8 @@
-import numberToCurrency from '@/utils/numberToCurrency'
 import { Icon } from '@iconify/react'
 import { useTranslation } from 'react-i18next'
 import COLORS from 'tailwindcss/colors'
+
+import numberToCurrency from '@/utils/numberToCurrency'
 
 import type { SavingGoal } from '..'
 

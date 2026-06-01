@@ -1,13 +1,42 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import colors from 'tailwindcss/colors'
+import z from 'zod'
 
-import { type InferInput } from '@lifeforge/shared'
-import { FormModal, defineForm } from '@lifeforge/ui'
+import {
+  CurrencyField,
+  FormModal,
+  ListboxField,
+  LocationField,
+  TextField,
+  createDefaultValues
+} from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+
+const schema = z.object({
+  name: z.string().min(1, 'Template name is required'),
+  type: z.enum(['income', 'expenses']),
+  particulars: z.string().min(1, 'Particulars is required'),
+  amount: z.number(),
+  asset: z.string().min(1, 'Asset is required'),
+  category: z.string().min(1, 'Category is required'),
+  ledgers: z.array(z.string()),
+  location: z
+    .object({
+      name: z.string(),
+      formattedAddress: z.string(),
+      location: z.object({
+        latitude: z.number(),
+        longitude: z.number()
+      })
+    })
+    .optional()
+})
 
 function ModifyTemplatesModal({
   onClose,
@@ -49,36 +78,79 @@ function ModifyTemplatesModal({
     })
   )
 
-  const { formProps } = defineForm<
-    InferInput<(typeof forgeAPI.templates)[typeof type]>['body']
-  >({
-    namespace: 'apps.wallet',
-    title: `templates.${type}`,
-    icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
-    submitButton: type,
-    onClose
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
+      ...initialData,
+      type: initialData?.type ?? 'income',
+      location: initialData?.location_name
+        ? {
+            name: initialData?.location_name || '',
+            location: {
+              latitude: initialData?.location_coords?.lat || 0,
+              longitude: initialData?.location_coords?.lon || 0
+            },
+            formattedAddress: initialData?.location_name || ''
+          }
+        : undefined
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
   })
-    .typesMap({
-      type: 'listbox',
-      name: 'text',
-      particulars: 'text',
-      amount: 'number',
-      asset: 'listbox',
-      category: 'listbox',
-      ledgers: 'listbox',
-      location: 'location'
-    })
-    .setupFields({
-      name: {
-        required: true,
-        label: 'Template Name',
-        icon: 'tabler:pencil',
-        placeholder: 'My Template'
-      },
-      type: {
-        multiple: false,
-        label: 'Transaction Type',
-        options: [
+
+  const watchedType = useWatch({ control: form.control, name: 'type' })
+
+  const categoryOptions = categories
+    .filter(cat => cat.type === watchedType)
+    .map(category => ({
+      text: category.name,
+      value: category.id,
+      icon: category.icon,
+      color: category.color
+    }))
+
+  const assetOptions = assets.map(asset => ({
+    text: asset.name,
+    value: asset.id,
+    icon: asset.icon
+  }))
+
+  const ledgerOptions = ledgers.map(ledger => ({
+    text: ledger.name,
+    value: ledger.id,
+    icon: ledger.icon,
+    color: ledger.color
+  }))
+
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: mutation.mutateAsync,
+        template: type
+      }}
+      uiConfig={{
+        icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
+        namespace: 'apps.wallet',
+        title: `templates.${type}`,
+        onClose
+      }}
+    >
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:pencil"
+        label="Template Name"
+        name="name"
+        placeholder="My Template"
+      />
+      <ListboxField
+        required
+        control={form.control}
+        icon="tabler:exchange"
+        label="Transaction Type"
+        name="type"
+        options={[
           {
             text: t('transactionTypes.income'),
             value: 'income',
@@ -91,80 +163,53 @@ function ModifyTemplatesModal({
             icon: 'tabler:logout-2',
             color: colors.red[500]
           }
-        ],
-        icon: 'tabler:exchange',
-        required: true
-      },
-      particulars: {
-        label: 'Particulars',
-        required: true,
-        icon: 'tabler:file-description',
-        placeholder: 'Enter details about the transaction'
-      },
-      amount: {
-        label: 'Amount',
-        type: 'currency',
-        icon: 'tabler:currency-dollar'
-      },
-      category: {
-        multiple: false,
-        label: 'Category',
-        options: formState =>
-          categories
-            .filter(cat => cat.type === formState.type)
-            .map(category => ({
-              text: category.name,
-              value: category.id,
-              icon: category.icon,
-              color: category.color
-            })),
-        icon: 'tabler:category',
-        required: true
-      },
-      asset: {
-        multiple: false,
-        label: 'Asset',
-        options: assets.map(asset => ({
-          text: asset.name,
-          value: asset.id,
-          icon: asset.icon
-        })),
-        icon: 'tabler:coin',
-        required: true
-      },
-      ledgers: {
-        multiple: true,
-        label: 'Ledger',
-        options: ledgers.map(ledger => ({
-          text: ledger.name,
-          value: ledger.id,
-          icon: ledger.icon,
-          color: ledger.color
-        })),
-        icon: 'tabler:book'
-      },
-      location: {
-        label: 'Location'
-      }
-    })
-    .initialData({
-      ...initialData,
-      type: initialData?.type ?? 'income',
-      location: {
-        name: initialData?.location_name || '',
-        location: {
-          latitude: initialData?.location_coords?.lat || 0,
-          longitude: initialData?.location_coords?.lon || 0
-        },
-        formattedAddress: initialData?.location_name || ''
-      }
-    })
-    .onSubmit(async data => {
-      await mutation.mutateAsync(data)
-    })
-    .build()
-
-  return <FormModal {...formProps} />
+        ]}
+      />
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:file-description"
+        label="Particulars"
+        name="particulars"
+        placeholder="Enter details about the transaction"
+      />
+      <CurrencyField
+        control={form.control}
+        icon="tabler:currency-dollar"
+        label="Amount"
+        name="amount"
+      />
+      <ListboxField
+        required
+        control={form.control}
+        icon="tabler:category"
+        label="Category"
+        name="category"
+        options={categoryOptions}
+      />
+      <ListboxField
+        required
+        control={form.control}
+        icon="tabler:coin"
+        label="Asset"
+        name="asset"
+        options={assetOptions}
+      />
+      <ListboxField
+        multiple
+        control={form.control}
+        icon="tabler:book"
+        label="Ledger"
+        name="ledgers"
+        options={ledgerOptions}
+      />
+      <LocationField
+        control={form.control}
+        label="Location"
+        name="location"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyTemplatesModal

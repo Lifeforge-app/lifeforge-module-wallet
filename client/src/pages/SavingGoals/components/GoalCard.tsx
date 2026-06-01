@@ -54,7 +54,7 @@ function GoalCard({ goal }: { goal: SavingGoal }) {
       confirmationButton: 'delete',
       confirmationPrompt: goal.name,
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }

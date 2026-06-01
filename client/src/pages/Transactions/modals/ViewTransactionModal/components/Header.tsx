@@ -1,8 +1,9 @@
-import { useWalletData } from '@/hooks/useWalletData'
-import TransactionAmount from '@/pages/Dashboard/components/TransactionsCard/components/TransactionAmount'
 import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
+
+import { useWalletData } from '@/hooks/useWalletData'
+import TransactionAmount from '@/pages/Dashboard/components/TransactionsCard/components/TransactionAmount'
 
 import type { WalletTransaction } from '../../..'
 

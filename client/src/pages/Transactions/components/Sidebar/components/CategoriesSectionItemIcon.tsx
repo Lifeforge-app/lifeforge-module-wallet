@@ -1,6 +1,7 @@
-import { useWalletStore } from '@/stores/useWalletStore'
 import { Icon } from '@iconify/react'
 import clsx from 'clsx'
+
+import { useWalletStore } from '@/stores/useWalletStore'
 
 function CategoriesSectionItemIcon({
   icon,

@@ -1,11 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import z from 'zod'
 
-import { type InferInput } from '@lifeforge/shared'
-import { FormModal, defineForm } from '@lifeforge/ui'
+import {
+  CurrencyField,
+  FormModal,
+  IconField,
+  TextField,
+  createDefaultValues
+} from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
+
+const schema = z.object({
+  name: z.string().min(1, 'Asset name is required'),
+  icon: z.string().min(1, 'Asset icon is required'),
+  starting_balance: z.number()
+})
 
 function ModifyAssetModal({
   data: { type, initialData },
@@ -39,45 +53,55 @@ function ModifyAssetModal({
     })
   )
 
-  const { formProps } = defineForm<
-    InferInput<(typeof forgeAPI.assets)[typeof type]>['body']
-  >({
-    namespace: 'apps.wallet',
-    icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: `assets.${type}`,
-    submitButton: type,
-    onClose
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
+      ...initialData
+    },
+    mode: 'all',
+    resolver: zodResolver(schema)
   })
-    .typesMap({
-      icon: 'icon',
-      name: 'text',
-      starting_balance: 'number'
-    })
-    .setupFields({
-      name: {
-        required: true,
-        label: 'Asset name',
-        icon: 'tabler:wallet',
-        placeholder: 'My assets'
-      },
-      icon: {
-        required: true,
-        label: 'Asset icon'
-      },
-      starting_balance: {
-        required: true,
-        label: 'Initial Balance',
-        icon: 'tabler:currency-dollar',
-        placeholder: '0.00'
-      }
-    })
-    .initialData(initialData)
-    .onSubmit(async data => {
-      await mutation.mutateAsync(data)
-    })
-    .build()
 
-  return <FormModal {...formProps} />
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        handler: async data => {
+          await mutation.mutateAsync(data)
+        },
+        template: type
+      }}
+      uiConfig={{
+        icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
+        namespace: 'apps.wallet',
+        title: `assets.${type}`,
+        onClose
+      }}
+    >
+      <TextField
+        required
+        control={form.control}
+        icon="tabler:wallet"
+        label="Asset name"
+        name="name"
+        placeholder="My assets"
+      />
+      <IconField
+        required
+        control={form.control}
+        label="Asset icon"
+        name="icon"
+      />
+      <CurrencyField
+        required
+        control={form.control}
+        icon="tabler:currency-dollar"
+        label="Initial Balance"
+        name="starting_balance"
+        placeholder="0.00"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyAssetModal
