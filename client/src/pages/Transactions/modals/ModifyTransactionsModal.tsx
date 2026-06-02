@@ -185,6 +185,8 @@ function ModifyTransactionsModal({
     resolver: zodResolver(schema)
   })
 
+  console.log(form.formState.errors)
+
   const watchedType = useWatch({ control: form.control, name: 'type' })
 
   const isTransfer = watchedType === 'transfer'

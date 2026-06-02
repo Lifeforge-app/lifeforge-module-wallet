@@ -1,11 +1,16 @@
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import Moment from 'moment'
+import * as MomentRange from 'moment-range'
 import z from 'zod'
 
 import forge from '../forge'
 import walletSchemas from '../schema'
 import getDateRange from '../utils/getDateRange'
+
+// @ts-expect-error - MomentRange types are not fully compatible with Moment
+const moment = MomentRange.extendMoment(Moment)
 
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isSameOrAfter)
@@ -140,20 +145,12 @@ export const getAssetAccumulatedBalance = forge
 
       const accumulatedBalance: Record<string, number> = {}
 
-      const allDateInBetween = []
-
-      const start = dayjs(
-        dateRange.startDate || allTransactions[allTransactions.length - 1].date
-      )
-
-      const end = dayjs(dateRange.endDate || allTransactions[0].date)
-
-      let currDate = start.clone()
-
-      while (currDate.isSameOrBefore(end, 'day')) {
-        allDateInBetween.push(currDate.clone())
-        currDate = currDate.add(1, 'day')
-      }
+      const allDateInBetween = moment
+        .range(
+          moment(allTransactions[allTransactions.length - 1].date),
+          moment()
+        )
+        .by('day')
 
       for (const date of allDateInBetween) {
         const dateStr = date.format('YYYY-MM-DD')
@@ -161,7 +158,7 @@ export const getAssetAccumulatedBalance = forge
         accumulatedBalance[dateStr] = parseFloat(currentBalance.toFixed(2))
 
         const transactionsOnDate = allTransactions.filter(t =>
-          dayjs(t.date).isSame(date, 'day')
+          moment(t.date).isSame(date, 'day')
         )
 
         for (const transaction of transactionsOnDate) {
@@ -176,14 +173,14 @@ export const getAssetAccumulatedBalance = forge
       return response.ok(
         Object.fromEntries(
           Object.entries(accumulatedBalance).filter(([date]) => {
-            const dateMoment = dayjs(date)
+            const dateMoment = moment(date)
 
             const isAfterStartDate = dateRange.startDate
-              ? dateMoment.isSameOrAfter(dayjs(dateRange.startDate), 'day')
+              ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
               : true
 
             const isBeforeEndDate = dateRange.endDate
-              ? dateMoment.isSameOrBefore(dayjs(dateRange.endDate), 'day')
+              ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
               : true
 
             return isAfterStartDate && isBeforeEndDate

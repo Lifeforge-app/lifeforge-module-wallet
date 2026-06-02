@@ -48,7 +48,7 @@ function ManageTemplatesModal({
           !choosing ? (
             <Button
               icon="tabler:plus"
-              variant="primary"
+              variant="plain"
               onClick={() => open(ModifyTemplatesModal, { type: 'create' })}
             />
           ) : undefined

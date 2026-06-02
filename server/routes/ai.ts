@@ -25,10 +25,13 @@ type TransactionTemplate = InferSchema<'transaction_templates'>
 
 type ExtractedData = {
   date: string
-  type: 'income' | 'expenses'
+  type: 'income' | 'expenses' | 'transfer'
   category: string
   amount: number
   location: string
+  asset: string | null
+  from: string | null
+  to: string | null
 }
 
 async function fetchInitialData(
@@ -72,24 +75,45 @@ async function extractBasicDetails(
   pb: IPBService<typeof schema>,
   description: string,
   todayStr: string,
-  categoryNames: string[]
+  categoryNames: string[],
+  assetNames: string[]
 ) {
   const hasCategories = categoryNames.length > 0
 
-  const FullTransactionDetails = z.object({
-    date: z.string().describe('Transaction date in YYYY-MM-DD format'),
-    type: z.enum(['income', 'expenses']),
-    category: hasCategories
-      ? z.enum(categoryNames).describe('The matched category')
-      : z.string().describe('The matched category name'),
-    amount: z.number().describe('Numeric amount without currency symbol'),
-    location: z.string().describe('Location name or "Unknown"')
-  })
+  const hasAssets = assetNames.length > 0
+
+  const assetEnum = hasAssets
+    ? z.enum(assetNames as [string, ...string[]])
+    : z.string()
+
+  const FullTransactionDetails = z.discriminatedUnion('type', [
+    z.object({
+      date: z.string().describe('Transaction date in YYYY-MM-DD format'),
+      type: z.literal('income').or(z.literal('expenses')),
+      category: hasCategories
+        ? z
+            .enum(categoryNames as [string, ...string[]])
+            .describe('The matched category')
+        : z.string().describe('The matched category name'),
+      amount: z.number().describe('Numeric amount without currency symbol'),
+      location: z.string().describe('Location name or "Unknown"'),
+      asset: assetEnum.describe(
+        'The matched asset/wallet name from the available list'
+      )
+    }),
+    z.object({
+      date: z.string().describe('Transaction date in YYYY-MM-DD format'),
+      type: z.literal('transfer'),
+      amount: z.number().describe('Numeric amount without currency symbol'),
+      from: assetEnum.describe('The source asset/wallet for the transfer'),
+      to: assetEnum.describe('The destination asset/wallet for the transfer')
+    })
+  ])
 
   return await fetchAI({
     pb,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     messages: [
       {
         role: 'system',
@@ -101,12 +125,15 @@ Strict Rules:
   - If an absolute date is provided (e.g. "May 25", "12/20/2025"), convert it to YYYY-MM-DD.
   - If a relative date or relative time context is provided (e.g. "today", "yesterday", "2 days ago", "last Friday", "yesterday afternoon", "3 hours ago"), you must calculate the exact calendar date in YYYY-MM-DD format based on the Current Reference Date: ${todayStr} (which represents today's date).
   - Never output descriptive relative terms (like "Today", "Yesterday", "2 days ago") in the date field; always output the calculated absolute calendar date in YYYY-MM-DD format.
-- Determine transaction type: 'income' or 'expenses'.
-- Assign the best matching category from the available category list. If no categories are provided, output a reasonable general category name (e.g. 'Food', 'Drinks', 'Entertainment', 'Transport').
-- Extract the clean, numerical transaction amount without currency signs.
+- Determine transaction type: 'income', 'expenses', or 'transfer'.
+  - For income or expenses: extract category, location, and the asset/wallet used.
+  - For transfer: extract only date, amount, and the from/to assets (from, to). Skip category, location, and single asset.
+- Extract the clean, numerical transaction amount without currency signs. CRITICAL: Never invent or assume an amount. Only extract an amount if it is explicitly stated in the description (e.g., "RM39", "$15", "50 dollars", "spent 20"). If no amount is explicitly mentioned, you MUST set amount to 0.
 - Extract the merchant name/location. If not found, use "Unknown".
+- Extract the payment asset/wallet used for the transaction. If the text does not contain any clue about which account or method was used, use "Unknown".
 
-Available Categories: ${hasCategories ? categoryNames.join(', ') : 'None'}`
+Available Categories: ${hasCategories ? categoryNames.join(', ') : 'None'}
+Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}`
       },
       {
         role: 'user',
@@ -143,7 +170,7 @@ async function matchTemplate(
   const templateData = await fetchAI({
     pb,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     messages: [
       {
         role: 'system',
@@ -155,6 +182,10 @@ Strict Matching Rules:
 - If the merchant/location, category, or descriptions are different (e.g., "The Library" vs "Lakeview Haus", or "book" vs "beverage"), they are absolutely NOT a match.
 - If there is no extremely close match, you MUST return 'None'.
 - Do not make loose or creative associations. Be highly conservative and default to 'None'.
+
+Slot Handling:
+- Template particulars may contain placeholder slots indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc. (e.g., <item>, {store}, {{service}}, [merchant]). These are empty slots to be filled with real values from the transaction.
+- Consider a template with slots as a potential match — the slot indicates the template fits, with details to be filled in from the actual transaction.
 
 Available Templates:
 ${templates
@@ -193,9 +224,13 @@ async function generateParticulars(
   pb: IPBService<typeof schema>,
   extractedData: ExtractedData,
   particularPrompt: TransactionPrompt | null,
-  description: string
+  description: string,
+  baseParticulars?: string
 ) {
-  const fallbackPrompt = `You are a copywriter generating clean, concise transaction summaries (particulars) for personal finance ledgers.
+  const todayStr = dayjs().format('YYYY-MM-DD')
+  let particularsPrompt = particularPrompt?.[extractedData.type as 'income' | 'expenses']
+    ? `${particularPrompt[extractedData.type as 'income' | 'expenses']}\n\nCurrent Reference Date: ${todayStr}\n\nIMPORTANT: If you are given a base reference particular containing placeholder slots (indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc.), you MUST fill those slots with the actual values from the user's transaction description, producing a concrete, complete particulars string.`
+    : `You are a copywriter generating clean, concise transaction summaries (particulars) for personal finance ledgers.
 Analyze the transaction text and describe only the purchase item or nature of the transaction (5 to 10 words).
 
 Strict Rules:
@@ -215,9 +250,9 @@ Few-Shot Examples:
 
 Now analyze the user input and produce the clean, concise particulars.`
 
-  let particularsPrompt = particularPrompt?.[extractedData.type]
-    ? `${particularPrompt[extractedData.type]}`
-    : fallbackPrompt
+  if (baseParticulars) {
+    particularsPrompt += `\n\nYou have a base reference particular from a matching template: "${baseParticulars}". Current Reference Date: ${todayStr}. This template may contain placeholder slots (indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc.). Your job is to fill those slots with the actual values from the user's transaction description, producing a concrete, complete particulars string. Use this as a base and enhance it with additional context from the user input if appropriate, while keeping it concise.`
+  }
 
   particularsPrompt += `\n\nCRITICAL RULE: Under no circumstances should any asset/wallet name, payment method, amount, date, day of week, or relative time words be included in the particulars.`
 
@@ -232,7 +267,7 @@ Now analyze the user input and produce the clean, concise particulars.`
   const particularsData = await fetchAI({
     pb,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     messages: [
       {
         role: 'system',
@@ -275,61 +310,6 @@ async function resolveLocationCoords(
   return null
 }
 
-async function resolveAsset(
-  fetchAI: FetchAIFunc,
-  pb: IPBService<typeof schema>,
-  assetNames: string[],
-  description: string
-) {
-  if (assetNames.length === 0) {
-    return 'Unknown'
-  }
-
-  const AssetMatch = z.object({
-    assetName: z
-      .enum(['Unknown', ...assetNames])
-      .describe(
-        'The matched asset name from the list, or Unknown if it cannot be derived'
-      )
-  })
-
-  const assetData = await fetchAI({
-    pb,
-    provider: 'deepseek',
-    model: 'deepseek-chat',
-    messages: [
-      {
-        role: 'system',
-        content: `You are an intelligent personal finance assistant.
-Your task is to identify which payment asset was used for the transaction based on the transaction text.
-
-Strict Rules:
-- Select the exact matching asset name from the provided list.
-- If the text does not contain any clues or mention of which account/method was used (e.g. "cash", "credit card", "bank", or a specific bank name), choose 'Unknown'.
-
-Available Assets:
-${assetNames
-  .map(function (name) {
-    return `- ${name}`
-  })
-  .join('\n')}
-
-Examples:
-- Input: "Starbucks coffee using MAE Wallet" -> MAE Wallet
-- Input: "Groceries yesterday" -> Unknown
-- Input: "Paid with Cash" -> Cash`
-      },
-      {
-        role: 'user',
-        content: description
-      }
-    ],
-    structure: AssetMatch
-  })
-
-  return assetData?.assetName || 'Unknown'
-}
-
 export const fromNaturalLanguage = forge
   .mutation({
     description:
@@ -351,7 +331,10 @@ export const fromNaturalLanguage = forge
           lat: z.number()
         }),
         location_name: z.string(),
-        asset: z.string().optional()
+        asset: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        ledgers: z.array(z.string()).optional()
       })
     }
   })
@@ -396,13 +379,35 @@ export const fromNaturalLanguage = forge
       pb,
       description,
       todayStr,
-      categoryNames
+      categoryNames,
+      assetNames
     )
 
     if (!extractedData) {
       throw new Error('Failed to extract transaction details')
     }
 
+    if (extractedData.type === 'transfer') {
+      return response.ok({
+        date: extractedData.date,
+        type: 'transfer',
+        amount: extractedData.amount,
+        category: null,
+        particulars: '',
+        location_coords: { lon: 0, lat: 0 },
+        location_name: '',
+        from:
+          extractedData.from && extractedData.from !== 'Unknown'
+            ? assetMap.get(extractedData.from)
+            : undefined,
+        to:
+          extractedData.to && extractedData.to !== 'Unknown'
+            ? assetMap.get(extractedData.to)
+            : undefined
+      })
+    }
+
+    // At this point, type is narrowed to 'income' | 'expenses'
     const finalResult: {
       date: string
       type: 'income' | 'expenses' | 'transfer'
@@ -415,6 +420,7 @@ export const fromNaturalLanguage = forge
       }
       location_name: string
       asset: string | undefined
+      ledgers: string[] | undefined
     } = {
       date: extractedData.date,
       type: extractedData.type,
@@ -429,7 +435,11 @@ export const fromNaturalLanguage = forge
         lat: 0
       },
       location_name: '',
-      asset: undefined as string | undefined
+      asset:
+        extractedData.asset && extractedData.asset !== 'Unknown'
+          ? assetMap.get(extractedData.asset)
+          : undefined,
+      ledgers: undefined
     }
 
     // Fetch transaction templates for type
@@ -452,15 +462,11 @@ export const fromNaturalLanguage = forge
       fetchAI,
       pb,
       templates,
-      extractedData,
+      extractedData as ExtractedData,
       description
     )
 
     if (matchedTemplate) {
-      if (matchedTemplate.particulars !== undefined && matchedTemplate.particulars !== null) {
-        finalResult.particulars = matchedTemplate.particulars
-      }
-
       if (matchedTemplate.category) {
         finalResult.category = matchedTemplate.category
       }
@@ -485,18 +491,24 @@ export const fromNaturalLanguage = forge
       ) {
         finalResult.amount = matchedTemplate.amount
       }
+
+      if (
+        matchedTemplate.ledgers &&
+        matchedTemplate.ledgers.length > 0
+      ) {
+        finalResult.ledgers = matchedTemplate.ledgers
+      }
     }
 
-    // 4. Generate particulars if not matched by template
-    if (!matchedTemplate && !finalResult.particulars?.trim()) {
-      finalResult.particulars = await generateParticulars(
-        fetchAI,
-        pb,
-        extractedData,
-        particularPrompt,
-        description
-      )
-    }
+    // 4. Generate particulars (always run, with template particulars as base reference if matched)
+    finalResult.particulars = await generateParticulars(
+      fetchAI,
+      pb,
+      extractedData as ExtractedData,
+      particularPrompt,
+      description,
+      matchedTemplate?.particulars || undefined
+    )
 
     // 5. Resolve location coordinates if not already set by template
     if (!finalResult.location_name?.trim()) {
@@ -512,16 +524,9 @@ export const fromNaturalLanguage = forge
       }
     }
 
-    // 6. Resolve payment asset
-    const matchedAssetName = await resolveAsset(
-      fetchAI,
-      pb,
-      assetNames,
-      description
-    )
-
-    if (matchedAssetName !== 'Unknown') {
-      finalResult.asset = assetMap.get(matchedAssetName)
+    // 6. Fallback to template asset if AI didn't resolve one
+    if (!finalResult.asset && matchedTemplate?.asset) {
+      finalResult.asset = matchedTemplate.asset
     }
 
     return response.ok(finalResult)

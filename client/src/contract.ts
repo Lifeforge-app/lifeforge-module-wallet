@@ -1171,6 +1171,18 @@ export const contract = {
             },
             "asset": {
               "type": "string"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "ledgers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [

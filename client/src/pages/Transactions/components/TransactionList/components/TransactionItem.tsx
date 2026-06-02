@@ -12,6 +12,7 @@ import {
 import forgeAPI from '@/utils/forgeAPI'
 
 import type { WalletTransaction } from '../../..'
+import ModifyTemplatesModal from '../../../modals/ModifyTemplatesModal'
 import ModifyTransactionsModal from '../../../modals/ModifyTransactionsModal'
 import ViewTransactionModal from '../../../modals/ViewTransactionModal'
 import TransactionIncomeExpensesItem from './TransactionIncomeExpensesItem'
@@ -46,7 +47,11 @@ function TransactionItem({
       direction="row"
       gap="md"
       justify="between"
-      onClick={() => open(ViewTransactionModal, { id: transaction.id })}
+      onClick={() => {
+        if (viewOnly) return
+
+        open(ViewTransactionModal, { id: transaction.id })
+      }}
     >
       {transaction.type === 'transfer' ? (
         <TransactionTransferItem transaction={transaction} />
@@ -54,7 +59,13 @@ function TransactionItem({
         <TransactionIncomeExpensesItem transaction={transaction} />
       )}
       {!viewOnly && (
-        <ContextMenu>
+        <ContextMenu
+          styles={{
+            menu: {
+              minWidth: '16em'
+            }
+          }}
+        >
           {transaction.type !== 'transfer' && (
             <ContextMenuItem
               icon="tabler:copy"
@@ -63,6 +74,28 @@ function TransactionItem({
                 navigator.clipboard.writeText(transaction.particulars)
                 toast.success('Transaction particulars copied to clipboard')
               }}
+            />
+          )}
+          {transaction.type !== 'transfer' && (
+            <ContextMenuItem
+              icon="tabler:template"
+              label="Create Template From..."
+              onClick={() =>
+                open(ModifyTemplatesModal, {
+                  type: 'create',
+                  initialData: {
+                    name: '',
+                    type: transaction.type,
+                    particulars: transaction.particulars,
+                    amount: transaction.amount,
+                    asset: transaction.asset,
+                    category: transaction.category,
+                    ledgers: transaction.ledgers ?? [],
+                    location_name: transaction.location_name,
+                    location_coords: transaction.location_coords
+                  }
+                })
+              }
             />
           )}
           <ContextMenuItem
