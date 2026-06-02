@@ -19,8 +19,8 @@ function PrintAndViewButton({
   return (
     <>
       <Button
-        className="mt-4"
         icon="tabler:printer"
+        mt="md"
         onClick={() => {
           reactToPrintFn()
         }}
@@ -28,8 +28,8 @@ function PrintAndViewButton({
         Print
       </Button>
       <Button
-        className="mt-2"
         icon="tabler:eye"
+        mt="sm"
         namespace="apps.wallet"
         variant="secondary"
         onClick={() => {

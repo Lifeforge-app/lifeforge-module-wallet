@@ -1,14 +1,18 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { Link, useNavigate } from '@lifeforge/shared'
 import {
+  Button,
   Card,
   EmptyStateScreen,
+  Flex,
+  Icon,
   Scrollbar,
+  Stack,
+  Text,
   Widget,
-  WithQuery
+  WithQuery,
+  surface
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
@@ -28,15 +32,14 @@ function AssetsBalanceCard() {
   return (
     <Widget
       actionComponent={
-        <Link
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 transition-all"
-          to="./assets"
-        >
-          <Icon className="text-xl" icon="tabler:chevron-right" />
-        </Link>
+        <Button as={Link} p="xs" to="./assets" variant="plain">
+          <Icon icon="tabler:chevron-right" />
+        </Button>
       }
-      className="col-span-1 row-span-2 min-h-96 xl:min-h-0"
+      gridColumnSpan={1}
+      gridRowSpan={2}
       icon="tabler:wallet"
+      minHeight={{ base: '24rem', xl: '0' }}
       namespace="apps.wallet"
       title="Assets Balance"
     >
@@ -44,46 +47,47 @@ function AssetsBalanceCard() {
         {assets =>
           assets.length > 0 ? (
             <Scrollbar>
-              <ul className="flex flex-col gap-3 pb-2">
+              <Stack as="ul" gap="sm" pb="sm">
                 {assets.map(asset => (
                   <Card
                     key={asset.id}
                     as={Link}
-                    className="flex-between component-bg-lighter-with-hover flex flex-col gap-3 [@media(min-width:400px)]:flex-row"
+                    bg={surface.lightInteractive}
+                    direction={{ base: 'column', sm: 'row' }}
+                    gap="md"
                     to={`/wallet/transactions?asset=${asset.id}`}
                   >
-                    <div className="flex w-full min-w-0 items-center gap-3">
-                      <Icon className="size-6 shrink-0" icon={asset.icon} />
-                      <div className="w-full min-w-0 truncate font-semibold">
+                    <Flex align="center" gap="md" minWidth="0" width="100%">
+                      <Icon icon={asset.icon} size="1.5rem" />
+                      <Text truncate weight="semibold">
                         {asset.name}
-                      </div>
-                    </div>
-                    <div
-                      className={clsx(
-                        'mt-4 flex gap-2 text-right text-3xl font-medium whitespace-nowrap [@media(min-width:400px)]:mt-0',
-                        isAmountHidden ? 'items-center' : 'items-end'
-                      )}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      align={isAmountHidden ? 'center' : 'end'}
+                      gap="sm"
+                      mt={{ base: 'md', sm: 'none' }}
                     >
-                      <span className="text-bg-500 text-xl">RM</span>
+                      <Text color="muted" size="xl">
+                        RM
+                      </Text>
                       {isAmountHidden ? (
-                        <span className="flex items-center">
+                        <Flex align="center">
                           {Array(4)
                             .fill(0)
                             .map((_, i) => (
-                              <Icon
-                                key={i}
-                                className="-mx-0.5 size-4"
-                                icon="uil:asterisk"
-                              />
+                              <Icon key={i} icon="uil:asterisk" size="1rem" />
                             ))}
-                        </span>
+                        </Flex>
                       ) : (
-                        <span>{numberToCurrency(asset.current_balance)}</span>
+                        <Text size="3xl" weight="medium">
+                          {numberToCurrency(asset.current_balance)}
+                        </Text>
                       )}
-                    </div>
+                    </Flex>
                   </Card>
                 ))}
-              </ul>
+              </Stack>
             </Scrollbar>
           ) : (
             <EmptyStateScreen

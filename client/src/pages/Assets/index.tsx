@@ -8,17 +8,18 @@ import {
   ContextMenuItem,
   EmptyStateScreen,
   FAB,
+  Grid,
   ModuleHeader,
   Widget,
-  WithQuery
+  WithQuery,
+  useModalStore
 } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import '../../index.css'
-import TotalBalance from './components/Amount'
+import TotalBalance from './components/AssetAmount'
 import AssetItem from './components/AssetItem'
 import ModifyAssetModal from './modals/ModifyAssetModal'
 
@@ -59,7 +60,7 @@ function Assets() {
       <ModuleHeader
         actionButton={
           <Button
-            className="hidden sm:flex"
+            display={{ base: 'none', sm: 'flex' }}
             icon="tabler:plus"
             tProps={{
               item: t('items.asset')
@@ -93,7 +94,7 @@ function Assets() {
               />
             </>
           ),
-          classNames: { menu: 'min-w-60' }
+          styles: { menu: { minWidth: '15rem' } }
         }}
         icon="tabler:wallet"
         namespace="apps.wallet"
@@ -107,25 +108,22 @@ function Assets() {
               actionComponent={
                 <TotalBalance
                   amount={totalBalance}
-                  className="hidden sm:flex"
+                  display={{ base: 'none', sm: 'flex' }}
                 />
               }
-              className="mb-6 h-min"
               icon="tabler:currency-dollar"
+              mb="lg"
               namespace="apps.wallet"
               title="Total Assets"
             >
-              <TotalBalance
-                amount={totalBalance}
-                className="flex-center w-full sm:hidden"
-              />
+              <TotalBalance amount={totalBalance} display={{ sm: 'none' }} />
             </Widget>
             {assets.length > 0 ? (
-              <div className="mb-24 grid grid-cols-1 gap-3 md:mb-6 md:grid-cols-2 lg:grid-cols-3">
+              <Grid gap="md" mb="2xl" templateCols={{ base: 1, md: 2, lg: 3 }}>
                 {assets.map(asset => (
                   <AssetItem key={asset.id} asset={asset} />
                 ))}
-              </div>
+              </Grid>
             ) : (
               <EmptyStateScreen
                 icon="tabler:wallet-off"

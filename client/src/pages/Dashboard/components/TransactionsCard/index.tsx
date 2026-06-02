@@ -1,12 +1,17 @@
-import { Icon } from '@iconify/react'
-
 import { Link } from '@lifeforge/shared'
-import { EmptyStateScreen, Scrollbar, Widget, WithQuery } from '@lifeforge/ui'
+import {
+  Button,
+  EmptyStateScreen,
+  Flex,
+  Icon,
+  Scrollbar,
+  Widget,
+  WithQuery
+} from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 
-import ListView from './views/ListView'
-import TableView from './views/TableView'
+import TransactionList from './components/TransactionList'
 
 function TransactionsCard() {
   const { transactionsQuery } = useWalletData()
@@ -14,27 +19,23 @@ function TransactionsCard() {
   return (
     <Widget
       actionComponent={
-        <Link
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 font-medium transition-all"
-          to="/wallet/transactions"
-        >
-          <Icon className="text-xl" icon="tabler:chevron-right" />
-        </Link>
+        <Button as={Link} p="xs" to="/wallet/transactions" variant="plain">
+          <Icon icon="tabler:chevron-right" />
+        </Button>
       }
-      className="col-span-2 row-span-4 min-h-0"
+      gridColumnSpan={{ xl: 2 }}
+      gridRowSpan={5}
       icon="tabler:list"
+      minHeight="0"
       namespace="apps.wallet"
       title="Recent Transactions"
     >
       <WithQuery query={transactionsQuery}>
         {transactions => (
-          <div className="size-full min-h-96 xl:min-h-0">
+          <Flex height="100%" minHeight="32rem" width="100%">
             <Scrollbar>
               {transactions.length > 0 ? (
-                <>
-                  <TableView />
-                  <ListView />
-                </>
+                <TransactionList />
               ) : (
                 <EmptyStateScreen
                   icon="tabler:wallet-off"
@@ -45,7 +46,7 @@ function TransactionsCard() {
                 />
               )}
             </Scrollbar>
-          </div>
+          </Flex>
         )}
       </WithQuery>
     </Widget>

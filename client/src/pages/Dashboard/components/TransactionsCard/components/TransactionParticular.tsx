@@ -1,3 +1,5 @@
+import { Text } from '@lifeforge/ui'
+
 import { useWalletData } from '@/hooks/useWalletData'
 
 import type { WalletTransaction } from '../../../../Transactions'
@@ -22,7 +24,7 @@ function TransactionParticular({
           {transaction.particulars}{' '}
           {transaction.location_name && (
             <>
-              <span className="text-bg-500">@</span> {transaction.location_name}
+              <Text color="bg-500">@</Text> {transaction.location_name}
             </>
           )}
         </>

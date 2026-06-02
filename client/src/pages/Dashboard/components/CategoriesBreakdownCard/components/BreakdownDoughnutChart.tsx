@@ -1,10 +1,8 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
-import { Card } from '@lifeforge/ui'
+import { Bordered, Box, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -47,30 +45,29 @@ function BreakdownDoughnutChart() {
       const percentage = totalAmount > 0 ? (data.value / totalAmount) * 100 : 0
 
       return (
-        <Card className="border-bg-200 dark:border-bg-700/50 component-bg border p-0!">
-          <div className="component-bg-lighter p-4!">
-            <div className="flex items-center gap-2">
-              <span
-                className="size-2.5 rounded-full"
+        <Bordered asChild borderColor={{ base: 'bg-200', dark: 'bg-700' }}>
+          <Stack bg={surface.light} p="lg" r="lg">
+            <Flex align="center" gap="sm">
+              <Box
+                height="0.625rem"
+                r="full"
                 style={{ backgroundColor: data.payload.color }}
+                width="0.625rem"
               />
-              <span className="font-medium">{data.name}</span>
-            </div>
-            <div className="mt-2 flex items-center justify-between gap-4">
-              <span className="text-bg-500">Amount:</span>
-              <span
-                className="font-semibold"
-                style={{ color: data.payload.color }}
-              >
+              <Text weight="medium">{data.name}</Text>
+            </Flex>
+            <Flex align="center" gap="lg" justify="between" mt="sm">
+              <Text color="muted">Amount:</Text>
+              <Text style={{ color: data.payload.color }} weight="semibold">
                 RM {numberToCurrency(data.value)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-bg-500">Percentage:</span>
-              <span className="font-semibold">{percentage.toFixed(1)}%</span>
-            </div>
-          </div>
-        </Card>
+              </Text>
+            </Flex>
+            <Flex align="center" gap="lg" justify="between">
+              <Text color="muted">Percentage:</Text>
+              <Text weight="semibold">{percentage.toFixed(1)}%</Text>
+            </Flex>
+          </Stack>
+        </Bordered>
       )
     }
 
@@ -78,63 +75,95 @@ function BreakdownDoughnutChart() {
   }
 
   return (
-    <div className="relative mx-auto flex aspect-square w-4/5 min-w-0 flex-col gap-3">
-      <div className="pointer-events-none absolute top-1/2 left-1/2 mt-2 flex size-full -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center">
-        <div
-          className={clsx(
-            'flex text-3xl font-medium',
-            isAmountHidden ? 'items-center' : 'items-end'
-          )}
+    <Flex
+      centered
+      aspectRatio="1/1"
+      direction="column"
+      gap="md"
+      height="auto"
+      minWidth="0"
+      position="relative"
+      width="80%"
+    >
+      <Flex
+        centered
+        align="center"
+        direction="column"
+        height="100%"
+        inset="0"
+        left="50%"
+        mt="sm"
+        position="absolute"
+        style={{
+          pointerEvents: 'none',
+          transform: 'translate(-50%, -50%)'
+        }}
+        top="50%"
+        width="100%"
+      >
+        <Flex asChild align={isAmountHidden ? 'center' : 'end'}>
+          <Text weight="medium">
+            <Text color="muted" mr="xs" size="xl">
+              RM
+            </Text>
+            {isAmountHidden ? (
+              <Flex align="center">
+                {Array(4)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Icon
+                      key={i}
+                      icon="uil:asterisk"
+                      size={{ base: '1.5rem', sm: '2rem' }}
+                    />
+                  ))}
+              </Flex>
+            ) : (
+              <Text size="3xl" weight="medium">
+                {numberToCurrency(totalAmount)}
+              </Text>
+            )}
+          </Text>
+        </Flex>
+        <Text
+          align="center"
+          color="muted"
+          mt="sm"
+          size={{ base: 'sm', sm: 'base' }}
         >
-          <span className="text-bg-500 mr-1 text-xl">RM</span>
-          {isAmountHidden ? (
-            <span className="flex items-center">
-              {Array(4)
-                .fill(0)
-                .map((_, i) => (
-                  <Icon
-                    key={i}
-                    className="-mx-0.5 size-6 sm:size-8"
-                    icon="uil:asterisk"
-                  />
-                ))}
-            </span>
-          ) : (
-            numberToCurrency(totalAmount)
-          )}
-        </div>
-        <div className="text-bg-500 mt-2 w-1/2 text-center text-sm sm:text-base">
           {type === 'expenses'
             ? t('widgets.categoriesBreakdown.thisMonthsExpenses')
             : t('widgets.categoriesBreakdown.thisMonthsIncome')}
-        </div>
-      </div>
-      <ResponsiveContainer height="100%" width="100%">
-        <PieChart>
-          <Pie
-            cornerRadius={4}
-            cx="50%"
-            cy="50%"
-            data={chartData}
-            dataKey="value"
-            innerRadius="80%"
-            nameKey="name"
-            outerRadius="100%"
-            paddingAngle={2}
-            strokeWidth={1}
-          >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={entry.color + '20'}
-                stroke={entry.color}
-              />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
+        </Text>
+      </Flex>
+      <Flex height="100%" maxWidth="36em" width="100%">
+        <ResponsiveContainer height="100%" width="100%">
+          <PieChart>
+            <Pie
+              cornerRadius={4}
+              cx="50%"
+              cy="50%"
+              data={chartData}
+              dataKey="value"
+              innerRadius="80%"
+              nameKey="name"
+              outerRadius="100%"
+              paddingAngle={2}
+              strokeWidth={1}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color + '20'}
+                  stroke={entry.color}
+                />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </Flex>
+    </Flex>
   )
 }
 

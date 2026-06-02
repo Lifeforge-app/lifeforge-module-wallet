@@ -1,8 +1,7 @@
-import clsx from 'clsx'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ListboxInput, ListboxOption } from '@lifeforge/ui'
+import { Flex, ListboxInput, ListboxOption, Text } from '@lifeforge/ui'
 
 function YearMonthInput({
   month,
@@ -10,8 +9,7 @@ function YearMonthInput({
   year,
   setYear,
   yearsOptions = [],
-  monthsOptions = [],
-  className
+  monthsOptions = []
 }: {
   month: number | null
   setMonth: (value: number | null) => void
@@ -19,7 +17,6 @@ function YearMonthInput({
   setYear: (value: number | null) => void
   yearsOptions: number[]
   monthsOptions: number[]
-  className?: string
 }) {
   const { t } = useTranslation('common.misc')
 
@@ -36,23 +33,15 @@ function YearMonthInput({
   }, [monthsOptions])
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col items-center gap-3 sm:flex-row',
-        className
-      )}
-    >
+    <Flex align="center" direction={{ base: 'column', sm: 'row' }} gap="sm">
       <ListboxInput
-        className="w-full sm:w-1/2"
         icon="tabler:calendar-month"
         label="Month"
         namespace="apps.wallet"
         renderContent={() => (
-          <>
-            <span className="-mt-px block truncate">
-              {month !== null ? t(`dates.months.${month}`) : 'None'}
-            </span>
-          </>
+          <Text truncate>
+            {month !== null ? t(`dates.months.${month}`) : 'None'}
+          </Text>
         )}
         value={month}
         onChange={setMonth}
@@ -66,15 +55,10 @@ function YearMonthInput({
         ))}
       </ListboxInput>
       <ListboxInput
-        className="w-full sm:w-1/2"
         icon="tabler:calendar"
         label="Year"
         namespace="apps.wallet"
-        renderContent={() => (
-          <>
-            <span className="-mt-px block truncate">{year ?? 'None'}</span>
-          </>
-        )}
+        renderContent={() => <Text truncate>{year ?? 'None'}</Text>}
         value={year}
         onChange={setYear}
       >
@@ -82,7 +66,7 @@ function YearMonthInput({
           <ListboxOption key={yr} label={yr.toString()} value={yr} />
         ))}
       </ListboxInput>
-    </div>
+    </Flex>
   )
 }
 

@@ -1,25 +1,29 @@
 import { useContext } from 'react'
 
+import { Box, Flex, Text } from '@lifeforge/ui'
+
 import { CategoriesBreakdownContext } from '..'
 
 function BreakdownChartLegend() {
   const { categories } = useContext(CategoriesBreakdownContext)
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+    <Flex align="center" gapX="lg" gapY="sm" justify="center" wrap="wrap">
       {categories.map(category => (
-        <div key={category.id} className="flex items-center gap-2">
-          <span
-            className="-mb-0.5 size-3 rounded-[3px] border"
+        <Flex key={category.id} align="center" gap="sm">
+          <Box
+            height="0.75rem"
+            r="full"
             style={{
               backgroundColor: category.color + '30',
-              borderColor: category.color
+              border: `1px solid ${category.color}`
             }}
-          ></span>
-          <span className="text-sm">{category.name}</span>
-        </div>
+            width="0.75rem"
+          />
+          <Text size="sm">{category.name}</Text>
+        </Flex>
       ))}
-    </div>
+    </Flex>
   )
 }
 

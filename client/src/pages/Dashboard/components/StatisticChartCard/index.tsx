@@ -12,7 +12,17 @@ import {
 } from 'recharts'
 
 import { usePersonalization } from '@lifeforge/shared'
-import { Card, EmptyStateScreen, Widget, WithQuery } from '@lifeforge/ui'
+import {
+  Box,
+  Card,
+  EmptyStateScreen,
+  Flex,
+  Stack,
+  Text,
+  Widget,
+  WithQuery,
+  surface
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import getChartScale from '@/utils/getChartScale'
@@ -54,43 +64,50 @@ function StatisticChardCard() {
   }) => {
     if (active && payload && payload.length) {
       return (
-        <Card className="border-bg-200 dark:border-bg-700/50 border">
-          <p className="mb-2 font-medium">{label}</p>
-          <div className="space-y-1">
-            {payload.map((entry, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="flex items-center gap-2">
-                  <span
-                    className="size-2.5 rounded-full"
-                    style={{ backgroundColor: entry.stroke }}
-                  />
-                  <span className="text-bg-500">{entry.name}:</span>
-                </div>
-                <span className="font-semibold" style={{ color: entry.stroke }}>
-                  RM {numberToCurrency(Math.abs(entry.value))}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="border-bg-200 dark:border-bg-700/50 my-2 w-full border-b" />
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-bg-500 font-medium">Difference:</span>
-            <span className="font-semibold">
-              RM{' '}
-              {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
-                ? '('
-                : ''}
-              {numberToCurrency(
-                Math.abs((payload[0]?.value ?? 0) + (payload[1]?.value ?? 0))
-              )}
-              {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
-                ? ')'
-                : ''}
-            </span>
-          </div>
+        <Card>
+          <Stack>
+            <Text mb="sm" weight="medium">
+              {label}
+            </Text>
+            <Stack gap="xs">
+              {payload.map((entry, index) => (
+                <Flex key={index} align="center" gap="lg" justify="between">
+                  <Flex align="center" gap="sm">
+                    <Box
+                      height="0.625rem"
+                      r="full"
+                      style={{
+                        backgroundColor: entry.stroke
+                      }}
+                      width="0.625rem"
+                    />
+                    <Text color="muted">{entry.name}:</Text>
+                  </Flex>
+                  <Text style={{ color: entry.stroke }} weight="semibold">
+                    RM {numberToCurrency(Math.abs(entry.value))}
+                  </Text>
+                </Flex>
+              ))}
+            </Stack>
+            <Box bg={surface.light} height="1px" width="100%" />
+            <Flex align="center" gap="lg" justify="between">
+              <Text color="muted" weight="medium">
+                Difference:
+              </Text>
+              <Text weight="semibold">
+                RM{' '}
+                {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
+                  ? '('
+                  : ''}
+                {numberToCurrency(
+                  Math.abs((payload[0]?.value ?? 0) + (payload[1]?.value ?? 0))
+                )}
+                {(payload[0]?.value ?? 0) + (payload[1]?.value ?? 0) < 0
+                  ? ')'
+                  : ''}
+              </Text>
+            </Flex>
+          </Stack>
         </Card>
       )
     }
@@ -102,18 +119,23 @@ function StatisticChardCard() {
     <Widget
       actionComponent={
         <RangeSelector
-          className="hidden w-72! sm:flex"
+          display={{ base: 'none', sm: 'block' }}
           range={range}
           setRange={setRange}
         />
       }
-      className="col-span-2 row-span-2"
+      gridColumnSpan={{ xl: 2 }}
+      gridRowSpan={2}
       icon="tabler:chart-dots"
       namespace="apps.wallet"
       title="Statistics"
     >
-      <RangeSelector className="sm:hidden" range={range} setRange={setRange} />
-      <div className="flex-center size-full min-h-96 flex-1">
+      <RangeSelector
+        display={{ sm: 'none' }}
+        range={range}
+        setRange={setRange}
+      />
+      <Flex centered flex="1" height="100%" minHeight="24rem" width="100%">
         <WithQuery query={chartDataQuery}>
           {chartData =>
             chartData.length === 0 ? (
@@ -128,7 +150,7 @@ function StatisticChardCard() {
                 <ComposedChart
                   barGap={0}
                   data={data}
-                  margin={{ top: 0, bottom: 20, left: 0, right: 0 }}
+                  margin={{ top: 0, bottom: 20, left: 20, right: 0 }}
                 >
                   <CartesianGrid
                     stroke={
@@ -153,7 +175,6 @@ function StatisticChardCard() {
                     }
                     tickLine={false}
                   />
-
                   <Tooltip
                     content={<CustomTooltip />}
                     cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }}
@@ -179,17 +200,17 @@ function StatisticChardCard() {
             )
           }
         </WithQuery>
-      </div>
-      <div className="flex-center gap-12">
-        <div className="flex items-center gap-2">
-          <span className="-mb-0.5 size-3 rounded-full bg-green-500"></span>
-          <span className="text-sm">{t('transactionTypes.income')}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="-mb-0.5 size-3 rounded-full bg-red-500"></span>
-          <span className="text-sm">{t('transactionTypes.expenses')}</span>
-        </div>
-      </div>
+      </Flex>
+      <Flex centered gap="2xl">
+        <Flex align="center" gap="sm">
+          <Box bg="green-500" height="0.75rem" r="full" width="0.75rem" />
+          <Text size="sm">{t('transactionTypes.income')}</Text>
+        </Flex>
+        <Flex align="center" gap="sm">
+          <Box bg="red-500" height="0.75rem" r="full" width="0.75rem" />
+          <Text size="sm">{t('transactionTypes.expenses')}</Text>
+        </Flex>
+      </Flex>
     </Widget>
   )
 }

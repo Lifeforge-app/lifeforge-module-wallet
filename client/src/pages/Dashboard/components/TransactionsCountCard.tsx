@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from '@lifeforge/shared'
 import {
   Box,
+  Button,
   Card,
   Flex,
   Icon,
@@ -30,15 +31,14 @@ function TransactionsCountCard() {
   return (
     <Widget
       actionComponent={
-        <Link
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 transition-all"
-          to="./transactions"
-        >
+        <Button as={Link} p="xs" to="./transactions" variant="plain">
           <Icon icon="tabler:chevron-right" />
-        </Link>
+        </Button>
       }
-      className="col-span-1 row-span-1 min-h-96 xl:min-h-0"
+      gridColumnSpan={1}
+      gridRowSpan={1}
       icon="tabler:arrows-exchange"
+      minHeight="24rem"
       namespace="apps.wallet"
       title="Transactions Count"
     >

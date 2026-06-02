@@ -7,9 +7,10 @@ import {
   EmptyStateScreen,
   FAB,
   ModuleHeader,
-  WithQuery
+  Stack,
+  WithQuery,
+  useModalStore
 } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 
@@ -45,7 +46,7 @@ function Ledgers() {
       <ModuleHeader
         actionButton={
           <Button
-            className="hidden md:flex"
+            display={{ base: 'none', md: 'flex' }}
             icon="tabler:plus"
             tProps={{
               item: t('items.ledger')
@@ -64,11 +65,11 @@ function Ledgers() {
         {ledgers => (
           <>
             {ledgers.length > 0 ? (
-              <div className="mb-24 space-y-3 md:mb-6">
+              <Stack mb="lg">
                 {ledgers.map(ledger => (
                   <LedgerItem key={ledger.id} ledger={ledger} />
                 ))}
-              </div>
+              </Stack>
             ) : (
               <EmptyStateScreen
                 icon="tabler:wallet-off"

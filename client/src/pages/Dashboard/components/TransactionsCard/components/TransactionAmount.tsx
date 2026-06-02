@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { Text } from '@lifeforge/ui'
 
 import numberToCurrency from '../../../../../utils/numberToCurrency'
 import type { WalletTransaction } from '../../../../Transactions'
@@ -11,24 +11,24 @@ function TransactionAmount({
   amount: number
 }) {
   return (
-    <>
-      <span
-        className={clsx({
-          'text-green-500': type === 'income',
-          'text-red-500': type === 'expenses',
-          'text-blue-500': type === 'transfer'
-        })}
-      >
+    <Text
+      color={
+        type === 'income'
+          ? 'green-500'
+          : type === 'expenses'
+            ? 'red-500'
+            : 'blue-500'
+      }
+    >
+      {
         {
-          {
-            income: '+',
-            expenses: '-',
-            transfer: ''
-          }[type]
-        }
-        {numberToCurrency(amount)}
-      </span>
-    </>
+          income: '+',
+          expenses: '-',
+          transfer: ''
+        }[type]
+      }
+      {numberToCurrency(amount)}
+    </Text>
   )
 }
 

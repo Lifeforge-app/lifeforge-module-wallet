@@ -1,8 +1,6 @@
-import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
-import clsx from 'clsx'
 
-import { Widget, WithQuery } from '@lifeforge/ui'
+import { Flex, Icon, Text, Widget, WithQuery } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'
@@ -25,67 +23,68 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
 
   return (
     <Widget
-      className="col-span-1 row-span-1"
+      gridColumnSpan={1}
+      gridRowSpan={1}
       icon={icon}
       namespace="apps.wallet"
       title={isIncome ? 'income' : 'expenses'}
     >
       <WithQuery query={incomeExpensesQuery}>
         {data => (
-          <div className="flex h-full flex-col justify-evenly">
-            <p className="flex w-full items-end justify-start gap-2 text-4xl font-medium xl:text-5xl">
-              <span className="text-bg-500 -mb-0.5 text-2xl xl:text-3xl">
-                RM
-              </span>
-              {isAmountHidden ? (
-                <span className="flex items-center">
-                  {Array(4)
-                    .fill(0)
-                    .map((_, i) => (
-                      <Icon
-                        key={i}
-                        className="-mx-0.5 size-6 xl:size-8"
-                        icon="uil:asterisk"
-                      />
-                    ))}
-                </span>
-              ) : (
-                numberToCurrency(
-                  +data[`total${title}` as 'totalIncome' | 'totalExpenses']
-                )
-              )}
-            </p>
-            <p>
-              <span
-                className={clsx(
-                  'inline-flex items-center',
-                  isIncome ? 'text-green-500' : 'text-red-500'
-                )}
-              >
-                {isIncome ? '+' : '-'} RM
-                {isAmountHidden ? (
-                  <span className="ml-1 flex items-center">
-                    {Array(4)
-                      .fill(0)
-                      .map((_, i) => (
-                        <Icon
-                          key={i}
-                          className="-mx-0.5 size-4"
-                          icon="uil:asterisk"
-                        />
-                      ))}
-                  </span>
-                ) : (
-                  numberToCurrency(
-                    +data[
-                      `monthly${title}` as 'monthlyIncome' | 'monthlyExpenses'
-                    ]
-                  )
-                )}
-              </span>{' '}
-              from this month
-            </p>
-          </div>
+          <Flex direction="column" height="100%" justify="evenly">
+            <Flex align="end" gap="sm" height="auto" width="100%">
+              <Flex asChild align="baseline" gap="sm" height="auto">
+                <Text size={{ base: '4xl', xl: '5xl' }} weight="medium">
+                  <Text color="muted" size={{ base: '2xl', xl: '3xl' }}>
+                    RM
+                  </Text>
+                  {isAmountHidden ? (
+                    <Flex align="center">
+                      {Array(4)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Icon
+                            key={i}
+                            icon="uil:asterisk"
+                            size={{ base: '1.5rem', xl: '2rem' }}
+                          />
+                        ))}
+                    </Flex>
+                  ) : (
+                    numberToCurrency(
+                      +data[`total${title}` as 'totalIncome' | 'totalExpenses']
+                    )
+                  )}
+                </Text>
+              </Flex>
+            </Flex>
+            <Flex align="baseline" gap="sm" mt="md">
+              <Flex asChild align={isAmountHidden ? 'center' : 'baseline'}>
+                <Text
+                  color={isIncome ? 'green-500' : 'red-500'}
+                  whiteSpace="nowrap"
+                >
+                  {isIncome ? '+' : '-'} RM
+                  {isAmountHidden ? (
+                    <Flex align="center" display="inline-flex" ml="sm">
+                      {Array(4)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Icon key={i} icon="uil:asterisk" size="1rem" />
+                        ))}
+                    </Flex>
+                  ) : (
+                    numberToCurrency(
+                      +data[
+                        `monthly${title}` as 'monthlyIncome' | 'monthlyExpenses'
+                      ]
+                    )
+                  )}
+                </Text>
+              </Flex>
+              <Text>from this month</Text>
+            </Flex>
+          </Flex>
         )}
       </WithQuery>
     </Widget>

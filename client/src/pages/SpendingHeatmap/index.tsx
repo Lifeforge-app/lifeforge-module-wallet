@@ -2,9 +2,15 @@ import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useMemo } from 'react'
 
-
 import { type InferOutput, useNavigate } from '@lifeforge/shared'
-import { EmptyStateScreen, ModuleHeader, TAILWIND_PALETTE, WithQuery } from '@lifeforge/ui'
+import {
+  EmptyStateScreen,
+  Flex,
+  ModuleHeader,
+  TAILWIND_PALETTE,
+  Text,
+  WithQuery
+} from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -21,13 +27,7 @@ function SpendingHeatmap() {
   )
 
   const googleMapAPIKeyQuery = useQuery(
-    forgeAPI
-      .getAPIKeys({
-        keyId: 'gcloud'
-      })
-      .queryOptions({
-        retry: false
-      })
+    forgeAPI.getAPIKeys({ keyId: 'gcloud' }).queryOptions({ retry: false })
   )
 
   const navigate = useNavigate()
@@ -58,9 +58,7 @@ function SpendingHeatmap() {
   }
 
   const centerPoint = useMemo(() => {
-    if (spendingData.length === 0) {
-      return { lat: 0, lng: 0 }
-    }
+    if (spendingData.length === 0) return { lat: 0, lng: 0 }
 
     const avgLat =
       spendingData.reduce(
@@ -93,10 +91,15 @@ function SpendingHeatmap() {
                 spendingData.length > 0 ? (
                   <APIProvider apiKey={googleMapAPIKey}>
                     <Map
-                      className="mb-8 h-full w-full flex-1 overflow-hidden rounded-lg"
                       defaultCenter={centerPoint}
                       defaultZoom={8}
                       mapId="SpendingHeatmap"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        flex: 1,
+                        borderRadius: 'var(--radius-lg)'
+                      }}
                     >
                       {spendingData.map(
                         (locationData: SpendingLocationData, index) => (
@@ -114,21 +117,32 @@ function SpendingHeatmap() {
                               )
                             }}
                           >
-                            <div
-                              className="relative cursor-pointer rounded-full border-2 border-white shadow-lg transition-transform hover:scale-110"
+                            <Flex
+                              centered
+                              align="center"
+                              height={`${getMarkerSize(locationData.count)}px`}
+                              position="relative"
+                              r="full"
                               style={{
                                 backgroundColor: getMarkerColor(
                                   locationData.amount
                                 ),
-                                width: getMarkerSize(locationData.count),
-                                height: getMarkerSize(locationData.count)
+                                border: '2px solid white',
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s'
                               }}
                               title={`${locationData.locationName}: ${numberToCurrency(locationData.amount)}`}
+                              width={`${getMarkerSize(locationData.count)}px`}
                             >
-                              <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
+                              <Text
+                                align="center"
+                                color="bg-100"
+                                size="xs"
+                                weight="bold"
+                              >
                                 {locationData.count}
-                              </div>
-                            </div>
+                              </Text>
+                            </Flex>
                           </AdvancedMarker>
                         )
                       )}

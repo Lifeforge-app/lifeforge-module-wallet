@@ -98,7 +98,6 @@ function ModifyAssetModal({
         icon="tabler:currency-dollar"
         label="Initial Balance"
         name="starting_balance"
-        placeholder="0.00"
       />
     </FormModal>
   )

@@ -1,40 +1,49 @@
-import { Icon } from '@iconify/react/dist/iconify.js'
-import clsx from 'clsx'
+import type { ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Listbox, ListboxOption } from '@lifeforge/ui'
+import {
+  Box,
+  Flex,
+  Icon,
+  Listbox,
+  ListboxOption,
+  Text,
+  surface
+} from '@lifeforge/ui'
 
 function RangeSelector({
   range,
   setRange,
-  className
+  display
 }: {
   range: 'week' | 'month' | 'ytd'
   setRange: (value: 'week' | 'month' | 'ytd') => void
-  className?: string
+  display?: ComponentProps<typeof Box>['display']
 }) {
   const { t } = useTranslation('apps.wallet')
 
   return (
-    <Listbox
-      renderContent={() => (
-        <div className="flex items-center gap-3">
-          <Icon className="text-bg-500 size-6" icon="tabler:history" />
-          {t(`timeRanges.${range}`)}
-        </div>
-      )}
-      className={clsx(className, 'component-bg-lighter')}
-      value={range}
-      onChange={setRange}
-    >
-      {['week', 'month', 'ytd'].map(option => (
-        <ListboxOption
-          key={option}
-          label={t(`timeRanges.${option}`)}
-          value={option}
-        />
-      ))}
-    </Listbox>
+    <Box display={display}>
+      <Listbox
+        bg={surface.light}
+        renderContent={() => (
+          <Flex align="center" gap="md">
+            <Icon color="muted" icon="tabler:history" size="1.5rem" />
+            <Text whiteSpace="nowrap">{t(`timeRanges.${range}`)}</Text>
+          </Flex>
+        )}
+        value={range}
+        onChange={setRange}
+      >
+        {['week', 'month', 'ytd'].map(option => (
+          <ListboxOption
+            key={option}
+            label={t(`timeRanges.${option}`)}
+            value={option}
+          />
+        ))}
+      </Listbox>
+    </Box>
   )
 }
 

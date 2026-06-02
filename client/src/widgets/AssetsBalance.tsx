@@ -1,15 +1,21 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import { useRef, useState } from 'react'
 
 import { Link, useDivSize } from '@lifeforge/shared'
 import type { WidgetConfig } from '@lifeforge/shared'
 import {
+  Box,
   Button,
   Card,
   EmptyStateScreen,
+  Flex,
+  Grid,
+  Icon,
+  Scrollbar,
+  Stack,
+  Text,
   Widget,
-  WithQuery
+  WithQuery,
+  surface
 } from '@lifeforge/ui'
 
 import { useWalletData } from '../hooks/useWalletData'
@@ -28,8 +34,8 @@ export default function AssetsBalance() {
     <Widget
       actionComponent={
         <Button
-          className="p-2!"
           icon={!showBalance ? 'tabler:eye-off' : 'tabler:eye'}
+          p="xs"
           variant="plain"
           onClick={() => {
             setShowBalance(!showBalance)
@@ -53,57 +59,75 @@ export default function AssetsBalance() {
               }}
             />
           ) : (
-            <ul
-              className={clsx(
-                'grid h-full gap-2 overflow-y-auto',
-                width > 400 && 'grid-cols-[repeat(auto-fill,minmax(240px,1fr))]'
-              )}
-            >
-              {assets.map(asset => (
-                <Card
-                  key={asset.id}
-                  isInteractive
-                  as={Link}
-                  className="flex-between component-bg-lighter-with-hover flex h-min min-w-0 gap-3"
-                  to={'/wallet/assets'}
-                >
-                  <div className="flex w-full min-w-0 items-center gap-3">
-                    <div className="bg-bg-200 dark:bg-bg-700 rounded-md p-2">
-                      <Icon
-                        className="text-bg-500 dark:text-bg-100 size-6"
-                        icon={asset.icon}
-                      />
-                    </div>
-                    <div className="flex w-full min-w-0 flex-col">
-                      <div className="w-full min-w-0 truncate font-semibold">
-                        {asset.name}
-                      </div>
-                      <div className="text-bg-500 flex items-center gap-1 text-sm">
-                        RM{' '}
-                        {showBalance ? (
-                          numberToCurrency(asset.current_balance)
-                        ) : (
-                          <span className="flex items-center">
-                            {Array(4)
-                              .fill(0)
-                              .map((_, i) => (
-                                <Icon
-                                  key={i}
-                                  className="size-3"
-                                  icon="uil:asterisk"
-                                />
-                              ))}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <button className="text-bg-300 dark:text-bg-700 rounded-lg p-4 transition-all">
-                    <Icon className="text-xl" icon="tabler:chevron-right" />
-                  </button>
-                </Card>
-              ))}
-            </ul>
+            <Scrollbar>
+              <Grid
+                ref={ref}
+                gap="sm"
+                templateCols={
+                  width > 400
+                    ? 'repeat(auto-fill, minmax(240px, 1fr))'
+                    : undefined
+                }
+              >
+                {assets.map(asset => (
+                  <Card
+                    key={asset.id}
+                    isInteractive
+                    as={Link}
+                    bg={surface.lightInteractive}
+                    direction="row"
+                    gap="md"
+                    minWidth="0"
+                    to="/wallet/assets"
+                  >
+                    <Flex align="center" gap="md" minWidth="0" width="100%">
+                      <Box
+                        bg={{ base: 'bg-200', dark: 'bg-700' }}
+                        p="sm"
+                        r="md"
+                      >
+                        <Icon
+                          color={{ base: 'bg-500', dark: 'bg-100' }}
+                          icon={asset.icon}
+                          size="1.5rem"
+                        />
+                      </Box>
+                      <Stack gap="none" minWidth="0" width="100%">
+                        <Text truncate weight="semibold">
+                          {asset.name}
+                        </Text>
+                        <Flex align="center" color="muted" gap="xs">
+                          <Text color="muted" size="sm">
+                            RM{' '}
+                          </Text>
+                          {showBalance ? (
+                            <Text color="muted" size="sm">
+                              {numberToCurrency(asset.current_balance)}
+                            </Text>
+                          ) : (
+                            <Flex align="center">
+                              {Array(4)
+                                .fill(0)
+                                .map((_, i) => (
+                                  <Icon
+                                    key={i}
+                                    icon="uil:asterisk"
+                                    size="0.75rem"
+                                  />
+                                ))}
+                            </Flex>
+                          )}
+                        </Flex>
+                      </Stack>
+                    </Flex>
+                    <Icon
+                      color={{ base: 'bg-300', dark: 'bg-700' }}
+                      icon="tabler:chevron-right"
+                    />
+                  </Card>
+                ))}
+              </Grid>
+            </Scrollbar>
           )
         }
       </WithQuery>

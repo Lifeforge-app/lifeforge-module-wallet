@@ -1,9 +1,8 @@
-import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
-import { TagChip } from '@lifeforge/ui'
+import { Flex, Icon, TagChip, Text, colorWithOpacity } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
@@ -20,179 +19,124 @@ function TransactionList({
 }) {
   const { assetsQuery, categoriesQuery } = useWalletData()
 
-  // Fetch transactions filtered by year/month from API
   const transactionsQuery = useQuery(
     forgeAPI.transactions.list
-      .input({
-        year: year.toString(),
-        month: (month + 1).toString(), // API expects 1-indexed
-        type
-      })
+      .input({ year: year.toString(), month: (month + 1).toString(), type })
       .queryOptions()
   )
 
   const transactions = transactionsQuery.data ?? []
-
   const assets = assetsQuery.data ?? []
-
   const categories = categoriesQuery.data ?? []
 
-  // Sort transactions by date ascending
   const sortedTransactions = useMemo(
     () => [...transactions].sort((a, b) => dayjs(a.date).diff(dayjs(b.date))),
     [transactions]
   )
 
-  // Calculate total
-  const total = useMemo(() => {
-    return transactions.reduce((acc, curr) => acc + curr.amount, 0)
-  }, [transactions])
+  const total = useMemo(
+    () => transactions.reduce((acc, curr) => acc + curr.amount, 0),
+    [transactions]
+  )
 
   return (
     <>
-      <h2 className="mt-16 text-2xl font-semibold tracking-widest uppercase print:break-after-avoid print:text-[18px]">
-        <span>
-          2.
-          {['income', 'expenses', 'transfer'].indexOf(type) + 1}{' '}
-        </span>
+      <Text
+        as="h2"
+        mt="3xl"
+        size={{ base: '2xl', print: 'lg' }}
+        tracking="widest"
+        transform="uppercase"
+        weight="semibold"
+      >
+        <Text>2.{['income', 'expenses', 'transfer'].indexOf(type) + 1} </Text>
         {type.charAt(0).toUpperCase() + type.slice(1)}
-      </h2>
-      <div className="overflow-x-auto print:overflow-visible">
-        <table className="mt-6 w-full print:break-inside-auto">
-          <thead>
-            <tr className="bg-custom-500 text-white print:bg-lime-600">
-              <th className="p-3 text-lg font-medium whitespace-nowrap">
-                Date
-              </th>
-              <th className="w-full p-3 text-left text-lg font-medium">
-                Particular
-              </th>
-
-              {type !== 'transfer' && (
-                <>
-                  <th className="p-3 text-lg font-medium whitespace-nowrap">
-                    Asset
-                  </th>
-                  <th className="p-3 text-lg font-medium whitespace-nowrap">
-                    Category
-                  </th>
-                </>
-              )}
-              <th className="p-3 text-lg font-medium whitespace-nowrap">
-                Amount
-              </th>
-            </tr>
-            <tr className="bg-bg-800 text-white print:bg-black/70">
-              <th className="p-3 text-lg font-medium whitespace-nowrap"></th>
-              <th className="w-full p-3 text-left text-lg font-medium"></th>
-              {type !== 'transfer' && (
-                <>
-                  <th className="p-3 text-lg font-medium whitespace-nowrap"></th>
-                  <th className="p-3 text-lg font-medium whitespace-nowrap"></th>
-                </>
-              )}
-              <th className="p-3 text-lg font-medium whitespace-nowrap">RM</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedTransactions.map(transaction => (
-              <tr
-                key={transaction.id}
-                className="even:bg-bg-200 dark:even:bg-bg-800/30 print:break-inside-avoid print:even:bg-black/[3%]"
-              >
-                <td className="p-3 text-lg whitespace-nowrap">
-                  {dayjs(transaction.date).format('MMM DD')}
-                </td>
-                <td className="min-w-96 p-3 text-lg">
-                  {transaction.type === 'transfer' ? (
-                    <>
-                      Transfer from{' '}
-                      {assets.find(asset => asset.id === transaction.from)
-                        ?.name ?? 'Unknown Asset'}{' '}
-                      to{' '}
-                      {assets.find(asset => asset.id === transaction.to)
-                        ?.name ?? 'Unknown Asset'}
-                    </>
-                  ) : (
-                    transaction.particulars
-                  )}
-                </td>
-                {transaction.type !== 'transfer' && (
-                  <td className="p-3 text-lg whitespace-nowrap">
-                    <div className="text-bg-500 flex items-center gap-2">
-                      <Icon
-                        className="size-6 shrink-0"
-                        icon={
-                          assets.find(asset => asset.id === transaction.asset)
-                            ?.icon ?? 'tabler:coin'
-                        }
-                      />
-                      <span>
-                        {
-                          assets.find(asset => asset.id === transaction.asset)
-                            ?.name
-                        }
-                      </span>
-                    </div>
-                  </td>
-                )}
-                {type !== 'transfer' && (
-                  <td className="p-3 text-lg whitespace-nowrap">
-                    {transaction.type !== 'transfer' && (
-                      <div className="flex-center">
-                        <TagChip
-                          className="w-min"
-                          color={
-                            categories.find(
-                              category => category.id === transaction.category
-                            )?.color
-                          }
-                          icon={
-                            categories.find(
-                              category => category.id === transaction.category
-                            )?.icon
-                          }
-                          label={
-                            categories.find(
-                              category => category.id === transaction.category
-                            )?.name ?? '-'
-                          }
-                        />
-                      </div>
-                    )}
-                  </td>
-                )}
-                <td className="p-3 text-right text-lg whitespace-nowrap">
-                  {type === 'expenses'
-                    ? `(${numberToCurrency(transaction.amount)})`
-                    : numberToCurrency(transaction.amount)}
-                </td>
-              </tr>
-            ))}
-            <tr className="even:bg-bg-200 dark:even:bg-bg-800/30 print:even:bg-black/[3%]">
-              <td
-                className="p-3 text-left text-xl font-semibold whitespace-nowrap"
-                colSpan={type !== 'transfer' ? 4 : 2}
-              >
-                Total {type.charAt(0).toUpperCase() + type.slice(1)}
+      </Text>
+      <table style={{ width: '100%', marginTop: '1.5rem' }}>
+        <thead>
+          <tr style={{ backgroundColor: 'var(--color-custom-500)', color: 'white' }}>
+            <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}>Date</th>
+            <th style={{ width: '100%', padding: '0.75rem', textAlign: 'left', fontSize: '1.125rem', fontWeight: '500' }}>Particular</th>
+            {type !== 'transfer' && (
+              <>
+                <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}>Asset</th>
+                <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}>Category</th>
+              </>
+            )}
+            <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}>Amount</th>
+          </tr>
+          <tr style={{ backgroundColor: 'var(--color-bg-800)', color: 'white' }}>
+            <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}></th>
+            <th style={{ width: '100%', padding: '0.75rem', textAlign: 'left', fontSize: '1.125rem', fontWeight: '500' }}></th>
+            {type !== 'transfer' && (
+              <>
+                <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}></th>
+                <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}></th>
+              </>
+            )}
+            <th style={{ padding: '0.75rem', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap' }}>RM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedTransactions.map((transaction, index) => (
+            <tr key={transaction.id}
+              style={{
+                  backgroundColor:
+                    index % 2 === 0
+                      ? colorWithOpacity('bg-500', '5%').toString()
+                      : undefined
+              }}
+            >
+              <td style={{ padding: '0.75rem', fontSize: '1.125rem', whiteSpace: 'nowrap' }}>
+                {dayjs(transaction.date).format('MMM DD')}
               </td>
-              <td
-                className="p-3 text-right text-lg font-medium whitespace-nowrap"
-                style={{
-                  borderTop: '2px solid',
-                  borderBottom: '6px double'
-                }}
-              >
-                <span className="font-medium">
-                  {total < 0
-                    ? `(${numberToCurrency(Math.abs(total))})`
-                    : numberToCurrency(total)}
-                </span>
+              <td style={{ minWidth: '24rem', padding: '0.75rem', fontSize: '1.125rem' }}>
+                {transaction.type === 'transfer' ? (
+                  <>
+                    Transfer from {assets.find(a => a.id === transaction.from)?.name ?? 'Unknown Asset'} to{' '}
+                    {assets.find(a => a.id === transaction.to)?.name ?? 'Unknown Asset'}
+                  </>
+                ) : (
+                  transaction.particulars
+                )}
+              </td>
+              {transaction.type !== 'transfer' && (
+                <td style={{ padding: '0.75rem', fontSize: '1.125rem', whiteSpace: 'nowrap' }}>
+                  <Flex align="center" gap="sm">
+                    <Icon
+                      icon={assets.find(a => a.id === transaction.asset)?.icon ?? 'tabler:coin'}
+                      size="1.5rem"
+                    />
+                    <Text>{assets.find(a => a.id === transaction.asset)?.name}</Text>
+                  </Flex>
+                </td>
+              )}
+              {transaction.type !== 'transfer' && (
+                <td style={{ padding: '0.75rem', fontSize: '1.125rem', whiteSpace: 'nowrap' }}>
+                  <TagChip
+                    color={categories.find(c => c.id === transaction.category)?.color}
+                    icon={categories.find(c => c.id === transaction.category)?.icon}
+                    label={categories.find(c => c.id === transaction.category)?.name ?? '-'}
+                  />
+                </td>
+              )}
+              <td style={{ padding: '0.75rem', textAlign: 'right', fontSize: '1.125rem', whiteSpace: 'nowrap' }}>
+                {type === 'expenses'
+                  ? `(${numberToCurrency(transaction.amount)})`
+                  : numberToCurrency(transaction.amount)}
               </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
+          ))}
+          <tr>
+            <td style={{ padding: '0.75rem', textAlign: 'left', fontSize: '1.25rem', fontWeight: '600', whiteSpace: 'nowrap' }} colSpan={type !== 'transfer' ? 4 : 2}>
+              Total {type.charAt(0).toUpperCase() + type.slice(1)}
+            </td>
+            <td style={{ padding: '0.75rem', textAlign: 'right', fontSize: '1.125rem', fontWeight: '500', whiteSpace: 'nowrap', borderTop: '2px solid', borderBottom: '6px double' }}>
+              {total < 0 ? `(${numberToCurrency(Math.abs(total))})` : numberToCurrency(total)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </>
   )
 }

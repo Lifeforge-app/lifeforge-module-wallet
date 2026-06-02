@@ -1,32 +1,55 @@
-import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
+
+import { Flex, Icon, Text } from '@lifeforge/ui'
 
 function StatementHeader({ month, year }: { month: number; year: number }) {
   return (
     <>
-      <h1 className="mb-8 hidden items-center gap-2 text-4xl font-medium print:flex print:text-[28px]">
+      <Flex
+        align="center"
+        as="h1"
+        display={{ base: 'none', print: 'flex' }}
+        gap="sm"
+        mb="xl"
+      >
         <Icon
-          className="text-custom-500 size-12 print:text-lime-600"
+          color={{ base: 'custom-500', print: 'custom-600' }}
           icon="tabler:hammer"
+          size="3rem"
         />
-        Lifeforge
-        <span className="text-custom-500 print:text-lime-600">.</span>
-      </h1>
-      <h1 className="hidden text-6xl leading-snug font-bold tracking-widest uppercase print:block print:text-[48px]">
+        <Text size="4xl" weight="medium" whiteSpace="nowrap">
+          Lifeforge
+          <Text color={{ base: 'custom-500', print: 'custom-600' }}>.</Text>
+        </Text>
+      </Flex>
+      <Text
+        as="h1"
+        display={{ base: 'none', print: 'block' }}
+        leading="snug"
+        size="6xl"
+        tracking="widest"
+        transform="uppercase"
+        weight="bold"
+      >
         Personal
         <br />
         Financial Statements
-      </h1>
-      <p className="text-bg-500 mt-4 hidden text-3xl print:block print:text-[24px]">
+      </Text>
+      <Text
+        color="muted"
+        display={{ base: 'none', print: 'block' }}
+        mt="md"
+        size="3xl"
+      >
         For the month ended{' '}
-        <span className="text-bg-100 font-bold">
+        <Text color={{ base: 'bg-100', print: 'bg-950' }} weight="bold">
           {dayjs()
             .year(year)
             .month(month + 1)
             .date(0)
             .format('DD MMMM YYYY')}
-        </span>
-      </p>
+        </Text>
+      </Text>
     </>
   )
 }

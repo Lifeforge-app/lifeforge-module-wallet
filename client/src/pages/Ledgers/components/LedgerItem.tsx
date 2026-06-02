@@ -1,14 +1,18 @@
-import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 
 import { useNavigate } from '@lifeforge/shared'
 import {
+  Box,
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  Flex,
+  Icon,
+  Stack,
+  Text,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -29,9 +33,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   const deleteMutation = useMutation(
     forgeAPI.ledgers.remove.input({ id: ledger.id }).mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'ledgers']
-        })
+        queryClient.invalidateQueries({ queryKey: ['wallet', 'ledgers'] })
       },
       onError: (error: Error) => {
         toast.error('Failed to delete ledger: ' + error.message)
@@ -40,10 +42,7 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   )
 
   const handleEditLedger = () =>
-    open(ModifyLedgerModal, {
-      type: 'update',
-      initialData: ledger
-    })
+    open(ModifyLedgerModal, { type: 'update', initialData: ledger })
 
   const handleDeleteLedger = () =>
     open(ConfirmationModal, {
@@ -59,27 +58,29 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   return (
     <Card
       isInteractive
-      className="flex-between gap-3"
+      align="center"
+      direction="row"
+      gap="md"
+      justify="between"
       onClick={() => navigate(`/wallet/transactions?ledger=${ledger.id}`)}
     >
-      <div className="flex items-center gap-3">
-        <span
-          className="shadow-custom w-min rounded-md p-2"
-          style={{ backgroundColor: ledger.color + '20' }}
-        >
+      <Flex align="center" gap="md">
+        <Box p="sm" r="md" style={{ backgroundColor: ledger.color + '20' }}>
           <Icon
-            className="size-8"
             icon={ledger.icon}
+            size="2rem"
             style={{ color: ledger.color }}
           />
-        </span>
-        <div>
-          <h2 className="text-xl font-medium">{ledger.name}</h2>
-          <p className="text-bg-500 text-left text-sm">
+        </Box>
+        <Stack gap="none">
+          <Text as="h2" size="xl" weight="medium">
+            {ledger.name}
+          </Text>
+          <Text color="muted" size="sm">
             {ledger.amount} {t('transactionCount')}
-          </p>
-        </div>
-      </div>
+          </Text>
+        </Stack>
+      </Flex>
       <ContextMenu>
         <ContextMenuItem
           icon="tabler:pencil"

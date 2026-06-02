@@ -1,10 +1,17 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AutoSizer } from 'react-virtualized'
 
 import { Link } from '@lifeforge/shared'
-import { Scrollbar } from '@lifeforge/ui'
+import {
+  Box,
+  Flex,
+  Icon,
+  Scrollbar,
+  Stack,
+  Text,
+  WithDivide
+} from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -19,66 +26,98 @@ function BreakdownDetails() {
   const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
 
   return (
-    <div className="h-full min-h-96 xl:min-h-0">
-      <Scrollbar className="mb-4">
-        <ul className="divide-bg-200 dark:divide-bg-800 flex flex-col divide-y">
-          {categories.map(category => (
-            <Link
-              key={category.id}
-              className="flex-between hover:bg-bg-100 dark:hover:bg-bg-800/50 flex gap-3 rounded-md p-4 transition-all"
-              to={`/wallet/transactions?type=${type}&category=${category.id}`}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="rounded-md bg-blue-500/20 p-2"
-                  style={{
-                    backgroundColor: category.color + '20',
-                    color: category.color
-                  }}
+    <Flex height="100%" minHeight="24em" width="100%">
+      <AutoSizer>
+        {({ width, height }) => (
+          <Scrollbar
+            style={{
+              width,
+              height
+            }}
+          >
+            <Stack gap="none">
+              {categories.map(category => (
+                <WithDivide
+                  key={category.id}
+                  axis="y"
+                  color={{ base: 'bg-200', dark: 'bg-800' }}
                 >
-                  <Icon className="size-6" icon={category.icon} />
-                </div>
-                <div className="flex flex-col">
-                  <div className="font-semibold">{category.name}</div>
-                  <div className="text-bg-500 text-sm">
-                    {breakdown[category.id]?.count} {t('transactionCount')}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div
-                  className={clsx(
-                    'flex gap-2 text-right font-medium',
-                    isAmountHidden ? 'items-center' : 'items-end',
-                    type === 'income' ? 'text-green-500' : 'text-red-500'
-                  )}
-                >
-                  {type === 'income' ? '+' : '-'} RM{' '}
-                  {isAmountHidden ? (
-                    <span className="flex items-center">
-                      {Array(4)
-                        .fill(0)
-                        .map((_, i) => (
-                          <Icon
-                            key={i}
-                            className="-mx-0.5 size-4"
-                            icon="uil:asterisk"
-                          />
-                        ))}
-                    </span>
-                  ) : (
-                    numberToCurrency(breakdown[category.id]?.amount)
-                  )}
-                </div>
-                <div className="text-bg-500 text-right text-sm">
-                  {breakdown[category.id]?.percentage.toFixed(2)}%
-                </div>
-              </div>
-            </Link>
-          ))}
-        </ul>
-      </Scrollbar>
-    </div>
+                  <Flex
+                    as={Link}
+                    bg={{
+                      base: 'transparent',
+                      hover: 'bg-100',
+                      darkHover: 'bg-800'
+                    }}
+                    gap="lg"
+                    minWidth="0"
+                    p="lg"
+                    to={`/wallet/transactions?type=${type}&category=${category.id}`}
+                    width="100%"
+                  >
+                    <Flex align="center" gap="md" minWidth="0" width="100%">
+                      <Box
+                        p="sm"
+                        r="md"
+                        style={{
+                          backgroundColor: category.color + '20',
+                          color: category.color
+                        }}
+                      >
+                        <Icon icon={category.icon} size="1.5rem" />
+                      </Box>
+                      <Stack gap="none" minWidth="0">
+                        <Text truncate weight="semibold">
+                          {category.name}
+                        </Text>
+                        <Text color="muted" size="sm" whiteSpace="nowrap">
+                          {breakdown[category.id]?.count}{' '}
+                          {t('transactionCount')}
+                        </Text>
+                      </Stack>
+                    </Flex>
+                    <Stack
+                      align="end"
+                      flexShrink="0"
+                      gap="none"
+                      width="min-content"
+                    >
+                      <Flex align={isAmountHidden ? 'center' : 'end'} gap="sm">
+                        <Text
+                          color={type === 'income' ? 'green-500' : 'red-500'}
+                          weight="medium"
+                          whiteSpace="nowrap"
+                        >
+                          {type === 'income' ? '+' : '-'} RM{' '}
+                          {isAmountHidden ? (
+                            <Flex align="center" display="inline-flex">
+                              {Array(4)
+                                .fill(0)
+                                .map((_, i) => (
+                                  <Icon
+                                    key={i}
+                                    icon="uil:asterisk"
+                                    size="1rem"
+                                  />
+                                ))}
+                            </Flex>
+                          ) : (
+                            numberToCurrency(breakdown[category.id]?.amount)
+                          )}
+                        </Text>
+                      </Flex>
+                      <Text align="right" color="muted" size="sm">
+                        {breakdown[category.id]?.percentage.toFixed(2)}%
+                      </Text>
+                    </Stack>
+                  </Flex>
+                </WithDivide>
+              ))}
+            </Stack>
+          </Scrollbar>
+        )}
+      </AutoSizer>
+    </Flex>
   )
 }
 

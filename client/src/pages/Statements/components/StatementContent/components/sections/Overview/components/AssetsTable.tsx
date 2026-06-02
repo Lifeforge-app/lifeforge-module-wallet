@@ -1,9 +1,7 @@
-import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 
-import { WithQuery } from '@lifeforge/ui'
+import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
@@ -16,7 +14,7 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
     forgeAPI.assets.getAllAssetAccumulatedBalance
       .input({
         year: year.toString(),
-        month: (month + 1).toString() // API expects 1-indexed
+        month: (month + 1).toString()
       })
       .queryOptions()
   )
@@ -26,105 +24,203 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
       {assets => (
         <WithQuery query={balancesQuery}>
           {balances => (
-            <div className="min-w-0 overflow-x-auto print:overflow-visible">
-              <table className="mt-6 w-full min-w-0 print:break-inside-auto">
-                <thead>
-                  <tr className="bg-custom-500 text-white print:bg-lime-600">
-                    <th className="w-full p-3 text-left text-lg font-medium">
-                      Assets
-                    </th>
-                    <th className="p-3 text-lg font-medium whitespace-nowrap">
-                      {dayjs()
-                        .month(month - 1)
-                        .format('MMM YYYY')}
-                    </th>
-                    <th className="p-3 text-lg font-medium whitespace-nowrap">
-                      {dayjs().month(month).format('MMM YYYY')}
-                    </th>
-                    <th
-                      className="p-3 text-lg font-medium whitespace-nowrap"
-                      colSpan={2}
-                    >
-                      Change
-                    </th>
-                  </tr>
-                  <tr className="bg-bg-800 text-white print:bg-black/70">
-                    <th className="w-full px-4 py-2 text-left text-lg font-medium"></th>
-                    <th className="px-4 py-2 text-lg font-medium">RM</th>
-                    <th className="px-4 py-2 text-lg font-medium">RM</th>
-                    <th className="px-4 py-2 text-lg font-medium">RM</th>
-                    <th className="px-4 py-2 text-lg font-medium">%</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {assets
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(asset => {
-                      const assetBalance = balances[asset.id]
+            <table
+              style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    backgroundColor: 'var(--color-custom-500)',
+                    color: 'white'
+                  }}
+                >
+                  <th
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      textAlign: 'left',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Assets
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.75rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {dayjs()
+                      .month(month - 1)
+                      .format('MMM YYYY')}
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.75rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {dayjs().month(month).format('MMM YYYY')}
+                  </th>
+                  <th
+                    colSpan={2}
+                    style={{
+                      padding: '0.75rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    Change
+                  </th>
+                </tr>
+                <tr
+                  style={{
+                    backgroundColor: 'var(--color-bg-800)',
+                    color: 'white'
+                  }}
+                >
+                  <th
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 1rem',
+                      textAlign: 'left',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  ></th>
+                  <th
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    RM
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    RM
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    RM
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '1.125rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    %
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {assets
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((asset, index) => {
+                    const assetBalance = balances[asset.id]
 
-                      const change = assetBalance.current - assetBalance.last
+                    const change = assetBalance.current - assetBalance.last
 
-                      const percentage =
-                        assetBalance.last !== 0
-                          ? (change / assetBalance.last) * 100
-                          : 0
+                    const percentage =
+                      assetBalance.last !== 0
+                        ? (change / assetBalance.last) * 100
+                        : 0
 
-                      return (
-                        <tr
-                          key={asset.id}
-                          className="even:bg-bg-200 dark:even:bg-bg-800/30 print:break-inside-avoid print:even:bg-black/[3%]"
+                    return (
+                      <tr key={asset.id}
+                        style={{
+                          backgroundColor:
+                            index % 2 === 0
+                              ? colorWithOpacity('bg-500', '5%').toString()
+                              : undefined
+                        }}
+                      >
+                        <td
+                          style={{ padding: '0.75rem', fontSize: '1.125rem' }}
                         >
-                          <td className="p-3 text-lg">
-                            <div className="flex items-center gap-2">
-                              <Icon
-                                className="size-6 shrink-0"
-                                icon={asset.icon}
-                              />
-                              <span className="whitespace-nowrap">
-                                {asset.name}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="p-3 text-right text-lg whitespace-nowrap">
-                            {balancesQuery.isLoading
-                              ? '...'
-                              : numberToCurrency(assetBalance.last)}
-                          </td>
-                          <td className="p-3 text-right text-lg whitespace-nowrap">
-                            {balancesQuery.isLoading
-                              ? '...'
-                              : numberToCurrency(assetBalance.current)}
-                          </td>
-                          <td
-                            className={clsx(
-                              'p-3 text-right text-lg whitespace-nowrap',
-                              change < 0 && 'text-rose-600'
-                            )}
-                          >
-                            {balancesQuery.isLoading
-                              ? '...'
-                              : change < 0
-                                ? `(${numberToCurrency(Math.abs(change))})`
-                                : numberToCurrency(change)}
-                          </td>
-                          <td
-                            className={clsx(
-                              'p-3 text-right text-lg whitespace-nowrap',
-                              percentage < 0 && 'text-rose-600'
-                            )}
-                          >
-                            {balancesQuery.isLoading
-                              ? '...'
-                              : percentage < 0
-                                ? `(${Math.abs(percentage).toFixed(2)}%)`
-                                : `${percentage.toFixed(2)}%`}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                </tbody>
-              </table>
-            </div>
+                          <Flex align="center" gap="sm">
+                            <Icon icon={asset.icon} size="1.5rem" />
+                            <Text whiteSpace="nowrap">{asset.name}</Text>
+                          </Flex>
+                        </td>
+                        <td
+                          style={{
+                            padding: '0.75rem',
+                            textAlign: 'right',
+                            fontSize: '1.125rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {balancesQuery.isLoading
+                            ? '...'
+                            : numberToCurrency(assetBalance.last)}
+                        </td>
+                        <td
+                          style={{
+                            padding: '0.75rem',
+                            textAlign: 'right',
+                            fontSize: '1.125rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {balancesQuery.isLoading
+                            ? '...'
+                            : numberToCurrency(assetBalance.current)}
+                        </td>
+                        <td
+                          style={{
+                            padding: '0.75rem',
+                            textAlign: 'right',
+                            fontSize: '1.125rem',
+                            whiteSpace: 'nowrap',
+                            color: change < 0 ? '#e11d48' : undefined
+                          }}
+                        >
+                          {balancesQuery.isLoading
+                            ? '...'
+                            : change < 0
+                              ? `(${numberToCurrency(Math.abs(change))})`
+                              : numberToCurrency(change)}
+                        </td>
+                        <td
+                          style={{
+                            padding: '0.75rem',
+                            textAlign: 'right',
+                            fontSize: '1.125rem',
+                            whiteSpace: 'nowrap',
+                            color: percentage < 0 ? '#e11d48' : undefined
+                          }}
+                        >
+                          {balancesQuery.isLoading
+                            ? '...'
+                            : percentage < 0
+                              ? `(${Math.abs(percentage).toFixed(2)}%)`
+                              : `${percentage.toFixed(2)}%`}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </table>
           )}
         </WithQuery>
       )}

@@ -1,14 +1,10 @@
-import { Icon } from '@iconify/react'
 import { useQuery } from '@tanstack/react-query'
-import clsx from 'clsx'
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   EmptyStateScreen,
-  Listbox,
-  ListboxOption,
   LoadingScreen,
+  Stack,
   WithQuery
 } from '@lifeforge/ui'
 
@@ -20,6 +16,7 @@ import { CategoriesBreakdownContext } from '..'
 import BreakdownChartLegend from './BreakdownChartLegend'
 import BreakdownDetails from './BreakdownDetails'
 import BreakdownDoughnutChart from './BreakdownDoughnutChart'
+import BreakdownFilters from './BreakdownFilters'
 
 function BreakdownContent({
   selectedType,
@@ -29,8 +26,6 @@ function BreakdownContent({
   setSelectedType: (type: 'income' | 'expenses') => void
 }) {
   const { categoriesQuery } = useWalletData()
-
-  const { t } = useTranslation(['common.misc', 'apps.wallet'])
 
   const {
     yearMonth: { year, month },
@@ -98,92 +93,36 @@ function BreakdownContent({
 
   return (
     <CategoriesBreakdownContext value={memoizedContextValue}>
-      <div className="mb-2 flex flex-col items-center gap-2">
-        <Listbox
-          className="component-bg-lighter w-full"
-          renderContent={() => (
-            <div className="flex items-center gap-3">
-              <Icon
-                className={clsx(
-                  'size-6',
-                  selectedType === 'income' ? 'text-green-500' : 'text-red-500'
-                )}
-                icon={
-                  selectedType === 'income' ? 'tabler:login-2' : 'tabler:logout'
-                }
+      <Stack centered flex="1" gap="lg" minHeight="0">
+        <BreakdownFilters
+          month={month}
+          monthsOptions={monthsOptions}
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+          setYearMonth={setYearMonth}
+          year={year}
+          yearsOptions={yearsOptions}
+        />
+        <WithQuery query={categoriesBreakdownQuery}>
+          {data =>
+            Object.keys(data[selectedType]).length === 0 ? (
+              <EmptyStateScreen
+                icon="tabler:wallet-off"
+                message={{
+                  id: 'transactions',
+                  namespace: 'apps.wallet'
+                }}
               />
-              {t(`apps.wallet:transactionTypes.${selectedType}`)}
-            </div>
-          )}
-          value={selectedType}
-          onChange={(value: 'income' | 'expenses') => setSelectedType(value)}
-        >
-          {(['income', 'expenses'] as const).map(type => (
-            <ListboxOption
-              key={type}
-              icon={type === 'income' ? 'tabler:login-2' : 'tabler:logout'}
-              label={t(`apps.wallet:transactionTypes.${type}`)}
-              value={type}
-            />
-          ))}
-        </Listbox>
-        <div className="flex w-full flex-col gap-2 min-[360px]:flex-row">
-          <Listbox
-            className="component-bg-lighter flex-1"
-            renderContent={() => (
-              <div className="flex items-center gap-3">
-                <Icon className="text-bg-500 size-6" icon="tabler:calendar" />
-                {t('common.misc:dates.months.' + month)}
-              </div>
-            )}
-            value={month}
-            onChange={(value: number | null) => setYearMonth({ month: value })}
-          >
-            {monthsOptions.map(option => (
-              <ListboxOption
-                key={option}
-                label={t('common.misc:dates.months.' + option)}
-                value={option}
-              />
-            ))}
-          </Listbox>
-          <Listbox
-            className="component-bg-lighter min-[360px]:w-36!"
-            renderContent={() => (
-              <div className="flex items-center gap-3">{year}</div>
-            )}
-            value={year}
-            onChange={(value: number | null) => setYearMonth({ year: value })}
-          >
-            {yearsOptions.map(option => (
-              <ListboxOption
-                key={option}
-                label={option.toString()}
-                value={option}
-              />
-            ))}
-          </Listbox>
-        </div>
-      </div>
-      <WithQuery query={categoriesBreakdownQuery}>
-        {data =>
-          Object.keys(data[selectedType]).length === 0 ? (
-            <EmptyStateScreen
-              icon="tabler:wallet-off"
-              message={{
-                id: 'transactions',
-                namespace: 'apps.wallet'
-              }}
-            />
-          ) : (
-            <>
-              <BreakdownDoughnutChart />
-              <BreakdownChartLegend />
-              <BreakdownDetails />
-            </>
-          )
-        }
-      </WithQuery>
+            ) : (
+              <>
+                <BreakdownDoughnutChart />
+                <BreakdownChartLegend />
+                <BreakdownDetails />
+              </>
+            )
+          }
+        </WithQuery>
+      </Stack>
     </CategoriesBreakdownContext>
   )
 }

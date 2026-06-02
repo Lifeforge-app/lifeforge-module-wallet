@@ -1,9 +1,8 @@
-import { Icon } from '@iconify/react'
 import { createContext, useState } from 'react'
 
 import { Link } from '@lifeforge/shared'
 import type { InferOutput } from '@lifeforge/shared'
-import { Widget } from '@lifeforge/ui'
+import { Button, Icon, Widget } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
@@ -32,15 +31,20 @@ function CategoriesBreakdownCard() {
   return (
     <Widget
       actionComponent={
-        <Link
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-800 dark:hover:bg-bg-700/30 dark:hover:text-bg-50 flex items-center gap-2 rounded-lg p-2 font-medium transition-all"
+        <Button
+          as={Link}
+          p="xs"
           to={`/wallet/transactions?type=${selectedType}`}
+          variant="plain"
         >
-          <Icon className="text-xl" icon="tabler:chevron-right" />
-        </Link>
+          <Icon icon="tabler:chevron-right" />
+        </Button>
       }
-      className="col-span-1 row-span-6 h-full min-h-0"
+      gridColumnSpan={1}
+      gridRowSpan={6}
+      height="100%"
       icon="tabler:chart-donut-3"
+      minHeight="0"
       namespace="apps.wallet"
       title="Categories Breakdown"
     >

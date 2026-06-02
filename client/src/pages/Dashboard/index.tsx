@@ -27,10 +27,8 @@ import { useWalletStore } from '@/stores/useWalletStore'
 
 import '../../index.css'
 import AssetsBalanceCard from './components/AssetsBalanceCard'
-import BudgetsCard from './components/BudgetsCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
-import SavingGoalsCard from './components/SavingGoalsCard'
 import StatisticChardCard from './components/StatisticChartCard'
 import TransactionsCard from './components/TransactionsCard'
 import TransactionsCountCard from './components/TransactionsCountCard'
@@ -105,20 +103,12 @@ function WalletDashboard() {
           )
         }}
       />
-      <Grid
-        gap="sm"
-        height="100%"
-        pb="2xl"
-        templateCols={{ base: 1, xl: 3 }}
-        width="100%"
-      >
+      <Grid gap="sm" pb="2xl" templateCols={{ base: 1, xl: 3 }} width="100%">
         <IncomeExpenseCard icon="tabler:login-2" title="Income" />
         <IncomeExpenseCard icon="tabler:logout-2" title="Expenses" />
         <AssetsBalanceCard />
         <StatisticChardCard />
         <TransactionsCountCard />
-        <BudgetsCard />
-        <SavingGoalsCard />
         <CategoriesBreakdownCard />
         <TransactionsCard />
       </Grid>

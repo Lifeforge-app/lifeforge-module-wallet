@@ -1,12 +1,28 @@
+import { Box, Flex, Text, colorWithOpacity } from '@lifeforge/ui'
+
 function StatementEndedText() {
   return (
-    <div className="my-12 flex items-center gap-3">
-      <div className="bg-bg-800 h-[3px] w-full print:bg-black/70" />
-      <div className="text-xl font-semibold tracking-widest whitespace-nowrap uppercase">
+    <Flex align="center" gap="md" my="xl">
+      <Box
+        bg={{ base: 'bg-800', print: colorWithOpacity('bg-500', '5%') }}
+        height="3px"
+        width="100%"
+      />
+      <Text
+        size="xl"
+        tracking="widest"
+        transform="uppercase"
+        weight="semibold"
+        whiteSpace="nowrap"
+      >
         End of Financial Statements
-      </div>
-      <div className="bg-bg-800 h-[3px] w-full print:bg-black/70" />
-    </div>
+      </Text>
+      <Box
+        bg={{ base: 'bg-800', print: colorWithOpacity('bg-500', '5%') }}
+        height="3px"
+        width="100%"
+      />
+    </Flex>
   )
 }
 

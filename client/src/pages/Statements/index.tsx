@@ -43,7 +43,6 @@ function Statements() {
       ) : (
         <>
           <YearMonthInput
-            className="mb-6"
             month={month}
             monthsOptions={monthsOptions}
             setMonth={(month: number | null) => setYearMonth({ month })}
