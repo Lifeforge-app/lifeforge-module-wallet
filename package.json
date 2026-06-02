@@ -28,7 +28,17 @@
   },
   "lifeforge": {
     "icon": "tabler:currency-dollar",
-    "category": "Finance"
+    "category": "Finance",
+    "APIKeyAccess": {
+      "deepseek": {
+        "usage": "Create transactions from natural language and images using llm",
+        "required": false
+      },
+      "gcloud": {
+        "usage": "To fetch location from google map api",
+        "required": false
+      }
+    }
   },
   "peerDependencies": {
     "@lifeforge/server-utils": "workspace:*",

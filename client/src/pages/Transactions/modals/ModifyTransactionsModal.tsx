@@ -25,6 +25,12 @@ import {
 import { useWalletData } from '@/hooks/useWalletData'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
 import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
+import {
+  CREATE_ANOTHER_OPTIONS,
+  type CreateAnotherValue,
+  createAnotherSchema
+} from '@/pages/Transactions/CreateAnotherFIeld'
+import CreateAnotherField from '@/pages/Transactions/CreateAnotherFIeld'
 import forgeAPI from '@/utils/forgeAPI'
 
 import type { WalletTransaction } from '..'
@@ -33,6 +39,7 @@ import ModifyCategoryModal from './ModifyCategoryModal'
 const schema = z
   .object({
     type: z.enum(['income', 'expenses', 'transfer']),
+    createAnother: createAnotherSchema,
     date: z.date(),
     amount: z.number().positive('Amount must be positive'),
     from: z.string().optional(),
@@ -98,7 +105,7 @@ const schema = z
   })
 
 function ModifyTransactionsModal({
-  data: { type, initialData },
+  data: { type, initialData, createAnother = 'none' },
   onClose
 }: {
   data: {
@@ -106,6 +113,7 @@ function ModifyTransactionsModal({
     initialData?: {
       type: WalletTransaction['type']
     } & Partial<WalletTransaction>
+    createAnother?: CreateAnotherValue
   }
   onClose: () => void
 }) {
@@ -142,6 +150,7 @@ function ModifyTransactionsModal({
   const form = useForm({
     defaultValues: {
       ...createDefaultValues(schema),
+      createAnother,
       type: initialData?.type || 'income',
       date: initialData ? dayjs(initialData.date).toDate() : dayjs().toDate(),
       amount: initialData?.amount || 0,
@@ -207,6 +216,8 @@ function ModifyTransactionsModal({
       form={form}
       submissionConfig={{
         handler: async data => {
+          const createAnother = data.createAnother
+
           if (data.type === 'transfer') {
             await mutation.mutateAsync({
               type: 'transfer' as const,
@@ -229,6 +240,25 @@ function ModifyTransactionsModal({
               amount: data.amount
             })
           }
+
+          onClose()
+
+          if (createAnother === 'none') {
+            return
+          }
+
+          setTimeout(() => {
+            const option = CREATE_ANOTHER_OPTIONS.find(
+              o => o.value === createAnother
+            )
+
+            if (option?.component) {
+              open(option.component, {
+                ...(option.data as object),
+                createAnother
+              } as never)
+            }
+          }, 300)
         },
         template: type
       }}
@@ -382,6 +412,7 @@ function ModifyTransactionsModal({
         }}
         name="receipt"
       />
+      {type === 'create' && <CreateAnotherField control={form.control} />}
     </FormModal>
   )
 }

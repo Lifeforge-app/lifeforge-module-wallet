@@ -126,7 +126,8 @@
     "manageTemplates": "Urus Templat",
     "fromTemplate": "Dari Templat",
     "autoGenerate": "Jana Automatik",
-    "savePrompts": "Simpan Petunjuk"
+    "savePrompts": "Simpan Petunjuk",
+    "fromNaturalLanguage": "Dari Bahasa Tabii"
   },
   "modals": {
     "transactions": {
@@ -158,7 +159,11 @@
       "manage": "Urus Templat",
       "choose": "Pilih Templat"
     },
-    "managePrompts": "Urus Petunjuk"
+    "managePrompts": "Urus Petunjuk",
+    "naturalLanguage": {
+      "title": "Dari Bahasa Tabii",
+      "description": "Terangkan transaksi anda dalam bahasa tabii, dan AI akan mengisi butiran secara automatik untuk anda."
+    }
   },
   "transactionTypes": {
     "income": "Pendapatan",
@@ -198,7 +203,12 @@
     "templateName": "Nama Templat",
     "incomePrompt": "Petunjuk Pendapatan",
     "expensesPrompt": "Petunjuk Perbelanjaan",
-    "rangeMode": "Mod Susunan"
+    "rangeMode": "Mod Susunan",
+    "description": {
+      "label": "Butiran Transaksi",
+      "placeholder": "Membelanjakan RM39 di The Library Ahad lalu menggunakan Dompet MAE untuk sebuah buku"
+    },
+    "keepAfterScan": "Simpan Resit Selepas Imbasan"
   },
   "items": {
     "transaction": "Transaksi",
@@ -207,9 +217,6 @@
     "category": "Kategori",
     "receipt": "Resit",
     "template": "Templat"
-  },
-  "receipts": {
-    "keepAfterScan": "Simpan Resit Selepas Imbasan"
   },
   "subsectionsTitleAndDesc": {
     "assets": {

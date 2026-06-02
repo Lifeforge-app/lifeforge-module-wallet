@@ -1,5 +1,6 @@
 import { forgeRouter, writeContractFileToClient } from '@lifeforge/server-utils'
 
+import * as aiRouter from './routes/ai'
 import * as analyticsRouter from './routes/analytics'
 import * as assetsRouter from './routes/assets'
 import * as categoriesRouter from './routes/categories'
@@ -11,6 +12,7 @@ import * as transactionsRouter from './routes/transactions'
 const routes = forgeRouter({
   transactions: {
     ...transactionsRouter,
+    ...aiRouter,
     prompts: promptsRouter
   },
   categories: categoriesRouter,

@@ -126,7 +126,8 @@
     "manageTemplates": "管理模板",
     "fromTemplate": "從模板",
     "autoGenerate": "自動生成",
-    "savePrompts": "保存提示"
+    "savePrompts": "保存提示",
+    "fromNaturalLanguage": "從自然語言"
   },
   "modals": {
     "transactions": {
@@ -158,7 +159,11 @@
       "manage": "管理模板",
       "choose": "選擇模板"
     },
-    "managePrompts": "管理提示"
+    "managePrompts": "管理提示",
+    "naturalLanguage": {
+      "title": "從自然語言",
+      "description": "用自然語言描述您的交易，AI 將為您自動填充詳細資訊。"
+    }
   },
   "transactionTypes": {
     "income": "收入",
@@ -198,7 +203,12 @@
     "templateName": "模板名稱",
     "incomePrompt": "收入提示",
     "expensesPrompt": "支出提示",
-    "rangeMode": "範圍模式"
+    "rangeMode": "範圍模式",
+    "description": {
+      "label": "交易描述",
+      "placeholder": "上週日使用 MAE 錢包在 The Library 花了 RM39 買了一本書"
+    },
+    "keepAfterScan": "掃描後保留收據"
   },
   "items": {
     "transaction": "交易",
@@ -207,9 +217,6 @@
     "category": "類別",
     "receipt": "收據",
     "template": "模板"
-  },
-  "receipts": {
-    "keepAfterScan": "掃描後保留收據"
   },
   "subsectionsTitleAndDesc": {
     "assets": {

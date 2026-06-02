@@ -12,6 +12,7 @@ import {
 
 import ManageTemplatesModal from './modals/ManageTemplatesModal'
 import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
+import NaturalLanguageModal from './modals/NaturalLanguageModal'
 import ScanReceiptModal from './modals/ScanReceiptModal'
 
 function TransactionCreationMenu({
@@ -32,6 +33,10 @@ function TransactionCreationMenu({
 
     if (hash === '#scan') {
       open(ScanReceiptModal, {})
+    }
+
+    if (hash === '#ai') {
+      open(NaturalLanguageModal, {})
     }
   }, [hash])
 
@@ -55,6 +60,12 @@ function TransactionCreationMenu({
         namespace="apps.wallet"
         onClick={() => open(ScanReceiptModal, {})}
       />
+      <ContextMenuItem
+        icon="tabler:brain"
+        label="fromNaturalLanguage"
+        namespace="apps.wallet"
+        onClick={() => open(NaturalLanguageModal, {})}
+      />
     </>
   )
 
@@ -71,6 +82,11 @@ function TransactionCreationMenu({
             new
           </Button>
         }
+        styles={{
+          menu: {
+            minWidth: '18em'
+          }
+        }}
       >
         {items}
       </ContextMenu>
@@ -81,6 +97,9 @@ function TransactionCreationMenu({
     <ContextMenu
       buttonComponent={<FAB visibilityBreakpoint="md" />}
       styles={{
+        menu: {
+          minWidth: '18em'
+        },
         wrapper: {
           position: 'fixed',
           right: '1.5rem',

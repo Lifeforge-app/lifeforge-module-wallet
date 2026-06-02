@@ -126,7 +126,8 @@
     "manageTemplates": "Manage Templates",
     "fromTemplate": "From Template",
     "autoGenerate": "Auto Generate",
-    "savePrompts": "Save Prompts"
+    "savePrompts": "Save Prompts",
+    "fromNaturalLanguage": "From Natural Language"
   },
   "modals": {
     "transactions": {
@@ -158,7 +159,11 @@
       "manage": "Manage Templates",
       "choose": "Choose Template"
     },
-    "managePrompts": "Manage Prompts"
+    "managePrompts": "Manage Prompts",
+    "naturalLanguage": {
+      "title": "From Natural Language",
+      "description": "Describe your transaction in natural language, and the AI will auto-populate the details for you."
+    }
   },
   "transactionTypes": {
     "income": "Income",
@@ -183,6 +188,7 @@
     "ledgerColor": "Ledger Color",
     "assetName": "Asset Name",
     "ledgerName": "Ledger Name",
+    "keepAfterScan": "Keep Receipt After Scan",
     "categoryName": {
       "label": "Category Name",
       "placeholder": "e.g. Groceries, Salary, Rent"
@@ -198,7 +204,11 @@
     "templateName": "Template Name",
     "incomePrompt": "Income Prompt",
     "expensesPrompt": "Expenses Prompt",
-    "rangeMode": "Range Mode"
+    "rangeMode": "Range Mode",
+    "description": {
+      "label": "Transaction Description",
+      "placeholder": "Spent RM39 at The Library last sunday using MAE Wallet for a book"
+    }
   },
   "items": {
     "transaction": "Transaction",
@@ -207,9 +217,6 @@
     "category": "Category",
     "receipt": "Receipt",
     "template": "Template"
-  },
-  "receipts": {
-    "keepAfterScan": "Keep Receipt After Scan"
   },
   "subsectionsTitleAndDesc": {
     "assets": {

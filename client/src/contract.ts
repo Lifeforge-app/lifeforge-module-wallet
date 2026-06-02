@@ -1096,6 +1096,96 @@ export const contract = {
         "NOT_FOUND": true
       }
     },
+    "fromNaturalLanguage": {
+      "method": "post",
+      "description": "Convert human natural language into partial transaction object",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string"
+            },
+            "amount": {
+              "type": "number"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "income",
+                "expenses",
+                "transfer"
+              ]
+            },
+            "category": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "particulars": {
+              "type": "string"
+            },
+            "location_coords": {
+              "type": "object",
+              "properties": {
+                "lon": {
+                  "type": "number"
+                },
+                "lat": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "lon",
+                "lat"
+              ],
+              "additionalProperties": false
+            },
+            "location_name": {
+              "type": "string"
+            },
+            "asset": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "date",
+            "amount",
+            "type",
+            "category",
+            "particulars",
+            "location_coords",
+            "location_name"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
     "prompts": {
       "autoGenerate": {
         "method": "post",
