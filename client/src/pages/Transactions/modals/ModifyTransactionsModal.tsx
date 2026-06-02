@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import colors from 'tailwindcss/colors'
+
 import z from 'zod'
 
 import {
@@ -19,6 +19,7 @@ import {
   createDefaultValues,
   fileValueSchema,
   getFormFileFieldInitialData,
+  TAILWIND_PALETTE,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -206,19 +207,19 @@ function ModifyTransactionsModal({
             text: t('transactionTypes.income'),
             value: 'income',
             icon: 'tabler:login-2',
-            color: colors.green[500]
+            color: TAILWIND_PALETTE.green[500]
           },
           {
             text: t('transactionTypes.expenses'),
             value: 'expenses',
             icon: 'tabler:logout-2',
-            color: colors.red[500]
+            color: TAILWIND_PALETTE.red[500]
           },
           {
             text: t('transactionTypes.transfer'),
             value: 'transfer',
             icon: 'tabler:transfer',
-            color: colors.blue[500]
+            color: TAILWIND_PALETTE.blue[500]
           }
         ]}
       />

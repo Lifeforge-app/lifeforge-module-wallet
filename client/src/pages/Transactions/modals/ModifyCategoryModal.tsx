@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import colors from 'tailwindcss/colors'
+
 import z from 'zod'
 
 import {
@@ -11,6 +11,7 @@ import {
   FormModal,
   IconField,
   ListboxField,
+  TAILWIND_PALETTE,
   TextField,
   createDefaultValues
 } from '@lifeforge/ui'
@@ -97,13 +98,13 @@ function ModifyCategoryModal({
             value: 'income',
             text: t('transactionTypes.income'),
             icon: 'tabler:login-2',
-            color: colors.green[500]
+            color: TAILWIND_PALETTE.green[500]
           },
           {
             value: 'expenses',
             text: t('transactionTypes.expenses'),
             icon: 'tabler:logout',
-            color: colors.red[500]
+            color: TAILWIND_PALETTE.red[500]
           }
         ]}
       />

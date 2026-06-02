@@ -19,6 +19,7 @@ import {
   ContextMenu,
   ContextMenuItem,
   FAB,
+  Grid,
   ModuleHeader
 } from '@lifeforge/ui'
 
@@ -61,7 +62,7 @@ function WalletDashboard() {
           <ContextMenu
             buttonComponent={
               <Button
-                className="hidden md:flex"
+                display={{ base: 'none', md: 'flex' }}
                 icon="tabler:plus"
                 tProps={{
                   item: t('apps.wallet:items.transaction')
@@ -71,7 +72,6 @@ function WalletDashboard() {
                 new
               </Button>
             }
-            classNames={{ wrapper: 'hidden md:block' }}
           >
             <ContextMenuItem
               icon="tabler:plus"
@@ -105,7 +105,13 @@ function WalletDashboard() {
           )
         }}
       />
-      <div className="flex size-full grid-cols-3 grid-rows-7 flex-col gap-3 pb-8 xl:grid">
+      <Grid
+        gap="sm"
+        height="100%"
+        pb="2xl"
+        templateCols={{ base: 1, xl: 3 }}
+        width="100%"
+      >
         <IncomeExpenseCard icon="tabler:login-2" title="Income" />
         <IncomeExpenseCard icon="tabler:logout-2" title="Expenses" />
         <AssetsBalanceCard />
@@ -115,11 +121,11 @@ function WalletDashboard() {
         <SavingGoalsCard />
         <CategoriesBreakdownCard />
         <TransactionsCard />
-      </div>
+      </Grid>
       <ContextMenu
-        buttonComponent={<FAB className="static!" isibilityBreakpoint="md" />}
-        classNames={{
-          wrapper: 'fixed right-6 bottom-6'
+        buttonComponent={<FAB visibilityBreakpoint="md" />}
+        styles={{
+          wrapper: { position: 'fixed', right: '1.5rem', bottom: '1.5rem' }
         }}
       >
         <ContextMenuItem

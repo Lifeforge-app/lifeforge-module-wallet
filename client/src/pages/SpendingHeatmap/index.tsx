@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useMemo } from 'react'
-import colors from 'tailwindcss/colors'
+
 
 import { type InferOutput, useNavigate } from '@lifeforge/shared'
-import { EmptyStateScreen, ModuleHeader, WithQuery } from '@lifeforge/ui'
+import { EmptyStateScreen, ModuleHeader, TAILWIND_PALETTE, WithQuery } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -50,11 +50,11 @@ function SpendingHeatmap() {
   }
 
   const getMarkerColor = (amount: number) => {
-    if (amount <= 100) return colors.green[500]
-    if (amount <= 500) return colors.yellow[500]
-    if (amount <= 1000) return colors.orange[500]
+    if (amount <= 100) return TAILWIND_PALETTE.green[500]
+    if (amount <= 500) return TAILWIND_PALETTE.yellow[500]
+    if (amount <= 1000) return TAILWIND_PALETTE.orange[500]
 
-    return colors.red[500]
+    return TAILWIND_PALETTE.red[500]
   }
 
   const centerPoint = useMemo(() => {

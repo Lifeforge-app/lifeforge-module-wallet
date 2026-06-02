@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import COLORS from 'tailwindcss/colors'
+
 
 import { anyColorToHex } from '@lifeforge/shared'
 import {
@@ -9,6 +9,7 @@ import {
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  TAILWIND_PALETTE,
   TagChip,
   useModalStore
 } from '@lifeforge/ui'
@@ -169,7 +170,7 @@ function BudgetCard({
         </p>
         <p
           className="text-sm font-medium"
-          style={{ color: isOverBudget ? COLORS.red[500] : COLORS.green[500] }}
+          style={{ color: isOverBudget ? TAILWIND_PALETTE.red[500] : TAILWIND_PALETTE.green[500] }}
         >
           {isOverBudget
             ? `RM ${Math.abs(remaining).toFixed(2)} over`

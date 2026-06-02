@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import colors from 'tailwindcss/colors'
+
 import z from 'zod'
 
 import {
@@ -12,7 +12,8 @@ import {
   ListboxField,
   LocationField,
   TextField,
-  createDefaultValues
+  createDefaultValues,
+  TAILWIND_PALETTE
 } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
@@ -155,13 +156,13 @@ function ModifyTemplatesModal({
             text: t('transactionTypes.income'),
             value: 'income',
             icon: 'tabler:login-2',
-            color: colors.green[500]
+            color: TAILWIND_PALETTE.green[500]
           },
           {
             text: t('transactionTypes.expenses'),
             value: 'expenses',
             icon: 'tabler:logout-2',
-            color: colors.red[500]
+            color: TAILWIND_PALETTE.red[500]
           }
         ]}
       />

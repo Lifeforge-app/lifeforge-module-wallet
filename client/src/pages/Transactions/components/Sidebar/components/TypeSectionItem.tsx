@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import colors from 'tailwindcss/colors'
+
 
 import { usePersonalization } from '@lifeforge/shared'
-import { SidebarItem } from '@lifeforge/ui'
+import { SidebarItem, TAILWIND_PALETTE } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -28,9 +28,9 @@ function TypeSectionItem({
     () =>
       ({
         'All Types': bgTempPalette[100],
-        Income: colors.green[500],
-        Expenses: colors.red[500],
-        Transfer: colors.blue[500]
+        Income: TAILWIND_PALETTE.green[500],
+        Expenses: TAILWIND_PALETTE.red[500],
+        Transfer: TAILWIND_PALETTE.blue[500]
       })[label],
     [bgTempPalette, label]
   )

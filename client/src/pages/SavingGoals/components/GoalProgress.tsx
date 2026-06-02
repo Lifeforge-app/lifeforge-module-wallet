@@ -1,18 +1,18 @@
 import { Icon } from '@iconify/react'
 import { useTranslation } from 'react-i18next'
-import COLORS from 'tailwindcss/colors'
+import { TAILWIND_PALETTE } from '@lifeforge/ui'
 
 import numberToCurrency from '@/utils/numberToCurrency'
 
 import type { SavingGoal } from '..'
 
 function getProgressColor(percentage: number): string {
-  if (percentage >= 100) return COLORS.green[500]
-  if (percentage >= 75) return COLORS.blue[500]
-  if (percentage >= 50) return COLORS.yellow[500]
-  if (percentage >= 25) return COLORS.orange[500]
+  if (percentage >= 100) return TAILWIND_PALETTE.green[500]
+  if (percentage >= 75) return TAILWIND_PALETTE.blue[500]
+  if (percentage >= 50) return TAILWIND_PALETTE.yellow[500]
+  if (percentage >= 25) return TAILWIND_PALETTE.orange[500]
 
-  return COLORS.red[500]
+  return TAILWIND_PALETTE.red[500]
 }
 
 interface GoalProgressProps {
