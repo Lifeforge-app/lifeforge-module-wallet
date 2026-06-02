@@ -6,9 +6,11 @@ import { toast } from 'react-toastify'
 import { usePromiseLoading } from '@lifeforge/shared'
 import {
   Alert,
+  Box,
   Button,
   EmptyStateScreen,
   ModalHeader,
+  Stack,
   TextAreaInput,
   WithQuery
 } from '@lifeforge/ui'
@@ -23,11 +25,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
   )
 
   const openaiAPIKeyAvailabilityQuery = useQuery(
-    forgeAPI
-      .checkAPIKeys({
-        keys: 'openai'
-      })
-      .queryOptions()
+    forgeAPI.checkAPIKeys({ keys: 'openai' }).queryOptions()
   )
 
   const [prompts, setPrompts] = useState<{ income: string; expenses: string }>({
@@ -42,15 +40,9 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
         messagesQuery.refetch()
         onClose()
       },
-      onError: () => {
-        toast.error('Failed to save prompts')
-      }
+      onError: () => toast.error('Failed to save prompts')
     })
   )
-
-  const handleChange = (field: 'income' | 'expenses', value: string) => {
-    setPrompts(prev => ({ ...prev, [field]: value }))
-  }
 
   async function handleAutoGeneratePrompt(field: 'income' | 'expenses') {
     try {
@@ -65,15 +57,13 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
     }
   }
 
-  async function handleSavePrompts() {
-    await savePromptsMutation.mutateAsync(prompts)
-  }
-
   const [generateLoading, onAutoGenerate] = usePromiseLoading(
     handleAutoGeneratePrompt
   )
 
-  const [saveLoading, onSave] = usePromiseLoading(handleSavePrompts)
+  const [saveLoading, onSave] = usePromiseLoading(async function () {
+    await savePromptsMutation.mutateAsync(prompts)
+  })
 
   useEffect(() => {
     if (messagesQuery.data) {
@@ -85,14 +75,14 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
   }, [messagesQuery.data])
 
   return (
-    <div className="min-w-[60vw]">
+    <Box minWidth="60vw">
       <ModalHeader
         icon="tabler:robot"
         namespace="apps.wallet"
         title="Manage Prompts"
         onClose={onClose}
       />
-      <Alert mb="md" type="note">
+      <Alert mb="lg" type="note">
         {t('messages.promptAutoGeneration')}
       </Alert>
       <WithQuery query={openaiAPIKeyAvailabilityQuery}>
@@ -100,71 +90,73 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
           keyAvailable ? (
             <WithQuery query={messagesQuery}>
               {() => (
-                <div className="space-y-6">
-                  <div className="space-y-2">
+                <Stack gap="xl">
+                  <Stack gap="md">
                     <TextAreaInput
                       icon="tabler:arrow-up-circle"
                       label="Income Prompt"
                       namespace="apps.wallet"
                       placeholder="Prompt used to generate particulars for income transactions."
                       value={prompts.income}
-                      onChange={value => handleChange('income', value)}
+                      onChange={value =>
+                        setPrompts(prev => ({ ...prev, income: value }))
+                      }
                     />
                     <Button
-                      className="w-full"
                       icon="mage:stars-c"
                       loading={generateLoading}
                       namespace="apps.wallet"
                       variant="secondary"
+                      width="100%"
                       onClick={() => onAutoGenerate('income')}
                     >
                       Auto Generate
                     </Button>
-                  </div>
-                  <div className="space-y-2">
+                  </Stack>
+                  <Stack gap="md">
                     <TextAreaInput
                       icon="tabler:arrow-down-circle"
                       label="Expenses Prompt"
                       namespace="apps.wallet"
                       placeholder="Prompt used to generate particulars for expenses transactions."
                       value={prompts.expenses}
-                      onChange={value => handleChange('expenses', value)}
+                      onChange={value =>
+                        setPrompts(prev => ({ ...prev, expenses: value }))
+                      }
                     />
                     <Button
-                      className="w-full"
                       icon="mage:stars-c"
                       loading={generateLoading}
                       namespace="apps.wallet"
                       variant="secondary"
+                      width="100%"
                       onClick={() => onAutoGenerate('expenses')}
                     >
                       Auto Generate
                     </Button>
-                  </div>
+                  </Stack>
                   <Button
-                    className="mt-4 w-full"
                     icon="tabler:device-floppy"
                     loading={saveLoading}
+                    mt="md"
                     namespace="apps.wallet"
+                    width="100%"
                     onClick={onSave}
                   >
                     Save Prompts
                   </Button>
-                </div>
+                </Stack>
               )}
             </WithQuery>
           ) : (
             <EmptyStateScreen
               icon="tabler:robot-off"
-              message={{
-                id: 'openAIApiKeyRequired',
-                namespace: 'apps.wallet'
-              }}
+              message={{ id: 'openAIApiKeyRequired', namespace: 'apps.wallet' }}
             />
           )
         }
       </WithQuery>
-    </div>
+    </Box>
   )
 }
 

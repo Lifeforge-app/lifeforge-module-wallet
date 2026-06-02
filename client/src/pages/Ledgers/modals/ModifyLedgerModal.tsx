@@ -20,7 +20,10 @@ const schema = z.object({
   icon: z.string().min(1, 'Ledger icon is required'),
   color: z
     .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color (e.g. #FF0000)')
+    .regex(
+      /^#[0-9A-Fa-f]{6}$/,
+      'Color must be a valid hex color (e.g. #FF0000)'
+    )
 })
 
 function ModifyLedgerModal({

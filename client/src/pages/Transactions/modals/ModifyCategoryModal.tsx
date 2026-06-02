@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-
 import z from 'zod'
 
 import {
@@ -26,7 +25,10 @@ const schema = z.object({
   icon: z.string().min(1, 'Category icon is required'),
   color: z
     .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color (e.g. #FF0000)')
+    .regex(
+      /^#[0-9A-Fa-f]{6}$/,
+      'Color must be a valid hex color (e.g. #FF0000)'
+    )
 })
 
 function ModifyCategoryModal({

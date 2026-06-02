@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-
 import z from 'zod'
 
 import {
@@ -11,9 +10,9 @@ import {
   FormModal,
   ListboxField,
   LocationField,
+  TAILWIND_PALETTE,
   TextField,
-  createDefaultValues,
-  TAILWIND_PALETTE
+  createDefaultValues
 } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
@@ -204,11 +203,7 @@ function ModifyTemplatesModal({
         name="ledgers"
         options={ledgerOptions}
       />
-      <LocationField
-        control={form.control}
-        label="Location"
-        name="location"
-      />
+      <LocationField control={form.control} label="Location" name="location" />
     </FormModal>
   )
 }

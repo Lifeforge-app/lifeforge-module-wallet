@@ -1,8 +1,7 @@
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 
-import { DateInput, SidebarTitle } from '@lifeforge/ui'
+import { DateInput, SidebarTitle, Stack } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -16,11 +15,8 @@ function DateRangeSelector() {
     type: 'start_date' | 'end_date'
   ) => {
     if (!date) {
-      if (type === 'start_date') {
-        setStartDate(undefined)
-      } else {
-        setEndDate(undefined)
-      }
+      if (type === 'start_date') setStartDate(undefined)
+      else setEndDate(undefined)
 
       return
     }
@@ -38,48 +34,39 @@ function DateRangeSelector() {
       (type === 'start_date' && dayjs(date).isAfter(otherDate)) ||
       (type === 'end_date' && dayjs(date).isBefore(otherDate))
     ) {
-      if (type === 'start_date') {
-        setEndDate(dayjs(date).format('YYYY-MM-DD'))
-      } else {
-        setStartDate(dayjs(date).format('YYYY-MM-DD'))
-      }
+      if (type === 'start_date') setEndDate(dayjs(date).format('YYYY-MM-DD'))
+      else setStartDate(dayjs(date).format('YYYY-MM-DD'))
     }
 
-    if (type === 'start_date') {
-      setStartDate(dayjs(date).format('YYYY-MM-DD'))
-    } else {
-      setEndDate(dayjs(date).format('YYYY-MM-DD'))
-    }
+    if (type === 'start_date') setStartDate(dayjs(date).format('YYYY-MM-DD'))
+    else setEndDate(dayjs(date).format('YYYY-MM-DD'))
   }
-
-  const dateInputsConfig = [
-    { type: 'start_date', icon: 'tabler:calendar-up', name: 'Start Date' },
-    { type: 'end_date', icon: 'tabler:calendar-down', name: 'End Date' }
-  ] as const
 
   return (
     <>
       <SidebarTitle label={t('sidebar.dateRange')} />
-      <div className="px-4">
-        {dateInputsConfig.map(({ type, icon, name }, idx) => (
-          <DateInput
-            key={type}
-            className={clsx('w-full', idx === 1 ? 'mt-4!' : 'mt-0')}
-            icon={icon}
-            label={name}
-            namespace="apps.wallet"
-            value={
-              (type === 'start_date' ? startDate : endDate) &&
-              dayjs(type === 'start_date' ? startDate : endDate).isValid()
-                ? dayjs(type === 'start_date' ? startDate : endDate).toDate()
-                : null
-            }
-            onChange={date => {
-              handleDateChange(date, type)
-            }}
-          />
-        ))}
-      </div>
+      <Stack gap="md" px="md">
+        <DateInput
+          icon="tabler:calendar-up"
+          label="Start Date"
+          namespace="apps.wallet"
+          value={
+            startDate && dayjs(startDate).isValid()
+              ? dayjs(startDate).toDate()
+              : null
+          }
+          onChange={date => handleDateChange(date, 'start_date')}
+        />
+        <DateInput
+          icon="tabler:calendar-down"
+          label="End Date"
+          namespace="apps.wallet"
+          value={
+            endDate && dayjs(endDate).isValid() ? dayjs(endDate).toDate() : null
+          }
+          onChange={date => handleDateChange(date, 'end_date')}
+        />
+      </Stack>
     </>
   )
 }

@@ -1,6 +1,7 @@
-import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
+
+import { Box, Flex, Icon, Text } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import TransactionAmount from '@/pages/Dashboard/components/TransactionsCard/components/TransactionAmount'
@@ -21,42 +22,46 @@ function Header({ transaction }: { transaction: WalletTransaction }) {
   )
 
   return (
-    <div className="flex-center flex flex-col">
+    <Flex centered align="center" direction="column">
       {category && (
-        <div
-          className="shadow-custom mb-6 w-min rounded-lg p-4 in-[.bordered]:border-2"
+        <Box
+          mb="lg"
+          p="lg"
+          r="lg"
           style={{
             backgroundColor: category.color + (category.color ? '50' : ''),
             color: category.color,
             borderColor: category.color + '20'
           }}
         >
-          <Icon className="size-8" icon={category.icon ?? ''} />
-        </div>
+          <Icon icon={category.icon ?? ''} size="2rem" />
+        </Box>
       )}
       {transaction.type === 'transfer' && (
-        <div className="mb-6 w-min rounded-lg bg-blue-500/20 p-4">
-          <Icon
-            className="size-8 text-blue-500"
-            icon="tabler:arrows-exchange"
-          />
-        </div>
+        <Box
+          mb="lg"
+          p="lg"
+          r="lg"
+          style={{ backgroundColor: 'rgba(59,130,246,0.2)' }}
+        >
+          <Icon color="blue-500" icon="tabler:arrows-exchange" size="2rem" />
+        </Box>
       )}
-      <div className="mb-2 text-center text-4xl font-medium">
+      <Text align="center" mb="sm" size="4xl" weight="medium">
         <TransactionAmount
           amount={transaction.amount}
           type={transaction.type}
         />
-      </div>
-      <p className="text-center text-lg">
+      </Text>
+      <Text align="center" size="lg">
         {transaction.type === 'transfer'
           ? 'Intra-Asset Transfer'
           : transaction.particulars}
-      </p>
-      <p className="text-bg-500 mt-2 text-center">
+      </Text>
+      <Text align="center" color="muted" mt="sm">
         {dayjs(transaction.date).format('dddd, D MMM YYYY')}
-      </p>
-    </div>
+      </Text>
+    </Flex>
   )
 }
 

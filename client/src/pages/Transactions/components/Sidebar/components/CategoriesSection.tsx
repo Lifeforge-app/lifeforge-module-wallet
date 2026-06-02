@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SidebarTitle, WithQuery } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
+import { SidebarTitle, WithQuery , useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'

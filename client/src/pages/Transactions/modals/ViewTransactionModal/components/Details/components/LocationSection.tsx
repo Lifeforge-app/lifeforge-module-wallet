@@ -3,23 +3,19 @@ import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 
 import { EmptyStateScreen, WithQuery } from '@lifeforge/ui'
 
-import type { WalletTransaction } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 
+import { useTransactionDetails } from '../TransactionDetailsContext'
 import DetailItem from './DetailItem'
 
-function LocationSection({
-  transaction
-}: {
-  transaction: WalletTransaction & {
-    type: 'income' | 'expenses'
-  }
-}) {
+function LocationSection() {
+  const transaction = useTransactionDetails()
+
   const googleMapAPIKey = useQuery(
-    forgeAPI.getAPIKeys({ keyId: 'gcloud' }).queryOptions({
-      retry: false
-    })
+    forgeAPI.getAPIKeys({ keyId: 'gcloud' }).queryOptions({ retry: false })
   )
+
+  if (transaction.type === 'transfer' || !transaction.location_name) return null
 
   return (
     <DetailItem vertical icon="tabler:map-pin" label="location">
@@ -28,13 +24,17 @@ function LocationSection({
           key ? (
             <APIProvider apiKey={key}>
               <Map
-                className="h-96 overflow-hidden rounded-md"
                 defaultCenter={{
                   lat: transaction.location_coords?.lat || 0,
                   lng: transaction.location_coords?.lon || 0
                 }}
                 defaultZoom={15}
                 mapId="LocationMap"
+                style={{
+                  height: '24rem',
+                  borderRadius: 'var(--radius-md)',
+                  overflow: 'hidden'
+                }}
               >
                 <AdvancedMarker
                   position={{
@@ -48,10 +48,7 @@ function LocationSection({
             <EmptyStateScreen
               smaller
               icon="tabler:key-off"
-              message={{
-                id: 'mapKey',
-                namespace: 'apps.wallet'
-              }}
+              message={{ id: 'mapKey', namespace: 'apps.wallet' }}
             />
           )
         }

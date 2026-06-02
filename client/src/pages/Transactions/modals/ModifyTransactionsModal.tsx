@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-
 import z from 'zod'
 
 import {
@@ -14,12 +13,12 @@ import {
   FormModal,
   ListboxField,
   LocationField,
+  TAILWIND_PALETTE,
   TextField,
   convertFormFileFieldData,
   createDefaultValues,
   fileValueSchema,
   getFormFileFieldInitialData,
-  TAILWIND_PALETTE,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -31,28 +30,72 @@ import forgeAPI from '@/utils/forgeAPI'
 import type { WalletTransaction } from '..'
 import ModifyCategoryModal from './ModifyCategoryModal'
 
-const schema = z.object({
-  type: z.enum(['income', 'expenses', 'transfer']),
-  date: z.date(),
-  amount: z.number().positive('Amount must be positive'),
-  from: z.string().optional(),
-  to: z.string().optional(),
-  particulars: z.string().optional(),
-  category: z.string().optional(),
-  asset: z.string().optional(),
-  ledgers: z.array(z.string()).optional(),
-  location: z
-    .object({
-      name: z.string(),
-      formattedAddress: z.string(),
-      location: z.object({
-        latitude: z.number(),
-        longitude: z.number()
+const schema = z
+  .object({
+    type: z.enum(['income', 'expenses', 'transfer']),
+    date: z.date(),
+    amount: z.number().positive('Amount must be positive'),
+    from: z.string().optional(),
+    to: z.string().optional(),
+    particulars: z.string().optional(),
+    category: z.string().optional(),
+    asset: z.string().optional(),
+    ledgers: z.array(z.string()).optional(),
+    location: z
+      .object({
+        name: z.string(),
+        formattedAddress: z.string(),
+        location: z.object({
+          latitude: z.number(),
+          longitude: z.number()
+        })
       })
-    })
-    .optional(),
-  receipt: fileValueSchema
-})
+      .optional(),
+    receipt: fileValueSchema
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === 'transfer') {
+      if (!data.from) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Source asset is required',
+          path: ['from']
+        })
+      }
+
+      if (!data.to) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Destination asset is required',
+          path: ['to']
+        })
+      }
+    } else {
+      if (!data.particulars) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Particulars is required',
+          path: ['particulars']
+        })
+      }
+
+      if (!data.category) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Category is required',
+          path: ['category']
+        })
+      }
+
+      if (!data.asset) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Asset is required',
+          path: ['asset']
+        })
+      }
+    }
+  })
 
 function ModifyTransactionsModal({
   data: { type, initialData },
@@ -168,8 +211,8 @@ function ModifyTransactionsModal({
             await mutation.mutateAsync({
               type: 'transfer' as const,
               date: dayjs(data.date).format('YYYY-MM-DD'),
-              from: data.from ?? '',
-              to: data.to ?? '',
+              from: data.from!,
+              to: data.to!,
               receipt: convertFormFileFieldData(data.receipt),
               amount: data.amount
             })
@@ -177,11 +220,11 @@ function ModifyTransactionsModal({
             await mutation.mutateAsync({
               type: data.type,
               date: dayjs(data.date).format('YYYY-MM-DD'),
-              asset: data.asset ?? '',
-              category: data.category ?? '',
+              asset: data.asset!,
+              category: data.category!,
               ledgers: data.ledgers ?? [],
               location: data.location ?? null,
-              particulars: data.particulars ?? '',
+              particulars: data.particulars!,
               receipt: convertFormFileFieldData(data.receipt),
               amount: data.amount
             })

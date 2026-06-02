@@ -3,13 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { AutoSizer } from 'react-virtualized'
 
 import {
+  Box,
+  Button,
   EmptyStateScreen,
+  Flex,
   ModalHeader,
   Scrollbar,
+  Stack,
   Tabs,
-  WithQuery
+  Text,
+  WithQuery,
+  useModalStore
 } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 
@@ -32,16 +37,15 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
     []
 
   return (
-    <div className="flex min-h-[80vh] min-w-[40vw] flex-col">
+    <Stack minHeight="80vh" minWidth="40vw">
       <ModalHeader
-        actionButtonProps={{
-          icon: 'tabler:plus',
-          onClick: () => {
-            open(ModifyCategoryModal, {
-              type: 'create'
-            })
-          }
-        }}
+        headerActions={
+          <Button
+            icon="tabler:plus"
+            variant="plain"
+            onClick={() => open(ModifyCategoryModal, { type: 'create' })}
+          />
+        }
         icon="tabler:apps"
         namespace="apps.wallet"
         title="categories.manage"
@@ -75,54 +79,44 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
       <WithQuery query={categoriesQuery}>
         {categories =>
           categories.length > 0 ? (
-            <div className="mt-4 flex-1">
+            <Box flex="1" mt="md">
               <AutoSizer>
                 {({ width, height }) => (
-                  <Scrollbar
-                    style={{
-                      width,
-                      height
-                    }}
-                  >
-                    <ul className="space-y-3">
+                  <Scrollbar style={{ width, height }}>
+                    <Stack>
                       {filteredCategories.length > 0 ? (
                         filteredCategories.map(category => (
                           <CategoryItem key={category.id} category={category} />
                         ))
                       ) : (
-                        <p className="text-bg-500 text-center">
+                        <Text align="center" color="muted">
                           No {selectedTab} categories found
-                        </p>
+                        </Text>
                       )}
-                    </ul>
+                    </Stack>
                   </Scrollbar>
                 )}
               </AutoSizer>
-            </div>
+            </Box>
           ) : (
-            <div className="flex-center flex-1">
+            <Flex centered flex="1">
               <EmptyStateScreen
                 CTAButtonProps={{
                   children: 'new',
                   icon: 'tabler:plus',
                   onClick: () => {
-                    open(ModifyCategoryModal, {
-                      type: 'create'
-                    })
+                    open(ModifyCategoryModal, { type: 'create' })
                   },
                   tProps: { item: t('items.category') }
                 }}
                 icon="tabler:apps-off"
-                message={{
-                  id: 'categories',
-                  namespace: 'apps.wallet'
-                }}
+                message={{ id: 'categories', namespace: 'apps.wallet' }}
               />
-            </div>
+            </Flex>
           )
         }
       </WithQuery>
-    </div>
+    </Stack>
   )
 }
 

@@ -5,10 +5,13 @@ import { AutoSizer } from 'react-virtualized'
 
 import {
   Alert,
+  Box,
   Button,
   EmptyStateScreen,
+  Flex,
   ModalHeader,
   Scrollbar,
+  Stack,
   Tabs,
   WithQuery,
   useModalStore
@@ -39,18 +42,14 @@ function ManageTemplatesModal({
   )
 
   return (
-    <div className="flex min-h-[80vh] min-w-[40vw] flex-col">
+    <Stack minHeight="80vh" minWidth="40vw">
       <ModalHeader
         headerActions={
           !choosing ? (
             <Button
               icon="tabler:plus"
               variant="primary"
-              onClick={() => {
-                open(ModifyTemplatesModal, {
-                  type: 'create'
-                })
-              }}
+              onClick={() => open(ModifyTemplatesModal, { type: 'create' })}
             />
           ) : undefined
         }
@@ -86,16 +85,11 @@ function ManageTemplatesModal({
       <WithQuery query={transactionTemplatesQuery}>
         {templates =>
           templates[selectedTab].length > 0 ? (
-            <div className="mt-4 flex-1">
+            <Box flex="1" height="100%" mt="md">
               <AutoSizer>
                 {({ width, height }) => (
-                  <Scrollbar
-                    style={{
-                      width,
-                      height: height
-                    }}
-                  >
-                    <ul className="space-y-3">
+                  <Scrollbar style={{ width, height }}>
+                    <Stack>
                       {templates[selectedTab].map(template => (
                         <TemplateItem
                           key={template.id}
@@ -104,35 +98,28 @@ function ManageTemplatesModal({
                           onClose={onClose}
                         />
                       ))}
-                    </ul>
+                    </Stack>
                   </Scrollbar>
                 )}
               </AutoSizer>
-            </div>
+            </Box>
           ) : (
-            <div className="flex-center flex-1">
+            <Flex centered flex="1">
               <EmptyStateScreen
                 CTAButtonProps={{
                   children: 'new',
                   icon: 'tabler:plus',
-                  onClick: () => {
-                    open(ModifyTemplatesModal, {
-                      type: 'create'
-                    })
-                  },
+                  onClick: () => open(ModifyTemplatesModal, { type: 'create' }),
                   tProps: { item: t('items.template') }
                 }}
                 icon="tabler:template-off"
-                message={{
-                  id: 'templates',
-                  namespace: 'apps.wallet'
-                }}
+                message={{ id: 'templates', namespace: 'apps.wallet' }}
               />
-            </div>
+            </Flex>
           )
         }
       </WithQuery>
-    </div>
+    </Stack>
   )
 }
 

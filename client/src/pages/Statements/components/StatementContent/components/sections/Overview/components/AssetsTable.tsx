@@ -146,7 +146,8 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
                         : 0
 
                     return (
-                      <tr key={asset.id}
+                      <tr
+                        key={asset.id}
                         style={{
                           backgroundColor:
                             index % 2 === 0

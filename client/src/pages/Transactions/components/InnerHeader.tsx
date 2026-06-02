@@ -1,6 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
-import { Button, TagsFilter, useModuleSidebarState } from '@lifeforge/ui'
+import {
+  Button,
+  Flex,
+  Stack,
+  TagsFilter,
+  Text,
+  useModuleSidebarState
+} from '@lifeforge/ui'
 
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -37,9 +44,9 @@ function InnerHeader() {
   )
 
   return (
-    <div className="flex-between flex">
-      <div>
-        <h1 className="text-3xl font-semibold lg:text-4xl">
+    <Flex align="center" justify="between">
+      <Stack>
+        <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
           {t(
             `apps.wallet:header.${
               !selectedType &&
@@ -51,10 +58,10 @@ function InnerHeader() {
                 : 'filtered'
             }Transactions`
           )}{' '}
-          <span className="text-bg-500 text-base">
+          <Text color="muted" size="base">
             ({filteredTransactions.length.toLocaleString()})
-          </span>
-        </h1>
+          </Text>
+        </Text>
         <TagsFilter
           availableFilters={{
             type: {
@@ -119,16 +126,16 @@ function InnerHeader() {
             ledger: setSelectedLedger
           }}
         />
-      </div>
+      </Stack>
       <Button
-        className="xl:hidden"
+        display={{ xl: 'none' }}
         icon="tabler:menu"
         variant="plain"
         onClick={() => {
           setIsSidebarOpen(true)
         }}
       />
-    </div>
+    </Flex>
   )
 }
 

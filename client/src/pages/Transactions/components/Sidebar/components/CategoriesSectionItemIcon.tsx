@@ -1,5 +1,4 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
+import { Box, Icon } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -15,34 +14,31 @@ function CategoriesSectionItemIcon({
   const { selectedCategory } = useWalletStore()
 
   return (
-    <div className="relative flex size-7 items-center justify-center">
+    <Box height="1.75rem" position="relative" width="1.75rem">
       <Icon
-        className={clsx(
-          'size-6 shrink-0',
-          selectedCategory === id && 'text-custom-500'
-        )}
+        color={selectedCategory === id ? 'custom-500' : undefined}
         icon={icon}
+        size="1.5rem"
       />
-      <Icon
-        className={clsx(
-          'absolute -right-2 -bottom-2 size-4 shrink-0',
-          type
-            ? {
-                income: 'text-green-500',
-                expenses: 'text-red-500'
-              }[type]
-            : 'text-yellow-500'
-        )}
-        icon={
-          type
-            ? {
-                income: 'tabler:login-2',
-                expenses: 'tabler:logout'
-              }[type]
-            : 'tabler:arrow-bar-both'
-        }
-      />
-    </div>
+      <Box bottom="-0.5rem" position="absolute" right="-0.5rem">
+        <Icon
+          color={
+            type
+              ? ({ income: 'green-500', expenses: 'red-500' } as const)[type]
+              : 'yellow-500'
+          }
+          icon={
+            type
+              ? {
+                  income: 'tabler:login-2',
+                  expenses: 'tabler:logout'
+                }[type]
+              : 'tabler:arrow-bar-both'
+          }
+          size="1rem"
+        />
+      </Box>
+    </Box>
   )
 }
 

@@ -1,14 +1,16 @@
-import { Icon } from '@iconify/react/dist/iconify.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import clsx from 'clsx'
-import { useCallback } from 'react'
 import { toast } from 'react-toastify'
 
 import {
+  Box,
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  Flex,
+  Icon,
+  Text,
+  surface,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -35,19 +37,10 @@ function TemplateItem({
 
   const { open } = useModalStore()
 
-  const handleEditTemplate = useCallback(() => {
-    open(ModifyTemplatesModal, {
-      type: 'update',
-      initialData: template
-    })
-  }, [template])
-
   const deleteMutation = useMutation(
     forgeAPI.templates.remove.input({ id: template.id }).mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'templates']
-        })
+        queryClient.invalidateQueries({ queryKey: ['wallet', 'templates'] })
       },
       onError: () => {
         toast.error('Failed to delete template')
@@ -55,26 +48,13 @@ function TemplateItem({
     })
   )
 
-  const handleDeleteTemplate = useCallback(() => {
-    open(ConfirmationModal, {
-      title: 'Delete Template',
-      description: 'Are you sure you want to delete this template?',
-      confirmationButton: 'delete',
-      onConfirm: async () => {
-        await deleteMutation.mutateAsync(undefined)
-      }
-    })
-  }, [])
-
   return (
     <Card
-      key={template.id}
-      className={clsx(
-        'flex-between gap-3',
-        !choosing
-          ? 'component-bg-lighter bg-bg-50 cursor-default!'
-          : 'component-bg-lighter-with-hover cursor-pointer'
-      )}
+      align="center"
+      bg={choosing ? surface.lightInteractive : surface.light}
+      direction="row"
+      gap="md"
+      justify="between"
       onClick={
         choosing
           ? () => {
@@ -89,45 +69,60 @@ function TemplateItem({
           : undefined
       }
     >
-      <div className="flex w-full min-w-0 items-center gap-3">
+      <Flex align="center" gap="md" minWidth="0" width="100%">
         {(() => {
           const targetCategory = categories.find(
             cat => cat.id === template.category
           )
 
           return (
-            <div
-              className="bg-bg-500/10 rounded-md p-2"
-              style={
-                targetCategory && {
-                  backgroundColor: targetCategory.color + '10'
-                }
-              }
+            <Box
+              p="sm"
+              r="md"
+              style={{
+                backgroundColor: targetCategory
+                  ? targetCategory.color + '10'
+                  : undefined
+              }}
             >
               <Icon
-                className="text-bg-500 size-6 shrink-0"
                 icon={targetCategory?.icon || 'tabler:template'}
+                size="1.5rem"
                 style={{ color: targetCategory?.color }}
               />
-            </div>
+            </Box>
           )
         })()}
-        <p className="w-full min-w-0 truncate text-lg font-medium">
+        <Text truncate size="lg" weight="medium">
           {template.name}
-        </p>
-      </div>
+        </Text>
+      </Flex>
       {!choosing && (
         <ContextMenu>
           <ContextMenuItem
             icon="tabler:pencil"
             label="Edit"
-            onClick={handleEditTemplate}
+            onClick={() =>
+              open(ModifyTemplatesModal, {
+                type: 'update',
+                initialData: template
+              })
+            }
           />
           <ContextMenuItem
             dangerous
             icon="tabler:trash"
             label="Delete"
-            onClick={handleDeleteTemplate}
+            onClick={() => {
+              open(ConfirmationModal, {
+                title: 'Delete Template',
+                description: 'Are you sure you want to delete this template?',
+                confirmationButton: 'delete',
+                onConfirm: async () => {
+                  await deleteMutation.mutateAsync(undefined)
+                }
+              })
+            }}
           />
         </ContextMenu>
       )}

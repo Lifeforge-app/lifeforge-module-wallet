@@ -1,6 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import clsx from 'clsx'
-import { useCallback } from 'react'
 import { toast } from 'react-toastify'
 
 import {
@@ -21,23 +19,14 @@ import TransactionTransferItem from './TransactionTransferItem'
 
 function TransactionItem({
   transaction,
-  viewOnly,
-  className
+  viewOnly
 }: {
   transaction: WalletTransaction
   viewOnly?: boolean
-  className?: string
 }) {
   const queryClient = useQueryClient()
 
   const { open } = useModalStore()
-
-  const handleEditTransaction = useCallback(() => {
-    open(ModifyTransactionsModal, {
-      type: 'update',
-      initialData: transaction
-    })
-  }, [transaction])
 
   const deleteMutation = useMutation(
     forgeAPI.transactions.remove.input({ id: transaction.id }).mutationOptions({
@@ -50,28 +39,14 @@ function TransactionItem({
     })
   )
 
-  const handleDeleteTransaction = useCallback(() => {
-    open(ConfirmationModal, {
-      title: 'Delete Transaction',
-      description: 'Are you sure you want to delete this transaction?',
-      confirmationButton: 'delete',
-      onConfirm: async () => {
-        await deleteMutation.mutateAsync(undefined)
-      }
-    })
-  }, [transaction])
-
-  const handleViewTransaction = useCallback(() => {
-    open(ViewTransactionModal, {
-      id: transaction.id
-    })
-  }, [transaction.id])
-
   return (
     <Card
       isInteractive
-      className={clsx('flex-between flex gap-3', className)}
-      onClick={handleViewTransaction}
+      align="center"
+      direction="row"
+      gap="md"
+      justify="between"
+      onClick={() => open(ViewTransactionModal, { id: transaction.id })}
     >
       {transaction.type === 'transfer' ? (
         <TransactionTransferItem transaction={transaction} />
@@ -93,13 +68,28 @@ function TransactionItem({
           <ContextMenuItem
             icon="tabler:pencil"
             label="Edit"
-            onClick={handleEditTransaction}
+            onClick={() =>
+              open(ModifyTransactionsModal, {
+                type: 'update',
+                initialData: transaction
+              })
+            }
           />
           <ContextMenuItem
             dangerous
             icon="tabler:trash"
             label="Delete"
-            onClick={handleDeleteTransaction}
+            onClick={() => {
+              open(ConfirmationModal, {
+                title: 'Delete Transaction',
+                description:
+                  'Are you sure you want to delete this transaction?',
+                confirmationButton: 'delete',
+                onConfirm: async () => {
+                  await deleteMutation.mutateAsync(undefined)
+                }
+              })
+            }}
           />
         </ContextMenu>
       )}

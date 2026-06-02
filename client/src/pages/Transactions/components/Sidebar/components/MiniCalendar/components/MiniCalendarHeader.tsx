@@ -1,7 +1,7 @@
-import { Icon } from '@iconify/react'
 import dayjs from 'dayjs'
 
 import { usePersonalization } from '@lifeforge/shared'
+import { Button, Flex, Text } from '@lifeforge/ui'
 
 function MiniCalendarHeader({
   currentMonth,
@@ -17,17 +17,19 @@ function MiniCalendarHeader({
   const { language } = usePersonalization()
 
   return (
-    <div className="flex-between mb-4 flex gap-2">
-      <div className="text-lg font-semibold whitespace-nowrap">
+    <Flex align="center" gap="lg" justify="between" mb="md">
+      <Text as="div" size="lg" weight="semibold" whiteSpace="nowrap">
         {dayjs()
           .year(currentYear)
           .month(currentMonth)
           .locale(language)
           .format(language.startsWith('zh') ? 'YYYY[年] MM月' : 'MMMM YYYY')}
-      </div>
-      <div className="-mr-4 flex gap-1">
-        <button
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-50 dark:hover:bg-bg-700/50 rounded-lg p-2 transition-all"
+      </Text>
+      <Flex gap="xs">
+        <Button
+          icon="uil:angle-left"
+          p="xs"
+          variant="plain"
           onClick={() => {
             setCurrentMonth(currentMonth - 1)
 
@@ -36,11 +38,11 @@ function MiniCalendarHeader({
               setCurrentMonth(11)
             }
           }}
-        >
-          <Icon className="size-6" icon="uil:angle-left" />
-        </button>
-        <button
-          className="text-bg-500 hover:bg-bg-100 hover:text-bg-50 dark:hover:bg-bg-700/50 rounded-lg p-2 transition-all"
+        />
+        <Button
+          icon="uil:angle-right"
+          p="xs"
+          variant="plain"
           onClick={() => {
             setCurrentMonth(currentMonth + 1)
 
@@ -49,11 +51,9 @@ function MiniCalendarHeader({
               setCurrentMonth(0)
             }
           }}
-        >
-          <Icon className="size-6" icon="uil:angle-right" />
-        </button>
-      </div>
-    </div>
+        />
+      </Flex>
+    </Flex>
   )
 }
 

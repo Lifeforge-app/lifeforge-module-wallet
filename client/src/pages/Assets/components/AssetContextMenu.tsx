@@ -16,6 +16,7 @@ import ModifyAssetModal from '../modals/ModifyAssetModal'
 
 function AssetContextMenu({ asset }: { asset: WalletAsset }) {
   const queryClient = useQueryClient()
+
   const { open } = useModalStore()
 
   const deleteMutation = useMutation(

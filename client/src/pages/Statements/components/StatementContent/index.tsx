@@ -20,7 +20,6 @@ function StatementContent({
     <PrintArea contentRef={contentRef}>
       <Transition>
         <Flex
-          className="lf-statement-content-flex"
           direction="column"
           display={{ base: showStatement ? 'flex' : 'none', print: 'flex' }}
           height={showStatement ? '100%' : '0'}

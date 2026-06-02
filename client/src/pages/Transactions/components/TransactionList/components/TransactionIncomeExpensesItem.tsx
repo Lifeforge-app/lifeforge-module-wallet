@@ -1,16 +1,21 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useCallback } from 'react'
 
-import { useModalStore } from '@lifeforge/ui'
+import {
+  Box,
+  Flex,
+  Icon,
+  Stack,
+  Text,
+  ViewImageModal,
+  useModalStore
+} from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 import type { WalletTransaction } from '../../..'
-import ViewReceiptModal from '../../../modals/ViewReceiptModal'
 
 function TransactionIncomeExpensesItem({
   transaction
@@ -32,11 +37,9 @@ function TransactionIncomeExpensesItem({
       e.stopPropagation()
       e.preventDefault()
 
-      if (!transaction.receipt) {
-        return
-      }
+      if (!transaction.receipt) return
 
-      open(ViewReceiptModal, {
+      open(ViewImageModal, {
         src: forgeAPI.getMedia({
           collectionId: transaction.collectionId,
           recordId: transaction.id,
@@ -47,99 +50,126 @@ function TransactionIncomeExpensesItem({
     [transaction]
   )
 
-  if (transaction.type === 'transfer') {
-    return null
-  }
+  if (transaction.type === 'transfer') return null
 
   return (
-    <div className="flex-between w-full min-w-0 gap-12">
-      <div className="flex w-full min-w-0 items-center gap-2 [@media(min-width:400px)]:gap-3">
-        <div
-          className="h-12 w-1 shrink-0 rounded-full"
+    <Flex align="center" gap="xl" justify="between" minWidth="0" width="100%">
+      <Flex
+        align="center"
+        flex="1"
+        gap={{ base: 'sm', sm: 'md' }}
+        minWidth="0"
+        width="100%"
+      >
+        <Box
+          height="3rem"
+          r="full"
           style={{
             backgroundColor:
               categories.find(category => category.id === transaction.category)
                 ?.color ?? 'transparent'
           }}
+          width="0.25rem"
         />
         <Icon
-          className="text-bg-500 size-8 shrink-0 print:text-zinc-500"
+          color={{ base: 'muted', print: 'zinc-500' }}
           icon={
             assets.find(asset => asset.id === transaction.asset)?.icon ?? ''
           }
+          size="2rem"
         />
-        <div className="flex w-full min-w-0 flex-col-reverse sm:flex-col">
-          <div className="flex w-full min-w-0 items-center gap-2">
-            <div className="min-w-0 truncate text-lg font-medium print:text-[14px]">
+        <Stack
+          direction={{ base: 'column-reverse', sm: 'column' }}
+          gap="xs"
+          minWidth="0"
+        >
+          <Flex align="center" gap="sm" minWidth="0">
+            <Text truncate size="lg" weight="medium">
               {transaction.particulars}{' '}
               {transaction.location_name !== '' && (
                 <>
-                  <span className="text-bg-500">@</span>{' '}
-                  {transaction.location_name}
+                  <Text color="muted">@</Text> {transaction.location_name}
                 </>
               )}
-            </div>
+            </Text>
             {transaction.receipt && (
               <button onClick={handleViewReceipt}>
                 <Icon
-                  className="text-bg-500 size-5 print:text-zinc-500"
+                  color={{ base: 'muted', print: 'zinc-500' }}
                   icon="tabler:file-text"
+                  size="1.25rem"
                 />
               </button>
             )}
-          </div>
-          <div className="text-bg-500 flex items-center gap-2 text-sm font-medium print:text-[10px] print:text-zinc-500">
-            <span className="block truncate whitespace-nowrap sm:hidden">
-              {dayjs(transaction.date).format('DD MMM')}
-            </span>
-            <span className="hidden sm:block">
-              {dayjs(transaction.date).format('MMM DD, YYYY')}
-            </span>
-            {transaction.ledgers.length > 0 && (
-              <>
-                <Icon className="size-1" icon="tabler:circle-filled" />
-                In
-                <div className="flex items-center gap-1">
-                  <Icon
-                    className="size-4"
-                    icon={
-                      ledgers.find(
-                        ledger => ledger.id === transaction.ledgers[0]
-                      )?.icon ?? ''
-                    }
-                    style={{
-                      color:
+          </Flex>
+          <Text asChild color="muted">
+            <Flex align="center" gap="sm">
+              <Text
+                display={{ base: 'block', sm: 'none' }}
+                size="sm"
+                weight="medium"
+              >
+                {dayjs(transaction.date).format('DD MMM')}
+              </Text>
+              <Text
+                display={{ base: 'none', sm: 'block' }}
+                size="sm"
+                weight="medium"
+              >
+                {dayjs(transaction.date).format('MMM DD, YYYY')}
+              </Text>
+              {transaction.ledgers.length > 0 && (
+                <>
+                  <Icon icon="tabler:circle-filled" size="0.25rem" />
+                  <Text size="sm" weight="medium">
+                    In
+                  </Text>
+                  <Flex align="center" gap="xs">
+                    <Icon
+                      icon={
                         ledgers.find(
                           ledger => ledger.id === transaction.ledgers[0]
-                        )?.color ?? 'white'
-                    }}
-                  />
-                  <span className="hidden md:block">
-                    {ledgers.find(
-                      ledger => ledger.id === transaction.ledgers[0]
-                    )?.name ?? 'Unknown'}
-                  </span>
-                </div>
-                {transaction.ledgers.length > 1 && (
-                  <span className="truncate">
-                    + {transaction.ledgers.length - 1} more
-                  </span>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-      <span
-        className={clsx('text-lg font-medium', {
-          'text-green-500': transaction.type === 'income',
-          'text-red-500': transaction.type === 'expenses'
-        })}
+                        )?.icon ?? ''
+                      }
+                      size="1rem"
+                      style={{
+                        color:
+                          ledgers.find(
+                            ledger => ledger.id === transaction.ledgers[0]
+                          )?.color ?? 'white'
+                      }}
+                    />
+                    <Text
+                      color="muted"
+                      display={{ base: 'none', md: 'block' }}
+                      size="sm"
+                      weight="medium"
+                    >
+                      {ledgers.find(
+                        ledger => ledger.id === transaction.ledgers[0]
+                      )?.name ?? 'Unknown'}
+                    </Text>
+                  </Flex>
+                  {transaction.ledgers.length > 1 && (
+                    <Text truncate size="sm" weight="medium">
+                      + {transaction.ledgers.length - 1} more
+                    </Text>
+                  )}
+                </>
+              )}
+            </Flex>
+          </Text>
+        </Stack>
+      </Flex>
+      <Text
+        color={transaction.type === 'income' ? 'green-500' : 'red-500'}
+        size="lg"
+        weight="medium"
       >
         {transaction.type === 'income' ? '+' : '-'}
         {numberToCurrency(transaction.amount)}
-      </span>
-    </div>
+      </Text>
+    </Flex>
   )
 }
 

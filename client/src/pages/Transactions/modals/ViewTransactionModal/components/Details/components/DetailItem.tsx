@@ -1,8 +1,6 @@
-import { Icon } from '@iconify/react'
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { Card } from '@lifeforge/ui'
+import { Card, Flex, Icon, Text, surface } from '@lifeforge/ui'
 
 function DetailItem({
   icon,
@@ -19,17 +17,19 @@ function DetailItem({
 
   return (
     <Card
-      className={clsx(
-        'component-bg-lighter w-full min-w-0',
-        vertical ? 'space-y-3' : 'sm:flex-between gap-12 space-y-3 sm:space-y-0'
-      )}
+      bg={surface.light}
+      direction={vertical ? 'column' : { base: 'column', sm: 'row' }}
+      gap="xl"
+      justify="between"
+      minWidth="0"
+      width="100%"
     >
-      <div className="text-bg-500 flex min-w-0 shrink-0 items-center gap-3">
-        <Icon className="size-6 shrink-0" icon={icon} />
-        <h3 className="w-full min-w-0 truncate text-lg font-medium">
+      <Flex align="center" color="muted" gap="md" minWidth="0">
+        <Icon icon={icon} size="1.5rem" />
+        <Text truncate as="h3" size="lg" weight="medium">
           {t(`inputs.${label}`)}
-        </h3>
-      </div>
+        </Text>
+      </Flex>
       {children}
     </Card>
   )

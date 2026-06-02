@@ -1,11 +1,20 @@
-import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 
 import { usePromiseLoading } from '@lifeforge/shared'
-import { Button, FileInput, ModalHeader, Switch } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
+import {
+  Box,
+  Button,
+  FileInput,
+  Flex,
+  Icon,
+  ModalHeader,
+  Switch,
+  Text,
+  useModalStore
+} from '@lifeforge/ui'
+import type { FileValue } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
@@ -17,22 +26,33 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
 
   const { t } = useTranslation('apps.wallet')
 
-  const [file, setFile] = useState<File | string | null>(null)
-
-  const [preview, setPreview] = useState<string | null>(null)
+  const [fileValue, setFileValue] = useState<FileValue>({ type: 'empty' })
 
   const [keepReceiptAfterScan, setKeepReceiptAfterScan] = useState(true)
 
   async function handleSubmit() {
-    if (file === null) {
+    if (fileValue.type === 'empty') {
       toast.error('Please select a file')
 
       return
     }
 
     try {
+      const theFile =
+        fileValue.type === 'upload'
+          ? fileValue.file
+          : fileValue.type === 'url'
+            ? fileValue.url
+            : null
+
+      if (!theFile) {
+        toast.error('Please select a file')
+
+        return
+      }
+
       const data = await forgeAPI.transactions.scanReceipt.mutate({
-        file
+        file: theFile
       })
 
       onClose()
@@ -41,7 +61,7 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
         initialData: {
           ...data,
           type: data.type ?? 'expenses',
-          receipt: (keepReceiptAfterScan ? file : '') as never
+          receipt: (keepReceiptAfterScan ? theFile : '') as never
         }
       })
     } catch {
@@ -53,69 +73,58 @@ function ScanReceiptModal({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     if (!open) {
-      setFile(null)
-      setPreview(null)
+      setFileValue({ type: 'empty' })
     }
   }, [open])
 
   return (
-    <div className="min-w-[50vw]">
+    <Box minWidth="50vw">
       <ModalHeader
         hasAI
-        actionButtonProps={{
-          icon: 'tabler:message',
-          onClick: () => {
-            open(ManagePromptsModal, {
-              onClose: () => {}
-            })
-          }
-        }}
+        headerActions={
+          <Button
+            icon="tabler:message"
+            variant="plain"
+            onClick={() => open(ManagePromptsModal, { onClose: () => {} })}
+          />
+        }
         icon="tabler:scan"
         namespace="apps.wallet"
         title="receipts.scan"
         onClose={onClose}
       />
       <FileInput
-        acceptedMimeTypes={{
+        icon="tabler:receipt"
+        label="receipt"
+        mimeTypes={{
           image: ['jpeg', 'png', 'jpg'],
           application: ['pdf']
         }}
-        file={file}
-        icon="tabler:receipt"
-        label="receipt"
         namespace="apps.wallet"
-        preview={preview}
-        setData={({ file, preview }) => {
-          setFile(file)
-          setPreview(preview)
-        }}
+        value={fileValue}
+        onChange={setFileValue}
       />
-      <div className="flex-between mt-4 gap-3">
-        <div className="flex w-full min-w-0 items-center gap-2">
-          <Icon className="size-5 shrink-0" icon="tabler:file-check" />
-          <span className="w-full min-w-0 truncate">
-            {t('receipts.keepAfterScan')}
-          </span>
-        </div>
+      <Flex align="center" gap="md" justify="between" mt="md">
+        <Flex align="center" gap="sm" minWidth="0" width="100%">
+          <Icon icon="tabler:file-check" size="1.25rem" />
+          <Text truncate>{t('receipts.keepAfterScan')}</Text>
+        </Flex>
         <Switch
           value={keepReceiptAfterScan}
-          onChange={() => {
-            setKeepReceiptAfterScan(!keepReceiptAfterScan)
-          }}
+          onChange={() => setKeepReceiptAfterScan(!keepReceiptAfterScan)}
         />
-      </div>
+      </Flex>
       <Button
-        className="mt-6 w-full"
         icon="tabler:arrow-right"
         iconPosition="end"
         loading={loading}
-        onClick={() => {
-          onSubmit().catch(console.error)
-        }}
+        mt="lg"
+        width="100%"
+        onClick={() => onSubmit().catch(console.error)}
       >
         proceed
       </Button>
-    </div>
+    </Box>
   )
 }
 

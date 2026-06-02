@@ -1,11 +1,18 @@
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
+import { Box, Text } from '@lifeforge/ui'
+
 import { useWalletStore } from '@/stores/useWalletStore'
 
-import getDayClassName from './utils/getDayClassName'
-import getTransactionClassName from './utils/getTransactionClassName'
+import {
+  betweenBorderAfter,
+  selectedBorderAfter,
+  selectedBorderAfterEnd,
+  selectedBorderAfterSingle,
+  selectedBorderAfterStart,
+  transactionBar
+} from './MiniCalendarDateItem.css'
 
 interface TransactionCount {
   income: number
@@ -63,122 +70,135 @@ function MiniCalendarDateItem({
   }
 
   const isFirstAndLastDay = useMemo(() => {
-    const startDateParam = startDate
+    const formattedDate = dayjs(
+      `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`,
+      'YYYY-M-D'
+    )
 
-    const endDateParam = endDate
+    if (startDate && dayjs(startDate).isSame(formattedDate, 'day'))
+      return 'first'
+    if (endDate && dayjs(endDate).isSame(formattedDate, 'day')) return 'last'
+
+    return ''
+  }, [startDate, endDate, date, actualIndex])
+
+  const isBetweenFirstAndLastDay = useMemo(() => {
+    if (startDate === null || endDate === null) return false
 
     const formattedDate = dayjs(
       `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`,
       'YYYY-M-D'
     )
 
-    if (startDateParam && dayjs(startDateParam).isSame(formattedDate, 'day')) {
-      return 'first'
-    }
-
-    if (endDateParam && dayjs(endDateParam).isSame(formattedDate, 'day')) {
-      return 'last'
-    }
-
-    return ''
-  }, [startDate, endDate, date, actualIndex])
-
-  const isBetweenFirstAndLastDay = useMemo(() => {
-    if (startDate === null || endDate === null) {
-      return false
-    }
-
     return (
-      dayjs(startDate ?? dayjs().format('YYYY-M-D')).isBefore(
-        dayjs(
-          `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`,
-          'YYYY-M-D'
-        ),
-        'day'
-      ) &&
-      dayjs(endDate ?? dayjs().format('YYYY-M-D')).isAfter(
-        dayjs(
-          `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`,
-          'YYYY-M-D'
-        ),
-        'day'
-      )
+      dayjs(startDate).isBefore(formattedDate, 'day') &&
+      dayjs(endDate).isAfter(formattedDate, 'day')
     )
   }, [startDate, endDate, date, actualIndex])
 
+  const isHidden = firstDay > index || index - firstDay + 1 > lastDate
+
+  const getSelectedClass = () => {
+    if (isHidden) return ''
+
+    if (isFirstAndLastDay === 'first') {
+      const isSingle =
+        startDate && endDate && dayjs(startDate).isSame(dayjs(endDate), 'day')
+
+      return `${selectedBorderAfter} ${isSingle ? selectedBorderAfterSingle : selectedBorderAfterStart}`
+    }
+
+    if (isFirstAndLastDay === 'last') {
+      return `${selectedBorderAfter} ${selectedBorderAfterEnd}`
+    }
+
+    if (isBetweenFirstAndLastDay) {
+      return betweenBorderAfter
+    }
+
+    return ''
+  }
+
+  const getOpacityClass = (count: number) => {
+    if (count >= 7) return '70%'
+    if (count >= 5) return '50%'
+    if (count >= 3) return '30%'
+    if (count >= 1) return '10%'
+
+    return '0%'
+  }
+
+  const handleClick = () => {
+    const target = `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`
+
+    if (nextToSelect === 'start') {
+      setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+      setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+      setNextToSelect('end')
+
+      return
+    }
+
+    if (
+      nextToSelect === 'end' &&
+      startDate !== null &&
+      dayjs(startDate).isAfter(dayjs(target, 'YYYY-M-D'))
+    ) {
+      setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+      setEndDate(dayjs(startDate).format('YYYY-M-D'))
+      setNextToSelect('end')
+
+      return
+    }
+
+    setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+    setNextToSelect('start')
+  }
+
   return (
-    <button
-      key={index}
-      className={clsx(
-        'relative h-10',
-        getDayClassName({
-          index,
-          firstDay,
-          lastDate,
-          startDate,
-          endDate,
-          isFirstAndLastDay,
-          isBetweenFirstAndLastDay
-        })
-      )}
-      onClick={() => {
-        const target = `${date.getFullYear()}-${
-          date.getMonth() + 1
-        }-${actualIndex}`
-
-        if (nextToSelect === 'start') {
-          setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-          setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-          setNextToSelect('end')
-
-          return
-        }
-
-        if (
-          nextToSelect === 'end' &&
-          startDate !== null &&
-          dayjs(startDate).isAfter(dayjs(target, 'YYYY-M-D'))
-        ) {
-          setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-          setEndDate(dayjs(startDate).format('YYYY-M-D'))
-          setNextToSelect('end')
-
-          return
-        }
-
-        setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-        setNextToSelect('start')
-      }}
+    <Box
+      as="button"
+      className={getSelectedClass()}
+      height="2.5rem"
+      position="relative"
+      onClick={handleClick}
     >
-      <span>{actualIndex}</span>
-      {!(firstDay > index || index - firstDay + 1 > lastDate) &&
-        transactionCount.total > 0 && (
-          <div
-            className={clsx(
-              'absolute top-1/2 left-1/2 z-[-1] flex size-10 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-sm',
-              getTransactionClassName(transactionCount.count)
-            )}
-          >
-            {(
-              [
-                ['income', 'bg-green-500'],
-                ['expenses', 'bg-red-500'],
-                ['transfer', 'bg-blue-500']
-              ] as const
-            ).map(([type, color]) => (
-              <span
-                key={type}
-                className={clsx(color, 'w-full')}
-                style={{
-                  height: `${Math.round(
-                    (transactionCount[type] / transactionCount.total) * 100
-                  )}%`
-                }}
-              ></span>
-            ))}
-          </div>
-        )}
-    </button>
+      <Text
+        align="center"
+        color={isHidden ? { base: 'bg-300', dark: 'bg-600' } : undefined}
+        size="sm"
+        style={isHidden ? { pointerEvents: 'none' } : undefined}
+      >
+        {actualIndex}
+      </Text>
+      {!isHidden && transactionCount.total > 0 && (
+        <Box
+          className={transactionBar}
+          style={{
+            opacity: getOpacityClass(transactionCount.count)
+          }}
+        >
+          {(
+            [
+              ['income', 'green-500'],
+              ['expenses', 'red-500'],
+              ['transfer', 'blue-500']
+            ] as const
+          ).map(([type, color]) => (
+            <Box
+              key={type}
+              bg={color}
+              style={{
+                height: `${Math.round(
+                  (transactionCount[type] / transactionCount.total) * 100
+                )}%`
+              }}
+              width="100%"
+            />
+          ))}
+        </Box>
+      )}
+    </Box>
   )
 }
 

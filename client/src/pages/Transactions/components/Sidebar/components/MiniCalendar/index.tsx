@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SidebarTitle } from '@lifeforge/ui'
+import { Box, SidebarTitle } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/pages/Transactions'
 
@@ -41,7 +41,7 @@ function MiniCalendar() {
         }
         label={t('sidebar.calendarHeatmap')}
       />
-      <div className="w-full px-8">
+      <Box px="xl" width="100%">
         <MiniCalendarHeader
           currentMonth={currentMonth}
           currentYear={currentYear}
@@ -53,7 +53,7 @@ function MiniCalendar() {
           currentYear={currentYear}
           viewsFilter={viewsFilter}
         />
-      </div>
+      </Box>
     </>
   )
 }

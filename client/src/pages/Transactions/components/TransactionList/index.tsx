@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { EmptyStateScreen, Pagination, Scrollbar } from '@lifeforge/ui'
+import { EmptyStateScreen, Pagination, Scrollbar, Stack } from '@lifeforge/ui'
 
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -38,11 +38,11 @@ function TransactionList() {
         onPageChange={setPage}
       />
       <Scrollbar>
-        <div className="w-full space-y-3">
+        <Stack>
           {transactions.slice((page - 1) * 25, page * 25).map(transaction => (
             <TransactionItem key={transaction.id} transaction={transaction} />
           ))}
-        </div>
+        </Stack>
       </Scrollbar>
     </>
   )

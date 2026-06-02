@@ -1,0 +1,38 @@
+import { Button, ViewImageModal, useModalStore } from '@lifeforge/ui'
+
+import forgeAPI from '@/utils/forgeAPI'
+
+import { useTransactionDetails } from '../TransactionDetailsContext'
+import DetailItem from './DetailItem'
+
+function ReceiptSection() {
+  const transaction = useTransactionDetails()
+
+  const { open } = useModalStore()
+
+  if (!transaction.receipt) return null
+
+  return (
+    <DetailItem vertical icon="tabler:receipt" label="receipt">
+      <Button
+        icon="tabler:eye"
+        namespace="apps.wallet"
+        variant="secondary"
+        width="100%"
+        onClick={() => {
+          open(ViewImageModal, {
+            src: forgeAPI.getMedia({
+              collectionId: transaction.collectionId,
+              recordId: transaction.id,
+              fieldId: transaction.receipt || ''
+            })
+          })
+        }}
+      >
+        View Receipt
+      </Button>
+    </DetailItem>
+  )
+}
+
+export default ReceiptSection

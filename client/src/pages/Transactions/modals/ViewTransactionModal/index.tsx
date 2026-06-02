@@ -1,4 +1,4 @@
-import { ModalHeader, WithQueryData } from '@lifeforge/ui'
+import { ModalHeader, Stack, WithQueryData } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
@@ -15,7 +15,7 @@ function ViewTransactionModal({
   onClose: () => void
 }) {
   return (
-    <div className="min-w-[30vw] space-y-3">
+    <Stack gap="xl" minWidth="30vw">
       <ModalHeader
         icon="tabler:eye"
         namespace="apps.wallet"
@@ -34,7 +34,7 @@ function ViewTransactionModal({
           </>
         )}
       </WithQueryData>
-    </div>
+    </Stack>
   )
 }
 

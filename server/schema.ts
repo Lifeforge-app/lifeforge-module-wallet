@@ -1292,7 +1292,7 @@ export const schemas = {
       viewQuery:
         "WITH all_transactions AS (\n  SELECT\n    DATE(wallet__transactions.date) AS date_key,\n    wallet__transactions_income_expenses.type AS transaction_type,\n    wallet__transactions.amount AS amount\n  FROM wallet__transactions_income_expenses\n  INNER JOIN wallet__transactions \n    ON wallet__transactions_income_expenses.base_transaction = wallet__transactions.id\n  UNION ALL\n  SELECT\n    DATE(wallet__transactions.date) AS date_key,\n    'transfer' AS transaction_type,\n    wallet__transactions.amount AS amount\n  FROM wallet__transactions_transfer\n  INNER JOIN wallet__transactions \n    ON wallet__transactions_transfer.base_transaction = wallet__transactions.id\n)\nSELECT\n  (ROW_NUMBER() OVER()) as id,\n  CAST(strftime('%Y', date_key) AS INTEGER) AS year,\n  CAST(strftime('%m', date_key) AS INTEGER) AS month,\n  CAST(strftime('%d', date_key) AS INTEGER) AS date,\n  SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END) AS income,\n  SUM(CASE WHEN transaction_type = 'expenses' THEN amount ELSE 0 END) AS expenses,\n  SUM(CASE WHEN transaction_type = 'transfer' THEN amount ELSE 0 END) AS transfer,\n  SUM(CASE WHEN transaction_type = 'income' THEN 1 ELSE 0 END) AS income_count,\n  SUM(CASE WHEN transaction_type = 'expenses' THEN 1 ELSE 0 END) AS expenses_count,\n  SUM(CASE WHEN transaction_type = 'transfer' THEN 1 ELSE 0 END) AS transfer_count\nFROM all_transactions\nGROUP BY date_key"
     }
-  },
+  }
 }
 
 export default cleanSchemas(schemas)

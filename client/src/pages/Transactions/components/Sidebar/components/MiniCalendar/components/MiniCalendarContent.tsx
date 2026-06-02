@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 
 import { usePersonalization } from '@lifeforge/shared'
-import { WithQuery } from '@lifeforge/ui'
+import { Grid, Text, WithQuery } from '@lifeforge/ui'
 
 import forgeAPI from '@/utils/forgeAPI'
 
@@ -40,16 +40,16 @@ function MiniCalendarContent({
   return (
     <WithQuery query={transactionCountQuery}>
       {transactionCountMap => (
-        <div className="grid grid-cols-7 gap-y-2">
+        <Grid gapY="sm" templateCols={7}>
           {{
             en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             'zh-CN': ['一', '二', '三', '四', '五', '六', '日'],
             'zh-TW': ['一', '二', '三', '四', '五', '六', '日'],
             ms: ['Is', 'Se', 'Ra', 'Kh', 'Ju', 'Sa', 'Ah']
           }[language ?? 'en']?.map(day => (
-            <div key={day} className="flex-center text-bg-500 text-sm">
+            <Text key={day} align="center" color="muted" size="sm">
               {day}
-            </div>
+            </Text>
           ))}
           {Array(
             Math.ceil(
@@ -73,7 +73,7 @@ function MiniCalendarContent({
                 transactionCountMap={transactionCountMap}
               />
             ))}
-        </div>
+        </Grid>
       )}
     </WithQuery>
   )

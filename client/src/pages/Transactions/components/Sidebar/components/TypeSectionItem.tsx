@@ -2,7 +2,6 @@ import _ from 'lodash'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-
 import { usePersonalization } from '@lifeforge/shared'
 import { SidebarItem, TAILWIND_PALETTE } from '@lifeforge/ui'
 

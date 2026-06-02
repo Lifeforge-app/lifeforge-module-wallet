@@ -1,32 +1,27 @@
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
 
-import { useLocation, useNavigate, useSearchParams } from '@lifeforge/shared'
+import { useNavigate, useSearchParams } from '@lifeforge/shared'
 import type { InferOutput } from '@lifeforge/shared'
 import {
-  Button,
-  ContextMenu,
-  ContextMenuItem,
+  ContentWrapperWithSidebar,
   EmptyStateScreen,
-  FAB,
+  LayoutWithSidebar,
   ModuleHeader,
-  WithQuery,
-  useModalStore
+  Stack,
+  WithQuery
 } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'
 
 import '../../index.css'
+import TransactionCreationMenu from './TransactionCreationMenu'
 import HeaderMenu from './components/HeaderMenu'
 import InnerHeader from './components/InnerHeader'
 import SearchBar from './components/SearchBar'
 import Sidebar from './components/Sidebar'
 import TransactionList from './components/TransactionList'
-import ManageTemplatesModal from './modals/ManageTemplatesModal'
-import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
-import ScanReceiptModal from './modals/ScanReceiptModal'
 
 export type WalletTransaction = InferOutput<
   typeof forgeAPI.transactions.list
@@ -37,10 +32,6 @@ export type WalletCategory = InferOutput<
 >[number]
 
 function Transactions() {
-  const { open } = useModalStore()
-
-  const { t } = useTranslation('apps.wallet')
-
   // TODO: Migrate to nuqs
   const {
     setSelectedType,
@@ -55,30 +46,6 @@ function Transactions() {
   const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
 
   const [searchParams] = useSearchParams()
-
-  const { hash } = useLocation()
-
-  const handleCreateTransaction = useCallback(() => {
-    open(ModifyTransactionsModal, {
-      type: 'create'
-    })
-  }, [])
-
-  const handleUploadReceipt = useCallback(() => {
-    open(ScanReceiptModal, {})
-  }, [])
-
-  useEffect(() => {
-    if (hash === '#new') {
-      open(ModifyTransactionsModal, {
-        type: 'create'
-      })
-    }
-
-    if (hash === '#scan') {
-      open(ScanReceiptModal, {})
-    }
-  }, [hash])
 
   useEffect(() => {
     const query = searchParams.get('query')
@@ -119,50 +86,11 @@ function Transactions() {
   return (
     <>
       <ModuleHeader
-        actionButton={
-          <ContextMenu
-            buttonComponent={
-              <Button
-                className="hidden md:flex"
-                icon="tabler:plus"
-                tProps={{
-                  item: t('apps.wallet:items.transaction')
-                }}
-                onClick={() => {}}
-              >
-                new
-              </Button>
-            }
-            classNames={{ button: 'hidden:md:block' }}
-          >
-            <ContextMenuItem
-              icon="tabler:plus"
-              label="Add Manually"
-              namespace="apps.wallet"
-              onClick={handleCreateTransaction}
-            />
-            <ContextMenuItem
-              icon="tabler:template"
-              label="From Template"
-              namespace="apps.wallet"
-              onClick={() => {
-                open(ManageTemplatesModal, {
-                  choosing: true
-                })
-              }}
-            />
-            <ContextMenuItem
-              icon="tabler:scan"
-              label="Scan Receipt"
-              namespace="apps.wallet"
-              onClick={handleUploadReceipt}
-            />
-          </ContextMenu>
-        }
+        actionButton={<TransactionCreationMenu variant="desktop" />}
         contextMenuProps={{
           children: <HeaderMenu />,
-          classNames: {
-            menu: 'min-w-60'
+          styles: {
+            menu: { minWidth: '15rem' }
           }
         }}
         icon="tabler:arrows-exchange"
@@ -170,12 +98,12 @@ function Transactions() {
         title="Transactions"
         tKey="subsectionsTitleAndDesc"
       />
-      <div className="flex min-h-0 w-full min-w-0 flex-1">
+      <LayoutWithSidebar>
         <Sidebar />
-        <div className="flex h-full min-w-0 flex-1 flex-col xl:ml-8">
+        <ContentWrapperWithSidebar>
           <InnerHeader />
           <SearchBar />
-          <div className="mt-6 mb-8 flex size-full flex-col gap-3">
+          <Stack gap="md" height="100%" my="lg" width="100%">
             <WithQuery query={transactionsQuery}>
               {transactions =>
                 transactions.length > 0 ? (
@@ -191,40 +119,10 @@ function Transactions() {
                 )
               }
             </WithQuery>
-            <ContextMenu
-              buttonComponent={
-                <FAB className="static!" visibilityBreakpoint="md" />
-              }
-              classNames={{
-                wrapper: 'w-min! fixed right-6 bottom-6'
-              }}
-            >
-              <ContextMenuItem
-                icon="tabler:plus"
-                label="Add Manually"
-                namespace="apps.wallet"
-                onClick={handleCreateTransaction}
-              />
-              <ContextMenuItem
-                icon="tabler:template"
-                label="From Template"
-                namespace="apps.wallet"
-                onClick={() => {
-                  open(ManageTemplatesModal, {
-                    choosing: true
-                  })
-                }}
-              />
-              <ContextMenuItem
-                icon="tabler:scan"
-                label="Scan Receipt"
-                namespace="apps.wallet"
-                onClick={handleUploadReceipt}
-              />
-            </ContextMenu>
-          </div>
-        </div>
-      </div>
+            <TransactionCreationMenu variant="mobile" />
+          </Stack>
+        </ContentWrapperWithSidebar>
+      </LayoutWithSidebar>
     </>
   )
 }
