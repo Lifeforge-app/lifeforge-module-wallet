@@ -10,10 +10,8 @@ export default {
       icon: 'tabler:arrows-exchange',
       path: 'transactions'
     },
-    { label: 'Budgets', icon: 'tabler:chart-pie', path: 'budgets' },
     { label: 'Assets', icon: 'tabler:wallet', path: 'assets' },
     { label: 'Ledgers', icon: 'tabler:book', path: 'ledgers' },
-    { label: 'Saving Goals', icon: 'tabler:target', path: 'saving-goals' },
     {
       label: 'Spending Heatmap',
       icon: 'tabler:map-pin',
@@ -28,8 +26,6 @@ export default {
   routes: {
     '/': lazy(() => import('@/pages/Dashboard')),
     '/transactions': lazy(() => import('@/pages/Transactions')),
-    '/budgets': lazy(() => import('@/pages/Budgets')),
-    '/saving-goals': lazy(() => import('@/pages/SavingGoals')),
     '/assets': lazy(() => import('@/pages/Assets')),
     '/ledgers': lazy(() => import('@/pages/Ledgers')),
     '/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
