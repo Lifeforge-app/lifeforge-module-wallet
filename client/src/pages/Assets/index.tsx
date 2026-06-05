@@ -2,14 +2,19 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useLocation } from '@lifeforge/shared'
+import { useLocation, useQueryState } from '@lifeforge/shared'
 import {
   Button,
   ContextMenuItem,
   EmptyStateScreen,
   FAB,
-  Grid,
+  Flex,
+  Listbox,
+  ListboxOption,
   ModuleHeader,
+  SearchInput,
+  Stack,
+  Text,
   Widget,
   WithQuery,
   useModalStore
@@ -22,6 +27,10 @@ import '../../index.css'
 import TotalBalance from './components/AssetAmount'
 import AssetItem from './components/AssetItem'
 import ModifyAssetModal from './modals/ModifyAssetModal'
+
+const RANGE_OPTIONS = ['week', 'month', 'quarter', 'year', 'all'] as const
+
+type RangeMode = (typeof RANGE_OPTIONS)[number]
 
 function Assets() {
   const queryClient = useQueryClient()
@@ -42,6 +51,24 @@ function Assets() {
       0
     )
   }, [assetsQuery.data])
+
+  const [searchQuery, setSearchQuery] = useQueryState('q', {
+    defaultValue: ''
+  })
+
+  const [rangeMode, setRangeMode] = useQueryState('range', {
+    defaultValue: 'month' as RangeMode
+  })
+
+  const filteredAssets = useMemo(() => {
+    if (!searchQuery) return assetsQuery.data ?? []
+
+    const q = searchQuery.toLowerCase()
+
+    return (assetsQuery.data ?? []).filter(asset =>
+      asset.name.toLowerCase().includes(q)
+    )
+  }, [assetsQuery.data, searchQuery])
 
   const handleCreateCategory = useCallback(() => {
     open(ModifyAssetModal, {
@@ -101,8 +128,32 @@ function Assets() {
         title="Assets"
         tKey="subsectionsTitleAndDesc"
       />
+      <Flex align="center" gap="md" mb="lg">
+        <SearchInput
+          namespace="apps.wallet"
+          searchTarget="asset"
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
+        <Listbox
+          minWidth="14em"
+          renderContent={() => (
+            <Text whiteSpace="nowrap">{t(`rangeModes.${rangeMode}`)}</Text>
+          )}
+          value={rangeMode}
+          onChange={setRangeMode}
+        >
+          {RANGE_OPTIONS.map(option => (
+            <ListboxOption
+              key={option}
+              label={t(`rangeModes.${option}`)}
+              value={option}
+            />
+          ))}
+        </Listbox>
+      </Flex>
       <WithQuery query={assetsQuery}>
-        {assets => (
+        {() => (
           <>
             <Widget
               actionComponent={
@@ -111,6 +162,7 @@ function Assets() {
                   display={{ base: 'none', sm: 'flex' }}
                 />
               }
+              height="min-content"
               icon="tabler:currency-dollar"
               mb="lg"
               namespace="apps.wallet"
@@ -118,12 +170,16 @@ function Assets() {
             >
               <TotalBalance amount={totalBalance} display={{ sm: 'none' }} />
             </Widget>
-            {assets.length > 0 ? (
-              <Grid gap="md" mb="2xl" templateCols={{ base: 1, md: 2, lg: 3 }}>
-                {assets.map(asset => (
-                  <AssetItem key={asset.id} asset={asset} />
+            {filteredAssets.length > 0 ? (
+              <Stack mb="2xl">
+                {filteredAssets.map(asset => (
+                  <AssetItem
+                    key={asset.id}
+                    asset={asset}
+                    rangeMode={rangeMode as RangeMode}
+                  />
                 ))}
-              </Grid>
+              </Stack>
             ) : (
               <EmptyStateScreen
                 icon="tabler:wallet-off"

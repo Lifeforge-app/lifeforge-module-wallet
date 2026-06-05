@@ -9,14 +9,20 @@ import type { WalletAsset } from '@/hooks/useWalletData'
 import forgeAPI from '@/utils/forgeAPI'
 import getChartScale from '@/utils/getChartScale'
 
-function AssetBalanceChart({ asset }: { asset: WalletAsset }) {
+function AssetBalanceChart({
+  asset,
+  rangeMode
+}: {
+  asset: WalletAsset
+  rangeMode: 'week' | 'month' | 'quarter' | 'year' | 'all'
+}) {
   const { derivedThemeColor } = usePersonalization()
 
   const assetBalanceQuery = useQuery(
     forgeAPI.assets.getAssetAccumulatedBalance
       .input({
         id: asset.id,
-        rangeMode: 'month'
+        rangeMode
       })
       .queryOptions()
   )
@@ -24,7 +30,7 @@ function AssetBalanceChart({ asset }: { asset: WalletAsset }) {
   const chartData = useMemo(() => {
     if (!assetBalanceQuery.data) return []
 
-    const sortedEntries = Object.entries(assetBalanceQuery.data).sort(
+    const sortedEntries = Object.entries(assetBalanceQuery.data.balances).sort(
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     )
 
@@ -60,15 +66,19 @@ function AssetBalanceChart({ asset }: { asset: WalletAsset }) {
   }, [chartScale, chartData])
 
   return (
-    <Box height="4rem">
-      <WithQuery query={assetBalanceQuery} showRetryButton={false}>
+    <Box height="3rem" width={{ base: '50%', md: '10rem' }}>
+      <WithQuery
+        loaderSize="1em"
+        query={assetBalanceQuery}
+        showRetryButton={false}
+      >
         {() =>
           chartData.length === 0 ? (
             <Flex centered color="muted" height="100%" width="100%">
               <Text color="muted">No data available</Text>
             </Flex>
           ) : (
-            <ResponsiveContainer height="100%" minHeight={64} width="100%">
+            <ResponsiveContainer height="100%" width="100%">
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient

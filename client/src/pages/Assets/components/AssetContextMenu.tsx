@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
 import {
+  Box,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
@@ -42,27 +43,35 @@ function AssetContextMenu({ asset }: { asset: WalletAsset }) {
     })
 
   return (
-    <ContextMenu>
-      <ContextMenuItem
-        icon="tabler:chart-line"
-        label="View Balance Chart"
-        namespace="apps.wallet"
-        onClick={() => open(BalanceChartModal, { initialData: asset })}
-      />
-      <ContextMenuItem
-        icon="tabler:pencil"
-        label="Edit"
-        onClick={() =>
-          open(ModifyAssetModal, { type: 'update', initialData: asset })
-        }
-      />
-      <ContextMenuItem
-        dangerous
-        icon="tabler:trash"
-        label="Delete"
-        onClick={handleDelete}
-      />
-    </ContextMenu>
+    <Box position={{ base: 'absolute', md: 'static' }} right="1em" top="1em">
+      <ContextMenu
+        styles={{
+          menu: {
+            minWidth: '16em'
+          }
+        }}
+      >
+        <ContextMenuItem
+          icon="tabler:chart-line"
+          label="View Balance Chart"
+          namespace="apps.wallet"
+          onClick={() => open(BalanceChartModal, { initialData: asset })}
+        />
+        <ContextMenuItem
+          icon="tabler:pencil"
+          label="Edit"
+          onClick={() =>
+            open(ModifyAssetModal, { type: 'update', initialData: asset })
+          }
+        />
+        <ContextMenuItem
+          dangerous
+          icon="tabler:trash"
+          label="Delete"
+          onClick={handleDelete}
+        />
+      </ContextMenu>
+    </Box>
   )
 }
 

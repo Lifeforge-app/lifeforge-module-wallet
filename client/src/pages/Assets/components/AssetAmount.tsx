@@ -16,8 +16,8 @@ function AssetAmount({
 
   return (
     <Flex asChild align={isAmountHidden ? 'center' : 'end'} display={display}>
-      <Text size={{ base: '3xl', sm: '5xl' }} weight="medium">
-        <Text color="muted" mr="sm" size={{ base: 'xl', sm: '3xl' }}>
+      <Text size="2xl" weight="medium">
+        <Text color="muted" mr="sm" size="xl">
           RM
         </Text>
         {isAmountHidden ? (
@@ -25,11 +25,7 @@ function AssetAmount({
             {Array(4)
               .fill(0)
               .map((_, i) => (
-                <Icon
-                  key={i}
-                  icon="uil:asterisk"
-                  size={{ base: '1.5rem', sm: '2rem' }}
-                />
+                <Icon key={i} icon="uil:asterisk" size="1em" />
               ))}
           </Flex>
         ) : (

@@ -59,7 +59,11 @@ export const getAssetAccumulatedBalance = forge
       }
     },
     output: {
-      OK: z.record(z.string(), z.number()),
+      OK: z.object({
+        balances: z.record(z.string(), z.number()),
+        startBalance: z.number(),
+        endBalance: z.number()
+      }),
       NOT_FOUND: true
     }
   })
@@ -138,7 +142,11 @@ export const getAssetAccumulatedBalance = forge
       ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
       if (allTransactions.length === 0) {
-        return response.ok({})
+        return response.ok({
+          balances: {},
+          startBalance: starting_balance,
+          endBalance: starting_balance
+        })
       }
 
       let currentBalance = starting_balance
@@ -170,8 +178,7 @@ export const getAssetAccumulatedBalance = forge
         }
       }
 
-      return response.ok(
-        Object.fromEntries(
+      const filtered = Object.fromEntries(
           Object.entries(accumulatedBalance).filter(([date]) => {
             const dateMoment = moment(date)
 
@@ -186,7 +193,15 @@ export const getAssetAccumulatedBalance = forge
             return isAfterStartDate && isBeforeEndDate
           })
         )
-      )
+
+      const balances = Object.values(filtered)
+
+      return response.ok({
+        balances: filtered,
+        startBalance: balances.length > 0 ? balances[0] : starting_balance,
+        endBalance:
+          balances.length > 0 ? balances[balances.length - 1] : starting_balance
+      })
     }
   )
 

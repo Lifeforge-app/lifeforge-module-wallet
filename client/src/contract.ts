@@ -1747,9 +1747,26 @@ export const contract = {
         "OK": {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
-          "additionalProperties": {
-            "type": "number"
-          }
+          "properties": {
+            "balances": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "startBalance": {
+              "type": "number"
+            },
+            "endBalance": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "balances",
+            "startBalance",
+            "endBalance"
+          ],
+          "additionalProperties": false
         },
         "NOT_FOUND": true
       }
