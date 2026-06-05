@@ -60,12 +60,12 @@ export default defineConfig(({ command }) => {
         },
         shared: {
           react: {
-            generate: false
+          generate: false
           },
           'react-dom': {
             generate: false
           },
-          '@lifeforge/@lifeforge/shared': {
+          '@lifeforge/shared': {
             generate: false
           },
           '@lifeforge/ui': {

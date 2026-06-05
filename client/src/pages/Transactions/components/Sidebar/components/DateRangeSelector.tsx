@@ -10,6 +10,11 @@ function DateRangeSelector() {
 
   const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
 
+  const handleClear = () => {
+    setStartDate(undefined)
+    setEndDate(undefined)
+  }
+
   const handleDateChange = (
     date: Date | null,
     type: 'start_date' | 'end_date'
@@ -44,7 +49,17 @@ function DateRangeSelector() {
 
   return (
     <>
-      <SidebarTitle label={t('sidebar.dateRange')} />
+      <SidebarTitle
+        actionButton={
+          startDate !== undefined || endDate !== undefined
+            ? {
+                icon: 'tabler:trash',
+                onClick: handleClear
+              }
+            : undefined
+        }
+        label={t('sidebar.dateRange')}
+      />
       <Stack gap="md" px="md">
         <DateInput
           icon="tabler:calendar-up"

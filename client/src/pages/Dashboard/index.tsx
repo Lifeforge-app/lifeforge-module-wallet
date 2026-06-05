@@ -109,8 +109,8 @@ function WalletDashboard() {
         <AssetsBalanceCard />
         <StatisticChardCard />
         <TransactionsCountCard />
-        <CategoriesBreakdownCard />
         <TransactionsCard />
+        <CategoriesBreakdownCard />
       </Grid>
       <ContextMenu
         buttonComponent={<FAB visibilityBreakpoint="md" />}

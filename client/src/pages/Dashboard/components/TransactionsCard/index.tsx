@@ -24,7 +24,7 @@ function TransactionsCard() {
         </Button>
       }
       gridColumnSpan={{ xl: 2 }}
-      gridRowSpan={5}
+      gridRowSpan={6}
       icon="tabler:list"
       minHeight="0"
       namespace="apps.wallet"
