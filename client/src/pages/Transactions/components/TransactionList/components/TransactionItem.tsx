@@ -9,7 +9,7 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import type { WalletTransaction } from '../../..'
 import ModifyTemplatesModal from '../../../modals/ModifyTemplatesModal'

@@ -12,9 +12,9 @@ export function TransactionDetailsProvider({
   children: React.ReactNode
 }) {
   return (
-    <TransactionDetailsContext.Provider value={transaction}>
+    <TransactionDetailsContext value={transaction}>
       {children}
-    </TransactionDetailsContext.Provider>
+    </TransactionDetailsContext>
   )
 }
 

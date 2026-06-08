@@ -11,12 +11,12 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import { type CreateAnotherValue } from '@/pages/Transactions/components/CreateAnotherFIeld'
-import CreateAnotherField, {
-  createAnotherSchema
-} from '@/pages/Transactions/components/CreateAnotherFIeld'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
+import CreateAnotherField, {
+  type CreateAnotherValue,
+  createAnotherSchema
+} from '../components/CreateAnotherFIeld'
 import ModifyTransactionsModal from './ModifyTransactionsModal'
 
 const schema = z.object({

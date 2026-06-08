@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 function AssetsTable({ month, year }: { month: number; year: number }) {

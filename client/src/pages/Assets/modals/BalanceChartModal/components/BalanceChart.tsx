@@ -22,7 +22,7 @@ import {
 } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
 

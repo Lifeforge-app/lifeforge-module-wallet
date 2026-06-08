@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Flex, Icon, Text, Widget, WithQuery } from '@lifeforge/ui'
 
+import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
-import forgeAPI from '@/utils/forgeAPI'
 
 import numberToCurrency from '../../../utils/numberToCurrency'
 

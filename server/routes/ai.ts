@@ -228,7 +228,9 @@ async function generateParticulars(
   baseParticulars?: string
 ) {
   const todayStr = dayjs().format('YYYY-MM-DD')
-  let particularsPrompt = particularPrompt?.[extractedData.type as 'income' | 'expenses']
+  let particularsPrompt = particularPrompt?.[
+    extractedData.type as 'income' | 'expenses'
+  ]
     ? `${particularPrompt[extractedData.type as 'income' | 'expenses']}\n\nCurrent Reference Date: ${todayStr}\n\nIMPORTANT: If you are given a base reference particular containing placeholder slots (indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc.), you MUST fill those slots with the actual values from the user's transaction description, producing a concrete, complete particulars string.`
     : `You are a copywriter generating clean, concise transaction summaries (particulars) for personal finance ledgers.
 Analyze the transaction text and describe only the purchase item or nature of the transaction (5 to 10 words).
@@ -492,10 +494,7 @@ export const fromNaturalLanguage = forge
         finalResult.amount = matchedTemplate.amount
       }
 
-      if (
-        matchedTemplate.ledgers &&
-        matchedTemplate.ledgers.length > 0
-      ) {
+      if (matchedTemplate.ledgers && matchedTemplate.ledgers.length > 0) {
         finalResult.ledgers = matchedTemplate.ledgers
       }
     }

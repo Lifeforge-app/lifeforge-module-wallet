@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 function TransactionsSummary({ month, year }: { month: number; year: number }) {
   const typesCountQuery = useQuery(

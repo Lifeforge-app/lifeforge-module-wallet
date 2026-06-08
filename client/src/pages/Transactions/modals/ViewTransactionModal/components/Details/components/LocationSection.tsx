@@ -3,7 +3,7 @@ import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 
 import { EmptyStateScreen, WithQuery } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import { useTransactionDetails } from '../TransactionDetailsContext'
 import DetailItem from './DetailItem'

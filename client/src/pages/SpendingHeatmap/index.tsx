@@ -12,7 +12,7 @@ import {
   WithQuery
 } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 type SpendingLocationData = InferOutput<

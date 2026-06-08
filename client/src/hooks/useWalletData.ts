@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import type { InferOutput } from '@lifeforge/shared'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import { useFilteredTransactions } from './useFilteredTransactions'
 

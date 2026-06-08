@@ -4,7 +4,7 @@ import { Link } from '@lifeforge/shared'
 import type { InferOutput } from '@lifeforge/shared'
 import { Button, Icon, Widget } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import type { WalletCategory } from '../../../Transactions'
 import BreakdownContent from './components/BreakdownContent'

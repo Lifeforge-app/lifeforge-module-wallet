@@ -10,7 +10,7 @@ import {
 } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import BalanceChartModal from '../modals/BalanceChartModal'
 import ModifyAssetModal from '../modals/ModifyAssetModal'

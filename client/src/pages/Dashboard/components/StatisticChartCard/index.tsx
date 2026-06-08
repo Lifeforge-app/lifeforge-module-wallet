@@ -24,7 +24,7 @@ import {
   surface
 } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
 

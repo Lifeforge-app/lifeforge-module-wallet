@@ -10,7 +10,7 @@ import {
 
 import { type WalletCategory, useWalletData } from '@/hooks/useWalletData'
 import useYearMonthState from '@/hooks/useYearMonthState'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import { CategoriesBreakdownContext } from '..'
 import BreakdownChartLegend from './BreakdownChartLegend'

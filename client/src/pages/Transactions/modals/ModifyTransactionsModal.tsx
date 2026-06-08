@@ -23,18 +23,14 @@ import {
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
+import { forgeAPI } from '@/manifest'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
 import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
-import {
-  CREATE_ANOTHER_OPTIONS,
-  type CreateAnotherValue,
-  createAnotherSchema
-} from '@/pages/Transactions/components/CreateAnotherFIeld'
-import CreateAnotherField from '@/pages/Transactions/components/CreateAnotherFIeld'
-import forgeAPI from '@/utils/forgeAPI'
+
 
 import type { WalletTransaction } from '..'
 import ModifyCategoryModal from './ModifyCategoryModal'
+import CreateAnotherField, { CREATE_ANOTHER_OPTIONS, createAnotherSchema, type CreateAnotherValue } from '../components/CreateAnotherFIeld'
 
 const schema = z
   .object({

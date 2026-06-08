@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import { usePersonalization } from '@lifeforge/shared'
 import { Grid, Text, WithQuery } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import MiniCalendarDateItem from './MiniCalendarDateItem'
 

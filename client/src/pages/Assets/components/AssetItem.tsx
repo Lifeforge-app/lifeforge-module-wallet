@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { Box, Card, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
+import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
-import forgeAPI from '@/utils/forgeAPI'
 
 import AssetAmount from './AssetAmount'
 import AssetBalanceChart from './AssetBalanceChart'

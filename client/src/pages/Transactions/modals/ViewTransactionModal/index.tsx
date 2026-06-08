@@ -1,6 +1,6 @@
 import { ModalHeader, Stack, WithQueryData } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import Details from './components/Details'
 import Header from './components/Header'

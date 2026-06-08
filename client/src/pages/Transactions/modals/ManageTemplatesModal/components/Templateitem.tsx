@@ -15,7 +15,7 @@ import {
 } from '@lifeforge/ui'
 
 import type { WalletTemplate } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import ModifyTemplatesModal from '../../ModifyTemplatesModal'
 import ModifyTransactionsModal from '../../ModifyTransactionsModal'

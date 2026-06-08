@@ -1,4 +1,4 @@
-import forgeAPI from './forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 export default function getFormFileFieldInitialData(
   initialData: any,

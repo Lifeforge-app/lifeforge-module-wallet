@@ -11,7 +11,7 @@ import {
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 import type { WalletTransaction } from '../../..'

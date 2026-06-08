@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Flex, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 function OverviewSummary({ month, year }: { month: number; year: number }) {

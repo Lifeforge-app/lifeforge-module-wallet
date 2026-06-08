@@ -179,20 +179,20 @@ export const getAssetAccumulatedBalance = forge
       }
 
       const filtered = Object.fromEntries(
-          Object.entries(accumulatedBalance).filter(([date]) => {
-            const dateMoment = moment(date)
+        Object.entries(accumulatedBalance).filter(([date]) => {
+          const dateMoment = moment(date)
 
-            const isAfterStartDate = dateRange.startDate
-              ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
-              : true
+          const isAfterStartDate = dateRange.startDate
+            ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
+            : true
 
-            const isBeforeEndDate = dateRange.endDate
-              ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
-              : true
+          const isBeforeEndDate = dateRange.endDate
+            ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
+            : true
 
-            return isAfterStartDate && isBeforeEndDate
-          })
-        )
+          return isAfterStartDate && isBeforeEndDate
+        })
+      )
 
       const balances = Object.values(filtered)
 

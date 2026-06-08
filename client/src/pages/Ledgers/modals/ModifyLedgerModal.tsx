@@ -13,7 +13,7 @@ import {
 } from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 const schema = z.object({
   name: z.string().min(1, 'Ledger name is required'),

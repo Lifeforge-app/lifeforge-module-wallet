@@ -12,8 +12,8 @@ import {
   WithQuery
 } from '@lifeforge/ui'
 
+import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
-import forgeAPI from '@/utils/forgeAPI'
 
 import HeaderMenu from './components/HeaderMenu'
 import InnerHeader from './components/InnerHeader'

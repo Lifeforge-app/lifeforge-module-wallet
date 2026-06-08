@@ -1,6 +1,6 @@
 import { Button, ViewImageModal, useModalStore } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import { useTransactionDetails } from '../TransactionDetailsContext'
 import DetailItem from './DetailItem'

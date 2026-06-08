@@ -17,7 +17,7 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import ModifyTemplatesModal from '../ModifyTemplatesModal'
 import TemplateItem from './components/Templateitem'

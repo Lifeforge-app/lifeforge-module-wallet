@@ -6,7 +6,7 @@ import { usePersonalization } from '@lifeforge/shared'
 import { Box, Flex, Text, WithQuery } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import getChartScale from '@/utils/getChartScale'
 
 function AssetBalanceChart({

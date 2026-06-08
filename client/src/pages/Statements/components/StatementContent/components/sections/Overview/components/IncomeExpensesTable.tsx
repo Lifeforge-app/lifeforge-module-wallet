@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { Flex, Icon, Text, colorWithOpacity } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 function IncomeExpensesTable({
