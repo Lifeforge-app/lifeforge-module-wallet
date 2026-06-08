@@ -10,10 +10,10 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import ManageTemplatesModal from './modals/ManageTemplatesModal'
-import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
-import NaturalLanguageModal from './modals/NaturalLanguageModal'
-import ScanReceiptModal from './modals/ScanReceiptModal'
+import ManageTemplatesModal from '../modals/ManageTemplatesModal'
+import ModifyTransactionsModal from '../modals/ModifyTransactionsModal'
+import NaturalLanguageModal from '../modals/NaturalLanguageModal'
+import ScanReceiptModal from '../modals/ScanReceiptModal'
 
 function TransactionCreationMenu({
   variant
@@ -95,10 +95,13 @@ function TransactionCreationMenu({
 
   return (
     <ContextMenu
-      buttonComponent={<FAB visibilityBreakpoint="md" />}
+      buttonComponent={<FAB position="static" visibilityBreakpoint="md" />}
       styles={{
         menu: {
           minWidth: '18em'
+        },
+        button: {
+          position: 'static'
         },
         wrapper: {
           position: 'fixed',

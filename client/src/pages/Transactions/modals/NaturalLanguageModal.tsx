@@ -11,10 +11,10 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import { type CreateAnotherValue } from '@/pages/Transactions/CreateAnotherFIeld'
+import { type CreateAnotherValue } from '@/pages/Transactions/components/CreateAnotherFIeld'
 import CreateAnotherField, {
   createAnotherSchema
-} from '@/pages/Transactions/CreateAnotherFIeld'
+} from '@/pages/Transactions/components/CreateAnotherFIeld'
 import forgeAPI from '@/utils/forgeAPI'
 
 import ModifyTransactionsModal from './ModifyTransactionsModal'

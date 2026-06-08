@@ -15,12 +15,11 @@ import {
 import { useWalletStore } from '@/stores/useWalletStore'
 import forgeAPI from '@/utils/forgeAPI'
 
-import '../../index.css'
-import TransactionCreationMenu from './TransactionCreationMenu'
 import HeaderMenu from './components/HeaderMenu'
 import InnerHeader from './components/InnerHeader'
 import SearchBar from './components/SearchBar'
 import Sidebar from './components/Sidebar'
+import TransactionCreationMenu from './components/TransactionCreationMenu'
 import TransactionList from './components/TransactionList'
 
 export type WalletTransaction = InferOutput<

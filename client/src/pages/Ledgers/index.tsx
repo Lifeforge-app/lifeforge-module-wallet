@@ -14,7 +14,6 @@ import {
 
 import { useWalletData } from '@/hooks/useWalletData'
 
-import '../../index.css'
 import LedgerItem from './components/LedgerItem'
 import ModifyLedgerModal from './modals/ModifyLedgerModal'
 

@@ -13,10 +13,10 @@ import {
 } from '@lifeforge/ui'
 import type { FileValue } from '@lifeforge/ui'
 
-import type { CreateAnotherValue } from '@/pages/Transactions/CreateAnotherFIeld'
+import type { CreateAnotherValue } from '@/pages/Transactions/components/CreateAnotherFIeld'
 import CreateAnotherField, {
   createAnotherSchema
-} from '@/pages/Transactions/CreateAnotherFIeld'
+} from '@/pages/Transactions/components/CreateAnotherFIeld'
 import forgeAPI from '@/utils/forgeAPI'
 
 import ManagePromptsModal from './ManagePromptsModal'

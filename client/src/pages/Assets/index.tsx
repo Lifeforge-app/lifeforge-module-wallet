@@ -23,7 +23,6 @@ import {
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 
-import '../../index.css'
 import TotalBalance from './components/AssetAmount'
 import AssetItem from './components/AssetItem'
 import ModifyAssetModal from './modals/ModifyAssetModal'

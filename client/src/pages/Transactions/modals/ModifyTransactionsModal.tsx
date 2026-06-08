@@ -29,8 +29,8 @@ import {
   CREATE_ANOTHER_OPTIONS,
   type CreateAnotherValue,
   createAnotherSchema
-} from '@/pages/Transactions/CreateAnotherFIeld'
-import CreateAnotherField from '@/pages/Transactions/CreateAnotherFIeld'
+} from '@/pages/Transactions/components/CreateAnotherFIeld'
+import CreateAnotherField from '@/pages/Transactions/components/CreateAnotherFIeld'
 import forgeAPI from '@/utils/forgeAPI'
 
 import type { WalletTransaction } from '..'

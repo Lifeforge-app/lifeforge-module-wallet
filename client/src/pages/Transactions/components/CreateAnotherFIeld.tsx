@@ -16,12 +16,14 @@ export type CreateAnotherValue = (typeof CREATE_ANOTHER_VALUES)[number]
 export const createAnotherSchema = z.enum(CREATE_ANOTHER_VALUES)
 
 const ModifyTransactionsModal = lazy(
-  () => import('./modals/ModifyTransactionsModal')
+  () => import('../modals/ModifyTransactionsModal')
 )
 
-const ScanReceiptModal = lazy(() => import('./modals/ScanReceiptModal'))
+const ScanReceiptModal = lazy(() => import('../modals/ScanReceiptModal'))
 
-const NaturalLanguageModal = lazy(() => import('./modals/NaturalLanguageModal'))
+const NaturalLanguageModal = lazy(
+  () => import('../modals/NaturalLanguageModal')
+)
 
 type CreateAnotherOption = {
   text: string

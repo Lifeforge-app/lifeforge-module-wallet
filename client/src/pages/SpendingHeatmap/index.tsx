@@ -15,8 +15,6 @@ import {
 import forgeAPI from '@/utils/forgeAPI'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import '../../index.css'
-
 type SpendingLocationData = InferOutput<
   typeof forgeAPI.analytics.getSpendingByLocation
 >[number]

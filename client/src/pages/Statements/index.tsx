@@ -6,7 +6,6 @@ import YearMonthInput from '@/components/YearMonthInput'
 import useYearMonthState from '@/hooks/useYearMonthState'
 import forgeAPI from '@/utils/forgeAPI'
 
-import '../../index.css'
 import PrintAndViewButton from './components/PrintAndViewButton'
 import StatementContent from './components/StatementContent'
 

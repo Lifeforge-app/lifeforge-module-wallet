@@ -25,7 +25,6 @@ import {
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
-import '../../index.css'
 import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
 import IncomeExpenseCard from './components/IncomeExpensesCard'

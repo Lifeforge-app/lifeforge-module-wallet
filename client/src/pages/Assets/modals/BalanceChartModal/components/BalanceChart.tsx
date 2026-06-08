@@ -65,7 +65,7 @@ function BalanceChart({
   const chartData = useMemo(() => {
     if (!assetBalanceQuery.data) return []
 
-    const sortedEntries = Object.entries(assetBalanceQuery.data).sort(
+    const sortedEntries = Object.entries(assetBalanceQuery.data.balances).sort(
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     )
 
