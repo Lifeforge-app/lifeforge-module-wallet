@@ -4,14 +4,15 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import z from 'zod'
 
-import { toast ,
+import {
   ColorField,
   FormModal,
   IconField,
   ListboxField,
   TAILWIND_PALETTE,
   TextField,
-  createDefaultValues
+  createDefaultValues,
+  toast
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'

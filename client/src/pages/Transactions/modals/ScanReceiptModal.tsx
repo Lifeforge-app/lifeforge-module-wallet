@@ -3,11 +3,12 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
-import { toast ,
+import {
   Button,
   CheckboxField,
   FileField,
   FormModal,
+  toast,
   useModalStore
 } from '@lifeforge/ui'
 import type { FileValue } from '@lifeforge/ui'

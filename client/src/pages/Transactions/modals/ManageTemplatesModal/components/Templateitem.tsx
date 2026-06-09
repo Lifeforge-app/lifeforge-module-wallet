@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { toast ,
+import {
   Box,
   Card,
   ConfirmationModal,
@@ -10,6 +10,7 @@ import { toast ,
   Icon,
   Text,
   surface,
+  toast,
   useModalStore
 } from '@lifeforge/ui'
 

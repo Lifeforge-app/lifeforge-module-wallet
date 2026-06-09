@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { usePromiseLoading } from '@lifeforge/api'
-import { toast ,
+import {
   Alert,
   Box,
   Button,
@@ -11,7 +11,8 @@ import { toast ,
   ModalHeader,
   Stack,
   TextAreaInput,
-  WithQuery
+  WithQuery,
+  toast
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'

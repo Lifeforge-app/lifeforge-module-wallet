@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { toast ,
+import {
   Box,
   Card,
   ConfirmationModal,
@@ -12,6 +12,7 @@ import { toast ,
   Stack,
   Text,
   surface,
+  toast,
   useModalStore
 } from '@lifeforge/ui'
 

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 
 import type { WidgetConfig } from '@lifeforge/configs'
-import { useDivSize ,
+import {
   Box,
   Button,
   Card,
@@ -15,7 +15,8 @@ import { useDivSize ,
   Text,
   Widget,
   WithQuery,
-  surface
+  surface,
+  useDivSize
 } from '@lifeforge/ui'
 
 import { useWalletData } from '../hooks/useWalletData'

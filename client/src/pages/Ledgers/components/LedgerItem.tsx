@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
-import { toast ,
+import {
   Box,
   Card,
   ConfirmationModal,
@@ -12,6 +12,7 @@ import { toast ,
   Icon,
   Stack,
   Text,
+  toast,
   useModalStore
 } from '@lifeforge/ui'
 

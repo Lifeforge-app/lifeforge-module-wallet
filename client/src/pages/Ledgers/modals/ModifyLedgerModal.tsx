@@ -3,12 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
-import { toast ,
+import {
   ColorField,
   FormModal,
   IconField,
   TextField,
-  createDefaultValues
+  createDefaultValues,
+  toast
 } from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'

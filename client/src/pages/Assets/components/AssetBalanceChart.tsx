@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
 
-import { usePersonalization , Box, Flex, Text, WithQuery } from '@lifeforge/ui'
+import { Box, Flex, Text, WithQuery, usePersonalization } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'

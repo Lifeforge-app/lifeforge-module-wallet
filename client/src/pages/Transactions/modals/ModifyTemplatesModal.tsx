@@ -4,14 +4,15 @@ import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import z from 'zod'
 
-import { toast ,
+import {
   CurrencyField,
   FormModal,
   ListboxField,
   LocationField,
   TAILWIND_PALETTE,
   TextField,
-  createDefaultValues
+  createDefaultValues,
+  toast
 } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
