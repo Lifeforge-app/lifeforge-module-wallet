@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
 
 import { usePromiseLoading } from '@lifeforge/api'
-import {
+import { toast ,
   Alert,
   Box,
   Button,

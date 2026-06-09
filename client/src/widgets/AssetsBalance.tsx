@@ -2,8 +2,7 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 
 import type { WidgetConfig } from '@lifeforge/configs'
-import { useDivSize } from '@lifeforge/ui'
-import {
+import { useDivSize ,
   Box,
   Button,
   Card,
