@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import { useNavigate, useSearchParams } from 'react-router'
-import type { InferOutput } from '@lifeforge/shared'
+import type { InferOutput } from '@lifeforge/api'
 import {
   ContentWrapperWithSidebar,
   EmptyStateScreen,

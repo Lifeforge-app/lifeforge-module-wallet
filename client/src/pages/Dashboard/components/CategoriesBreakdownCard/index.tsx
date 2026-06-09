@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react'
 import { Link } from 'react-router'
 
-import type { InferOutput } from '@lifeforge/shared'
+import type { InferOutput } from '@lifeforge/api'
 import { Button, Icon, Widget } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'

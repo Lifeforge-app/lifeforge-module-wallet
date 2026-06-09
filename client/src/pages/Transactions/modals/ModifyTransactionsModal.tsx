@@ -27,10 +27,13 @@ import { forgeAPI } from '@/manifest'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
 import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
 
-
 import type { WalletTransaction } from '..'
+import CreateAnotherField, {
+  CREATE_ANOTHER_OPTIONS,
+  type CreateAnotherValue,
+  createAnotherSchema
+} from '../components/CreateAnotherFIeld'
 import ModifyCategoryModal from './ModifyCategoryModal'
-import CreateAnotherField, { CREATE_ANOTHER_OPTIONS, createAnotherSchema, type CreateAnotherValue } from '../components/CreateAnotherFIeld'
 
 const schema = z
   .object({
@@ -180,8 +183,6 @@ function ModifyTransactionsModal({
     mode: 'all',
     resolver: zodResolver(schema)
   })
-
-  console.log(form.formState.errors)
 
   const watchedType = useWatch({ control: form.control, name: 'type' })
 

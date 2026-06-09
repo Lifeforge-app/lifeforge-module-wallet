@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 
-import { useDivSize } from '@lifeforge/shared'
+import { useDivSize } from '@lifeforge/ui'
 import { Link } from 'react-router'
-import type { WidgetConfig } from '@lifeforge/shared'
+import type { WidgetConfig } from '@lifeforge/configs'
 import {
   Box,
   Button,
