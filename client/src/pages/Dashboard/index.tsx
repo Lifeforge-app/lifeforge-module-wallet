@@ -48,7 +48,7 @@ ChartJS.register(
 function WalletDashboard() {
   const navigate = useNavigate()
 
-  const { t } = useTranslation(['common.buttons', 'apps.wallet'])
+  const { t } = useTranslation(['common.buttons', 'apps.lifeforge--wallet'])
 
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
 
@@ -62,7 +62,7 @@ function WalletDashboard() {
                 display={{ base: 'none', md: 'flex' }}
                 icon="tabler:plus"
                 tProps={{
-                  item: t('apps.wallet:items.transaction')
+                  item: t('apps.lifeforge--wallet:items.transaction')
                 }}
                 onClick={() => {}}
               >
@@ -73,7 +73,7 @@ function WalletDashboard() {
             <ContextMenuItem
               icon="tabler:plus"
               label="Add Manually"
-              namespace="apps.wallet"
+              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 navigate('/wallet/transactions#new')
               }}
@@ -81,7 +81,7 @@ function WalletDashboard() {
             <ContextMenuItem
               icon="tabler:scan"
               label="Scan Receipt"
-              namespace="apps.wallet"
+              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 navigate('/wallet/transactions#scan')
               }}
@@ -94,7 +94,7 @@ function WalletDashboard() {
               checked={isAmountHidden}
               icon="tabler:eye-off"
               label="Hide Amount"
-              namespace="apps.wallet"
+              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 toggleAmountVisibility()
               }}
@@ -120,7 +120,7 @@ function WalletDashboard() {
         <ContextMenuItem
           icon="tabler:plus"
           label="Add Manually"
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           onClick={() => {
             navigate('/wallet/transactions#new')
           }}
@@ -128,7 +128,7 @@ function WalletDashboard() {
         <ContextMenuItem
           icon="tabler:scan"
           label="Scan Receipt"
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           onClick={() => {
             navigate('/wallet/transactions#scan')
           }}

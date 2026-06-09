@@ -35,7 +35,7 @@ function NaturalLanguageModal({
 }) {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const mutation = useMutation(
     forgeAPI.transactions.fromNaturalLanguage.mutationOptions()
@@ -77,7 +77,7 @@ function NaturalLanguageModal({
       }}
       uiConfig={{
         icon: 'tabler:brain',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: 'naturalLanguage.title',
         onClose
       }}

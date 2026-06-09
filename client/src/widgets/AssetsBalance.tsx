@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
-
-import { useDivSize } from '@lifeforge/ui'
 import { Link } from 'react-router'
+
 import type { WidgetConfig } from '@lifeforge/configs'
+import { useDivSize } from '@lifeforge/ui'
 import {
   Box,
   Button,
@@ -44,7 +44,7 @@ export default function AssetsBalance() {
         />
       }
       icon="tabler:wallet"
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
@@ -55,7 +55,7 @@ export default function AssetsBalance() {
               icon="tabler:wallet-off"
               message={{
                 id: 'assets',
-                namespace: 'apps.wallet',
+                namespace: 'apps.lifeforge--wallet',
                 tKey: 'widgets.assetsBalance'
               }}
             />
@@ -137,7 +137,7 @@ export default function AssetsBalance() {
 }
 
 export const config: WidgetConfig = {
-  namespace: 'apps.wallet',
+  namespace: 'apps.lifeforge--wallet',
   id: 'assetsBalance',
   icon: 'tabler:coin'
 }

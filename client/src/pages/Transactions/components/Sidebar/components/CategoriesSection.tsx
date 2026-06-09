@@ -12,7 +12,7 @@ import CategoriesSectionItem from './CategoriesSectionItem'
 function CategoriesSection() {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { categoriesQuery } = useWalletData()
 

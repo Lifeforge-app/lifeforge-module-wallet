@@ -20,7 +20,7 @@ function RangeSelector({
   setRange: (value: 'week' | 'month' | 'ytd') => void
   display?: ComponentProps<typeof Box>['display']
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   return (
     <Box display={display}>

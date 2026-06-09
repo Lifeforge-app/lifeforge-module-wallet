@@ -11,13 +11,14 @@ import {
   YAxis
 } from 'recharts'
 
-import { usePersonalization ,
+import {
   Box,
   Card,
   EmptyStateScreen,
   Flex,
   Text,
-  WithQuery
+  WithQuery,
+  usePersonalization
 } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
@@ -198,7 +199,7 @@ function BalanceChart({
           <EmptyStateScreen
             message={{
               id: 'transactions',
-              namespace: 'apps.wallet'
+              namespace: 'apps.lifeforge--wallet'
             }}
           />
         )

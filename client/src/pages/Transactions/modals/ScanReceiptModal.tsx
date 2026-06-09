@@ -101,7 +101,7 @@ function ScanReceiptModal({
       }}
       uiConfig={{
         icon: 'tabler:scan',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: 'receipts.scan',
         headerActions: (
           <Button

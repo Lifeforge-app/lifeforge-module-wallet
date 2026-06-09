@@ -27,14 +27,14 @@ function BalanceChartFilters({
   endDate: Date | null
   setEndDate: (date: Date | null) => void
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   return (
     <Stack gap="lg" mb="2xl">
       <ListboxInput
         icon="tabler:history"
         label="range mode"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         renderContent={() => <Text>{t(`rangeModes.${rangeMode}`)}</Text>}
         value={rangeMode}
         onChange={setRangeMode}
@@ -52,7 +52,7 @@ function BalanceChartFilters({
           <DateInput
             icon="tabler:calendar-up"
             label="startDate"
-            namespace="apps.wallet"
+            namespace="apps.lifeforge--wallet"
             value={startDate}
             onChange={(date: Date | null) => {
               setStartDate(date)
@@ -65,7 +65,7 @@ function BalanceChartFilters({
           <DateInput
             icon="tabler:calendar-down"
             label="endDate"
-            namespace="apps.wallet"
+            namespace="apps.lifeforge--wallet"
             value={endDate}
             onChange={(date: Date | null) => {
               setEndDate(date)

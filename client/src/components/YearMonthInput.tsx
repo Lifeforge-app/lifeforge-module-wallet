@@ -37,7 +37,7 @@ function YearMonthInput({
       <ListboxInput
         icon="tabler:calendar-month"
         label="Month"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         renderContent={() => (
           <Text truncate>
             {month !== null ? t(`dates.months.${month}`) : 'None'}
@@ -57,7 +57,7 @@ function YearMonthInput({
       <ListboxInput
         icon="tabler:calendar"
         label="Year"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         renderContent={() => <Text truncate>{year ?? 'None'}</Text>}
         value={year}
         onChange={setYear}

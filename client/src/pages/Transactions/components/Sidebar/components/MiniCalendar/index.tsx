@@ -11,7 +11,7 @@ import MiniCalendarHeader from './components/MiniCalendarHeader'
 import MiniCalendarToggleViewMenu from './components/MiniCalendarToggleViewMenu'
 
 function MiniCalendar() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const [currentMonth, setCurrentMonth] = useState(dayjs().month())
 

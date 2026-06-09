@@ -24,7 +24,7 @@ import CategoryItem from './components/CategoryItem'
 function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { categoriesQuery } = useWalletData()
 
@@ -47,7 +47,7 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
           />
         }
         icon="tabler:apps"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="categories.manage"
         onClose={onClose}
       />
@@ -110,7 +110,10 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
                   tProps: { item: t('items.category') }
                 }}
                 icon="tabler:apps-off"
-                message={{ id: 'categories', namespace: 'apps.wallet' }}
+                message={{
+                  id: 'categories',
+                  namespace: 'apps.lifeforge--wallet'
+                }}
               />
             </Flex>
           )

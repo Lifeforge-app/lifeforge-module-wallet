@@ -22,7 +22,7 @@ import { forgeAPI } from '@/manifest'
 import ModifyLedgerModal from '../modals/ModifyLedgerModal'
 
 function LedgerItem({ ledger }: { ledger: WalletLedger }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const navigate = useNavigate()
 

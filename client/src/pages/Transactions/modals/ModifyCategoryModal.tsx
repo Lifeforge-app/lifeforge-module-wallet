@@ -43,7 +43,7 @@ function ModifyCategoryModal({
 }) {
   const queryClient = useQueryClient()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const mutation = useMutation(
     (type === 'create'
@@ -83,7 +83,7 @@ function ModifyCategoryModal({
       }}
       uiConfig={{
         icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: `categories.${type === 'update' ? 'update' : 'create'}`,
         onClose
       }}

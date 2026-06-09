@@ -13,7 +13,7 @@ function DetailItem({
   vertical?: boolean
   children: React.ReactElement
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   return (
     <Card

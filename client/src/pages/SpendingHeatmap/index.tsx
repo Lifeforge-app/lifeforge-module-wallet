@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router'
 
 import { type InferOutput } from '@lifeforge/api'
-import { useNavigate } from 'react-router'
 import {
   EmptyStateScreen,
   Flex,
@@ -78,7 +78,7 @@ function SpendingHeatmap() {
     <>
       <ModuleHeader
         icon="uil:map-marker"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Spending Heatmap"
         tKey="subsectionsTitleAndDesc"
       />
@@ -152,7 +152,7 @@ function SpendingHeatmap() {
                     icon="tabler:map-pin-off"
                     message={{
                       id: 'location',
-                      namespace: 'apps.wallet'
+                      namespace: 'apps.lifeforge--wallet'
                     }}
                   />
                 )
@@ -163,7 +163,7 @@ function SpendingHeatmap() {
               icon="tabler:key-off"
               message={{
                 id: 'mapKey',
-                namespace: 'apps.wallet'
+                namespace: 'apps.lifeforge--wallet'
               }}
             />
           )

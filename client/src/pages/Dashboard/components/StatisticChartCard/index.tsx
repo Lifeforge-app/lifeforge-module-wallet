@@ -11,7 +11,7 @@ import {
   YAxis
 } from 'recharts'
 
-import { usePersonalization ,
+import {
   Box,
   Card,
   EmptyStateScreen,
@@ -20,7 +20,8 @@ import { usePersonalization ,
   Text,
   Widget,
   WithQuery,
-  surface
+  surface,
+  usePersonalization
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -30,7 +31,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import RangeSelector from './components/RangeSelector'
 
 function StatisticChardCard() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { bgTempPalette, derivedTheme } = usePersonalization()
 
@@ -126,7 +127,7 @@ function StatisticChardCard() {
       gridColumnSpan={{ xl: 2 }}
       gridRowSpan={2}
       icon="tabler:chart-dots"
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title="Statistics"
     >
       <RangeSelector
@@ -141,7 +142,7 @@ function StatisticChardCard() {
               <EmptyStateScreen
                 message={{
                   id: 'transactions',
-                  namespace: 'apps.wallet'
+                  namespace: 'apps.lifeforge--wallet'
                 }}
               />
             ) : (

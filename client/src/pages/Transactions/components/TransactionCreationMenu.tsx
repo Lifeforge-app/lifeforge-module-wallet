@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-
 import { useLocation } from 'react-router'
+
 import {
   Button,
   ContextMenu,
@@ -22,7 +22,7 @@ function TransactionCreationMenu({
 }) {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { hash } = useLocation()
 
@@ -45,25 +45,25 @@ function TransactionCreationMenu({
       <ContextMenuItem
         icon="tabler:plus"
         label="Add Manually"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         onClick={() => open(ModifyTransactionsModal, { type: 'create' })}
       />
       <ContextMenuItem
         icon="tabler:template"
         label="From Template"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         onClick={() => open(ManageTemplatesModal, { choosing: true })}
       />
       <ContextMenuItem
         icon="tabler:scan"
         label="Scan Receipt"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         onClick={() => open(ScanReceiptModal, {})}
       />
       <ContextMenuItem
         icon="tabler:brain"
         label="fromNaturalLanguage"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         onClick={() => open(NaturalLanguageModal, {})}
       />
     </>

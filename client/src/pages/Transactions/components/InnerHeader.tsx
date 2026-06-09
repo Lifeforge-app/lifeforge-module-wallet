@@ -31,7 +31,7 @@ function InnerHeader() {
 
   const { setIsSidebarOpen } = useModuleSidebarState()
 
-  const { t } = useTranslation(['common.buttons', 'apps.wallet'])
+  const { t } = useTranslation(['common.buttons', 'apps.lifeforge--wallet'])
 
   const assets = assetsQuery.data ?? []
 
@@ -48,7 +48,7 @@ function InnerHeader() {
       <Stack>
         <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
           {t(
-            `apps.wallet:header.${
+            `apps.lifeforge--wallet:header.${
               !selectedType &&
               !selectedCategory &&
               !selectedAsset &&

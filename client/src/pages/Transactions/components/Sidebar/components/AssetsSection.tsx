@@ -9,7 +9,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import AssetsSectionItem from './AssetsSectionItem'
 
 function AssetsSection() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { assetsQuery } = useWalletData()
 

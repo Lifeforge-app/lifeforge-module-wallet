@@ -14,7 +14,7 @@ const TYPES = [
 ]
 
 function TypeSection() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { typesCountQuery } = useWalletData()
 

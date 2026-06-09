@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
-
 import { useNavigate, useSearchParams } from 'react-router'
+
 import type { InferOutput } from '@lifeforge/api'
 import {
   ContentWrapperWithSidebar,
@@ -93,7 +93,7 @@ function Transactions() {
           }
         }}
         icon="tabler:arrows-exchange"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Transactions"
         tKey="subsectionsTitleAndDesc"
       />
@@ -112,7 +112,7 @@ function Transactions() {
                     icon="tabler:wallet-off"
                     message={{
                       id: 'transactions',
-                      namespace: 'apps.wallet'
+                      namespace: 'apps.lifeforge--wallet'
                     }}
                   />
                 )

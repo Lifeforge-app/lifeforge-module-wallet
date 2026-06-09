@@ -85,7 +85,7 @@ function BreakdownContent({
         icon="tabler:wallet-off"
         message={{
           id: 'transactions',
-          namespace: 'apps.wallet'
+          namespace: 'apps.lifeforge--wallet'
         }}
       />
     )
@@ -110,7 +110,7 @@ function BreakdownContent({
                 icon="tabler:wallet-off"
                 message={{
                   id: 'transactions',
-                  namespace: 'apps.wallet'
+                  namespace: 'apps.lifeforge--wallet'
                 }}
               />
             ) : (

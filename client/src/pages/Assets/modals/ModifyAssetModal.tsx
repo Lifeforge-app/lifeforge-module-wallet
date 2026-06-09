@@ -73,7 +73,7 @@ function ModifyAssetModal({
       }}
       uiConfig={{
         icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: `assets.${type}`,
         onClose
       }}

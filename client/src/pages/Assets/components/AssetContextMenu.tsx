@@ -54,7 +54,7 @@ function AssetContextMenu({ asset }: { asset: WalletAsset }) {
         <ContextMenuItem
           icon="tabler:chart-line"
           label="View Balance Chart"
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           onClick={() => open(BalanceChartModal, { initialData: asset })}
         />
         <ContextMenuItem

@@ -18,7 +18,7 @@ import {
 import { forgeAPI } from '@/manifest'
 
 function ManagePromptsModal({ onClose }: { onClose: () => void }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const messagesQuery = useQuery(
     forgeAPI.transactions.prompts.get.queryOptions()
@@ -78,7 +78,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
     <Box minWidth="60vw">
       <ModalHeader
         icon="tabler:robot"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Manage Prompts"
         onClose={onClose}
       />
@@ -95,7 +95,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                     <TextAreaInput
                       icon="tabler:arrow-up-circle"
                       label="Income Prompt"
-                      namespace="apps.wallet"
+                      namespace="apps.lifeforge--wallet"
                       placeholder="Prompt used to generate particulars for income transactions."
                       value={prompts.income}
                       onChange={value =>
@@ -105,7 +105,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                     <Button
                       icon="mage:stars-c"
                       loading={generateLoading}
-                      namespace="apps.wallet"
+                      namespace="apps.lifeforge--wallet"
                       variant="secondary"
                       width="100%"
                       onClick={() => onAutoGenerate('income')}
@@ -117,7 +117,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                     <TextAreaInput
                       icon="tabler:arrow-down-circle"
                       label="Expenses Prompt"
-                      namespace="apps.wallet"
+                      namespace="apps.lifeforge--wallet"
                       placeholder="Prompt used to generate particulars for expenses transactions."
                       value={prompts.expenses}
                       onChange={value =>
@@ -127,7 +127,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                     <Button
                       icon="mage:stars-c"
                       loading={generateLoading}
-                      namespace="apps.wallet"
+                      namespace="apps.lifeforge--wallet"
                       variant="secondary"
                       width="100%"
                       onClick={() => onAutoGenerate('expenses')}
@@ -139,7 +139,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
                     icon="tabler:device-floppy"
                     loading={saveLoading}
                     mt="md"
-                    namespace="apps.wallet"
+                    namespace="apps.lifeforge--wallet"
                     width="100%"
                     onClick={onSave}
                   >
@@ -151,7 +151,10 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
           ) : (
             <EmptyStateScreen
               icon="tabler:robot-off"
-              message={{ id: 'openAIApiKeyRequired', namespace: 'apps.wallet' }}
+              message={{
+                id: 'openAIApiKeyRequired',
+                namespace: 'apps.lifeforge--wallet'
+              }}
             />
           )
         }

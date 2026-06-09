@@ -27,7 +27,7 @@ function BreakdownFilters({
   yearsOptions: number[]
   monthsOptions: number[]
 }) {
-  const { t } = useTranslation(['common.misc', 'apps.wallet'])
+  const { t } = useTranslation(['common.misc', 'apps.lifeforge--wallet'])
 
   return (
     <Stack>
@@ -42,7 +42,9 @@ function BreakdownFilters({
               }
               size="1.5rem"
             />
-            <Text>{t(`apps.wallet:transactionTypes.${selectedType}`)}</Text>
+            <Text>
+              {t(`apps.lifeforge--wallet:transactionTypes.${selectedType}`)}
+            </Text>
           </Flex>
         )}
         value={selectedType}
@@ -52,7 +54,7 @@ function BreakdownFilters({
           <ListboxOption
             key={type}
             icon={type === 'income' ? 'tabler:login-2' : 'tabler:logout'}
-            label={t(`apps.wallet:transactionTypes.${type}`)}
+            label={t(`apps.lifeforge--wallet:transactionTypes.${type}`)}
             value={type}
           />
         ))}

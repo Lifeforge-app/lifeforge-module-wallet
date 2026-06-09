@@ -29,7 +29,7 @@ function ManageTemplatesModal({
   onClose: () => void
   data: { choosing?: boolean }
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { open } = useModalStore()
 
@@ -54,7 +54,7 @@ function ManageTemplatesModal({
           ) : undefined
         }
         icon="tabler:template"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title={`templates.${choosing ? 'choose' : 'manage'}`}
         onClose={onClose}
       />
@@ -113,7 +113,10 @@ function ManageTemplatesModal({
                   tProps: { item: t('items.template') }
                 }}
                 icon="tabler:template-off"
-                message={{ id: 'templates', namespace: 'apps.wallet' }}
+                message={{
+                  id: 'templates',
+                  namespace: 'apps.lifeforge--wallet'
+                }}
               />
             </Flex>
           )

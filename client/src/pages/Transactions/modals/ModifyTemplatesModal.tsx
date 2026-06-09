@@ -48,7 +48,7 @@ function ModifyTemplatesModal({
     initialData?: Partial<WalletTemplate>
   }
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const queryClient = useQueryClient()
 
@@ -131,7 +131,7 @@ function ModifyTemplatesModal({
       }}
       uiConfig={{
         icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: `templates.${type}`,
         onClose
       }}

@@ -9,7 +9,7 @@ function SearchBar() {
     <SearchInput
       debounceMs={300}
       mt="md"
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       searchTarget="transaction"
       value={searchQuery}
       onChange={setSearchQuery}

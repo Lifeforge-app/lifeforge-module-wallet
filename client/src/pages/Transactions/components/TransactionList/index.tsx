@@ -24,7 +24,7 @@ function TransactionList() {
         icon="tabler:filter-off"
         message={{
           id: 'results',
-          namespace: 'apps.wallet'
+          namespace: 'apps.lifeforge--wallet'
         }}
       />
     )

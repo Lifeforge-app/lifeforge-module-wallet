@@ -17,7 +17,7 @@ function MiniCalendarToggleViewMenu({
   viewsFilter: WalletTransaction['type'][]
   toggleView: (view: WalletTransaction['type']) => void
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   return (
     <ContextMenu>

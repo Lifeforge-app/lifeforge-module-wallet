@@ -25,7 +25,7 @@ function Statements() {
     <>
       <ModuleHeader
         icon="tabler:file-text"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Financial Statements"
         tKey="subsectionsTitleAndDesc"
       />
@@ -36,7 +36,7 @@ function Statements() {
           icon="tabler:report-off"
           message={{
             id: 'statements',
-            namespace: 'apps.wallet'
+            namespace: 'apps.lifeforge--wallet'
           }}
         />
       ) : (

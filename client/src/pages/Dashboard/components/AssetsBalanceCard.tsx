@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-
 import { Link, useNavigate } from 'react-router'
+
 import {
   Button,
   Card,
@@ -27,7 +27,7 @@ function AssetsBalanceCard() {
 
   const { isAmountHidden } = useWalletStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   return (
     <Widget
@@ -40,7 +40,7 @@ function AssetsBalanceCard() {
       gridRowSpan={2}
       icon="tabler:wallet"
       minHeight={{ base: '24rem', xl: '0' }}
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
@@ -103,7 +103,7 @@ function AssetsBalanceCard() {
               icon="tabler:wallet-off"
               message={{
                 id: 'assets',
-                namespace: 'apps.wallet'
+                namespace: 'apps.lifeforge--wallet'
               }}
             />
           )

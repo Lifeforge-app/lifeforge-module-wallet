@@ -6,7 +6,7 @@ import { DateInput, SidebarTitle, Stack } from '@lifeforge/ui'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 function DateRangeSelector() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
 
@@ -64,7 +64,7 @@ function DateRangeSelector() {
         <DateInput
           icon="tabler:calendar-up"
           label="Start Date"
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           value={
             startDate && dayjs(startDate).isValid()
               ? dayjs(startDate).toDate()
@@ -75,7 +75,7 @@ function DateRangeSelector() {
         <DateInput
           icon="tabler:calendar-down"
           label="End Date"
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           value={
             endDate && dayjs(endDate).isValid() ? dayjs(endDate).toDate() : null
           }

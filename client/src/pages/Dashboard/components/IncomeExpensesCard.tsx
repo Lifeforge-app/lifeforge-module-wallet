@@ -26,7 +26,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
       gridColumnSpan={1}
       gridRowSpan={1}
       icon={icon}
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title={isIncome ? 'income' : 'expenses'}
     >
       <WithQuery query={incomeExpensesQuery}>

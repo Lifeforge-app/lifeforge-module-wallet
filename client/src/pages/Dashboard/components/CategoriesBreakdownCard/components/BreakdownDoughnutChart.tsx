@@ -10,7 +10,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import { CategoriesBreakdownContext } from '..'
 
 function BreakdownDoughnutChart() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { isAmountHidden } = useWalletStore()
 

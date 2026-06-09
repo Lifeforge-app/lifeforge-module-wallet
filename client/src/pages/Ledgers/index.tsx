@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-
 import { useLocation } from 'react-router'
+
 import {
   Button,
   EmptyStateScreen,
@@ -18,7 +18,7 @@ import LedgerItem from './components/LedgerItem'
 import ModifyLedgerModal from './modals/ModifyLedgerModal'
 
 function Ledgers() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { ledgersQuery } = useWalletData()
 
@@ -56,7 +56,7 @@ function Ledgers() {
           </Button>
         }
         icon="tabler:book"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Ledgers"
         tKey="subsectionsTitleAndDesc"
       />
@@ -74,7 +74,7 @@ function Ledgers() {
                 icon="tabler:wallet-off"
                 message={{
                   id: 'ledger',
-                  namespace: 'apps.wallet'
+                  namespace: 'apps.lifeforge--wallet'
                 }}
               />
             )}

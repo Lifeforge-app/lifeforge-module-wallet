@@ -16,7 +16,7 @@ function ReceiptSection() {
     <DetailItem vertical icon="tabler:receipt" label="receipt">
       <Button
         icon="tabler:eye"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         variant="secondary"
         width="100%"
         onClick={() => {

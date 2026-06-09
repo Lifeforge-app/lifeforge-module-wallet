@@ -26,7 +26,7 @@ function CategoryItem({ category }: { category: WalletCategory }) {
 
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const deleteMutation = useMutation(
     forgeAPI.categories.remove.input({ id: category.id }).mutationOptions({

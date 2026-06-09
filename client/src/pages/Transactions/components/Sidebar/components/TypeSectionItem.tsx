@@ -2,7 +2,11 @@ import _ from 'lodash'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { usePersonalization , SidebarItem, TAILWIND_PALETTE } from '@lifeforge/ui'
+import {
+  SidebarItem,
+  TAILWIND_PALETTE,
+  usePersonalization
+} from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -15,7 +19,7 @@ function TypeSectionItem({
   label: string
   amount: number | undefined
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { bgTempPalette } = usePersonalization()
 

@@ -10,7 +10,7 @@ import { useWalletStore } from '@/stores/useWalletStore'
 import LedgerSectionItem from './LedgerSectionItem'
 
 function LedgerSection() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const navigate = useNavigate()
 

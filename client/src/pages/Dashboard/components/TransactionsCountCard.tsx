@@ -24,7 +24,7 @@ function TransactionsCountCard() {
 
   const { isAmountHidden } = useWalletStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const typesCount = typesCountQuery.data ?? {}
 
@@ -39,7 +39,7 @@ function TransactionsCountCard() {
       gridRowSpan={1}
       icon="tabler:arrows-exchange"
       minHeight="24rem"
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title="Transactions Count"
     >
       <Scrollbar>

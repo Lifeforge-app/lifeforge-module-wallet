@@ -116,7 +116,7 @@ function ModifyTransactionsModal({
   }
   onClose: () => void
 }) {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { open } = useModalStore()
 
@@ -263,7 +263,7 @@ function ModifyTransactionsModal({
       }}
       uiConfig={{
         icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-        namespace: 'apps.wallet',
+        namespace: 'apps.lifeforge--wallet',
         title: `transactions.${type}`,
         onClose
       }}

@@ -45,7 +45,7 @@ function CategoriesBreakdownCard() {
       height="100%"
       icon="tabler:chart-donut-3"
       minHeight="0"
-      namespace="apps.wallet"
+      namespace="apps.lifeforge--wallet"
       title="Categories Breakdown"
     >
       <BreakdownContent

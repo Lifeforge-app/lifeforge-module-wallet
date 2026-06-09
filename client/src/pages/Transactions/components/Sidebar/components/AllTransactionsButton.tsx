@@ -6,7 +6,7 @@ import { SidebarItem } from '@lifeforge/ui'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 function AllTransactionsButton() {
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const {
     selectedType,

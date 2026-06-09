@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useQueryState } from 'nuqs'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-
 import { useLocation } from 'react-router'
-import { useQueryState } from 'nuqs'
+
 import {
   Button,
   ContextMenuItem,
@@ -37,7 +37,7 @@ function Assets() {
 
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.wallet')
+  const { t } = useTranslation('apps.lifeforge--wallet')
 
   const { assetsQuery } = useWalletData()
 
@@ -114,7 +114,7 @@ function Assets() {
                 checked={isAmountHidden}
                 icon="tabler:eye-off"
                 label="Hide Amount"
-                namespace="apps.wallet"
+                namespace="apps.lifeforge--wallet"
                 onClick={() => {
                   toggleAmountVisibility()
                 }}
@@ -124,13 +124,13 @@ function Assets() {
           styles: { menu: { minWidth: '15rem' } }
         }}
         icon="tabler:wallet"
-        namespace="apps.wallet"
+        namespace="apps.lifeforge--wallet"
         title="Assets"
         tKey="subsectionsTitleAndDesc"
       />
       <Flex align="center" gap="md" mb="lg">
         <SearchInput
-          namespace="apps.wallet"
+          namespace="apps.lifeforge--wallet"
           searchTarget="asset"
           value={searchQuery}
           onChange={setSearchQuery}
@@ -165,7 +165,7 @@ function Assets() {
               height="min-content"
               icon="tabler:currency-dollar"
               mb="lg"
-              namespace="apps.wallet"
+              namespace="apps.lifeforge--wallet"
               title="Total Assets"
             >
               <TotalBalance amount={totalBalance} display={{ sm: 'none' }} />
@@ -185,7 +185,7 @@ function Assets() {
                 icon="tabler:wallet-off"
                 message={{
                   id: 'assets',
-                  namespace: 'apps.wallet'
+                  namespace: 'apps.lifeforge--wallet'
                 }}
               />
             )}
