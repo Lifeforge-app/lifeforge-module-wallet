@@ -2,7 +2,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useLocation, useQueryState } from '@lifeforge/shared'
+import { useLocation } from 'react-router'
+import { useQueryState } from 'nuqs'
 import {
   Button,
   ContextMenuItem,

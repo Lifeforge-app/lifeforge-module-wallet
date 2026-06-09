@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useMemo } from 'react'
 
-import { type InferOutput, useNavigate } from '@lifeforge/shared'
+import { type InferOutput } from '@lifeforge/shared'
+import { useNavigate } from 'react-router'
 import {
   EmptyStateScreen,
   Flex,

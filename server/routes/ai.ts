@@ -228,6 +228,7 @@ async function generateParticulars(
   baseParticulars?: string
 ) {
   const todayStr = dayjs().format('YYYY-MM-DD')
+
   let particularsPrompt = particularPrompt?.[
     extractedData.type as 'income' | 'expenses'
   ]

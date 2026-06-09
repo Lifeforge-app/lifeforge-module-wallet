@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 
-import { useNavigate } from '@lifeforge/shared'
 import {
   Box,
   Card,

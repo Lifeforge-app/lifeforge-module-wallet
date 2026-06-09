@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react'
+import { Link } from 'react-router'
 
-import { Link } from '@lifeforge/shared'
 import type { InferOutput } from '@lifeforge/shared'
 import { Button, Icon, Widget } from '@lifeforge/ui'
 

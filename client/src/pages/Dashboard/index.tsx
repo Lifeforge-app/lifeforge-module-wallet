@@ -12,8 +12,8 @@ import {
   Tooltip
 } from 'chart.js'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 
-import { useNavigate } from '@lifeforge/shared'
 import {
   Button,
   ContextMenu,

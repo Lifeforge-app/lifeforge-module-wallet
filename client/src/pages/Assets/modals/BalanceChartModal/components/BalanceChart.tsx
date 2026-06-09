@@ -11,8 +11,7 @@ import {
   YAxis
 } from 'recharts'
 
-import { usePersonalization } from '@lifeforge/shared'
-import {
+import { usePersonalization ,
   Box,
   Card,
   EmptyStateScreen,

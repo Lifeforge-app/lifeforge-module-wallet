@@ -1,4 +1,5 @@
-import { Link } from '@lifeforge/shared'
+import { Link } from 'react-router'
+
 import {
   Button,
   EmptyStateScreen,

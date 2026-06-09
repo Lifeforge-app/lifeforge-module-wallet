@@ -1,8 +1,8 @@
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { AutoSizer } from 'react-virtualized'
 
-import { Link } from '@lifeforge/shared'
 import {
   Box,
   Flex,

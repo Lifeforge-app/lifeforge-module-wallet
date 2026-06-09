@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 
-import { usePersonalization } from '@lifeforge/shared'
-import { Grid, Text, WithQuery } from '@lifeforge/ui'
+import { usePersonalization , Grid, Text, WithQuery } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

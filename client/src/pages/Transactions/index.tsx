@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
-import { useNavigate, useSearchParams } from '@lifeforge/shared'
+import { useNavigate, useSearchParams } from 'react-router'
 import type { InferOutput } from '@lifeforge/shared'
 import {
   ContentWrapperWithSidebar,
