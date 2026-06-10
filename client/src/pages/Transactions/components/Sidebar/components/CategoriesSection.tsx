@@ -11,11 +11,8 @@ import CategoriesSectionItem from './CategoriesSectionItem'
 
 function CategoriesSection() {
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
-
   const { categoriesQuery } = useWalletData()
-
   const { selectedType } = useWalletStore()
 
   const categories = useMemo(

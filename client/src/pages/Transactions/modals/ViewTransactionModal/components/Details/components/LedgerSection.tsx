@@ -7,7 +7,6 @@ import DetailItem from './DetailItem'
 
 function LedgerSection() {
   const transaction = useTransactionDetails()
-
   const { ledgersQuery } = useWalletData()
 
   if (transaction.type === 'transfer') return null

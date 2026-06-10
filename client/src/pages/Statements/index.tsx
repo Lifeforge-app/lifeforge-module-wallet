@@ -18,7 +18,6 @@ function Statements() {
   } = useYearMonthState(forgeAPI.analytics.getAvailableYearMonths)
 
   const [showStatement, setShowStatement] = useState(false)
-
   const contentRef = useRef<HTMLDivElement>(null)
 
   return (

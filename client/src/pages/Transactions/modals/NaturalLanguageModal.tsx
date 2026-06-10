@@ -34,7 +34,6 @@ function NaturalLanguageModal({
   }
 }) {
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
 
   const mutation = useMutation(

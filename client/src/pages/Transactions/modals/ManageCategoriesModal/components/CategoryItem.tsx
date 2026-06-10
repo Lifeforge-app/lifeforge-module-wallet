@@ -23,9 +23,7 @@ import ModifyCategoryModal from '../../ModifyCategoryModal'
 
 function CategoryItem({ category }: { category: WalletCategory }) {
   const queryClient = useQueryClient()
-
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
 
   const deleteMutation = useMutation(

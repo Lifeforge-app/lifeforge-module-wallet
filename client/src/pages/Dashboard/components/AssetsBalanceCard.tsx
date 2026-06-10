@@ -22,11 +22,8 @@ import numberToCurrency from '../../../utils/numberToCurrency'
 
 function AssetsBalanceCard() {
   const navigate = useNavigate()
-
   const { assetsQuery } = useWalletData()
-
   const { isAmountHidden } = useWalletStore()
-
   const { t } = useModuleTranslation()
 
   return (

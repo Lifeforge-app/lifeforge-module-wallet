@@ -30,7 +30,6 @@ function TemplateItem({
   onClose: () => void
 }) {
   const queryClient = useQueryClient()
-
   const categoriesQuery = useQuery(forgeAPI.categories.list.queryOptions())
 
   const categories = categoriesQuery.data ?? []

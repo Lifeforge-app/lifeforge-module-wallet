@@ -42,7 +42,6 @@ function ModifyCategoryModal({
   onClose: () => void
 }) {
   const queryClient = useQueryClient()
-
   const { t } = useModuleTranslation()
 
   const mutation = useMutation(

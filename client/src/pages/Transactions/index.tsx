@@ -41,9 +41,7 @@ function Transactions() {
   } = useWalletStore()
 
   const navigate = useNavigate()
-
   const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
-
   const [searchParams] = useSearchParams()
 
   useEffect(() => {

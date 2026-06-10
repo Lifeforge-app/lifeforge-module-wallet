@@ -30,7 +30,6 @@ function InnerHeader() {
   } = useWalletStore()
 
   const { setIsSidebarOpen } = useModuleSidebarState()
-
   const { t } = useModuleTranslation(['common.buttons'])
 
   const assets = assetsQuery.data ?? []

@@ -23,7 +23,6 @@ function TransactionIncomeExpensesItem({
   transaction: WalletTransaction
 }) {
   const { open } = useModalStore()
-
   const { categoriesQuery, ledgersQuery, assetsQuery } = useWalletData()
 
   const categories = categoriesQuery.data ?? []

@@ -20,7 +20,6 @@ function TypeSectionItem({
   amount: number | undefined
 }) {
   const { t } = useModuleTranslation()
-
   const { bgTempPalette } = usePersonalization()
 
   const { selectedType, setSelectedType, setSelectedCategory } =

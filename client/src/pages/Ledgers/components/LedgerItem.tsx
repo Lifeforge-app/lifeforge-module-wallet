@@ -23,11 +23,8 @@ import ModifyLedgerModal from '../modals/ModifyLedgerModal'
 
 function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   const { t } = useModuleTranslation()
-
   const navigate = useNavigate()
-
   const { open } = useModalStore()
-
   const queryClient = useQueryClient()
 
   const deleteMutation = useMutation(

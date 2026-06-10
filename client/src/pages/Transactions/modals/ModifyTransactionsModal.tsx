@@ -117,11 +117,8 @@ function ModifyTransactionsModal({
   onClose: () => void
 }) {
   const { t } = useModuleTranslation()
-
   const { open } = useModalStore()
-
   const queryClient = useQueryClient()
-
   const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
 
   const assets = assetsQuery.data ?? []

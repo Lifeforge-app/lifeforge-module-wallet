@@ -49,9 +49,7 @@ function ModifyTemplatesModal({
   }
 }) {
   const { t } = useModuleTranslation()
-
   const queryClient = useQueryClient()
-
   const { categoriesQuery, assetsQuery, ledgersQuery } = useWalletData()
 
   const assets = assetsQuery.data ?? []

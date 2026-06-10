@@ -20,9 +20,7 @@ import numberToCurrency from '../../../../../utils/numberToCurrency'
 
 function BreakdownDetails() {
   const { t } = useModuleTranslation()
-
   const { isAmountHidden } = useWalletStore()
-
   const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
 
   return (

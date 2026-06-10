@@ -7,7 +7,6 @@ import DetailItem from './DetailItem'
 
 function CategorySection() {
   const transaction = useTransactionDetails()
-
   const { categoriesQuery } = useWalletData()
 
   if (transaction.type === 'transfer') return null

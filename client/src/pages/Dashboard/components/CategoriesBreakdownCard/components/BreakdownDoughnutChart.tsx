@@ -11,9 +11,7 @@ import { CategoriesBreakdownContext } from '..'
 
 function BreakdownDoughnutChart() {
   const { t } = useModuleTranslation()
-
   const { isAmountHidden } = useWalletStore()
-
   const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
 
   const chartData = useMemo(() => {

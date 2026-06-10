@@ -26,7 +26,6 @@ function TransactionItem({
   viewOnly?: boolean
 }) {
   const queryClient = useQueryClient()
-
   const { open } = useModalStore()
 
   const deleteMutation = useMutation(

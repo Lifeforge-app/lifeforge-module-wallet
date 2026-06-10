@@ -24,11 +24,8 @@ import numberToCurrency from '../utils/numberToCurrency'
 
 export default function AssetsBalance() {
   const { assetsQuery } = useWalletData()
-
   const ref = useRef<HTMLDivElement>(null)
-
   const { width } = useDivSize(ref)
-
   const [showBalance, setShowBalance] = useState(false)
 
   return (

@@ -24,13 +24,9 @@ export type WalletTemplate = InferOutput<typeof forgeAPI.templates.list>[
 
 export function useWalletData() {
   const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
-
   const assetsQuery = useQuery(forgeAPI.assets.list.queryOptions())
-
   const ledgersQuery = useQuery(forgeAPI.ledgers.list.queryOptions())
-
   const categoriesQuery = useQuery(forgeAPI.categories.list.queryOptions())
-
   const templatesQuery = useQuery(forgeAPI.templates.list.queryOptions())
 
   const typesCountQuery = useQuery(

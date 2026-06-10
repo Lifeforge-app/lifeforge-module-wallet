@@ -19,11 +19,8 @@ import ModifyLedgerModal from './modals/ModifyLedgerModal'
 
 function Ledgers() {
   const { t } = useModuleTranslation()
-
   const { ledgersQuery } = useWalletData()
-
   const { hash } = useLocation()
-
   const { open } = useModalStore()
 
   const handleCreateLedger = () => {

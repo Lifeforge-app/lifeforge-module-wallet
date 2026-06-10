@@ -30,7 +30,6 @@ function ManageTemplatesModal({
   data: { choosing?: boolean }
 }) {
   const { t } = useModuleTranslation()
-
   const { open } = useModalStore()
 
   const [selectedTab, setSelectedTab] = useState<'income' | 'expenses'>(

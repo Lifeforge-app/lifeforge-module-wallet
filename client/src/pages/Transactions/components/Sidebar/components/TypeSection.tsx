@@ -15,7 +15,6 @@ const TYPES = [
 
 function TypeSection() {
   const { t } = useModuleTranslation()
-
   const { typesCountQuery } = useWalletData()
 
   return (

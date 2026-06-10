@@ -7,7 +7,6 @@ import { useWalletStore } from '@/stores/useWalletStore'
 
 function DateRangeSelector() {
   const { t } = useModuleTranslation()
-
   const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
 
   const handleClear = () => {

@@ -32,9 +32,7 @@ import RangeSelector from './components/RangeSelector'
 
 function StatisticChardCard() {
   const { t } = useModuleTranslation()
-
   const { bgTempPalette, derivedTheme } = usePersonalization()
-
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
 
   const chartDataQuery = useQuery(

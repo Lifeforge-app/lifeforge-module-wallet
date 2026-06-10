@@ -11,11 +11,8 @@ import LedgerSectionItem from './LedgerSectionItem'
 
 function LedgerSection() {
   const { t } = useModuleTranslation()
-
   const navigate = useNavigate()
-
   const { ledgersQuery } = useWalletData()
-
   const { selectedLedger } = useWalletStore()
 
   const ledgers = useMemo(

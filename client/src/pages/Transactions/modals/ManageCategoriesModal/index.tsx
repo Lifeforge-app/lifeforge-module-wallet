@@ -23,9 +23,7 @@ import CategoryItem from './components/CategoryItem'
 
 function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
-
   const { categoriesQuery } = useWalletData()
 
   const [selectedTab, setSelectedTab] = useState<'income' | 'expenses'>(

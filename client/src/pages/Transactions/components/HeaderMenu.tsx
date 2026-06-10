@@ -8,7 +8,6 @@ import ManageTemplatesModal from '../modals/ManageTemplatesModal'
 
 function HeaderMenu() {
   const { open } = useModalStore()
-
   const queryClient = useQueryClient()
 
   const handleRefresh = useCallback(() => {

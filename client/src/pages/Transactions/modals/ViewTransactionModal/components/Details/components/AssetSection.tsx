@@ -7,7 +7,6 @@ import DetailItem from './DetailItem'
 
 function AssetSection() {
   const transaction = useTransactionDetails()
-
   const { assetsQuery } = useWalletData()
 
   if (transaction.type === 'transfer') {

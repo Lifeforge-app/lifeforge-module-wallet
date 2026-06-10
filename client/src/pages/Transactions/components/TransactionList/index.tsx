@@ -9,9 +9,7 @@ import TransactionItem from './components/TransactionItem'
 
 function TransactionList() {
   const { transactionsQuery } = useWalletData()
-
   const [page, setPage] = useState(1)
-
   const transactions = useFilteredTransactions(transactionsQuery.data ?? [])
 
   useEffect(() => {

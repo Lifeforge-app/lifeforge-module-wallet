@@ -34,15 +34,10 @@ type RangeMode = (typeof RANGE_OPTIONS)[number]
 
 function Assets() {
   const queryClient = useQueryClient()
-
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
-
   const { assetsQuery } = useWalletData()
-
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
-
   const { hash } = useLocation()
 
   const totalBalance = useMemo(() => {

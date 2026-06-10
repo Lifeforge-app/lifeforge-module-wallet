@@ -21,9 +21,7 @@ import numberToCurrency from '../../../utils/numberToCurrency'
 
 function TransactionsCountCard() {
   const { typesCountQuery } = useWalletData()
-
   const { isAmountHidden } = useWalletStore()
-
   const { t } = useModuleTranslation()
 
   const typesCount = typesCountQuery.data ?? {}

@@ -18,7 +18,6 @@ function MiniCalendarContent({
   viewsFilter: ('income' | 'expenses' | 'transfer')[]
 }) {
   const { language } = usePersonalization()
-
   const [nextToSelect, setNextToSelect] = useState<'start' | 'end'>('start')
 
   const transactionCountQuery = useQuery(

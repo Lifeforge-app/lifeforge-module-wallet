@@ -12,9 +12,7 @@ import MiniCalendarToggleViewMenu from './components/MiniCalendarToggleViewMenu'
 
 function MiniCalendar() {
   const { t } = useModuleTranslation()
-
   const [currentMonth, setCurrentMonth] = useState(dayjs().month())
-
   const [currentYear, setCurrentYear] = useState(dayjs().year())
 
   const [viewsFilter, setViewsFilter] = useState<WalletTransaction['type'][]>([

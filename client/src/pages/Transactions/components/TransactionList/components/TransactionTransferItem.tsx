@@ -22,7 +22,6 @@ function TransactionTransferItem({
   transaction: WalletTransaction
 }) {
   const { open } = useModalStore()
-
   const { assetsQuery } = useWalletData()
 
   const assets = assetsQuery.data ?? []

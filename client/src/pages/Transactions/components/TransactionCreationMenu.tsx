@@ -21,9 +21,7 @@ function TransactionCreationMenu({
   variant: 'desktop' | 'mobile'
 }) {
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
-
   const { hash } = useLocation()
 
   useEffect(() => {

@@ -7,7 +7,6 @@ import DetailItem from './DetailItem'
 
 function ReceiptSection() {
   const transaction = useTransactionDetails()
-
   const { open } = useModalStore()
 
   if (!transaction.receipt) return null
