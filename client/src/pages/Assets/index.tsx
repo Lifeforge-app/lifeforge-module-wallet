@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
 import { useCallback, useEffect, useMemo } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useLocation } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   ContextMenuItem,
@@ -109,7 +109,6 @@ function Assets() {
                 checked={isAmountHidden}
                 icon="tabler:eye-off"
                 label="Hide Amount"
-                namespace="apps.lifeforge--wallet"
                 onClick={() => {
                   toggleAmountVisibility()
                 }}
@@ -119,13 +118,11 @@ function Assets() {
           styles: { menu: { minWidth: '15rem' } }
         }}
         icon="tabler:wallet"
-        namespace="apps.lifeforge--wallet"
         title="Assets"
         tKey="subsectionsTitleAndDesc"
       />
       <Flex align="center" gap="md" mb="lg">
         <SearchInput
-          namespace="apps.lifeforge--wallet"
           searchTarget="asset"
           value={searchQuery}
           onChange={setSearchQuery}
@@ -160,7 +157,6 @@ function Assets() {
               height="min-content"
               icon="tabler:currency-dollar"
               mb="lg"
-              namespace="apps.lifeforge--wallet"
               title="Total Assets"
             >
               <TotalBalance amount={totalBalance} display={{ sm: 'none' }} />
@@ -179,8 +175,7 @@ function Assets() {
               <EmptyStateScreen
                 icon="tabler:wallet-off"
                 message={{
-                  id: 'assets',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'assets'
                 }}
               />
             )}

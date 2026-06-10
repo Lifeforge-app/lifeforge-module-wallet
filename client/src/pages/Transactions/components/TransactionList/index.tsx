@@ -21,8 +21,7 @@ function TransactionList() {
       <EmptyStateScreen
         icon="tabler:filter-off"
         message={{
-          id: 'results',
-          namespace: 'apps.lifeforge--wallet'
+          id: 'results'
         }}
       />
     )

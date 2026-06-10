@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { AutoSizer } from 'react-virtualized'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Alert,
   Box,
@@ -53,7 +53,6 @@ function ManageTemplatesModal({
           ) : undefined
         }
         icon="tabler:template"
-        namespace="apps.lifeforge--wallet"
         title={`templates.${choosing ? 'choose' : 'manage'}`}
         onClose={onClose}
       />
@@ -113,8 +112,7 @@ function ManageTemplatesModal({
                 }}
                 icon="tabler:template-off"
                 message={{
-                  id: 'templates',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'templates'
                 }}
               />
             </Flex>

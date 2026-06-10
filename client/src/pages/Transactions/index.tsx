@@ -91,7 +91,6 @@ function Transactions() {
           }
         }}
         icon="tabler:arrows-exchange"
-        namespace="apps.lifeforge--wallet"
         title="Transactions"
         tKey="subsectionsTitleAndDesc"
       />
@@ -109,8 +108,7 @@ function Transactions() {
                   <EmptyStateScreen
                     icon="tabler:wallet-off"
                     message={{
-                      id: 'transactions',
-                      namespace: 'apps.lifeforge--wallet'
+                      id: 'transactions'
                     }}
                   />
                 )

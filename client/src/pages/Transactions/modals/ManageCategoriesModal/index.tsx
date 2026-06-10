@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { AutoSizer } from 'react-virtualized'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Button,
@@ -45,7 +45,6 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
           />
         }
         icon="tabler:apps"
-        namespace="apps.lifeforge--wallet"
         title="categories.manage"
         onClose={onClose}
       />
@@ -109,8 +108,7 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
                 }}
                 icon="tabler:apps-off"
                 message={{
-                  id: 'categories',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'categories'
                 }}
               />
             </Flex>

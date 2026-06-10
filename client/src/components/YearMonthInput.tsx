@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, ListboxInput, ListboxOption, Text } from '@lifeforge/ui'
 
 function YearMonthInput({
@@ -37,7 +37,6 @@ function YearMonthInput({
       <ListboxInput
         icon="tabler:calendar-month"
         label="Month"
-        namespace="apps.lifeforge--wallet"
         renderContent={() => (
           <Text truncate>
             {month !== null ? t(`dates.months.${month}`) : 'None'}
@@ -57,7 +56,6 @@ function YearMonthInput({
       <ListboxInput
         icon="tabler:calendar"
         label="Year"
-        namespace="apps.lifeforge--wallet"
         renderContent={() => <Text truncate>{year ?? 'None'}</Text>}
         value={year}
         onChange={setYear}

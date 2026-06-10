@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Flex,

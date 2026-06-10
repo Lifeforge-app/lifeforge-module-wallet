@@ -48,7 +48,7 @@ function LocationSection() {
             <EmptyStateScreen
               smaller
               icon="tabler:key-off"
-              message={{ id: 'mapKey', namespace: 'apps.lifeforge--wallet' }}
+              message={{ id: 'mapKey' }}
             />
           )
         }

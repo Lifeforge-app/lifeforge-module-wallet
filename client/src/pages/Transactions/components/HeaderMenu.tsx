@@ -30,13 +30,6 @@ function HeaderMenu() {
       <ContextMenuItem
         icon="tabler:apps"
         label="Manage Categories"
-        namespace="apps.lifeforge--wallet"
-        onClick={handleManageCategories}
-      />
-      <ContextMenuItem
-        icon="tabler:template"
-        label="Manage Templates"
-        namespace="apps.lifeforge--wallet"
         onClick={() => {
           open(ManageTemplatesModal, {})
         }}

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useLocation } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   ContextMenu,
@@ -43,25 +43,21 @@ function TransactionCreationMenu({
       <ContextMenuItem
         icon="tabler:plus"
         label="Add Manually"
-        namespace="apps.lifeforge--wallet"
         onClick={() => open(ModifyTransactionsModal, { type: 'create' })}
       />
       <ContextMenuItem
         icon="tabler:template"
         label="From Template"
-        namespace="apps.lifeforge--wallet"
         onClick={() => open(ManageTemplatesModal, { choosing: true })}
       />
       <ContextMenuItem
         icon="tabler:scan"
         label="Scan Receipt"
-        namespace="apps.lifeforge--wallet"
         onClick={() => open(ScanReceiptModal, {})}
       />
       <ContextMenuItem
         icon="tabler:brain"
         label="fromNaturalLanguage"
-        namespace="apps.lifeforge--wallet"
         onClick={() => open(NaturalLanguageModal, {})}
       />
     </>

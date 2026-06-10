@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
-import { useModuleTranslation } from '@lifeforge/localization'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   DateInput,
   Flex,
@@ -34,7 +34,6 @@ function BalanceChartFilters({
       <ListboxInput
         icon="tabler:history"
         label="range mode"
-        namespace="apps.lifeforge--wallet"
         renderContent={() => <Text>{t(`rangeModes.${rangeMode}`)}</Text>}
         value={rangeMode}
         onChange={setRangeMode}
@@ -52,7 +51,6 @@ function BalanceChartFilters({
           <DateInput
             icon="tabler:calendar-up"
             label="startDate"
-            namespace="apps.lifeforge--wallet"
             value={startDate}
             onChange={(date: Date | null) => {
               setStartDate(date)
@@ -65,7 +63,6 @@ function BalanceChartFilters({
           <DateInput
             icon="tabler:calendar-down"
             label="endDate"
-            namespace="apps.lifeforge--wallet"
             value={endDate}
             onChange={(date: Date | null) => {
               setEndDate(date)

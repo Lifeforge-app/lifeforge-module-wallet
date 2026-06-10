@@ -78,7 +78,6 @@ function SpendingHeatmap() {
     <>
       <ModuleHeader
         icon="uil:map-marker"
-        namespace="apps.lifeforge--wallet"
         title="Spending Heatmap"
         tKey="subsectionsTitleAndDesc"
       />
@@ -151,8 +150,7 @@ function SpendingHeatmap() {
                   <EmptyStateScreen
                     icon="tabler:map-pin-off"
                     message={{
-                      id: 'location',
-                      namespace: 'apps.lifeforge--wallet'
+                      id: 'location'
                     }}
                   />
                 )
@@ -162,8 +160,7 @@ function SpendingHeatmap() {
             <EmptyStateScreen
               icon="tabler:key-off"
               message={{
-                id: 'mapKey',
-                namespace: 'apps.lifeforge--wallet'
+                id: 'mapKey'
               }}
             />
           )

@@ -198,8 +198,7 @@ function BalanceChart({
         ) : (
           <EmptyStateScreen
             message={{
-              id: 'transactions',
-              namespace: 'apps.lifeforge--wallet'
+              id: 'transactions'
             }}
           />
         )

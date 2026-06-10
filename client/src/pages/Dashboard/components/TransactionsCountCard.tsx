@@ -1,6 +1,6 @@
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Link } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Button,
@@ -37,7 +37,6 @@ function TransactionsCountCard() {
       gridRowSpan={1}
       icon="tabler:arrows-exchange"
       minHeight="24rem"
-      namespace="apps.lifeforge--wallet"
       title="Transactions Count"
     >
       <Scrollbar>

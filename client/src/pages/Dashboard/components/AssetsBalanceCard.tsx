@@ -1,6 +1,6 @@
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Link, useNavigate } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   Card,
@@ -37,7 +37,6 @@ function AssetsBalanceCard() {
       gridRowSpan={2}
       icon="tabler:wallet"
       minHeight={{ base: '24rem', xl: '0' }}
-      namespace="apps.lifeforge--wallet"
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
@@ -99,8 +98,7 @@ function AssetsBalanceCard() {
               }}
               icon="tabler:wallet-off"
               message={{
-                id: 'assets',
-                namespace: 'apps.lifeforge--wallet'
+                id: 'assets'
               }}
             />
           )

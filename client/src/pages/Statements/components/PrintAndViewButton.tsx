@@ -30,7 +30,6 @@ function PrintAndViewButton({
       <Button
         icon="tabler:eye"
         mt="sm"
-        namespace="apps.lifeforge--wallet"
         variant="secondary"
         onClick={() => {
           setShowStatement(!showStatement)

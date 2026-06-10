@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Bar,
   CartesianGrid,
@@ -11,6 +10,7 @@ import {
   YAxis
 } from 'recharts'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Card,
@@ -125,7 +125,6 @@ function StatisticChardCard() {
       gridColumnSpan={{ xl: 2 }}
       gridRowSpan={2}
       icon="tabler:chart-dots"
-      namespace="apps.lifeforge--wallet"
       title="Statistics"
     >
       <RangeSelector
@@ -139,8 +138,7 @@ function StatisticChardCard() {
             chartData.length === 0 ? (
               <EmptyStateScreen
                 message={{
-                  id: 'transactions',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'transactions'
                 }}
               />
             ) : (

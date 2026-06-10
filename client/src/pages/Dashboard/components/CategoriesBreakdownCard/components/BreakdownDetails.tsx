@@ -1,8 +1,8 @@
 import { useContext } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Link } from 'react-router'
 import { AutoSizer } from 'react-virtualized'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Flex,

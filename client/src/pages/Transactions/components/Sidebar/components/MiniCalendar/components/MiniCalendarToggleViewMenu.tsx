@@ -1,5 +1,4 @@
 import { useModuleTranslation } from '@lifeforge/localization'
-
 import { ContextMenu, ContextMenuGroup, ContextMenuItem } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/pages/Transactions'

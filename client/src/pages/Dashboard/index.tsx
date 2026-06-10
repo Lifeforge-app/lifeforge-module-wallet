@@ -11,9 +11,9 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   ContextMenu,
@@ -71,7 +71,6 @@ function WalletDashboard() {
             <ContextMenuItem
               icon="tabler:plus"
               label="Add Manually"
-              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 navigate('/wallet/transactions#new')
               }}
@@ -79,7 +78,6 @@ function WalletDashboard() {
             <ContextMenuItem
               icon="tabler:scan"
               label="Scan Receipt"
-              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 navigate('/wallet/transactions#scan')
               }}
@@ -92,7 +90,6 @@ function WalletDashboard() {
               checked={isAmountHidden}
               icon="tabler:eye-off"
               label="Hide Amount"
-              namespace="apps.lifeforge--wallet"
               onClick={() => {
                 toggleAmountVisibility()
               }}
@@ -118,7 +115,6 @@ function WalletDashboard() {
         <ContextMenuItem
           icon="tabler:plus"
           label="Add Manually"
-          namespace="apps.lifeforge--wallet"
           onClick={() => {
             navigate('/wallet/transactions#new')
           }}
@@ -126,7 +122,6 @@ function WalletDashboard() {
         <ContextMenuItem
           icon="tabler:scan"
           label="Scan Receipt"
-          namespace="apps.lifeforge--wallet"
           onClick={() => {
             navigate('/wallet/transactions#scan')
           }}

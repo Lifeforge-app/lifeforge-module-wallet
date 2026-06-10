@@ -45,7 +45,6 @@ function BalanceChartModal({
           </Text>
         }
         icon="tabler:chart-line"
-        namespace="apps.lifeforge--wallet"
         title="assetsBalanceChart"
         onClose={onClose}
       />

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { SidebarItem } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'

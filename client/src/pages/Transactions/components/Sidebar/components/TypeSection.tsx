@@ -1,5 +1,4 @@
 import { useModuleTranslation } from '@lifeforge/localization'
-
 import { SidebarTitle } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'

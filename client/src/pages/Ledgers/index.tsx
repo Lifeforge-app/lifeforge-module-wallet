@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useLocation } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   EmptyStateScreen,
@@ -53,7 +53,6 @@ function Ledgers() {
           </Button>
         }
         icon="tabler:book"
-        namespace="apps.lifeforge--wallet"
         title="Ledgers"
         tKey="subsectionsTitleAndDesc"
       />
@@ -70,8 +69,7 @@ function Ledgers() {
               <EmptyStateScreen
                 icon="tabler:wallet-off"
                 message={{
-                  id: 'ledger',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'ledger'
                 }}
               />
             )}

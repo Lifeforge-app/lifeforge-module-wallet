@@ -28,7 +28,6 @@ function TransactionsCard() {
       gridRowSpan={6}
       icon="tabler:list"
       minHeight="0"
-      namespace="apps.lifeforge--wallet"
       title="Recent Transactions"
     >
       <WithQuery query={transactionsQuery}>
@@ -41,8 +40,7 @@ function TransactionsCard() {
                 <EmptyStateScreen
                   icon="tabler:wallet-off"
                   message={{
-                    id: 'transactions',
-                    namespace: 'apps.lifeforge--wallet'
+                    id: 'transactions'
                   }}
                 />
               )}

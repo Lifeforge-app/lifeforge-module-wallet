@@ -41,7 +41,6 @@ export default function AssetsBalance() {
         />
       }
       icon="tabler:wallet"
-      namespace="apps.lifeforge--wallet"
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
@@ -52,7 +51,6 @@ export default function AssetsBalance() {
               icon="tabler:wallet-off"
               message={{
                 id: 'assets',
-                namespace: 'apps.lifeforge--wallet',
                 tKey: 'widgets.assetsBalance'
               }}
             />
@@ -134,7 +132,6 @@ export default function AssetsBalance() {
 }
 
 export const config: WidgetConfig = {
-  namespace: 'apps.lifeforge--wallet',
   id: 'assetsBalance',
   icon: 'tabler:coin'
 }

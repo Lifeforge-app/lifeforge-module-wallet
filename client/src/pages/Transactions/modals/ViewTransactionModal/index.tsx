@@ -18,7 +18,6 @@ function ViewTransactionModal({
     <Stack gap="xl" minWidth="30vw">
       <ModalHeader
         icon="tabler:eye"
-        namespace="apps.lifeforge--wallet"
         title="transactions.view"
         onClose={onClose}
       />

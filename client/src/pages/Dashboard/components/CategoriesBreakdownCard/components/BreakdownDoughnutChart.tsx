@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Bordered, Box, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'

@@ -84,8 +84,7 @@ function BreakdownContent({
       <EmptyStateScreen
         icon="tabler:wallet-off"
         message={{
-          id: 'transactions',
-          namespace: 'apps.lifeforge--wallet'
+          id: 'transactions'
         }}
       />
     )
@@ -109,8 +108,7 @@ function BreakdownContent({
               <EmptyStateScreen
                 icon="tabler:wallet-off"
                 message={{
-                  id: 'transactions',
-                  namespace: 'apps.lifeforge--wallet'
+                  id: 'transactions'
                 }}
               />
             ) : (

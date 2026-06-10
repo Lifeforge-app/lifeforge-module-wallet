@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useCallback, useState } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Box, SidebarTitle } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/pages/Transactions'

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { SidebarTitle, WithQuery } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
