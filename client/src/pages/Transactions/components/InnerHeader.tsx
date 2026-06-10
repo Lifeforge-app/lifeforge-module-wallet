@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   Button,
@@ -31,7 +31,7 @@ function InnerHeader() {
 
   const { setIsSidebarOpen } = useModuleSidebarState()
 
-  const { t } = useTranslation(['common.buttons', 'apps.lifeforge--wallet'])
+  const { t } = useModuleTranslation(['common.buttons'])
 
   const assets = assetsQuery.data ?? []
 

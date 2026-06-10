@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { SidebarTitle } from '@lifeforge/ui'
 
@@ -14,7 +14,7 @@ const TYPES = [
 ]
 
 function TypeSection() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { typesCountQuery } = useWalletData()
 

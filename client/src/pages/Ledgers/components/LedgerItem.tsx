@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
 import {
@@ -22,7 +22,7 @@ import { forgeAPI } from '@/manifest'
 import ModifyLedgerModal from '../modals/ModifyLedgerModal'
 
 function LedgerItem({ ledger }: { ledger: WalletLedger }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const navigate = useNavigate()
 

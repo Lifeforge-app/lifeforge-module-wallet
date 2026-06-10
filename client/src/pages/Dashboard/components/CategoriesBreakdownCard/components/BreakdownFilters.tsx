@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   Flex,
@@ -27,7 +27,7 @@ function BreakdownFilters({
   yearsOptions: number[]
   monthsOptions: number[]
 }) {
-  const { t } = useTranslation(['common.misc', 'apps.lifeforge--wallet'])
+  const { t } = useModuleTranslation(['common.misc'])
 
   return (
     <Stack>

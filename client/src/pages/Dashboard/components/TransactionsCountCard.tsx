@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Link } from 'react-router'
 
 import {
@@ -24,7 +24,7 @@ function TransactionsCountCard() {
 
   const { isAmountHidden } = useWalletStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const typesCount = typesCountQuery.data ?? {}
 

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   Box,
@@ -26,7 +26,7 @@ function CategoryItem({ category }: { category: WalletCategory }) {
 
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const deleteMutation = useMutation(
     forgeAPI.categories.remove.input({ id: category.id }).mutationOptions({

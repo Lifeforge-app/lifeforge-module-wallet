@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
 import { SidebarTitle } from '@lifeforge/ui'
@@ -9,7 +9,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import AssetsSectionItem from './AssetsSectionItem'
 
 function AssetsSection() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { assetsQuery } = useWalletData()
 

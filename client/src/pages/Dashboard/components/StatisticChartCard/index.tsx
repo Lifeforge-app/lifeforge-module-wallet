@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Bar,
   CartesianGrid,
@@ -31,7 +31,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import RangeSelector from './components/RangeSelector'
 
 function StatisticChardCard() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { bgTempPalette, derivedTheme } = usePersonalization()
 

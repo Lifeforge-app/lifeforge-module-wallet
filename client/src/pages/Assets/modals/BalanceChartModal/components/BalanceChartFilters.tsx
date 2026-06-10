@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   DateInput,
@@ -27,7 +27,7 @@ function BalanceChartFilters({
   endDate: Date | null
   setEndDate: (date: Date | null) => void
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   return (
     <Stack gap="lg" mb="2xl">

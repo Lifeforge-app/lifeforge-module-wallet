@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   SidebarItem,
@@ -19,7 +19,7 @@ function TypeSectionItem({
   label: string
   amount: number | undefined
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { bgTempPalette } = usePersonalization()
 

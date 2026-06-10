@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useLocation } from 'react-router'
 
 import {
@@ -18,7 +18,7 @@ import LedgerItem from './components/LedgerItem'
 import ModifyLedgerModal from './modals/ModifyLedgerModal'
 
 function Ledgers() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { ledgersQuery } = useWalletData()
 

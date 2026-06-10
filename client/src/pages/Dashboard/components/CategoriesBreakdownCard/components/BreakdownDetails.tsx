@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Link } from 'react-router'
 import { AutoSizer } from 'react-virtualized'
 
@@ -19,7 +19,7 @@ import { CategoriesBreakdownContext } from '..'
 import numberToCurrency from '../../../../../utils/numberToCurrency'
 
 function BreakdownDetails() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { isAmountHidden } = useWalletStore()
 

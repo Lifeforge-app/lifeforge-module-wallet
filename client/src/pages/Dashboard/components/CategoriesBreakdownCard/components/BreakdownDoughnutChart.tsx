@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
 import { Bordered, Box, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
@@ -10,7 +10,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import { CategoriesBreakdownContext } from '..'
 
 function BreakdownDoughnutChart() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { isAmountHidden } = useWalletStore()
 

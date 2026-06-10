@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { SidebarTitle, WithQuery, useModalStore } from '@lifeforge/ui'
 
@@ -12,7 +12,7 @@ import CategoriesSectionItem from './CategoriesSectionItem'
 function CategoriesSection() {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { categoriesQuery } = useWalletData()
 

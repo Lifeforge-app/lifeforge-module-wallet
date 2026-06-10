@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
 import { SidebarTitle, WithQuery } from '@lifeforge/ui'
@@ -10,7 +10,7 @@ import { useWalletStore } from '@/stores/useWalletStore'
 import LedgerSectionItem from './LedgerSectionItem'
 
 function LedgerSection() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const navigate = useNavigate()
 

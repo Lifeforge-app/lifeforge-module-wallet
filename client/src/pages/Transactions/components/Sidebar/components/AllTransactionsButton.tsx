@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { SidebarItem } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
 function AllTransactionsButton() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const {
     selectedType,

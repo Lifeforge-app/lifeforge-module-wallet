@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { usePromiseLoading } from '@lifeforge/api'
 import {
@@ -18,7 +18,7 @@ import {
 import { forgeAPI } from '@/manifest'
 
 function ManagePromptsModal({ onClose }: { onClose: () => void }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const messagesQuery = useQuery(
     forgeAPI.transactions.prompts.get.queryOptions()

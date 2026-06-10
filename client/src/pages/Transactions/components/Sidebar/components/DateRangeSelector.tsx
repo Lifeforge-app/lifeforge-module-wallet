@@ -1,12 +1,12 @@
 import dayjs from 'dayjs'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { DateInput, SidebarTitle, Stack } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
 function DateRangeSelector() {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
 

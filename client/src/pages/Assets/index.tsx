@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
 import { useCallback, useEffect, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useLocation } from 'react-router'
 
 import {
@@ -37,7 +37,7 @@ function Assets() {
 
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { assetsQuery } = useWalletData()
 

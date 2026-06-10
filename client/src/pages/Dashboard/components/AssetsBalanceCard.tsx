@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Link, useNavigate } from 'react-router'
 
 import {
@@ -27,7 +27,7 @@ function AssetsBalanceCard() {
 
   const { isAmountHidden } = useWalletStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   return (
     <Widget

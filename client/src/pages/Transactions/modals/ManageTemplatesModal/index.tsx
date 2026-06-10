@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { AutoSizer } from 'react-virtualized'
 
 import {
@@ -29,7 +29,7 @@ function ManageTemplatesModal({
   onClose: () => void
   data: { choosing?: boolean }
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { open } = useModalStore()
 

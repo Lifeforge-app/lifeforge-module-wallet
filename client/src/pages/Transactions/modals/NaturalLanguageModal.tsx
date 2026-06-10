@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import z from 'zod'
 
 import {
@@ -35,7 +35,7 @@ function NaturalLanguageModal({
 }) {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const mutation = useMutation(
     forgeAPI.transactions.fromNaturalLanguage.mutationOptions()

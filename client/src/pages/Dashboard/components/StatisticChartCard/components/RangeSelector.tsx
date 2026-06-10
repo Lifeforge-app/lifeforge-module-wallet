@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import {
   Box,
@@ -20,7 +20,7 @@ function RangeSelector({
   setRange: (value: 'week' | 'month' | 'ytd') => void
   display?: ComponentProps<typeof Box>['display']
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   return (
     <Box display={display}>

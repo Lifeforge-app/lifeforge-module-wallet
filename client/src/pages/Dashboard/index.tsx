@@ -11,7 +11,7 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useNavigate } from 'react-router'
 
 import {
@@ -48,7 +48,7 @@ ChartJS.register(
 function WalletDashboard() {
   const navigate = useNavigate()
 
-  const { t } = useTranslation(['common.buttons', 'apps.lifeforge--wallet'])
+  const { t } = useModuleTranslation(['common.buttons'])
 
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
 

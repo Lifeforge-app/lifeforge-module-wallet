@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { ContextMenu, ContextMenuGroup, ContextMenuItem } from '@lifeforge/ui'
 
@@ -17,7 +17,7 @@ function MiniCalendarToggleViewMenu({
   viewsFilter: WalletTransaction['type'][]
   toggleView: (view: WalletTransaction['type']) => void
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   return (
     <ContextMenu>

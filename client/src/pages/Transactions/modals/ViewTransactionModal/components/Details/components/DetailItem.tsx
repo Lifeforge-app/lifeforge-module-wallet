@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import { Card, Flex, Icon, Text, surface } from '@lifeforge/ui'
 
@@ -13,7 +13,7 @@ function DetailItem({
   vertical?: boolean
   children: React.ReactElement
 }) {
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   return (
     <Card

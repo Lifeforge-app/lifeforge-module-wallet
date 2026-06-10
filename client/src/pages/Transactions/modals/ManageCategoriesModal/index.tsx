@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { AutoSizer } from 'react-virtualized'
 
 import {
@@ -24,7 +24,7 @@ import CategoryItem from './components/CategoryItem'
 function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.lifeforge--wallet')
+  const { t } = useModuleTranslation()
 
   const { categoriesQuery } = useWalletData()
 
