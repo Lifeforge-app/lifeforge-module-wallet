@@ -48,6 +48,7 @@ function CategoriesSectionItem({
       active={selectedCategory === id}
       icon={memoizedIcon}
       label={label}
+      namespace={id ? false : undefined}
       number={amount}
       sideStripColor={color}
       onCancelButtonClick={id !== null ? handleCancelButtonClick : undefined}

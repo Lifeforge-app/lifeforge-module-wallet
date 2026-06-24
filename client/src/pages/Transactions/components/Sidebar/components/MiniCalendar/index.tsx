@@ -37,7 +37,7 @@ function MiniCalendar() {
             viewsFilter={viewsFilter}
           />
         }
-        label={t('sidebar.calendarHeatmap')}
+        label="calendarHeatmap"
       />
       <Box px="xl" width="100%">
         <MiniCalendarHeader

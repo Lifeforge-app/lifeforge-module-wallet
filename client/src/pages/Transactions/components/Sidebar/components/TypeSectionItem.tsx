@@ -61,6 +61,7 @@ function TypeSectionItem({
           ? `sidebar.${_.camelCase(label)}`
           : `transactionTypes.${_.camelCase(label)}`
       )}
+      namespace={false}
       number={amount}
       sideStripColor={sidebarStripColor}
       onCancelButtonClick={

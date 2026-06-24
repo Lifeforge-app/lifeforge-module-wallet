@@ -40,6 +40,7 @@ export default function LedgerSectionItem({
       active={active}
       icon={icon}
       label={label}
+      namespace={id ? false : undefined}
       number={amount}
       sideStripColor={color}
       onCancelButtonClick={id !== null ? handleCancelButtonClick : undefined}

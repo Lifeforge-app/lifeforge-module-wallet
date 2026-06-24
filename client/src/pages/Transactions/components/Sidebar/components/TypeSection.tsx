@@ -1,4 +1,3 @@
-import { useModuleTranslation } from '@lifeforge/localization'
 import { SidebarTitle } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
@@ -13,12 +12,11 @@ const TYPES = [
 ]
 
 function TypeSection() {
-  const { t } = useModuleTranslation()
   const { typesCountQuery } = useWalletData()
 
   return (
     <>
-      <SidebarTitle label={t('sidebar.transactionTypes')} />
+      <SidebarTitle label="transactionTypes" />
       {TYPES.map(([icon, name]) => (
         <TypeSectionItem
           key={name}

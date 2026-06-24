@@ -20,7 +20,7 @@ function LedgerSection() {
       [
         {
           icon: 'tabler:book',
-          name: t('sidebar.allLedgers'),
+          name: 'allLedgers',
           color: 'white',
           id: null,
           amount: undefined
@@ -38,7 +38,7 @@ function LedgerSection() {
             navigate('/wallet/ledgers#new')
           }
         }}
-        label={t('sidebar.ledgers')}
+        label="ledgers"
       />
       <WithQuery query={ledgersQuery}>
         {() => (

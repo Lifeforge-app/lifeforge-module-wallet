@@ -22,7 +22,7 @@ function AssetsSection() {
       [
         {
           icon: 'tabler:coin',
-          name: t('sidebar.allAssets'),
+          name: 'allAssets',
           color: 'white',
           id: null,
           amount: undefined
@@ -38,7 +38,7 @@ function AssetsSection() {
           icon: 'tabler:plus',
           onClick: handleActionButtonClick
         }}
-        label={t('sidebar.assets')}
+        label="assets"
       />
       {ITEMS.map(({ icon, name, id, amount }) => (
         <AssetsSectionItem

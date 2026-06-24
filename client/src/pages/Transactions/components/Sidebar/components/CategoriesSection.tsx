@@ -20,7 +20,7 @@ function CategoriesSection() {
       [
         {
           icon: 'tabler:tag',
-          name: t('sidebar.allCategories'),
+          name: 'All Categories',
           color: 'white',
           type: null as 'income' | 'expenses' | null,
           amount: undefined as number | undefined,
@@ -56,7 +56,7 @@ function CategoriesSection() {
           icon: 'tabler:plus',
           onClick: handleActionButtonClick
         }}
-        label={t('sidebar.categories')}
+        label="categories"
       />
       <WithQuery query={categoriesQuery}>
         {() => (

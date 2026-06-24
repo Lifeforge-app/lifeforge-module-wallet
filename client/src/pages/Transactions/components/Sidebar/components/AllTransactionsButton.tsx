@@ -44,7 +44,7 @@ function AllTransactionsButton() {
     <SidebarItem
       active={activeState}
       icon="tabler:list"
-      label={t('sidebar.allTransactions')}
+      label="allTransactions"
       onClick={handleAllTransactionsClick}
     />
   )

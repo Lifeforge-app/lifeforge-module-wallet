@@ -34,6 +34,7 @@ function AssetsSectionItem({
       active={selectedAsset === id || (selectedAsset === null && id === null)}
       icon={icon}
       label={label}
+      namespace={id ? false : undefined}
       number={amount}
       onCancelButtonClick={id !== null ? handleCancelButtonClick : undefined}
       onClick={handleClick}

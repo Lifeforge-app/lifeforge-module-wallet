@@ -57,7 +57,7 @@ function DateRangeSelector() {
               }
             : undefined
         }
-        label={t('sidebar.dateRange')}
+        label="dateRange"
       />
       <Stack gap="md" px="md">
         <DateInput
