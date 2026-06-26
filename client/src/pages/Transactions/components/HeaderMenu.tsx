@@ -16,10 +16,6 @@ function HeaderMenu() {
     })
   }, [queryClient])
 
-  const handleManageCategories = useCallback(() => {
-    open(ManageCategoriesModal, {})
-  }, [])
-
   return (
     <>
       <ContextMenuItem
@@ -30,9 +26,12 @@ function HeaderMenu() {
       <ContextMenuItem
         icon="tabler:apps"
         label="Manage Categories"
-        onClick={() => {
-          open(ManageTemplatesModal, {})
-        }}
+        onClick={() => open(ManageCategoriesModal, {})}
+      />
+      <ContextMenuItem
+        icon="tabler:template"
+        label="Manage Templates"
+        onClick={() => open(ManageTemplatesModal, {})}
       />
     </>
   )

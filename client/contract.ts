@@ -234,6 +234,150 @@ export const contract = {
         "NOT_FOUND": true
       }
     },
+    "createMultiple": {
+      "method": "post",
+      "description": "Create multiple new transactions",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "transactions": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "amount": {
+                        "type": "number"
+                      },
+                      "date": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "amount",
+                      "date"
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "income",
+                              "expenses"
+                            ]
+                          },
+                          "particulars": {
+                            "type": "string"
+                          },
+                          "asset": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "ledgers": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "location": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "formattedAddress": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "object",
+                                    "properties": {
+                                      "latitude": {
+                                        "type": "number"
+                                      },
+                                      "longitude": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "latitude",
+                                      "longitude"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "formattedAddress",
+                                  "location"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "particulars",
+                          "asset",
+                          "category",
+                          "ledgers"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "const": "transfer"
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "type"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "transactions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "CREATED": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "null"
+        }
+      }
+    },
     "getById": {
       "method": "get",
       "description": "Get wallet transaction by ID",
@@ -1121,80 +1265,83 @@ export const contract = {
       "output": {
         "OK": {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "object",
-          "properties": {
-            "date": {
-              "type": "string"
-            },
-            "amount": {
-              "type": "number"
-            },
-            "type": {
-              "type": "string",
-              "enum": [
-                "income",
-                "expenses",
-                "transfer"
-              ]
-            },
-            "category": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "particulars": {
-              "type": "string"
-            },
-            "location_coords": {
-              "type": "object",
-              "properties": {
-                "lon": {
-                  "type": "number"
-                },
-                "lat": {
-                  "type": "number"
-                }
-              },
-              "required": [
-                "lon",
-                "lat"
-              ],
-              "additionalProperties": false
-            },
-            "location_name": {
-              "type": "string"
-            },
-            "asset": {
-              "type": "string"
-            },
-            "from": {
-              "type": "string"
-            },
-            "to": {
-              "type": "string"
-            },
-            "ledgers": {
-              "type": "array",
-              "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
                 "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "income",
+                  "expenses",
+                  "transfer"
+                ]
+              },
+              "category": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "particulars": {
+                "type": "string"
+              },
+              "location_coords": {
+                "type": "object",
+                "properties": {
+                  "lon": {
+                    "type": "number"
+                  },
+                  "lat": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "lon",
+                  "lat"
+                ],
+                "additionalProperties": false
+              },
+              "location_name": {
+                "type": "string"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "ledgers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
-            }
-          },
-          "required": [
-            "date",
-            "amount",
-            "type",
-            "category",
-            "particulars",
-            "location_coords",
-            "location_name"
-          ],
-          "additionalProperties": false
+            },
+            "required": [
+              "date",
+              "amount",
+              "type",
+              "category",
+              "particulars",
+              "location_coords",
+              "location_name"
+            ],
+            "additionalProperties": false
+          }
         }
       }
     },

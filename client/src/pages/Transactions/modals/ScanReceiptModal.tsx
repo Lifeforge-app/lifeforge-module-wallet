@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   CheckboxField,
@@ -38,6 +39,7 @@ function ScanReceiptModal({
   }
 }) {
   const { open } = useModalStore()
+  const { t } = useModuleTranslation()
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -64,7 +66,7 @@ function ScanReceiptModal({
           const fileValue = values.receipt
 
           if (fileValue.type === 'empty' || fileValue.type === 'existing') {
-            toast.error('Please select a file')
+            toast.error(t('toasts.selectFile'))
 
             return
           }
@@ -77,7 +79,7 @@ function ScanReceiptModal({
                 : null
 
           if (!theFile) {
-            toast.error('Please select a file')
+            toast.error(t('toasts.selectFile'))
 
             return
           }

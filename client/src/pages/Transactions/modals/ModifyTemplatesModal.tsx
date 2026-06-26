@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
+
+import { useForgeMutation } from '@lifeforge/api'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
@@ -11,8 +12,7 @@ import {
   LocationField,
   TAILWIND_PALETTE,
   TextField,
-  createDefaultValues,
-  toast
+  createDefaultValues
 } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
@@ -49,7 +49,6 @@ function ModifyTemplatesModal({
   }
 }) {
   const { t } = useModuleTranslation()
-  const queryClient = useQueryClient()
   const { categoriesQuery, assetsQuery, ledgersQuery } = useWalletData()
 
   const assets = assetsQuery.data ?? []
@@ -58,22 +57,14 @@ function ModifyTemplatesModal({
 
   const ledgers = ledgersQuery.data ?? []
 
-  const mutation = useMutation(
-    (type === 'create'
-      ? forgeAPI.templates.create
-      : forgeAPI.templates.update.input({
-          id: initialData?.id || ''!
-        })
-    ).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'templates']
-        })
-      },
-      onError: error => {
-        toast.error(`Failed to ${type} template: ${error.message}`)
-      }
-    })
+  const createMutation = useForgeMutation(
+    forgeAPI.templates.create,
+    { action: 'create', queryKey: forgeAPI.templates.key }
+  )
+
+  const updateMutation = useForgeMutation(
+    forgeAPI.templates.update.input({ id: initialData?.id || ''! }),
+    { action: 'update', queryKey: forgeAPI.templates.key }
   )
 
   const form = useForm({
@@ -124,7 +115,9 @@ function ModifyTemplatesModal({
     <FormModal
       form={form}
       submissionConfig={{
-        handler: mutation.mutateAsync,
+        handler: data => {
+          (type === 'create' ? createMutation : updateMutation).mutateAsync(data)
+        },
         template: type
       }}
       uiConfig={{

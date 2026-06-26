@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
+import { useForgeMutation } from '@lifeforge/api'
 import {
   Box,
   Card,
@@ -10,7 +11,6 @@ import {
   Icon,
   Text,
   surface,
-  toast,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -29,22 +29,12 @@ function TemplateItem({
   choosing: boolean
   onClose: () => void
 }) {
-  const queryClient = useQueryClient()
+  const { open } = useModalStore()
   const categoriesQuery = useQuery(forgeAPI.categories.list.queryOptions())
 
-  const categories = categoriesQuery.data ?? []
-
-  const { open } = useModalStore()
-
-  const deleteMutation = useMutation(
-    forgeAPI.templates.remove.input({ id: template.id }).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet', 'templates'] })
-      },
-      onError: () => {
-        toast.error('Failed to delete template')
-      }
-    })
+  const deleteMutation = useForgeMutation(
+    forgeAPI.templates.remove.input({ id: template.id }),
+    { action: 'delete', queryKey: forgeAPI.templates.key }
   )
 
   return (
@@ -70,7 +60,7 @@ function TemplateItem({
     >
       <Flex align="center" gap="md" minWidth="0" width="100%">
         {(() => {
-          const targetCategory = categories.find(
+          const targetCategory = (categoriesQuery.data ?? []).find(
             cat => cat.id === template.category
           )
 

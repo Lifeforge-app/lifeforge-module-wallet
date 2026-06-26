@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
-import { usePromiseLoading } from '@lifeforge/api'
+import { useForgeMutation, usePromiseLoading } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Alert,
@@ -33,15 +33,17 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
     expenses: ''
   })
 
-  const savePromptsMutation = useMutation(
-    forgeAPI.transactions.prompts.update.mutationOptions({
+  const savePromptsMutation = useForgeMutation(
+    forgeAPI.transactions.prompts.update,
+    {
+      action: 'save',
       onSuccess: () => {
-        toast.success('Prompts saved successfully')
+        toast.success(t('toasts.savePrompts.success'))
         messagesQuery.refetch()
         onClose()
       },
-      onError: () => toast.error('Failed to save prompts')
-    })
+      onError: () => toast.error(t('toasts.savePrompts.error'))
+    }
   )
 
   async function handleAutoGeneratePrompt(field: 'income' | 'expenses') {
@@ -53,7 +55,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
 
       setPrompts(prev => ({ ...prev, [field]: response }))
     } catch {
-      toast.error('Failed to auto-generate prompt using AI')
+      toast.error(t('toasts.autoGeneratePrompt.error'))
     }
   }
 

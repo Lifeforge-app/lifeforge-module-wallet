@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForgeMutation } from '@lifeforge/api'
 import { useNavigate } from 'react-router'
 
 import { useModuleTranslation } from '@lifeforge/localization'
@@ -12,7 +12,6 @@ import {
   Icon,
   Stack,
   Text,
-  toast,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -25,17 +24,10 @@ function LedgerItem({ ledger }: { ledger: WalletLedger }) {
   const { t } = useModuleTranslation()
   const navigate = useNavigate()
   const { open } = useModalStore()
-  const queryClient = useQueryClient()
 
-  const deleteMutation = useMutation(
-    forgeAPI.ledgers.remove.input({ id: ledger.id }).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet', 'ledgers'] })
-      },
-      onError: (error: Error) => {
-        toast.error('Failed to delete ledger: ' + error.message)
-      }
-    })
+  const deleteMutation = useForgeMutation(
+    forgeAPI.ledgers.remove.input({ id: ledger.id }),
+    { action: 'delete', queryKey: forgeAPI.ledgers.key }
   )
 
   const handleEditLedger = () =>

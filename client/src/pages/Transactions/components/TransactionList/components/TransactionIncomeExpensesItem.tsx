@@ -85,7 +85,7 @@ function TransactionIncomeExpensesItem({
           <Flex align="center" gap="sm" minWidth="0">
             <Text truncate size="lg" weight="medium">
               {transaction.particulars}{' '}
-              {transaction.location_name !== '' && (
+              {transaction.location_name && (
                 <>
                   <Text color="muted">@</Text> {transaction.location_name}
                 </>

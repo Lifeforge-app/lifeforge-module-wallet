@@ -1,11 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
+import { useForgeMutation } from '@lifeforge/api'
 import {
   Box,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
-  toast,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -16,18 +14,11 @@ import BalanceChartModal from '../modals/BalanceChartModal'
 import ModifyAssetModal from '../modals/ModifyAssetModal'
 
 function AssetContextMenu({ asset }: { asset: WalletAsset }) {
-  const queryClient = useQueryClient()
   const { open } = useModalStore()
 
-  const deleteMutation = useMutation(
-    forgeAPI.assets.remove.input({ id: asset.id }).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet', 'assets'] })
-      },
-      onError: (error: Error) => {
-        toast.error('Failed to delete asset: ' + error.message)
-      }
-    })
+  const deleteMutation = useForgeMutation(
+    forgeAPI.assets.remove.input({ id: asset.id }),
+    { action: 'delete', queryKey: forgeAPI.assets.key }
   )
 
   const handleDelete = () =>

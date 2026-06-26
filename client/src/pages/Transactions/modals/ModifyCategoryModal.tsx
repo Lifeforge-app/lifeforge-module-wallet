@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
+
+import { useForgeMutation } from '@lifeforge/api'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
@@ -11,8 +12,7 @@ import {
   ListboxField,
   TAILWIND_PALETTE,
   TextField,
-  createDefaultValues,
-  toast
+  createDefaultValues
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -41,27 +41,16 @@ function ModifyCategoryModal({
   }
   onClose: () => void
 }) {
-  const queryClient = useQueryClient()
   const { t } = useModuleTranslation()
 
-  const mutation = useMutation(
-    (type === 'create'
-      ? forgeAPI.categories.create
-      : forgeAPI.categories.update.input({
-          id: initialData?.id || ''!
-        })
-    ).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'categories']
-        })
-      },
-      onError: error => {
-        toast.error(
-          `Failed to ${type === 'create' ? 'create' : 'update'} category: ${error.message}`
-        )
-      }
-    })
+  const createMutation = useForgeMutation(
+    forgeAPI.categories.create,
+    { action: 'create', queryKey: forgeAPI.categories.key }
+  )
+
+  const updateMutation = useForgeMutation(
+    forgeAPI.categories.update.input({ id: initialData?.id || ''! }),
+    { action: 'update', queryKey: forgeAPI.categories.key }
   )
 
   const form = useForm({
@@ -77,7 +66,9 @@ function ModifyCategoryModal({
     <FormModal
       form={form}
       submissionConfig={{
-        handler: mutation.mutateAsync,
+        handler: data => {
+          (type === 'create' ? createMutation : updateMutation).mutateAsync(data)
+        },
         template: type === 'update' ? 'update' : 'create'
       }}
       uiConfig={{

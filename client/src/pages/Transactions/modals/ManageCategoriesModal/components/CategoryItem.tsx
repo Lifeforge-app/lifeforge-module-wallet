@@ -1,5 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
+import { useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
@@ -12,7 +11,6 @@ import {
   Stack,
   Text,
   surface,
-  toast,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -22,19 +20,12 @@ import type { WalletCategory } from '../../..'
 import ModifyCategoryModal from '../../ModifyCategoryModal'
 
 function CategoryItem({ category }: { category: WalletCategory }) {
-  const queryClient = useQueryClient()
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
 
-  const deleteMutation = useMutation(
-    forgeAPI.categories.remove.input({ id: category.id }).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet', 'categories'] })
-      },
-      onError: err => {
-        toast.error(`Failed to delete category: ${err.message}`)
-      }
-    })
+  const deleteMutation = useForgeMutation(
+    forgeAPI.categories.remove.input({ id: category.id }),
+    { action: 'delete', queryKey: forgeAPI.categories.key }
   )
 
   return (

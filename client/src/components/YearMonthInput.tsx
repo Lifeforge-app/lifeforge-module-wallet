@@ -18,7 +18,7 @@ function YearMonthInput({
   yearsOptions: number[]
   monthsOptions: number[]
 }) {
-  const { t } = useModuleTranslation('common.misc')
+  const { t } = useModuleTranslation(['common.misc'])
 
   useEffect(() => {
     if (yearsOptions.length > 0) {

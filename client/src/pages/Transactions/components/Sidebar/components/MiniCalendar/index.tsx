@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import { useCallback, useState } from 'react'
 
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Box, SidebarTitle } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/pages/Transactions'
@@ -11,7 +10,6 @@ import MiniCalendarHeader from './components/MiniCalendarHeader'
 import MiniCalendarToggleViewMenu from './components/MiniCalendarToggleViewMenu'
 
 function MiniCalendar() {
-  const { t } = useModuleTranslation()
   const [currentMonth, setCurrentMonth] = useState(dayjs().month())
   const [currentYear, setCurrentYear] = useState(dayjs().year())
 

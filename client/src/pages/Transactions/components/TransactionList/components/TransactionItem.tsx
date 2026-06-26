@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
+import { useForgeMutation } from '@lifeforge/api'
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Card,
   ConfirmationModal,
@@ -25,18 +25,12 @@ function TransactionItem({
   transaction: WalletTransaction
   viewOnly?: boolean
 }) {
-  const queryClient = useQueryClient()
   const { open } = useModalStore()
+  const { t } = useModuleTranslation()
 
-  const deleteMutation = useMutation(
-    forgeAPI.transactions.remove.input({ id: transaction.id }).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet'] })
-      },
-      onError: () => {
-        toast.error('Failed to delete transaction')
-      }
-    })
+  const deleteMutation = useForgeMutation(
+    forgeAPI.transactions.remove.input({ id: transaction.id }),
+    { action: 'delete', queryKey: forgeAPI.key }
   )
 
   return (
@@ -71,7 +65,7 @@ function TransactionItem({
               label="Copy"
               onClick={() => {
                 navigator.clipboard.writeText(transaction.particulars)
-                toast.success('Transaction particulars copied to clipboard')
+                toast.success(t('toasts.copyParticulars'))
               }}
             />
           )}

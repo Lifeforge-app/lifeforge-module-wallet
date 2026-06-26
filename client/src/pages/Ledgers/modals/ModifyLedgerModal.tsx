@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
+import { useForgeMutation } from '@lifeforge/api'
 import {
   ColorField,
   FormModal,
   IconField,
   TextField,
-  createDefaultValues,
-  toast
+  createDefaultValues
 } from '@lifeforge/ui'
 
 import type { WalletLedger } from '@/hooks/useWalletData'
@@ -36,26 +35,14 @@ function ModifyLedgerModal({
   }
   onClose: () => void
 }) {
-  const queryClient = useQueryClient()
+  const createMutation = useForgeMutation(
+    forgeAPI.ledgers.create,
+    { action: 'create', queryKey: forgeAPI.ledgers.key }
+  )
 
-  const mutation = useMutation(
-    (type === 'create'
-      ? forgeAPI.ledgers.create
-      : forgeAPI.ledgers.update.input({
-          id: initialData?.id || ''
-        })
-    ).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'ledgers']
-        })
-      },
-      onError: error => {
-        toast.error(
-          `Failed to ${type === 'create' ? 'create' : 'update'} ledger: ${error.message}`
-        )
-      }
-    })
+  const updateMutation = useForgeMutation(
+    forgeAPI.ledgers.update.input({ id: initialData?.id || '' }),
+    { action: 'update', queryKey: forgeAPI.ledgers.key }
   )
 
   const form = useForm({
@@ -72,7 +59,10 @@ function ModifyLedgerModal({
       form={form}
       submissionConfig={{
         handler: async data => {
-          await mutation.mutateAsync(data)
+          await (type === 'create'
+            ? createMutation
+            : updateMutation
+          ).mutateAsync(data)
         },
         template: type
       }}

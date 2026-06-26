@@ -70,7 +70,7 @@ function TransactionTransferItem({
               {assets.find(asset => asset.id === transaction.to)?.name ??
                 'Unknown'}
             </Text>
-            {transaction.receipt !== '' && (
+            {transaction.receipt && (
               <button onClick={handleViewReceipt}>
                 <Icon color="muted" icon="tabler:file-text" size="1.25rem" />
               </button>

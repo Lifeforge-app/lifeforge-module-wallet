@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
+import { useForgeMutation } from '@lifeforge/api'
 import {
   CurrencyField,
   FormModal,
   IconField,
   TextField,
-  createDefaultValues,
-  toast
+  createDefaultValues
 } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
@@ -31,26 +30,14 @@ function ModifyAssetModal({
   }
   onClose: () => void
 }) {
-  const queryClient = useQueryClient()
+  const createMutation = useForgeMutation(
+    forgeAPI.assets.create,
+    { action: 'create', queryKey: forgeAPI.assets.key }
+  )
 
-  const mutation = useMutation(
-    (type === 'create'
-      ? forgeAPI.assets.create
-      : forgeAPI.assets.update.input({
-          id: initialData?.id || ''
-        })
-    ).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['wallet', 'assets']
-        })
-      },
-      onError: error => {
-        toast.error(
-          `Failed to ${type === 'create' ? 'create' : 'update'} asset: ${error.message}`
-        )
-      }
-    })
+  const updateMutation = useForgeMutation(
+    forgeAPI.assets.update.input({ id: initialData?.id || '' }),
+    { action: 'update', queryKey: forgeAPI.assets.key }
   )
 
   const form = useForm({
@@ -67,7 +54,10 @@ function ModifyAssetModal({
       form={form}
       submissionConfig={{
         handler: async data => {
-          await mutation.mutateAsync(data)
+          await (type === 'create'
+            ? createMutation
+            : updateMutation
+          ).mutateAsync(data)
         },
         template: type
       }}
