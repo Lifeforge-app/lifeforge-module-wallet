@@ -162,7 +162,9 @@
     "managePrompts": "Urus Petunjuk",
     "naturalLanguage": {
       "title": "Dari Bahasa Tabii",
-      "description": "Terangkan transaksi anda dalam bahasa tabii, dan AI akan mengisi butiran secara automatik untuk anda."
+      "description": "Terangkan transaksi anda dalam bahasa tabii, dan AI akan mengisi butiran secara automatik untuk anda.",
+      "confirmTitle": "Sahkan Transaksi",
+      "confirmDescription": "Semak dan sahkan transaksi yang diekstrak daripada huraian anda."
     }
   },
   "transactionTypes": {
@@ -205,9 +207,10 @@
     "expensesPrompt": "Petunjuk Perbelanjaan",
     "rangeMode": "Mod Susunan",
     "description": {
-      "label": "Butiran Transaksi",
-      "placeholder": "Membelanjakan RM39 di The Library Ahad lalu menggunakan Dompet MAE untuk sebuah buku"
+      "label": "Penerangan Transaksi",
+      "placeholder": "Belanja RM39 di Perpustakaan pada hari Ahad lepas menggunakan Dompet MAE untuk sebuah buku"
     },
+    "createAnother": "Buat Satu Lagi",
     "keepAfterScan": "Simpan Resit Selepas Imbasan"
   },
   "items": {
@@ -256,5 +259,25 @@
     "all": "Sepanjang Masa",
     "custom": "Julat Tersuai",
     "quarter": "90 Hari Terakhir"
+  },
+  "toasts": {
+    "createMultipleTransactions": {
+      "success": "Berjaya mencipta semua transaksi",
+      "error": "Gagal mencipta transaksi"
+    },
+    "missingRequiredFields": "Beberapa transaksi tidak mempunyai maklumat yang diperlukan",
+    "noTransactionsExtracted": "Tiada transaksi diekstrak",
+    "copyParticulars": "Butiran transaksi disalin ke papan klip",
+    "selectFile": "Sila pilih fail",
+    "savePrompts": {
+      "success": "Prompt berjaya disimpan",
+      "error": "Gagal menyimpan prompt"
+    },
+    "autoGeneratePrompt": {
+      "error": "Gagal menjana prompt secara automatik menggunakan AI"
+    }
+  },
+  "actions": {
+    "convert": "menukar"
   }
 }

@@ -1,22 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
+import { useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   FormModal,
   TextAreaField,
   createDefaultValues,
+  toast,
   useModalStore
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
+import type { WalletTransaction } from '..'
 import CreateAnotherField, {
   type CreateAnotherValue,
   createAnotherSchema
 } from '../components/CreateAnotherFIeld'
+import ConfirmMultipleTransactionsModal from './ConfirmMultipleTransactionsModal'
 import ModifyTransactionsModal from './ModifyTransactionsModal'
 
 const schema = z.object({
@@ -36,9 +39,9 @@ function NaturalLanguageModal({
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
 
-  const mutation = useMutation(
-    forgeAPI.transactions.fromNaturalLanguage.mutationOptions()
-  )
+  const mutation = useForgeMutation(forgeAPI.transactions.fromNaturalLanguage, {
+    action: t('actions.convert')
+  })
 
   const form = useForm({
     defaultValues: {
@@ -57,22 +60,30 @@ function NaturalLanguageModal({
             description: values.description
           })
 
-          const cv = values.createAnother
-
           onClose()
 
-          setTimeout(() => {
-            open(ModifyTransactionsModal, {
-              type: 'create',
-              createAnother: cv,
-              initialData: {
-                ...(data as any)
-              }
-            })
-          }, 300)
+          if (data.length === 1) {
+            setTimeout(() => {
+              open(ModifyTransactionsModal, {
+                type: 'create',
+                createAnother: values.createAnother,
+                initialData: data[0] as unknown as {
+                  type: WalletTransaction['type']
+                } & Partial<WalletTransaction>
+              })
+            }, 300)
+          } else if (data.length > 1) {
+            setTimeout(() => {
+              open(ConfirmMultipleTransactionsModal, {
+                transactions: data
+              })
+            }, 300)
+          } else {
+            toast.error(t('toasts.noTransactionsExtracted'))
+          }
         },
-        label: t('buttons.fromNaturalLanguage'),
-        icon: 'tabler:brain'
+        label: 'proceed',
+        icon: 'tabler:arrow-right'
       }}
       uiConfig={{
         icon: 'tabler:brain',
@@ -85,7 +96,7 @@ function NaturalLanguageModal({
         required
         control={form.control}
         icon="tabler:message"
-        label={t('inputs.description.label')}
+        label="description.label"
         name="description"
         placeholder={t('inputs.description.placeholder')}
       />

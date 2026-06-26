@@ -162,7 +162,9 @@
     "managePrompts": "Manage Prompts",
     "naturalLanguage": {
       "title": "From Natural Language",
-      "description": "Describe your transaction in natural language, and the AI will auto-populate the details for you."
+      "description": "Describe your transaction in natural language, and the AI will auto-populate the details for you.",
+      "confirmTitle": "Confirm Transactions",
+      "confirmDescription": "Review and confirm the transactions extracted from your description."
     }
   },
   "transactionTypes": {
@@ -208,7 +210,8 @@
     "description": {
       "label": "Transaction Description",
       "placeholder": "Spent RM39 at The Library last sunday using MAE Wallet for a book"
-    }
+    },
+    "createAnother": "Create Another"
   },
   "items": {
     "transaction": "Transaction",
@@ -256,5 +259,25 @@
     "all": "All Time",
     "custom": "Custom Range",
     "quarter": "Last 90 Days"
+  },
+  "toasts": {
+    "createMultipleTransactions": {
+      "success": "Successfully created all transactions",
+      "error": "Failed to create transactions"
+    },
+    "missingRequiredFields": "Some transactions are missing required fields",
+    "noTransactionsExtracted": "No transactions extracted",
+    "copyParticulars": "Transaction particulars copied to clipboard",
+    "selectFile": "Please select a file",
+    "savePrompts": {
+      "success": "Prompts saved successfully",
+      "error": "Failed to save prompts"
+    },
+    "autoGeneratePrompt": {
+      "error": "Failed to auto-generate prompt using AI"
+    }
+  },
+  "actions": {
+    "convert": "converted"
   }
 }

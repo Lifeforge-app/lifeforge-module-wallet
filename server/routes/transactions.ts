@@ -526,3 +526,62 @@ export const scanReceipt = forge
       )
     }
   )
+
+export const createMultiple = forge
+  .mutation({
+    description: 'Create multiple new transactions',
+    input: {
+      body: z.object({
+        transactions: z.array(MutateTransactionInputSchema)
+      })
+    },
+    output: {
+      CREATED: z.null()
+    }
+  })
+  .callback(async ({ pb, body: { transactions }, response }) => {
+    const results = []
+
+    for (const data of transactions) {
+      const baseTransaction = await pb.create
+        .collection('transactions')
+        .data({
+          type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
+          amount: data.amount,
+          date: data.date
+        })
+        .execute()
+
+      if (data.type === 'transfer') {
+        await pb.create
+          .collection('transactions_transfer')
+          .data({
+            from: data.from,
+            to: data.to,
+            base_transaction: baseTransaction.id
+          })
+          .execute()
+      } else {
+        await pb.create
+          .collection('transactions_income_expenses')
+          .data({
+            base_transaction: baseTransaction.id,
+            type: data.type,
+            particulars: data.particulars,
+            asset: data.asset,
+            category: data.category,
+            ledgers: data.ledgers,
+            location_name: data.location?.name ?? '',
+            location_coords: {
+              lon: data.location?.location.longitude ?? 0,
+              lat: data.location?.location.latitude ?? 0
+            }
+          })
+          .execute()
+      }
+
+      results.push(baseTransaction)
+    }
+
+    return response.created(null)
+  })

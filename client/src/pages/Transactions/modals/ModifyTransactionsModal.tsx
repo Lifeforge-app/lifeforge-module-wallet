@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
+import { useForgeMutation, type InferInput } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   CurrencyField,
@@ -18,7 +18,6 @@ import {
   createDefaultValues,
   fileValueSchema,
   getFormFileFieldInitialData,
-  toast,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -104,7 +103,7 @@ const schema = z
   })
 
 function ModifyTransactionsModal({
-  data: { type, initialData, createAnother = 'none' },
+  data: { type, initialData, createAnother = 'none', onSubmit },
   onClose
 }: {
   data: {
@@ -113,12 +112,14 @@ function ModifyTransactionsModal({
       type: WalletTransaction['type']
     } & Partial<WalletTransaction>
     createAnother?: CreateAnotherValue
+    onSubmit?: (
+      data: InferInput<typeof forgeAPI.transactions.create>['body']
+    ) => void | Promise<void>
   }
   onClose: () => void
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
-  const queryClient = useQueryClient()
   const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
 
   const assets = assetsQuery.data ?? []
@@ -127,20 +128,14 @@ function ModifyTransactionsModal({
 
   const ledgers = ledgersQuery.data ?? []
 
-  const mutation = useMutation(
-    (type === 'create'
-      ? forgeAPI.transactions.create
-      : forgeAPI.transactions.update.input({
-          id: initialData?.id || ''!
-        })
-    ).mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wallet'] })
-      },
-      onError: error => {
-        toast.error('Failed to modify transaction:', error)
-      }
-    })
+  const createMutation = useForgeMutation(
+    forgeAPI.transactions.create,
+    { action: 'create', queryKey: forgeAPI.key }
+  )
+
+  const updateMutation = useForgeMutation(
+    forgeAPI.transactions.update.input({ id: initialData?.id || ''! }),
+    { action: 'update', queryKey: forgeAPI.key }
   )
 
   const form = useForm({
@@ -212,29 +207,53 @@ function ModifyTransactionsModal({
       form={form}
       submissionConfig={{
         handler: async data => {
+          const finalData =
+            data.type === 'transfer'
+              ? {
+                  type: 'transfer' as const,
+                  date: dayjs(data.date).format('YYYY-MM-DD'),
+                  from: data.from!,
+                  to: data.to!,
+                  receipt: convertFormFileFieldData(data.receipt),
+                  amount: data.amount
+                }
+              : {
+                  type: data.type,
+                  date: dayjs(data.date).format('YYYY-MM-DD'),
+                  asset: data.asset!,
+                  category: data.category!,
+                  ledgers: data.ledgers ?? [],
+                  location: data.location ?? null,
+                  particulars: data.particulars!,
+                  receipt: convertFormFileFieldData(data.receipt),
+                  amount: data.amount
+                }
+
+          if (onSubmit) {
+            if (finalData.receipt === 'keep') {
+              finalData.receipt = initialData?.receipt || ''
+            } else if (finalData.receipt === 'removed') {
+              finalData.receipt = ''
+            }
+
+            await onSubmit(finalData)
+            onClose()
+
+            return
+          }
+
           const createAnother = data.createAnother
 
           if (data.type === 'transfer') {
-            await mutation.mutateAsync({
-              type: 'transfer' as const,
-              date: dayjs(data.date).format('YYYY-MM-DD'),
-              from: data.from!,
-              to: data.to!,
-              receipt: convertFormFileFieldData(data.receipt),
-              amount: data.amount
-            })
+            await (type === 'create'
+              ? createMutation
+              : updateMutation
+            ).mutateAsync(finalData)
           } else {
-            await mutation.mutateAsync({
-              type: data.type,
-              date: dayjs(data.date).format('YYYY-MM-DD'),
-              asset: data.asset!,
-              category: data.category!,
-              ledgers: data.ledgers ?? [],
-              location: data.location ?? null,
-              particulars: data.particulars!,
-              receipt: convertFormFileFieldData(data.receipt),
-              amount: data.amount
-            })
+            await (type === 'create'
+              ? createMutation
+              : updateMutation
+            ).mutateAsync(finalData)
           }
 
           onClose()

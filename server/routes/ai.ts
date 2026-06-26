@@ -26,12 +26,12 @@ type TransactionTemplate = InferSchema<'transaction_templates'>
 type ExtractedData = {
   date: string
   type: 'income' | 'expenses' | 'transfer'
-  category: string
+  category?: string
   amount: number
-  location: string
-  asset: string | null
-  from: string | null
-  to: string | null
+  location?: string
+  asset?: string | null
+  from?: string | null
+  to?: string | null
 }
 
 async function fetchInitialData(
@@ -110,7 +110,13 @@ async function extractBasicDetails(
     })
   ])
 
-  return await fetchAI({
+  const TransactionsList = z.object({
+    transactions: z
+      .array(FullTransactionDetails)
+      .describe('The list of extracted transactions')
+  })
+
+  const result = await fetchAI({
     pb,
     provider: 'deepseek',
     model: 'deepseek-v4-flash',
@@ -118,9 +124,10 @@ async function extractBasicDetails(
       {
         role: 'system',
         content: `You are an expert transaction extractor for personal finance software.
-Your task is to analyze the receipt text or natural language input and extract structured details.
+Your task is to analyze the receipt text or natural language input and extract structured details. The user might describe a single transaction or multiple transactions simultaneously. Identify and extract each individual transaction.
 
 Strict Rules:
+- If multiple transactions are mentioned or implied (e.g. "I spent 10 on food and 20 on coffee", "yesterday got 100 salary, today paid 50 for water"), extract each one as a separate element in the list.
 - Identify the correct date of the transaction:
   - If an absolute date is provided (e.g. "May 25", "12/20/2025"), convert it to YYYY-MM-DD.
   - If a relative date or relative time context is provided (e.g. "today", "yesterday", "2 days ago", "last Friday", "yesterday afternoon", "3 hours ago"), you must calculate the exact calendar date in YYYY-MM-DD format based on the Current Reference Date: ${todayStr} (which represents today's date).
@@ -140,32 +147,57 @@ Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}`
         content: description
       }
     ],
-    structure: FullTransactionDetails
+    structure: TransactionsList
   })
+
+  console.log(result)
+
+  return result
 }
 
-async function matchTemplate(
+async function batchMatchTemplates(
   fetchAI: FetchAIFunc,
   pb: IPBService<typeof schema>,
   templates: TransactionTemplate[],
-  extractedData: ExtractedData,
+  transactions: ExtractedData[],
   description: string
-) {
-  if (templates.length === 0) {
-    return null
+): Promise<(TransactionTemplate | null)[]> {
+  if (templates.length === 0 || transactions.length === 0) {
+    return transactions.map(() => null)
   }
 
   const templateNames = templates.map(function (t) {
     return t.name
   })
 
-  const TemplateMatch = z.object({
-    template: z
-      .enum(['None', ...templateNames])
-      .describe(
-        'Best matching template name, or None if there is no extremely close match'
-      )
+  const BatchTemplateMatch = z.object({
+    matches: z.array(
+      z.object({
+        transactionIndex: z.number().describe('0-based index of the transaction in the input list'),
+        template: z
+          .enum(['None', ...templateNames])
+          .describe('Best matching template name, or None if there is no extremely close match')
+      })
+    )
   })
+
+  const formattedTransactions = transactions
+    .map(function (tx, index) {
+      return `Transaction #${index}:
+- Type: ${tx.type}
+- Amount: ${tx.amount}
+- Category: ${tx.category || 'N/A'}
+- Location: ${tx.location || 'Unknown'}`
+    })
+    .join('\n\n')
+
+  const formattedTemplates = templates
+    .map(function (t) {
+      return `- [Type: ${t.type}] ${t.name}: ${t.particulars || 'N/A'} ${
+        t.location_name ? `@ ${t.location_name}` : ''
+      }`
+    })
+    .join('\n')
 
   const templateData = await fetchAI({
     pb,
@@ -175,12 +207,13 @@ async function matchTemplate(
       {
         role: 'system',
         content: `You are a smart matching system that maps transactions to pre-defined user templates.
-Your goal is to determine if the transaction matches a template.
+Your goal is to determine if each transaction in the list matches a template.
 
 Strict Matching Rules:
+- A transaction can ONLY match a template if they have the exact same type (e.g., an expenses transaction can only match an expenses template, and an income transaction can only match an income template).
 - A match is ONLY valid if the merchant/location name or the specific item purchased matches the template's details.
 - If the merchant/location, category, or descriptions are different (e.g., "The Library" vs "Lakeview Haus", or "book" vs "beverage"), they are absolutely NOT a match.
-- If there is no extremely close match, you MUST return 'None'.
+- If there is no extremely close match of the correct type, you MUST return 'None'.
 - Do not make loose or creative associations. Be highly conservative and default to 'None'.
 
 Slot Handling:
@@ -188,83 +221,121 @@ Slot Handling:
 - Consider a template with slots as a potential match — the slot indicates the template fits, with details to be filled in from the actual transaction.
 
 Available Templates:
-${templates
-  .map(function (t) {
-    return `- ${t.name}: ${t.particulars || 'N/A'} ${
-      t.location_name ? `@ ${t.location_name}` : ''
-    }`
-  })
-  .join('\n')}`
+${formattedTemplates}`
       },
       {
         role: 'user',
-        content: `Transaction details:
-- Amount: ${extractedData.amount}
-- Category: ${extractedData.category}
-- Location: ${extractedData.location}
-- Raw text: ${description}`
+        content: `Transactions to match:
+${formattedTransactions}
+
+Raw full input description context:
+${description}`
       }
     ],
-    structure: TemplateMatch
+    structure: BatchTemplateMatch
   })
 
-  if (templateData && templateData.template !== 'None') {
-    return (
-      templates.find(function (t) {
-        return t.name === templateData.template
-      }) || null
-    )
+  const results = transactions.map(() => null as TransactionTemplate | null)
+
+  if (templateData && templateData.matches) {
+    for (const match of templateData.matches) {
+      if (
+        match.transactionIndex >= 0 &&
+        match.transactionIndex < transactions.length &&
+        match.template !== 'None'
+      ) {
+        const found = templates.find(function (t) {
+          return t.name === match.template
+        })
+        if (found) {
+          results[match.transactionIndex] = found
+        }
+      }
+    }
   }
 
-  return null
+  return results
 }
 
-async function generateParticulars(
+async function batchGenerateParticulars(
   fetchAI: FetchAIFunc,
   pb: IPBService<typeof schema>,
-  extractedData: ExtractedData,
+  transactions: ExtractedData[],
   particularPrompt: TransactionPrompt | null,
   description: string,
-  baseParticulars?: string
-) {
+  baseParticularsMap: Map<number, string | undefined>
+): Promise<Map<number, string>> {
+  const results = new Map<number, string>()
+
+  const activeTransactions = transactions
+    .map(function (tx, index) {
+      return { tx, index }
+    })
+    .filter(function (item) {
+      return item.tx.type !== 'transfer'
+    })
+
+  if (activeTransactions.length === 0) {
+    return results
+  }
+
   const todayStr = dayjs().format('YYYY-MM-DD')
 
-  let particularsPrompt = particularPrompt?.[
-    extractedData.type as 'income' | 'expenses'
-  ]
-    ? `${particularPrompt[extractedData.type as 'income' | 'expenses']}\n\nCurrent Reference Date: ${todayStr}\n\nIMPORTANT: If you are given a base reference particular containing placeholder slots (indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc.), you MUST fill those slots with the actual values from the user's transaction description, producing a concrete, complete particulars string.`
-    : `You are a copywriter generating clean, concise transaction summaries (particulars) for personal finance ledgers.
-Analyze the transaction text and describe only the purchase item or nature of the transaction (5 to 10 words).
+  let particularsPrompt = `You are a copywriter generating clean, concise transaction summaries (particulars) for personal finance ledgers.
+Analyze the transaction list and describe only the purchase item or nature of the transaction for each item (5 to 10 words).
 
 Strict Rules:
 1. Do NOT include payment methods, card names, or wallets (e.g., "using MAE Wallet", "with Visa", "by card", "credit card", "wallet").
 2. Do NOT include dates, relative times, or days of week (e.g., "last Sunday", "today", "yesterday", "Sunday").
 3. Do NOT include transaction amounts or currencies (e.g., "RM39", "$15").
+4. Under no circumstances should any asset/wallet name, payment method, amount, date, day of week, or relative time words be included in the particulars.
 
 Few-Shot Examples:
-- Input: "Spend RM39 for the purchase of book at The Library by BookXCess last sunday using MAE Wallet"
+- Input transaction: "Spend RM39 for the purchase of book at The Library by BookXCess last sunday using MAE Wallet"
   Particulars: "Purchase of book by BookXCess"
 
-- Input: "Starbucks coffee for $5.50 this morning with Visa Card"
+- Input transaction: "Starbucks coffee for $5.50 this morning with Visa Card"
   Particulars: "Starbucks coffee"
 
-- Input: "Bought groceries at Tesco yesterday for RM120 using Cash"
+- Input transaction: "Bought groceries at Tesco yesterday for RM120 using Cash"
   Particulars: "Groceries at Tesco"
 
-Now analyze the user input and produce the clean, concise particulars.`
+Now analyze the list of user transactions and generate the clean, concise particulars for each.`
 
-  if (baseParticulars) {
-    particularsPrompt += `\n\nYou have a base reference particular from a matching template: "${baseParticulars}". Current Reference Date: ${todayStr}. This template may contain placeholder slots (indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc.). Your job is to fill those slots with the actual values from the user's transaction description, producing a concrete, complete particulars string. Use this as a base and enhance it with additional context from the user input if appropriate, while keeping it concise.`
+  if (particularPrompt) {
+    particularsPrompt += `\n\nCustom Guideline Reference (if available/applicable):
+Income Guideline: ${particularPrompt.income || 'N/A'}
+Expenses Guideline: ${particularPrompt.expenses || 'N/A'}`
   }
 
-  particularsPrompt += `\n\nCRITICAL RULE: Under no circumstances should any asset/wallet name, payment method, amount, date, day of week, or relative time words be included in the particulars.`
+  const formattedItems = activeTransactions
+    .map(function (item) {
+      const basePart = baseParticularsMap.get(item.index)
+      let itemContext = `Transaction #${item.index}:
+- Type: ${item.tx.type}
+- Amount: ${item.tx.amount}
+- Category: ${item.tx.category || 'N/A'}
+- Location: ${item.tx.location || 'Unknown'}`
 
-  const ParticularsExtraction = z.object({
-    particulars: z
-      .string()
-      .describe(
-        'Clean transaction particulars (5-10 words). MUST NOT contain dates, times, day of week, amounts, or payment asset names.'
-      )
+      if (basePart) {
+        itemContext += `\n- Base template reference particulars: "${basePart}". (This template may contain placeholder slots like <slot_name>, {slot_name}, {{slot_name}}, etc. Fill those slots with actual values from the transaction description to produce a concrete summary.)`
+      }
+
+      return itemContext
+    })
+    .join('\n\n')
+
+  const ParticularsListSchema = z.object({
+    particularsList: z.array(
+      z.object({
+        transactionIndex: z.number().describe('0-based index of the transaction in the input list'),
+        particulars: z
+          .string()
+          .describe(
+            'Clean transaction particulars (5-10 words). MUST NOT contain dates, times, day of week, amounts, or payment asset names.'
+          )
+      })
+    )
   })
 
   const particularsData = await fetchAI({
@@ -278,13 +349,30 @@ Now analyze the user input and produce the clean, concise particulars.`
       },
       {
         role: 'user',
-        content: description
+        content: `Transactions to summarize:
+${formattedItems}
+
+Current Reference Date: ${todayStr}
+Raw full input description context:
+${description}`
       }
     ],
-    structure: ParticularsExtraction
+    structure: ParticularsListSchema
   })
 
-  return particularsData?.particulars || ''
+  if (particularsData && particularsData.particularsList) {
+    for (const item of particularsData.particularsList) {
+      results.set(item.transactionIndex, item.particulars)
+    }
+  }
+
+  for (const item of activeTransactions) {
+    if (!results.has(item.index)) {
+      results.set(item.index, item.tx.particulars || 'Transaction')
+    }
+  }
+
+  return results
 }
 
 async function resolveLocationCoords(
@@ -323,22 +411,24 @@ export const fromNaturalLanguage = forge
       })
     },
     output: {
-      OK: z.object({
-        date: z.string(),
-        amount: z.number(),
-        type: z.enum(['income', 'expenses', 'transfer']),
-        category: z.string().nullable(),
-        particulars: z.string(),
-        location_coords: z.object({
-          lon: z.number(),
-          lat: z.number()
-        }),
-        location_name: z.string(),
-        asset: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        ledgers: z.array(z.string()).optional()
-      })
+      OK: z.array(
+        z.object({
+          date: z.string(),
+          amount: z.number(),
+          type: z.enum(['income', 'expenses', 'transfer']),
+          category: z.string().nullable(),
+          particulars: z.string(),
+          location_coords: z.object({
+            lon: z.number(),
+            lat: z.number()
+          }),
+          location_name: z.string(),
+          asset: z.string().optional(),
+          from: z.string().optional(),
+          to: z.string().optional(),
+          ledgers: z.array(z.string()).optional()
+        })
+      )
     }
   })
   .callback(async function ({
@@ -386,148 +476,153 @@ export const fromNaturalLanguage = forge
       assetNames
     )
 
-    if (!extractedData) {
+    if (!extractedData || !extractedData.transactions) {
       throw new Error('Failed to extract transaction details')
     }
 
-    if (extractedData.type === 'transfer') {
-      return response.ok({
-        date: extractedData.date,
-        type: 'transfer',
-        amount: extractedData.amount,
-        category: null,
-        particulars: '',
-        location_coords: { lon: 0, lat: 0 },
-        location_name: '',
-        from:
-          extractedData.from && extractedData.from !== 'Unknown'
-            ? assetMap.get(extractedData.from)
-            : undefined,
-        to:
-          extractedData.to && extractedData.to !== 'Unknown'
-            ? assetMap.get(extractedData.to)
-            : undefined
-      })
-    }
-
-    // At this point, type is narrowed to 'income' | 'expenses'
-    const finalResult: {
-      date: string
-      type: 'income' | 'expenses' | 'transfer'
-      amount: number
-      category: string | null
-      particulars: string
-      location_coords: {
-        lon: number
-        lat: number
-      }
-      location_name: string
-      asset: string | undefined
-      ledgers: string[] | undefined
-    } = {
-      date: extractedData.date,
-      type: extractedData.type,
-      amount: extractedData.amount,
-      category:
-        categoryMap.get(extractedData.category) ||
-        extractedData.category ||
-        null,
-      particulars: '',
-      location_coords: {
-        lon: 0,
-        lat: 0
-      },
-      location_name: '',
-      asset:
-        extractedData.asset && extractedData.asset !== 'Unknown'
-          ? assetMap.get(extractedData.asset)
-          : undefined,
-      ledgers: undefined
-    }
-
-    // Fetch transaction templates for type
-    const templates = await pb.getFullList
+    const allTemplates = await pb.getFullList
       .collection('transaction_templates')
-      .filter([
-        {
-          field: 'type',
-          operator: '=',
-          value: extractedData.type
-        }
-      ])
       .execute()
       .catch(function () {
-        return []
+        return [] as TransactionTemplate[]
       })
 
-    // 3. Match template
-    const matchedTemplate = await matchTemplate(
+    // Batch match templates for all transactions
+    const matchedTemplates = await batchMatchTemplates(
       fetchAI,
       pb,
-      templates,
-      extractedData as ExtractedData,
+      allTemplates,
+      extractedData.transactions,
       description
     )
 
-    if (matchedTemplate) {
-      if (matchedTemplate.category) {
-        finalResult.category = matchedTemplate.category
+    // Construct base particulars map
+    const baseParticularsMap = new Map<number, string | undefined>()
+    extractedData.transactions.forEach((tx, idx) => {
+      const template = matchedTemplates[idx]
+      if (template) {
+        baseParticularsMap.set(idx, template.particulars || undefined)
       }
+    })
 
-      if (matchedTemplate.location_name) {
-        finalResult.location_name = matchedTemplate.location_name
-      }
-
-      if (
-        matchedTemplate.location_coords &&
-        (matchedTemplate.location_coords.lon !== 0 ||
-          matchedTemplate.location_coords.lat !== 0)
-      ) {
-        finalResult.location_coords = matchedTemplate.location_coords
-      }
-
-      if (
-        finalResult.amount === 0 &&
-        matchedTemplate.amount !== undefined &&
-        matchedTemplate.amount !== null &&
-        matchedTemplate.amount > 0
-      ) {
-        finalResult.amount = matchedTemplate.amount
-      }
-
-      if (matchedTemplate.ledgers && matchedTemplate.ledgers.length > 0) {
-        finalResult.ledgers = matchedTemplate.ledgers
-      }
-    }
-
-    // 4. Generate particulars (always run, with template particulars as base reference if matched)
-    finalResult.particulars = await generateParticulars(
+    // Batch generate particulars for all transactions
+    const particularsMap = await batchGenerateParticulars(
       fetchAI,
       pb,
-      extractedData as ExtractedData,
+      extractedData.transactions,
       particularPrompt,
       description,
-      matchedTemplate?.particulars || undefined
+      baseParticularsMap
     )
 
-    // 5. Resolve location coordinates if not already set by template
-    if (!finalResult.location_name?.trim()) {
-      const resolvedLoc = await resolveLocationCoords(
-        searchLocations,
-        key,
-        extractedData.location
-      )
+    const results = await Promise.all(
+      extractedData.transactions.map(async function (item, idx) {
+        if (item.type === 'transfer') {
+          return {
+            date: item.date,
+            type: 'transfer' as const,
+            amount: item.amount,
+            category: null,
+            particulars: '',
+            location_coords: { lon: 0, lat: 0 },
+            location_name: '',
+            from:
+              item.from && item.from !== 'Unknown'
+                ? assetMap.get(item.from)
+                : undefined,
+            to:
+              item.to && item.to !== 'Unknown'
+                ? assetMap.get(item.to)
+                : undefined
+          }
+        }
 
-      if (resolvedLoc) {
-        finalResult.location_coords = resolvedLoc.coords
-        finalResult.location_name = resolvedLoc.name
-      }
-    }
+        const matchedTemplate = matchedTemplates[idx]
 
-    // 6. Fallback to template asset if AI didn't resolve one
-    if (!finalResult.asset && matchedTemplate?.asset) {
-      finalResult.asset = matchedTemplate.asset
-    }
+        const finalResult: {
+          date: string
+          type: 'income' | 'expenses' | 'transfer'
+          amount: number
+          category: string | null
+          particulars: string
+          location_coords: {
+            lon: number
+            lat: number
+          }
+          location_name: string
+          asset: string | undefined
+          ledgers: string[] | undefined
+        } = {
+          date: item.date,
+          type: item.type,
+          amount: item.amount,
+          category: categoryMap.get(item.category) || item.category || null,
+          particulars: particularsMap.get(idx) || '',
+          location_coords: {
+            lon: 0,
+            lat: 0
+          },
+          location_name: '',
+          asset:
+            item.asset && item.asset !== 'Unknown'
+              ? assetMap.get(item.asset)
+              : undefined,
+          ledgers: undefined
+        }
 
-    return response.ok(finalResult)
+        if (matchedTemplate) {
+          if (matchedTemplate.category) {
+            finalResult.category = matchedTemplate.category
+          }
+
+          if (matchedTemplate.location_name) {
+            finalResult.location_name = matchedTemplate.location_name
+          }
+
+          if (
+            matchedTemplate.location_coords &&
+            (matchedTemplate.location_coords.lon !== 0 ||
+              matchedTemplate.location_coords.lat !== 0)
+          ) {
+            finalResult.location_coords = matchedTemplate.location_coords
+          }
+
+          if (
+            finalResult.amount === 0 &&
+            matchedTemplate.amount !== undefined &&
+            matchedTemplate.amount !== null &&
+            matchedTemplate.amount > 0
+          ) {
+            finalResult.amount = matchedTemplate.amount
+          }
+
+          if (matchedTemplate.ledgers && matchedTemplate.ledgers.length > 0) {
+            finalResult.ledgers = matchedTemplate.ledgers
+          }
+        }
+
+        // 5. Resolve location coordinates if not already set by template
+        if (!finalResult.location_name?.trim()) {
+          const resolvedLoc = await resolveLocationCoords(
+            searchLocations,
+            key,
+            (item as { location: string }).location
+          )
+
+          if (resolvedLoc) {
+            finalResult.location_coords = resolvedLoc.coords
+            finalResult.location_name = resolvedLoc.name
+          }
+        }
+
+        // 6. Fallback to template asset if AI didn't resolve one
+        if (!finalResult.asset && matchedTemplate?.asset) {
+          finalResult.asset = matchedTemplate.asset
+        }
+
+        return finalResult
+      })
+    )
+
+    return response.ok(results)
   })

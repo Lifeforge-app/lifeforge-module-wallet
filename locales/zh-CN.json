@@ -162,7 +162,9 @@
     "managePrompts": "管理提示",
     "naturalLanguage": {
       "title": "从自然语言",
-      "description": "用自然语言描述您的交易，AI 将为您自动填充详细信息。"
+      "description": "用自然语言描述您的交易，AI 将为您自动填充详细信息。",
+      "confirmTitle": "确认交易",
+      "confirmDescription": "审查并确认从您的描述中提取的交易。"
     }
   },
   "transactionTypes": {
@@ -208,7 +210,8 @@
       "label": "交易描述",
       "placeholder": "上周日使用 MAE 钱包在 The Library 花了 RM39 买了一本书"
     },
-    "keepAfterScan": "扫描后保留收据"
+    "keepAfterScan": "扫描后保留收据",
+    "createAnother": "再创建一个"
   },
   "items": {
     "transaction": "交易",
@@ -256,5 +259,25 @@
     "all": "所有时间",
     "custom": "自定义范围",
     "quarter": "过去90天"
+  },
+  "toasts": {
+    "createMultipleTransactions": {
+      "success": "成功创建所有交易",
+      "error": "创建交易失败"
+    },
+    "missingRequiredFields": "部分交易缺少必填字段",
+    "noTransactionsExtracted": "未提取到任何交易",
+    "copyParticulars": "交易详情已复制到剪贴板",
+    "selectFile": "请选择文件",
+    "savePrompts": {
+      "success": "提示词保存成功",
+      "error": "保存提示词失败"
+    },
+    "autoGeneratePrompt": {
+      "error": "AI 自动生成提示词失败"
+    }
+  },
+  "actions": {
+    "convert": "转换"
   }
 }
