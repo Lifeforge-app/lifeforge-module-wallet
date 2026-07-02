@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
-
 import { EmptyStateScreen, Pagination, Scrollbar, Stack } from '@lifeforge/ui'
 
+import useFilter from '@/hooks/useFilter'
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
 
@@ -9,12 +8,28 @@ import TransactionItem from './components/TransactionItem'
 
 function TransactionList() {
   const { transactionsQuery } = useWalletData()
-  const [page, setPage] = useState(1)
-  const transactions = useFilteredTransactions(transactionsQuery.data ?? [])
+  const filters = useFilter()
+  const {
+    page,
+    setPage,
+    type,
+    category,
+    asset,
+    ledger,
+    startDate,
+    endDate,
+    searchQuery
+  } = filters
 
-  useEffect(() => {
-    setPage(1)
-  }, [transactions])
+  const transactions = useFilteredTransactions(transactionsQuery.data ?? [], {
+    type,
+    category,
+    asset,
+    ledger,
+    startDate,
+    endDate,
+    searchQuery
+  })
 
   if (transactions.length === 0) {
     return (

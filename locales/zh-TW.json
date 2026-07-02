@@ -127,7 +127,8 @@
     "fromTemplate": "從模板",
     "autoGenerate": "自動生成",
     "savePrompts": "保存提示",
-    "fromNaturalLanguage": "從自然語言"
+    "fromNaturalLanguage": "從自然語言",
+    "createTemplateFrom": "從交易創建模板"
   },
   "modals": {
     "transactions": {

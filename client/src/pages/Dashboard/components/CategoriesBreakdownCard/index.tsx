@@ -17,10 +17,14 @@ export const CategoriesBreakdownContext = createContext<{
   breakdown: CategoryBreakdown
   categories: WalletCategory[]
   type: 'income' | 'expenses'
+  year: number | null
+  month: number | null
 }>({
   breakdown: {},
   categories: [],
-  type: 'expenses'
+  type: 'expenses',
+  year: null,
+  month: null
 })
 
 function CategoriesBreakdownCard() {

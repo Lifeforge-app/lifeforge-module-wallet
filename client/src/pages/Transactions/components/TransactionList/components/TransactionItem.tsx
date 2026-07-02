@@ -72,7 +72,7 @@ function TransactionItem({
           {transaction.type !== 'transfer' && (
             <ContextMenuItem
               icon="tabler:template"
-              label="Create Template From..."
+              label="Create Template From"
               onClick={() =>
                 open(ModifyTemplatesModal, {
                   type: 'create',

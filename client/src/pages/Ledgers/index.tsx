@@ -53,7 +53,7 @@ function Ledgers() {
           </Button>
         }
         icon="tabler:book"
-        title="Ledgers"
+        title="ledgers"
         tKey="subsectionsTitleAndDesc"
       />
       <WithQuery query={ledgersQuery}>

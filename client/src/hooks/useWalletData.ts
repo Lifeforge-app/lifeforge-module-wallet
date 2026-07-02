@@ -4,8 +4,6 @@ import type { InferOutput } from '@lifeforge/api'
 
 import { forgeAPI } from '@/manifest'
 
-import { useFilteredTransactions } from './useFilteredTransactions'
-
 export type WalletTransaction = InferOutput<
   typeof forgeAPI.transactions.list
 >[number]
@@ -33,17 +31,12 @@ export function useWalletData() {
     forgeAPI.analytics.getTypesCount.queryOptions()
   )
 
-  const filteredTransactions = useFilteredTransactions(
-    transactionsQuery.data ?? []
-  )
-
   return {
     transactionsQuery,
     assetsQuery,
     ledgersQuery,
     categoriesQuery,
     templatesQuery,
-    filteredTransactions,
     typesCountQuery
   }
 }

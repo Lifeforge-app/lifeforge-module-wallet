@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 
 import { SidebarItem } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 import CategoriesSectionItemIcon from './CategoriesSectionItemIcon'
 
@@ -21,8 +21,7 @@ function CategoriesSectionItem({
   type: 'income' | 'expenses' | null
   amount: number | undefined
 }) {
-  const { selectedCategory, setSelectedCategory, setSelectedType } =
-    useWalletStore()
+  const { category, updateFilter } = useFilter()
 
   const memoizedIcon = useMemo(
     () => <CategoriesSectionItemIcon icon={icon} id={id} type={type} />,
@@ -30,22 +29,22 @@ function CategoriesSectionItem({
   )
 
   const handleCancelButtonClick = useCallback(() => {
-    setSelectedCategory(null)
-  }, [])
+    updateFilter('category', '')
+  }, [updateFilter])
 
   const handleClick = useCallback(() => {
     if (id === null) {
-      setSelectedCategory(null)
+      updateFilter('category', '')
     } else {
-      setSelectedCategory(id)
-      setSelectedType(type)
+      updateFilter('category', id)
+      updateFilter('type', type!)
     }
-  }, [])
+  }, [id, type, updateFilter])
 
   return (
     <SidebarItem
       key={id}
-      active={selectedCategory === id}
+      active={category === id || (category === '' && id === null)}
       icon={memoizedIcon}
       label={label}
       namespace={id ? false : undefined}

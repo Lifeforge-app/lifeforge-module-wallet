@@ -24,7 +24,7 @@
     },
     "assetsBalance": {
       "title": "Baki Aset",
-      "description": "Jejak baki aset anda.",
+      "description": "Jejak baki aset an.",
       "empty": {
         "assets": {
           "title": "Tiada Aset Dijumpai",
@@ -127,7 +127,8 @@
     "fromTemplate": "Dari Templat",
     "autoGenerate": "Jana Automatik",
     "savePrompts": "Simpan Petunjuk",
-    "fromNaturalLanguage": "Dari Bahasa Tabii"
+    "fromNaturalLanguage": "Dari Bahasa Tabii",
+    "createTemplateFrom": "Cipta Templat Daripada..."
   },
   "modals": {
     "transactions": {

@@ -70,9 +70,11 @@ function BreakdownContent({
     return {
       breakdown: currentBreakdown,
       categories: filteredCategories,
-      type: selectedType
+      type: selectedType,
+      year,
+      month
     }
-  }, [currentBreakdown, filteredCategories, selectedType])
+  }, [currentBreakdown, filteredCategories, selectedType, year, month])
 
   if (isYearMonthLoading) {
     return <LoadingScreen />

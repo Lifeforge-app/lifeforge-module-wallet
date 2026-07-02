@@ -8,25 +8,16 @@ import {
   useModuleSidebarState
 } from '@lifeforge/ui'
 
+import useFilter from '@/hooks/useFilter'
 import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
 import { useWalletData } from '@/hooks/useWalletData'
-import { useWalletStore } from '@/stores/useWalletStore'
 
 function InnerHeader() {
   const { transactionsQuery, assetsQuery, categoriesQuery, ledgersQuery } =
     useWalletData()
 
-  const {
-    searchQuery,
-    selectedType,
-    selectedCategory,
-    selectedAsset,
-    selectedLedger,
-    setSelectedType,
-    setSelectedCategory,
-    setSelectedAsset,
-    setSelectedLedger
-  } = useWalletStore()
+  const { searchQuery, type, category, asset, ledger, updateFilter } =
+    useFilter()
 
   const { setIsSidebarOpen } = useModuleSidebarState()
   const { t } = useModuleTranslation(['common.buttons'])
@@ -38,7 +29,16 @@ function InnerHeader() {
   const ledgers = ledgersQuery.data ?? []
 
   const filteredTransactions = useFilteredTransactions(
-    transactionsQuery.data ?? []
+    transactionsQuery.data ?? [],
+    {
+      type,
+      category,
+      asset,
+      ledger,
+      startDate: '',
+      endDate: '',
+      searchQuery
+    }
   )
 
   return (
@@ -47,11 +47,7 @@ function InnerHeader() {
         <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
           {t(
             `apps.lifeforge--wallet:header.${
-              !selectedType &&
-              !selectedCategory &&
-              !selectedAsset &&
-              !selectedLedger &&
-              searchQuery === ''
+              !type && !category && !asset && !ledger && searchQuery === ''
                 ? 'all'
                 : 'filtered'
             }Transactions`
@@ -112,16 +108,18 @@ function InnerHeader() {
             }
           }}
           values={{
-            type: selectedType,
-            category: selectedCategory,
-            asset: selectedAsset,
-            ledger: selectedLedger
+            type,
+            category,
+            asset,
+            ledger
           }}
           onChange={{
-            type: setSelectedType as (value: string | null) => void,
-            category: setSelectedCategory,
-            asset: setSelectedAsset,
-            ledger: setSelectedLedger
+            type: (value: string | null) => updateFilter('type', value ?? ''),
+            category: (value: string | null) =>
+              updateFilter('category', value ?? ''),
+            asset: (value: string | null) => updateFilter('asset', value ?? ''),
+            ledger: (value: string | null) =>
+              updateFilter('ledger', value ?? '')
           }}
         />
       </Stack>

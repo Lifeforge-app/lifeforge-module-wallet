@@ -1,6 +1,6 @@
 import { SidebarDivider, SidebarWrapper } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 import AllTransactionsButton from './components/AllTransactionsButton'
 import AssetsSection from './components/AssetsSection'
@@ -11,7 +11,7 @@ import MiniCalendar from './components/MiniCalendar'
 import TypeSection from './components/TypeSection'
 
 function Sidebar() {
-  const { selectedType } = useWalletStore()
+  const { type } = useFilter()
 
   return (
     <SidebarWrapper>
@@ -24,7 +24,7 @@ function Sidebar() {
       <TypeSection />
       <SidebarDivider />
       <CategoriesSection />
-      {selectedType !== 'transfer' && <SidebarDivider />}
+      {type !== 'transfer' && <SidebarDivider />}
       <AssetsSection />
       <SidebarDivider />
       <LedgerSection />

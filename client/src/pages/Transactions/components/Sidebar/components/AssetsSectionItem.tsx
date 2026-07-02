@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 
 import { SidebarItem } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 function AssetsSectionItem({
   icon,
@@ -15,23 +15,23 @@ function AssetsSectionItem({
   id: string | null
   amount: number | undefined
 }) {
-  const { selectedAsset, setSelectedAsset } = useWalletStore()
+  const { asset, updateFilter } = useFilter()
 
   const handleCancelButtonClick = useCallback(() => {
-    setSelectedAsset(null)
-  }, [])
+    updateFilter('asset', '')
+  }, [updateFilter])
 
   const handleClick = useCallback(() => {
     if (id === null) {
-      setSelectedAsset(null)
+      updateFilter('asset', '')
     } else {
-      setSelectedAsset(id)
+      updateFilter('asset', id)
     }
-  }, [])
+  }, [id, updateFilter])
 
   return (
     <SidebarItem
-      active={selectedAsset === id || (selectedAsset === null && id === null)}
+      active={asset === id || (asset === '' && id === null)}
       icon={icon}
       label={label}
       namespace={id ? false : undefined}

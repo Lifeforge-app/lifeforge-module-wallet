@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import z from 'zod'
 
 import { useForgeMutation } from '@lifeforge/api'
-
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   ColorField,
@@ -43,10 +42,10 @@ function ModifyCategoryModal({
 }) {
   const { t } = useModuleTranslation()
 
-  const createMutation = useForgeMutation(
-    forgeAPI.categories.create,
-    { action: 'create', queryKey: forgeAPI.categories.key }
-  )
+  const createMutation = useForgeMutation(forgeAPI.categories.create, {
+    action: 'create',
+    queryKey: forgeAPI.categories.key
+  })
 
   const updateMutation = useForgeMutation(
     forgeAPI.categories.update.input({ id: initialData?.id || ''! }),
@@ -67,13 +66,14 @@ function ModifyCategoryModal({
       form={form}
       submissionConfig={{
         handler: data => {
-          (type === 'create' ? createMutation : updateMutation).mutateAsync(data)
+          ;(type === 'create' ? createMutation : updateMutation).mutateAsync(
+            data
+          )
         },
         template: type === 'update' ? 'update' : 'create'
       }}
       uiConfig={{
         icon: type === 'update' ? 'tabler:pencil' : 'tabler:plus',
-        namespace: 'apps.lifeforge--wallet',
         title: `categories.${type === 'update' ? 'update' : 'create'}`,
         onClose
       }}
@@ -83,7 +83,7 @@ function ModifyCategoryModal({
         control={form.control}
         disabled={type === 'update'}
         icon="tabler:apps"
-        label={t('categoryType')}
+        label="categoryType"
         name="type"
         options={[
           {
@@ -104,20 +104,20 @@ function ModifyCategoryModal({
         required
         control={form.control}
         icon="tabler:pencil"
-        label={t('categoryName')}
+        label="categoryName"
         name="name"
         placeholder={t('inputs.categoryName.placeholder')}
       />
       <IconField
         required
         control={form.control}
-        label={t('categoryIcon')}
+        label="categoryIcon"
         name="icon"
       />
       <ColorField
         required
         control={form.control}
-        label={t('categoryColor')}
+        label="categoryColor"
         name="color"
       />
     </FormModal>

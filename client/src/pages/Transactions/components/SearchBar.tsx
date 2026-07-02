@@ -1,9 +1,9 @@
 import { SearchInput } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 function SearchBar() {
-  const { searchQuery, setSearchQuery } = useWalletStore()
+  const { searchQuery, setSearchQuery } = useFilter()
 
   return (
     <SearchInput

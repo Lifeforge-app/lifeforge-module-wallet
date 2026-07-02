@@ -127,6 +127,7 @@ function ConfirmMultipleTransactionsModal({
         <Button
           disabled={hasInvalid || transactions.length === 0}
           icon="tabler:check"
+          loading={mutation.isPending}
           mt="md"
           width="100%"
           onClick={handleSaveAll}

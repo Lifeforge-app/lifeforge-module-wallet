@@ -8,7 +8,7 @@ import {
   usePersonalization
 } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 function TypeSectionItem({
   icon,
@@ -22,8 +22,7 @@ function TypeSectionItem({
   const { t } = useModuleTranslation()
   const { bgTempPalette } = usePersonalization()
 
-  const { selectedType, setSelectedType, setSelectedCategory } =
-    useWalletStore()
+  const { type, updateFilter } = useFilter()
 
   const sidebarStripColor = useMemo(
     () =>
@@ -37,23 +36,25 @@ function TypeSectionItem({
   )
 
   const handleCancelButtonClick = useCallback(() => {
-    setSelectedType(null)
-  }, [])
+    updateFilter('type', '')
+  }, [updateFilter])
 
   const handleClick = useCallback(() => {
     if (label === 'All Types') {
-      setSelectedType(null)
+      updateFilter('type', '')
     } else {
-      setSelectedCategory(null)
-      setSelectedType(label.toLowerCase() as 'income' | 'expenses' | 'transfer')
+      updateFilter('category', '')
+      updateFilter(
+        'type',
+        label.toLowerCase() as 'income' | 'expenses' | 'transfer'
+      )
     }
-  }, [])
+  }, [label, updateFilter])
 
   return (
     <SidebarItem
       active={
-        selectedType === label.toLowerCase() ||
-        (selectedType === null && label === 'All Types')
+        type === label.toLowerCase() || (type === '' && label === 'All Types')
       }
       icon={icon}
       label={t(

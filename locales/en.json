@@ -127,7 +127,8 @@
     "fromTemplate": "From Template",
     "autoGenerate": "Auto Generate",
     "savePrompts": "Save Prompts",
-    "fromNaturalLanguage": "From Natural Language"
+    "fromNaturalLanguage": "From Natural Language",
+    "createTemplateFrom": "Create Template From..."
   },
   "modals": {
     "transactions": {

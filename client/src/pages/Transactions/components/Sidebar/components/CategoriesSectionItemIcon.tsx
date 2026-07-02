@@ -1,6 +1,6 @@
 import { Box, Icon } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 function CategoriesSectionItemIcon({
   icon,
@@ -11,12 +11,12 @@ function CategoriesSectionItemIcon({
   type: 'income' | 'expenses' | null
   id: string | null
 }) {
-  const { selectedCategory } = useWalletStore()
+  const { category } = useFilter()
 
   return (
     <Box height="1.75rem" position="relative" width="1.75rem">
       <Icon
-        color={selectedCategory === id ? 'custom-500' : undefined}
+        color={category === id ? 'custom-500' : undefined}
         icon={icon}
         size="1.5rem"
       />

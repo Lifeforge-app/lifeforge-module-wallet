@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 
 import { Box, Text } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 import {
   betweenBorderAfter,
@@ -37,7 +37,7 @@ function MiniCalendarDateItem({
   setNextToSelect,
   transactionCountMap
 }: MiniCalendarDateItemProps) {
-  const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
+  const { startDate, endDate, setFilters } = useFilter()
 
   let firstDay = dayjs(date).startOf('month').day() - 1
   firstDay = firstDay === -1 ? 6 : firstDay
@@ -83,7 +83,7 @@ function MiniCalendarDateItem({
   }, [startDate, endDate, date, actualIndex])
 
   const isBetweenFirstAndLastDay = useMemo(() => {
-    if (startDate === null || endDate === null) return false
+    if (startDate === '' || endDate === '') return false
 
     const formattedDate = dayjs(
       `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`,
@@ -132,8 +132,10 @@ function MiniCalendarDateItem({
     const target = `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`
 
     if (nextToSelect === 'start') {
-      setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-      setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+      setFilters({
+        startDate: dayjs(target, 'YYYY-M-D').format('YYYY-M-D'),
+        endDate: dayjs(target, 'YYYY-M-D').format('YYYY-M-D')
+      })
       setNextToSelect('end')
 
       return
@@ -141,17 +143,21 @@ function MiniCalendarDateItem({
 
     if (
       nextToSelect === 'end' &&
-      startDate !== null &&
+      startDate !== '' &&
       dayjs(startDate).isAfter(dayjs(target, 'YYYY-M-D'))
     ) {
-      setStartDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
-      setEndDate(dayjs(startDate).format('YYYY-M-D'))
+      setFilters({
+        startDate: dayjs(target, 'YYYY-M-D').format('YYYY-M-D'),
+        endDate: dayjs(startDate).format('YYYY-M-D')
+      })
       setNextToSelect('end')
 
       return
     }
 
-    setEndDate(dayjs(target, 'YYYY-M-D').format('YYYY-M-D'))
+    setFilters({
+      endDate: dayjs(target, 'YYYY-M-D').format('YYYY-M-D')
+    })
     setNextToSelect('start')
   }
 

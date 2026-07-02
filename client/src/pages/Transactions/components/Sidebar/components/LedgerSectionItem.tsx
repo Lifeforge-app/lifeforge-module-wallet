@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 
 import { SidebarItem } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 export default function LedgerSectionItem({
   icon,
@@ -17,23 +17,22 @@ export default function LedgerSectionItem({
   id: string | null
   amount: number | undefined
 }) {
-  const { selectedLedger, setSelectedLedger } = useWalletStore()
+  const { ledger, updateFilter } = useFilter()
 
-  const active =
-    selectedLedger === id || (selectedLedger === null && id === null)
+  const active = ledger === id || (ledger === '' && id === null)
 
   const handleCancelButtonClick = useCallback(() => {
-    setSelectedLedger(null)
-  }, [])
+    updateFilter('ledger', '')
+  }, [updateFilter])
 
   const handleClick = useCallback(() => {
     if (label === 'All') {
-      setSelectedLedger(null)
+      updateFilter('ledger', '')
 
       return
     }
-    setSelectedLedger(id)
-  }, [])
+    updateFilter('ledger', id!)
+  }, [label, id, updateFilter])
 
   return (
     <SidebarItem

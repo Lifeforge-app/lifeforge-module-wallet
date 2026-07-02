@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, ListboxInput, ListboxOption, Text } from '@lifeforge/ui'
 
 function YearMonthInput({
@@ -18,7 +18,7 @@ function YearMonthInput({
   yearsOptions: number[]
   monthsOptions: number[]
 }) {
-  const { t } = useModuleTranslation(['common.misc'])
+  const { t } = useTranslation(['common.misc'])
 
   useEffect(() => {
     if (yearsOptions.length > 0) {

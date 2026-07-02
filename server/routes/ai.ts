@@ -18,14 +18,13 @@ type GetAPIKeyFunc = (
 
 type InferSchema<T extends keyof typeof schemas> = z.infer<(typeof schema)[T]>
 
-type Category = InferSchema<'categories'>
-type Asset = InferSchema<'assets'>
 type TransactionPrompt = InferSchema<'transactions_prompts'>
 type TransactionTemplate = InferSchema<'transaction_templates'>
 
 type ExtractedData = {
   date: string
   type: 'income' | 'expenses' | 'transfer'
+  particulars?: string
   category?: string
   amount: number
   location?: string
@@ -43,30 +42,30 @@ async function fetchInitialData(
       .collection('transactions_prompts')
       .execute()
       .catch(function () {
-        return null as TransactionPrompt | null
+        return null
       }),
     pb.getFullList
       .collection('categories')
       .execute()
       .catch(function () {
-        return [] as Category[]
+        return []
       }),
     getAPIKey('gcloud', pb).catch(function () {
-      return null as string | null
+      return null
     }),
     pb.getFullList
       .collection('assets')
       .execute()
       .catch(function () {
-        return [] as Asset[]
+        return []
       })
   ])
 
   return {
-    particularPrompt: particularPrompt as TransactionPrompt | null,
-    categories: categories as Category[],
-    key: key as string | null,
-    assets: assets as Asset[]
+    particularPrompt,
+    categories,
+    key,
+    assets
   }
 }
 
@@ -82,18 +81,14 @@ async function extractBasicDetails(
 
   const hasAssets = assetNames.length > 0
 
-  const assetEnum = hasAssets
-    ? z.enum(assetNames as [string, ...string[]])
-    : z.string()
+  const assetEnum = hasAssets ? z.enum(assetNames) : z.string()
 
   const FullTransactionDetails = z.discriminatedUnion('type', [
     z.object({
       date: z.string().describe('Transaction date in YYYY-MM-DD format'),
       type: z.literal('income').or(z.literal('expenses')),
       category: hasCategories
-        ? z
-            .enum(categoryNames as [string, ...string[]])
-            .describe('The matched category')
+        ? z.enum(categoryNames).describe('The matched category')
         : z.string().describe('The matched category name'),
       amount: z.number().describe('Numeric amount without currency symbol'),
       location: z.string().describe('Location name or "Unknown"'),
@@ -136,7 +131,7 @@ Strict Rules:
   - For income or expenses: extract category, location, and the asset/wallet used.
   - For transfer: extract only date, amount, and the from/to assets (from, to). Skip category, location, and single asset.
 - Extract the clean, numerical transaction amount without currency signs. CRITICAL: Never invent or assume an amount. Only extract an amount if it is explicitly stated in the description (e.g., "RM39", "$15", "50 dollars", "spent 20"). If no amount is explicitly mentioned, you MUST set amount to 0.
-- Extract the merchant name/location. If not found, use "Unknown".
+- Extract the merchant name/location ONLY if it is explicitly stated. Never guess, infer, or fabricate a location. If not explicitly stated, use "Unknown".
 - Extract the payment asset/wallet used for the transaction. If the text does not contain any clue about which account or method was used, use "Unknown".
 
 Available Categories: ${hasCategories ? categoryNames.join(', ') : 'None'}
@@ -173,10 +168,14 @@ async function batchMatchTemplates(
   const BatchTemplateMatch = z.object({
     matches: z.array(
       z.object({
-        transactionIndex: z.number().describe('0-based index of the transaction in the input list'),
+        transactionIndex: z
+          .number()
+          .describe('0-based index of the transaction in the input list'),
         template: z
           .enum(['None', ...templateNames])
-          .describe('Best matching template name, or None if there is no extremely close match')
+          .describe(
+            'Best matching template name, or None if there is no extremely close match'
+          )
       })
     )
   })
@@ -247,6 +246,7 @@ ${description}`
         const found = templates.find(function (t) {
           return t.name === match.template
         })
+
         if (found) {
           results[match.transactionIndex] = found
         }
@@ -311,6 +311,7 @@ Expenses Guideline: ${particularPrompt.expenses || 'N/A'}`
   const formattedItems = activeTransactions
     .map(function (item) {
       const basePart = baseParticularsMap.get(item.index)
+
       let itemContext = `Transaction #${item.index}:
 - Type: ${item.tx.type}
 - Amount: ${item.tx.amount}
@@ -328,7 +329,9 @@ Expenses Guideline: ${particularPrompt.expenses || 'N/A'}`
   const ParticularsListSchema = z.object({
     particularsList: z.array(
       z.object({
-        transactionIndex: z.number().describe('0-based index of the transaction in the input list'),
+        transactionIndex: z
+          .number()
+          .describe('0-based index of the transaction in the input list'),
         particulars: z
           .string()
           .describe(
@@ -375,11 +378,16 @@ ${description}`
   return results
 }
 
+type ResolvedLocation = {
+  coords: { lon: number; lat: number }
+  name: string
+}
+
 async function resolveLocationCoords(
   searchLocations: SearchLocationsFunc,
   key: string | null,
   locationName: string
-) {
+): Promise<ResolvedLocation | null> {
   if (!key || !locationName || locationName === 'Unknown') {
     return null
   }
@@ -399,6 +407,42 @@ async function resolveLocationCoords(
   }
 
   return null
+}
+
+async function batchResolveLocationCoords(
+  searchLocations: SearchLocationsFunc,
+  key: string | null,
+  transactions: ExtractedData[]
+): Promise<Map<string, ResolvedLocation | null>> {
+  const resultMap = new Map<string, ResolvedLocation | null>()
+
+  if (!key) return resultMap
+
+  const uniqueLocations = [
+    ...new Set(
+      transactions
+        .map(function (tx) {
+          return tx.location
+        })
+        .filter(function (loc): loc is string {
+          return !!loc && loc !== 'Unknown'
+        })
+    )
+  ]
+
+  const resolved = await Promise.all(
+    uniqueLocations.map(async function (loc) {
+      const resolvedLoc = await resolveLocationCoords(searchLocations, key, loc)
+
+      return { loc, resolvedLoc }
+    })
+  )
+
+  for (const { loc, resolvedLoc } of resolved) {
+    resultMap.set(loc, resolvedLoc)
+  }
+
+  return resultMap
 }
 
 export const fromNaturalLanguage = forge
@@ -484,7 +528,7 @@ export const fromNaturalLanguage = forge
       .collection('transaction_templates')
       .execute()
       .catch(function () {
-        return [] as TransactionTemplate[]
+        return []
       })
 
     // Batch match templates for all transactions
@@ -500,6 +544,7 @@ export const fromNaturalLanguage = forge
     const baseParticularsMap = new Map<number, string | undefined>()
     extractedData.transactions.forEach((tx, idx) => {
       const template = matchedTemplates[idx]
+
       if (template) {
         baseParticularsMap.set(idx, template.particulars || undefined)
       }
@@ -513,6 +558,13 @@ export const fromNaturalLanguage = forge
       particularPrompt,
       description,
       baseParticularsMap
+    )
+
+    // Batch resolve all unique locations before processing transactions
+    const locationCoordsMap = await batchResolveLocationCoords(
+      searchLocations,
+      key,
+      extractedData.transactions
     )
 
     const results = await Promise.all(
@@ -601,13 +653,9 @@ export const fromNaturalLanguage = forge
           }
         }
 
-        // 5. Resolve location coordinates if not already set by template
+        // 5. Resolve location coordinates from pre-resolved map if not already set by template
         if (!finalResult.location_name?.trim()) {
-          const resolvedLoc = await resolveLocationCoords(
-            searchLocations,
-            key,
-            (item as { location: string }).location
-          )
+          const resolvedLoc = locationCoordsMap.get(item.location) || null
 
           if (resolvedLoc) {
             finalResult.location_coords = resolvedLoc.coords

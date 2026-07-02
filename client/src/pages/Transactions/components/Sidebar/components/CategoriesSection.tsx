@@ -3,8 +3,8 @@ import { useCallback, useMemo } from 'react'
 import { useModuleTranslation } from '@lifeforge/localization'
 import { SidebarTitle, WithQuery, useModalStore } from '@lifeforge/ui'
 
+import useFilter from '@/hooks/useFilter'
 import { useWalletData } from '@/hooks/useWalletData'
-import { useWalletStore } from '@/stores/useWalletStore'
 
 import ModifyCategoryModal from '../../../modals/ModifyCategoryModal'
 import CategoriesSectionItem from './CategoriesSectionItem'
@@ -13,7 +13,7 @@ function CategoriesSection() {
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
   const { categoriesQuery } = useWalletData()
-  const { selectedType } = useWalletStore()
+  const { type } = useFilter()
 
   const categories = useMemo(
     () =>
@@ -35,9 +35,10 @@ function CategoriesSection() {
           ) ?? []
         )
         .filter(
-          ({ type }) => selectedType === type || (selectedType ?? null) === null
+          ({ type: catType }) =>
+            type === '' || catType === null || type === catType
         ),
-    [categoriesQuery.data, selectedType, t]
+    [categoriesQuery.data, type, t]
   )
 
   const handleActionButtonClick = useCallback(() => {
@@ -49,7 +50,7 @@ function CategoriesSection() {
     })
   }, [])
 
-  return selectedType !== 'transfer' ? (
+  return type !== 'transfer' ? (
     <>
       <SidebarTitle
         actionButton={{
@@ -61,17 +62,19 @@ function CategoriesSection() {
       <WithQuery query={categoriesQuery}>
         {() => (
           <>
-            {categories.map(({ icon, name, color, id, type, amount }) => (
-              <CategoriesSectionItem
-                key={id}
-                amount={amount}
-                color={color}
-                icon={icon}
-                id={id}
-                label={name}
-                type={type}
-              />
-            ))}
+            {categories.map(
+              ({ icon, name, color, id, type: catType, amount }) => (
+                <CategoriesSectionItem
+                  key={id}
+                  amount={amount}
+                  color={color}
+                  icon={icon}
+                  id={id}
+                  label={name}
+                  type={catType}
+                />
+              )
+            )}
           </>
         )}
       </WithQuery>

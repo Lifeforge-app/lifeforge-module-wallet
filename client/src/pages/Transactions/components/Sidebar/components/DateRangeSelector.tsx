@@ -2,14 +2,16 @@ import dayjs from 'dayjs'
 
 import { DateInput, SidebarTitle, Stack } from '@lifeforge/ui'
 
-import { useWalletStore } from '@/stores/useWalletStore'
+import useFilter from '@/hooks/useFilter'
 
 function DateRangeSelector() {
-  const { startDate, endDate, setStartDate, setEndDate } = useWalletStore()
+  const { startDate, endDate, setFilters, updateFilter } = useFilter()
 
   const handleClear = () => {
-    setStartDate(undefined)
-    setEndDate(undefined)
+    setFilters({
+      startDate: '',
+      endDate: ''
+    })
   }
 
   const handleDateChange = (
@@ -17,18 +19,18 @@ function DateRangeSelector() {
     type: 'start_date' | 'end_date'
   ) => {
     if (!date) {
-      if (type === 'start_date') setStartDate(undefined)
-      else setEndDate(undefined)
+      if (type === 'start_date') updateFilter('startDate', '')
+      else updateFilter('endDate', '')
 
       return
     }
 
     const otherDate =
       type === 'start_date'
-        ? endDate !== undefined && dayjs(endDate).isValid()
+        ? endDate !== '' && dayjs(endDate).isValid()
           ? dayjs(endDate)
           : dayjs()
-        : startDate !== undefined && dayjs(startDate).isValid()
+        : startDate !== '' && dayjs(startDate).isValid()
           ? dayjs(startDate)
           : dayjs()
 
@@ -36,19 +38,31 @@ function DateRangeSelector() {
       (type === 'start_date' && dayjs(date).isAfter(otherDate)) ||
       (type === 'end_date' && dayjs(date).isBefore(otherDate))
     ) {
-      if (type === 'start_date') setEndDate(dayjs(date).format('YYYY-MM-DD'))
-      else setStartDate(dayjs(date).format('YYYY-MM-DD'))
+      if (type === 'start_date') {
+        setFilters({
+          endDate: dayjs(date).format('YYYY-MM-DD'),
+          startDate: dayjs(date).format('YYYY-MM-DD')
+        })
+      } else {
+        setFilters({
+          startDate: dayjs(date).format('YYYY-MM-DD'),
+          endDate: dayjs(date).format('YYYY-MM-DD')
+        })
+      }
+
+      return
     }
 
-    if (type === 'start_date') setStartDate(dayjs(date).format('YYYY-MM-DD'))
-    else setEndDate(dayjs(date).format('YYYY-MM-DD'))
+    if (type === 'start_date')
+      updateFilter('startDate', dayjs(date).format('YYYY-MM-DD'))
+    else updateFilter('endDate', dayjs(date).format('YYYY-MM-DD'))
   }
 
   return (
     <>
       <SidebarTitle
         actionButton={
-          startDate !== undefined || endDate !== undefined
+          startDate !== '' || endDate !== ''
             ? {
                 icon: 'tabler:trash',
                 onClick: handleClear
@@ -62,7 +76,7 @@ function DateRangeSelector() {
           icon="tabler:calendar-up"
           label="Start Date"
           value={
-            startDate && dayjs(startDate).isValid()
+            startDate !== '' && dayjs(startDate).isValid()
               ? dayjs(startDate).toDate()
               : null
           }
@@ -72,7 +86,9 @@ function DateRangeSelector() {
           icon="tabler:calendar-down"
           label="End Date"
           value={
-            endDate && dayjs(endDate).isValid() ? dayjs(endDate).toDate() : null
+            endDate !== '' && dayjs(endDate).isValid()
+              ? dayjs(endDate).toDate()
+              : null
           }
           onChange={date => handleDateChange(date, 'end_date')}
         />

@@ -4,45 +4,49 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import { useMemo } from 'react'
 
 import type { WalletTransaction } from '../pages/Transactions'
-import { useWalletStore } from '../stores/useWalletStore'
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
 
-export function useFilteredTransactions(transactions: WalletTransaction[]) {
-  const {
-    selectedType,
-    selectedCategory,
-    selectedAsset,
-    selectedLedger,
-    startDate,
-    endDate,
-    searchQuery
-  } = useWalletStore()
+interface FilterParams {
+  type: string
+  category: string
+  asset: string
+  ledger: string
+  startDate: string
+  endDate: string
+  searchQuery: string
+}
+
+export function useFilteredTransactions(
+  transactions: WalletTransaction[],
+  filters: FilterParams
+) {
+  const { type, category, asset, ledger, startDate, endDate, searchQuery } =
+    filters
 
   return useMemo(() => {
     return transactions
-      .filter(tx => (selectedType ? tx.type === selectedType : true))
+      .filter(tx => (type ? tx.type === type : true))
       .filter(tx => {
-        if (!selectedCategory) return true
+        if (!category) return true
         if (tx.type === 'transfer') return false
 
-        return tx.category === selectedCategory
+        return tx.category === category
       })
       .filter(tx => {
-        if (!selectedAsset) return true
+        if (!asset) return true
 
-        if (tx.type === 'transfer')
-          return tx.from === selectedAsset || tx.to === selectedAsset
+        if (tx.type === 'transfer') return tx.from === asset || tx.to === asset
 
-        return tx.asset === selectedAsset
+        return tx.asset === asset
       })
       .filter(tx => {
-        if (!selectedLedger) return true
+        if (!ledger) return true
 
         if (tx.type === 'transfer') return false
 
-        return tx.ledgers?.includes(selectedLedger)
+        return tx.ledgers?.includes(ledger)
       })
       .filter(
         tx =>
@@ -73,10 +77,10 @@ export function useFilteredTransactions(transactions: WalletTransaction[]) {
       })
   }, [
     transactions,
-    selectedType,
-    selectedCategory,
-    selectedAsset,
-    selectedLedger,
+    type,
+    category,
+    asset,
+    ledger,
     startDate,
     endDate,
     searchQuery

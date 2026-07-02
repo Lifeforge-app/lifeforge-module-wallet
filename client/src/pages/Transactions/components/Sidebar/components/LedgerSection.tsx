@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router'
 import { useModuleTranslation } from '@lifeforge/localization'
 import { SidebarTitle, WithQuery } from '@lifeforge/ui'
 
+import useFilter from '@/hooks/useFilter'
 import { useWalletData } from '@/hooks/useWalletData'
-import { useWalletStore } from '@/stores/useWalletStore'
 
 import LedgerSectionItem from './LedgerSectionItem'
 
@@ -13,7 +13,7 @@ function LedgerSection() {
   const { t } = useModuleTranslation()
   const navigate = useNavigate()
   const { ledgersQuery } = useWalletData()
-  const { selectedLedger } = useWalletStore()
+  const { ledger } = useFilter()
 
   const ledgers = useMemo(
     () =>
@@ -26,7 +26,7 @@ function LedgerSection() {
           amount: undefined
         }
       ].concat(ledgersQuery.data ?? ([] as any)),
-    [ledgersQuery.data, selectedLedger, t]
+    [ledgersQuery.data, ledger, t]
   )
 
   return (

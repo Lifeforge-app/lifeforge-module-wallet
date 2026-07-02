@@ -1,6 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
 import {
@@ -13,7 +11,6 @@ import {
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
-import { useWalletStore } from '@/stores/useWalletStore'
 
 import HeaderMenu from './components/HeaderMenu'
 import InnerHeader from './components/InnerHeader'
@@ -31,54 +28,7 @@ export type WalletCategory = InferOutput<
 >[number]
 
 function Transactions() {
-  // TODO: Migrate to nuqs
-  const {
-    setSelectedType,
-    setSelectedLedger,
-    setSelectedAsset,
-    setSelectedCategory,
-    setSearchQuery
-  } = useWalletStore()
-
-  const navigate = useNavigate()
   const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
-  const [searchParams] = useSearchParams()
-
-  useEffect(() => {
-    const query = searchParams.get('query')
-
-    const type = searchParams.get('type')
-
-    const ledger = searchParams.get('ledger')
-
-    const asset = searchParams.get('asset')
-
-    const category = searchParams.get('category')
-
-    if (query) {
-      setSearchQuery(query)
-    }
-
-    if (type && ['income', 'expenses', 'transfer'].includes(type)) {
-      setSelectedType(type as WalletTransaction['type'])
-    }
-
-    if (ledger) {
-      setSelectedLedger(ledger)
-    }
-
-    if (asset) {
-      setSelectedAsset(asset)
-    }
-
-    if (category) {
-      setSelectedCategory(category)
-    }
-
-    navigate('/wallet/transactions', {
-      replace: true
-    })
-  }, [searchParams])
 
   return (
     <>
