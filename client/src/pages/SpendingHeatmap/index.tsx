@@ -10,7 +10,8 @@ import {
   ModuleHeader,
   TAILWIND_PALETTE,
   Text,
-  WithQuery
+  WithQuery,
+  usePersonalization
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -21,6 +22,9 @@ type SpendingLocationData = InferOutput<
 >[number]
 
 function SpendingHeatmap() {
+  const navigate = useNavigate()
+  const { derivedTheme } = usePersonalization()
+
   const spendingDataQuery = useQuery(
     forgeAPI.analytics.getSpendingByLocation.queryOptions()
   )
@@ -28,8 +32,6 @@ function SpendingHeatmap() {
   const googleMapAPIKeyQuery = useQuery(
     forgeAPI.getAPIKeys({ keyId: 'gcloud' }).queryOptions({ retry: false })
   )
-
-  const navigate = useNavigate()
 
   const spendingData = spendingDataQuery.data ?? []
 
@@ -79,7 +81,6 @@ function SpendingHeatmap() {
       <ModuleHeader
         icon="uil:map-marker"
         title="Spending Heatmap"
-        tKey="subsectionsTitleAndDesc"
       />
       <WithQuery query={googleMapAPIKeyQuery} showRetryButton={false}>
         {googleMapAPIKey =>
@@ -89,6 +90,7 @@ function SpendingHeatmap() {
                 spendingData.length > 0 ? (
                   <APIProvider apiKey={googleMapAPIKey}>
                     <Map
+                      colorScheme={derivedTheme === 'dark' ? 'DARK' : 'LIGHT'}
                       defaultCenter={centerPoint}
                       defaultZoom={8}
                       mapId="SpendingHeatmap"
