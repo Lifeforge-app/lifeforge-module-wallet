@@ -54,7 +54,6 @@ function Ledgers() {
         }
         icon="tabler:book"
         title="ledgers"
-        tKey="subsectionsTitleAndDesc"
       />
       <WithQuery query={ledgersQuery}>
         {ledgers => (

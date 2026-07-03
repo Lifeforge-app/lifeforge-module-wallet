@@ -48,12 +48,10 @@ function TemplateItem({
         choosing
           ? () => {
               onClose()
-              setTimeout(() => {
-                open(ModifyTransactionsModal, {
-                  type: 'create',
-                  initialData: template
-                })
-              }, 200)
+              open(ModifyTransactionsModal, {
+                type: 'create',
+                initialData: template
+              })
             }
           : undefined
       }

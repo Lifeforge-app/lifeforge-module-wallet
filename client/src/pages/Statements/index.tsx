@@ -25,7 +25,6 @@ function Statements() {
       <ModuleHeader
         icon="tabler:file-text"
         title="Financial Statements"
-        tKey="subsectionsTitleAndDesc"
       />
       {isLoading ? (
         <LoadingScreen />

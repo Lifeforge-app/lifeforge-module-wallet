@@ -262,18 +262,16 @@ function ModifyTransactionsModal({
             return
           }
 
-          setTimeout(() => {
-            const option = CREATE_ANOTHER_OPTIONS.find(
-              o => o.value === createAnother
-            )
+          const option = CREATE_ANOTHER_OPTIONS.find(
+            o => o.value === createAnother
+          )
 
-            if (option?.component) {
-              open(option.component, {
-                ...(option.data as object),
-                createAnother
-              } as never)
-            }
-          }, 300)
+          if (option?.component) {
+            open(option.component, {
+              ...(option.data as object),
+              createAnother
+            } as never)
+          }
         },
         template: type
       }}

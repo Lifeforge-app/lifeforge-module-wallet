@@ -42,7 +42,6 @@ function Transactions() {
         }}
         icon="tabler:arrows-exchange"
         title="Transactions"
-        tKey="subsectionsTitleAndDesc"
       />
       <LayoutWithSidebar>
         <Sidebar />

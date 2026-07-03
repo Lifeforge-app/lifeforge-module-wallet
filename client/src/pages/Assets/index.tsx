@@ -119,7 +119,6 @@ function Assets() {
         }}
         icon="tabler:wallet"
         title="Assets"
-        tKey="subsectionsTitleAndDesc"
       />
       <Flex align="center" gap="md" mb="lg">
         <SearchInput

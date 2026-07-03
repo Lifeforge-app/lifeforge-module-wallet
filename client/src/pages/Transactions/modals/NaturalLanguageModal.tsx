@@ -63,21 +63,17 @@ function NaturalLanguageModal({
           onClose()
 
           if (data.length === 1) {
-            setTimeout(() => {
-              open(ModifyTransactionsModal, {
-                type: 'create',
-                createAnother: values.createAnother,
-                initialData: data[0] as unknown as {
-                  type: WalletTransaction['type']
-                } & Partial<WalletTransaction>
-              })
-            }, 300)
+            open(ModifyTransactionsModal, {
+              type: 'create',
+              createAnother: values.createAnother,
+              initialData: data[0] as unknown as {
+                type: WalletTransaction['type']
+              } & Partial<WalletTransaction>
+            })
           } else if (data.length > 1) {
-            setTimeout(() => {
-              open(ConfirmMultipleTransactionsModal, {
-                transactions: data
-              })
-            }, 300)
+            open(ConfirmMultipleTransactionsModal, {
+              transactions: data
+            })
           } else {
             toast.error(t('toasts.noTransactionsExtracted'))
           }

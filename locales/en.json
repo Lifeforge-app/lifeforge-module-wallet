@@ -2,12 +2,29 @@
   "title": "Wallet",
   "description": "Become your own financial superhero.",
   "subsections": {
-    "dashboard": "Dashboard",
-    "transactions": "Transactions",
-    "assets": "Assets",
-    "ledgers": "Ledgers",
-    "financialStatements": "Financial Statements",
-    "spendingHeatmap": "Spending Heatmap"
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "assets": {
+      "title": "Assets",
+      "description": "Manage your assets securely and efficiently in your wallet."
+    },
+    "ledgers": {
+      "title": "Ledgers",
+      "description": "Manage and view your financial transactions and accounts in the ledger."
+    },
+    "transactions": {
+      "title": "Transactions",
+      "description": "View your transaction history and details."
+    },
+    "financialStatements": {
+      "title": "Financial Statements",
+      "description": "View detailed financial statements that provide insights into your account's transactions and balances."
+    },
+    "spendingHeatmap": {
+      "title": "Spending Heatmap",
+      "description": "Visual representation of your spending habits over time."
+    }
   },
   "header": {
     "allTransactions": "All Transactions",
@@ -221,28 +238,6 @@
     "category": "Category",
     "receipt": "Receipt",
     "template": "Template"
-  },
-  "subsectionsTitleAndDesc": {
-    "assets": {
-      "title": "Assets",
-      "description": "Manage your assets securely and efficiently in your wallet."
-    },
-    "ledgers": {
-      "title": "Ledgers",
-      "description": "Manage and view your financial transactions and accounts in the ledger."
-    },
-    "transactions": {
-      "title": "Transactions",
-      "description": "View your transaction history and details."
-    },
-    "financialStatements": {
-      "title": "Financial Statements",
-      "description": "View detailed financial statements that provide insights into your account's transactions and balances."
-    },
-    "spendingHeatmap": {
-      "title": "Spending Heatmap",
-      "description": "Visual representation of your spending habits over time."
-    }
   },
   "timeRanges": {
     "week": "This Week",

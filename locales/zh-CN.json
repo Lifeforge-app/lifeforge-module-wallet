@@ -2,12 +2,29 @@
   "title": "钱包",
   "description": "成为您自己的财务超级英雄。",
   "subsections": {
-    "dashboard": "仪表板",
-    "transactions": "交易",
-    "assets": "资产",
-    "ledgers": "帐本",
-    "financialStatements": "财务报表",
-    "spendingHeatmap": "消费热力图"
+    "dashboard": {
+      "title": "仪表板"
+    },
+    "assets": {
+      "title": "资产",
+      "description": "在您的钱包中安全高效地管理您的资产。"
+    },
+    "ledgers": {
+      "title": "分类账",
+      "description": "管理和查看您在账本中的财务交易和账户。"
+    },
+    "transactions": {
+      "title": "交易记录",
+      "description": "查看您的交易历史和详情。"
+    },
+    "financialStatements": {
+      "title": "财务报表",
+      "description": "查看详细的财务报表，以了解您账户的交易和余额情况。"
+    },
+    "spendingHeatmap": {
+      "title": "消费热力图",
+      "description": "展示您随时间变化的消费习惯的可视化图形。"
+    }
   },
   "header": {
     "allTransactions": "所有交易",
@@ -221,28 +238,6 @@
     "category": "类别",
     "receipt": "收据",
     "template": "模板"
-  },
-  "subsectionsTitleAndDesc": {
-    "assets": {
-      "title": "资产",
-      "description": "在您的钱包中安全高效地管理您的资产。"
-    },
-    "ledgers": {
-      "title": "分类账",
-      "description": "管理和查看您在账本中的财务交易和账户。"
-    },
-    "transactions": {
-      "title": "交易记录",
-      "description": "查看您的交易历史和详情。"
-    },
-    "financialStatements": {
-      "title": "财务报表",
-      "description": "查看详细的财务报表，以了解您账户的交易和余额情况。"
-    },
-    "spendingHeatmap": {
-      "title": "消费热力图",
-      "description": "展示您随时间变化的消费习惯的可视化图形。"
-    }
   },
   "timeRanges": {
     "week": "本周",
