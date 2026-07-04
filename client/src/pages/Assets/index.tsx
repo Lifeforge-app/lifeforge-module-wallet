@@ -22,6 +22,7 @@ import {
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
+import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import TotalBalance from './components/AssetAmount'
@@ -100,7 +101,7 @@ function Assets() {
                 label="Refresh"
                 onClick={() => {
                   queryClient.invalidateQueries({
-                    queryKey: ['wallet', 'assets']
+                    queryKey: forgeAPI.assets.key
                   })
                   assetsQuery.refetch()
                 }}

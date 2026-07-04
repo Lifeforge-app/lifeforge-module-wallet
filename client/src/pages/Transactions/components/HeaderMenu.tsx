@@ -3,6 +3,8 @@ import { useCallback } from 'react'
 
 import { ContextMenuItem, useModalStore } from '@lifeforge/ui'
 
+import { forgeAPI } from '@/manifest'
+
 import ManageCategoriesModal from '../modals/ManageCategoriesModal'
 import ManageTemplatesModal from '../modals/ManageTemplatesModal'
 
@@ -12,7 +14,7 @@ function HeaderMenu() {
 
   const handleRefresh = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ['wallet', 'transactions']
+      queryKey: forgeAPI.transactions.key
     })
   }, [queryClient])
 
