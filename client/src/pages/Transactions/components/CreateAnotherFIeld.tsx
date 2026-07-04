@@ -2,7 +2,7 @@ import { type FunctionComponent, lazy } from 'react'
 import { type Control, type FieldValues } from 'react-hook-form'
 import z from 'zod'
 
-import { Box, ListboxField, TAILWIND_PALETTE } from '@lifeforge/ui'
+import { Box, ListboxField } from '@lifeforge/ui'
 
 export const CREATE_ANOTHER_VALUES = [
   'form',
@@ -29,7 +29,6 @@ type CreateAnotherOption = {
   text: string
   value: CreateAnotherValue
   icon: string
-  color: string
   component?: FunctionComponent<{ data: never; onClose: () => void }>
   data?: unknown
 }
@@ -38,14 +37,12 @@ export const CREATE_ANOTHER_OPTIONS: CreateAnotherOption[] = [
   {
     text: 'No',
     value: 'none',
-    icon: 'tabler:x',
-    color: TAILWIND_PALETTE.red[500]
+    icon: 'tabler:x'
   },
   {
     text: 'Form',
     value: 'form',
     icon: 'tabler:forms',
-    color: TAILWIND_PALETTE.blue[500],
     component: ModifyTransactionsModal,
     data: { type: 'create' }
   },
@@ -53,7 +50,6 @@ export const CREATE_ANOTHER_OPTIONS: CreateAnotherOption[] = [
     text: 'Scan Receipt',
     value: 'scan_receipt',
     icon: 'tabler:camera',
-    color: TAILWIND_PALETTE.purple[500],
     component: ScanReceiptModal,
     data: {}
   },
@@ -61,7 +57,6 @@ export const CREATE_ANOTHER_OPTIONS: CreateAnotherOption[] = [
     text: 'Natural Language',
     value: 'natural_language',
     icon: 'tabler:brain',
-    color: TAILWIND_PALETTE.green[500],
     component: NaturalLanguageModal,
     data: {}
   }
