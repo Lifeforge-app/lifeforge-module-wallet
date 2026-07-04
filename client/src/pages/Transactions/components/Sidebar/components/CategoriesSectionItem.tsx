@@ -21,7 +21,7 @@ function CategoriesSectionItem({
   type: 'income' | 'expenses' | null
   amount: number | undefined
 }) {
-  const { category, updateFilter } = useFilter()
+  const { category, updateFilter, setFilters } = useFilter()
 
   const memoizedIcon = useMemo(
     () => <CategoriesSectionItemIcon icon={icon} id={id} type={type} />,
@@ -36,8 +36,7 @@ function CategoriesSectionItem({
     if (id === null) {
       updateFilter('category', '')
     } else {
-      updateFilter('category', id)
-      updateFilter('type', type!)
+      setFilters({ category: id, type: type! })
     }
   }, [id, type, updateFilter])
 
