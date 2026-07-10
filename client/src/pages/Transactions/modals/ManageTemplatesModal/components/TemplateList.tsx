@@ -1,78 +1,66 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { AutoSizer } from 'react-virtualized'
 
-import { useModuleTranslation } from '@lifeforge/localization'
-import {
-  Box,
-  EmptyStateScreen,
-  Flex,
-  Scrollbar,
-  Stack,
-  WithQuery,
-  useModalStore,
-  useTabContext
-} from '@lifeforge/ui'
+import type { InferOutput } from '@lifeforge/api'
+import { Box, EmptyStateScreen, Flex, Scrollbar, Stack } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
-import ModifyTemplatesModal from '../../ModifyTemplatesModal'
-import TemplateItem from './Templateitem'
+import { TemplatesTabbedView } from '../constants/tabbed_view'
+import TemplateItem from './TemplateItem'
 
 function TemplateList({
+  templates,
   choosing,
   onClose
 }: {
+  templates: InferOutput<typeof forgeAPI.templates.list>
   choosing: boolean | undefined
   onClose: () => void
 }) {
-  const { t } = useModuleTranslation()
-  const { currentTab } = useTabContext<'income' | 'expenses'>()
-  const { open } = useModalStore()
+  const { currentTab, setAmounts } = TemplatesTabbedView.useContext()
 
-  const transactionTemplatesQuery = useQuery(
-    forgeAPI.templates.list.queryOptions()
-  )
+  useEffect(() => {
+    if (!templates) return
+
+    setAmounts({
+      income: templates.income.length,
+      expenses: templates.expenses.length
+    })
+  }, [templates?.income?.length, templates?.expenses?.length, setAmounts])
+
+  if (templates[currentTab].length === 0) {
+    return (
+      <Flex centered flex="1">
+        <EmptyStateScreen
+          icon="tabler:template-off"
+          message={{
+            id: 'templates'
+          }}
+        />
+      </Flex>
+    )
+  }
 
   return (
-    <WithQuery query={transactionTemplatesQuery}>
-      {templates =>
-        templates[currentTab].length > 0 ? (
-          <Box flex="1" height="100%" mt="md">
-            <AutoSizer>
-              {({ width, height }) => (
-                <Scrollbar style={{ width, height }}>
-                  <Stack>
-                    {templates[currentTab].map(template => (
-                      <TemplateItem
-                        key={template.id}
-                        choosing={!!choosing}
-                        template={template}
-                        onClose={onClose}
-                      />
-                    ))}
-                  </Stack>
-                </Scrollbar>
-              )}
-            </AutoSizer>
-          </Box>
-        ) : (
-          <Flex centered flex="1">
-            <EmptyStateScreen
-              CTAButtonProps={{
-                children: 'new',
-                icon: 'tabler:plus',
-                onClick: () => open(ModifyTemplatesModal, { type: 'create' }),
-                tProps: { item: t('items.template') }
-              }}
-              icon="tabler:template-off"
-              message={{
-                id: 'templates'
-              }}
-            />
-          </Flex>
-        )
-      }
-    </WithQuery>
+    <Box flex="1" height="100%" mt="md">
+      <AutoSizer>
+        {({ width, height }) => (
+          <Scrollbar style={{ width, height }}>
+            <Stack>
+              {templates[currentTab].map(template => (
+                <TemplateItem
+                  key={template.id}
+                  choosing={!!choosing}
+                  template={template}
+                  onClose={onClose}
+                />
+              ))}
+            </Stack>
+          </Scrollbar>
+        )}
+      </AutoSizer>
+    </Box>
   )
 }
 

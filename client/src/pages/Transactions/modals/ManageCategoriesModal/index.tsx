@@ -1,21 +1,19 @@
-import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   ModalHeader,
   Stack,
-  WithTab,
+  WithQueryData,
   useModalStore
 } from '@lifeforge/ui'
 
-import { useWalletData } from '@/hooks/useWalletData'
+import { forgeAPI } from '@/manifest'
 
 import ModifyCategoryModal from '../ModifyCategoryModal'
 import CategoryList from './components/CategoryList'
+import { CategoriesTabbedView } from './constants/tabbed_view'
 
 function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
   const { open } = useModalStore()
-  const { t } = useModuleTranslation()
-  const { categoriesQuery } = useWalletData()
 
   return (
     <Stack minHeight="80vh" minWidth="40vw">
@@ -31,36 +29,12 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
         title="categories.manage"
         onClose={onClose}
       />
-      <WithTab
-        tabs={[
-          {
-            name: t('transactionTypes.income'),
-            id: 'income',
-            icon: 'tabler:login-2',
-            amount:
-              categoriesQuery.data?.filter(
-                category => category.type === 'income'
-              ).length || 0
-          },
-          {
-            name: t('transactionTypes.expenses'),
-            id: 'expenses',
-            icon: 'tabler:logout',
-            amount:
-              categoriesQuery.data?.filter(
-                category => category.type === 'expenses'
-              ).length || 0
-          }
-        ]}
-        useNuqs={false}
-      >
-        {({ TabSelector }) => (
-          <>
-            <TabSelector />
-            <CategoryList />
-          </>
-        )}
-      </WithTab>
+      <CategoriesTabbedView.Root>
+        <CategoriesTabbedView.Selector />
+        <WithQueryData controller={forgeAPI.categories.list}>
+          {categories => <CategoryList categories={categories} />}
+        </WithQueryData>
+      </CategoriesTabbedView.Root>
     </Stack>
   )
 }

@@ -1,12 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Alert,
   Button,
   ModalHeader,
   Stack,
-  WithTab,
+  WithQueryData,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -14,6 +12,7 @@ import { forgeAPI } from '@/manifest'
 
 import ModifyTemplatesModal from '../ModifyTemplatesModal'
 import TemplateList from './components/TemplateList'
+import { TemplatesTabbedView } from './constants/tabbed_view'
 
 function ManageTemplatesModal({
   onClose,
@@ -24,10 +23,6 @@ function ManageTemplatesModal({
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
-
-  const transactionTemplatesQuery = useQuery(
-    forgeAPI.templates.list.queryOptions()
-  )
 
   return (
     <Stack minHeight="80vh" minWidth="40vw">
@@ -50,29 +45,18 @@ function ManageTemplatesModal({
           {t('messages.aiAccuracy')}
         </Alert>
       )}
-      <WithTab
-        tabs={[
-          {
-            name: t('transactionTypes.income'),
-            id: 'income',
-            icon: 'tabler:login-2',
-            amount: transactionTemplatesQuery.data?.income?.length || 0
-          },
-          {
-            name: t('transactionTypes.expenses'),
-            id: 'expenses',
-            icon: 'tabler:logout',
-            amount: transactionTemplatesQuery.data?.expenses?.length || 0
-          }
-        ]}
-      >
-        {({ TabSelector }) => (
-          <>
-            <TabSelector />
-            <TemplateList choosing={choosing} onClose={onClose} />
-          </>
-        )}
-      </WithTab>
+      <TemplatesTabbedView.Root>
+        <TemplatesTabbedView.Selector />
+        <WithQueryData controller={forgeAPI.templates.list}>
+          {templates => (
+            <TemplateList
+              choosing={choosing}
+              templates={templates}
+              onClose={onClose}
+            />
+          )}
+        </WithQueryData>
+      </TemplatesTabbedView.Root>
     </Stack>
   )
 }
