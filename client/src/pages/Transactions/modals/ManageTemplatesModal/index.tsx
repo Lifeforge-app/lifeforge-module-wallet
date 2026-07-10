@@ -1,26 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import { AutoSizer } from 'react-virtualized'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Alert,
-  Box,
   Button,
-  EmptyStateScreen,
-  Flex,
   ModalHeader,
-  Scrollbar,
   Stack,
-  Tabs,
-  WithQuery,
+  WithTab,
   useModalStore
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
 import ModifyTemplatesModal from '../ModifyTemplatesModal'
-import TemplateItem from './components/Templateitem'
+import TemplateList from './components/TemplateList'
 
 function ManageTemplatesModal({
   onClose,
@@ -31,10 +24,6 @@ function ManageTemplatesModal({
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
-
-  const [selectedTab, setSelectedTab] = useState<'income' | 'expenses'>(
-    'income'
-  )
 
   const transactionTemplatesQuery = useQuery(
     forgeAPI.templates.list.queryOptions()
@@ -61,10 +50,8 @@ function ManageTemplatesModal({
           {t('messages.aiAccuracy')}
         </Alert>
       )}
-      <Tabs
-        currentTab={selectedTab}
-        enabled={['income', 'expenses']}
-        items={[
+      <WithTab
+        tabs={[
           {
             name: t('transactionTypes.income'),
             id: 'income',
@@ -78,47 +65,14 @@ function ManageTemplatesModal({
             amount: transactionTemplatesQuery.data?.expenses?.length || 0
           }
         ]}
-        onTabChange={setSelectedTab as (value: string) => void}
-      />
-      <WithQuery query={transactionTemplatesQuery}>
-        {templates =>
-          templates[selectedTab].length > 0 ? (
-            <Box flex="1" height="100%" mt="md">
-              <AutoSizer>
-                {({ width, height }) => (
-                  <Scrollbar style={{ width, height }}>
-                    <Stack>
-                      {templates[selectedTab].map(template => (
-                        <TemplateItem
-                          key={template.id}
-                          choosing={!!choosing}
-                          template={template}
-                          onClose={onClose}
-                        />
-                      ))}
-                    </Stack>
-                  </Scrollbar>
-                )}
-              </AutoSizer>
-            </Box>
-          ) : (
-            <Flex centered flex="1">
-              <EmptyStateScreen
-                CTAButtonProps={{
-                  children: 'new',
-                  icon: 'tabler:plus',
-                  onClick: () => open(ModifyTemplatesModal, { type: 'create' }),
-                  tProps: { item: t('items.template') }
-                }}
-                icon="tabler:template-off"
-                message={{
-                  id: 'templates'
-                }}
-              />
-            </Flex>
-          )
-        }
-      </WithQuery>
+      >
+        {({ TabSelector }) => (
+          <>
+            <TabSelector />
+            <TemplateList choosing={choosing} onClose={onClose} />
+          </>
+        )}
+      </WithTab>
     </Stack>
   )
 }
