@@ -47,7 +47,7 @@ function ManageTemplatesModal({
       )}
       <TemplatesTabbedView.Root>
         <TemplatesTabbedView.Selector />
-        <WithQueryData controller={forgeAPI.templates.list}>
+        <WithQueryData contract={forgeAPI.templates.list}>
           {templates => (
             <TemplateList
               choosing={choosing}

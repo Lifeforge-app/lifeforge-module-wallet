@@ -22,7 +22,7 @@ function ViewTransactionModal({
         onClose={onClose}
       />
       <WithQueryData
-        controller={forgeAPI.transactions.getById.input({
+        contract={forgeAPI.transactions.getById.input({
           id
         })}
       >

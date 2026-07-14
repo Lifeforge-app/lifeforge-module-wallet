@@ -31,7 +31,7 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
       />
       <CategoriesTabbedView.Root>
         <CategoriesTabbedView.Selector />
-        <WithQueryData controller={forgeAPI.categories.list}>
+        <WithQueryData contract={forgeAPI.categories.list}>
           {categories => <CategoryList categories={categories} />}
         </WithQueryData>
       </CategoriesTabbedView.Root>
