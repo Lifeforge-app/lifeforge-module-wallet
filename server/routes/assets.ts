@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import Moment from 'moment'
-import * as MomentRange from 'moment-range'
+import MomentRange from 'moment-range'
 import z from 'zod'
 
 import forge from '../forge'
@@ -289,8 +289,7 @@ export const getAllAssetAccumulatedBalance = forge
         .filter(t => t.from === asset.id || t.to === asset.id)
         .map(t => ({
           type: (t.from === asset.id ? 'expenses' : 'income') as
-            | 'income'
-            | 'expenses',
+            'income' | 'expenses',
           amount: t.expand!.base_transaction!.amount!,
           date: t.expand!.base_transaction!.date!
         }))

@@ -1,11 +1,8 @@
 import dayjs from 'dayjs'
 import z from 'zod'
 
-import type {
-  FetchAIFunc,
-  IPBService,
-  SearchLocationsFunc
-} from '@lifeforge/server-utils'
+import type { IPBService } from '@lifeforge/pocketbase'
+import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
 
 import forge from '../forge'
 import { schemas } from '../schema'
@@ -145,8 +142,6 @@ Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}`
     structure: TransactionsList
   })
 
-  console.log(result)
-
   return result
 }
 
@@ -217,7 +212,7 @@ Strict Matching Rules:
 
 Slot Handling:
 - Template particulars may contain placeholder slots indicated by various bracket styles like <slot_name>, {slot_name}, {{slot_name}}, [slot_name], (slot_name), etc. (e.g., <item>, {store}, {{service}}, [merchant]). These are empty slots to be filled with real values from the transaction.
-- Consider a template with slots as a potential match — the slot indicates the template fits, with details to be filled in from the actual transaction.
+- Consider a template with slots as a potential match - the slot indicates the template fits, with details to be filled in from the actual transaction.
 
 Available Templates:
 ${formattedTemplates}`
