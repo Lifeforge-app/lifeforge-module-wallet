@@ -1,6 +1,6 @@
-import { useForgeMutation } from '@lifeforge/api'
 import { useNavigate } from 'react-router'
 
+import { useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,

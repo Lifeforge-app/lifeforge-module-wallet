@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
-import { useForgeMutation, type InferInput } from '@lifeforge/api'
+import { type InferInput, useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   CurrencyField,
@@ -128,10 +128,10 @@ function ModifyTransactionsModal({
 
   const ledgers = ledgersQuery.data ?? []
 
-  const createMutation = useForgeMutation(
-    forgeAPI.transactions.create,
-    { action: 'create', queryKey: forgeAPI.key }
-  )
+  const createMutation = useForgeMutation(forgeAPI.transactions.create, {
+    action: 'create',
+    queryKey: forgeAPI.key
+  })
 
   const updateMutation = useForgeMutation(
     forgeAPI.transactions.update.input({ id: initialData?.id || ''! }),
@@ -245,14 +245,12 @@ function ModifyTransactionsModal({
           const createAnother = data.createAnother
 
           if (data.type === 'transfer') {
-            await (type === 'create'
-              ? createMutation
-              : updateMutation
+            await (
+              type === 'create' ? createMutation : updateMutation
             ).mutateAsync(finalData)
           } else {
-            await (type === 'create'
-              ? createMutation
-              : updateMutation
+            await (
+              type === 'create' ? createMutation : updateMutation
             ).mutateAsync(finalData)
           }
 

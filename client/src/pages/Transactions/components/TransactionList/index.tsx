@@ -9,6 +9,7 @@ import TransactionItem from './components/TransactionItem'
 function TransactionList() {
   const { transactionsQuery } = useWalletData()
   const filters = useFilter()
+
   const {
     page,
     setPage,

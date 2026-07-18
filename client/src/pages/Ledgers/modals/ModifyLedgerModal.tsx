@@ -35,10 +35,10 @@ function ModifyLedgerModal({
   }
   onClose: () => void
 }) {
-  const createMutation = useForgeMutation(
-    forgeAPI.ledgers.create,
-    { action: 'create', queryKey: forgeAPI.ledgers.key }
-  )
+  const createMutation = useForgeMutation(forgeAPI.ledgers.create, {
+    action: 'create',
+    queryKey: forgeAPI.ledgers.key
+  })
 
   const updateMutation = useForgeMutation(
     forgeAPI.ledgers.update.input({ id: initialData?.id || '' }),
@@ -59,9 +59,8 @@ function ModifyLedgerModal({
       form={form}
       submissionConfig={{
         handler: async data => {
-          await (type === 'create'
-            ? createMutation
-            : updateMutation
+          await (
+            type === 'create' ? createMutation : updateMutation
           ).mutateAsync(data)
         },
         template: type

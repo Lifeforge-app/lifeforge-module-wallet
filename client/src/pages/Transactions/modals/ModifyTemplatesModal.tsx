@@ -3,7 +3,6 @@ import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
 import { useForgeMutation } from '@lifeforge/api'
-
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   CurrencyField,
@@ -57,10 +56,10 @@ function ModifyTemplatesModal({
 
   const ledgers = ledgersQuery.data ?? []
 
-  const createMutation = useForgeMutation(
-    forgeAPI.templates.create,
-    { action: 'create', queryKey: forgeAPI.templates.key }
-  )
+  const createMutation = useForgeMutation(forgeAPI.templates.create, {
+    action: 'create',
+    queryKey: forgeAPI.templates.key
+  })
 
   const updateMutation = useForgeMutation(
     forgeAPI.templates.update.input({ id: initialData?.id || ''! }),
@@ -116,7 +115,9 @@ function ModifyTemplatesModal({
       form={form}
       submissionConfig={{
         handler: data => {
-          (type === 'create' ? createMutation : updateMutation).mutateAsync(data)
+          ;(type === 'create' ? createMutation : updateMutation).mutateAsync(
+            data
+          )
         },
         template: type
       }}

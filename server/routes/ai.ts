@@ -38,22 +38,22 @@ async function fetchInitialData(
     pb.getFirstListItem
       .collection('transactions_prompts')
       .execute()
-      .catch(function () {
+      .catch(() => {
         return null
       }),
     pb.getFullList
       .collection('categories')
       .execute()
-      .catch(function () {
+      .catch(() => {
         return []
       }),
-    getAPIKey('gcloud', pb).catch(function () {
+    getAPIKey('gcloud', pb).catch(() => {
       return null
     }),
     pb.getFullList
       .collection('assets')
       .execute()
-      .catch(function () {
+      .catch(() => {
         return []
       })
   ])
@@ -387,7 +387,7 @@ async function resolveLocationCoords(
     return null
   }
 
-  const locations = await searchLocations(key, locationName).catch(function () {
+  const locations = await searchLocations(key, locationName).catch(() => {
     return []
   })
 
@@ -522,7 +522,7 @@ export const fromNaturalLanguage = forge
     const allTemplates = await pb.getFullList
       .collection('transaction_templates')
       .execute()
-      .catch(function () {
+      .catch(() => {
         return []
       })
 

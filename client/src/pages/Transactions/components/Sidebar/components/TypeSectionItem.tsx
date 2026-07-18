@@ -21,7 +21,6 @@ function TypeSectionItem({
 }) {
   const { t } = useModuleTranslation()
   const { bgTempPalette } = usePersonalization()
-
   const { type, updateFilter } = useFilter()
 
   const sidebarStripColor = useMemo(

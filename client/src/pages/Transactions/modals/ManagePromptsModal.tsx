@@ -63,7 +63,7 @@ function ManagePromptsModal({ onClose }: { onClose: () => void }) {
     handleAutoGeneratePrompt
   )
 
-  const [saveLoading, onSave] = usePromiseLoading(async function () {
+  const [saveLoading, onSave] = usePromiseLoading(async () => {
     await savePromptsMutation.mutateAsync(prompts)
   })
 

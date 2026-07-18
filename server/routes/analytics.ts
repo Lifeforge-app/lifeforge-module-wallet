@@ -402,9 +402,7 @@ export const getTransactionCountByDay = forge
       ?.split(',')
       .map(v => v.trim())
       .filter(t => ['income', 'expenses', 'transfer'].includes(t)) as (
-      | 'income'
-      | 'expenses'
-      | 'transfer'
+      'income' | 'expenses' | 'transfer'
     )[]) ?? ['income', 'expenses', 'transfer']
 
     const data = await pb.getFullList

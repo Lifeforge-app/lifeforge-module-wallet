@@ -30,10 +30,10 @@ function ModifyAssetModal({
   }
   onClose: () => void
 }) {
-  const createMutation = useForgeMutation(
-    forgeAPI.assets.create,
-    { action: 'create', queryKey: forgeAPI.assets.key }
-  )
+  const createMutation = useForgeMutation(forgeAPI.assets.create, {
+    action: 'create',
+    queryKey: forgeAPI.assets.key
+  })
 
   const updateMutation = useForgeMutation(
     forgeAPI.assets.update.input({ id: initialData?.id || '' }),
@@ -54,9 +54,8 @@ function ModifyAssetModal({
       form={form}
       submissionConfig={{
         handler: async data => {
-          await (type === 'create'
-            ? createMutation
-            : updateMutation
+          await (
+            type === 'create' ? createMutation : updateMutation
           ).mutateAsync(data)
         },
         template: type

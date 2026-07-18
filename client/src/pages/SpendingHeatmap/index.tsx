@@ -78,10 +78,7 @@ function SpendingHeatmap() {
 
   return (
     <>
-      <ModuleHeader
-        icon="uil:map-marker"
-        title="Spending Heatmap"
-      />
+      <ModuleHeader icon="uil:map-marker" title="Spending Heatmap" />
       <WithQuery query={googleMapAPIKeyQuery} showRetryButton={false}>
         {googleMapAPIKey =>
           googleMapAPIKey ? (

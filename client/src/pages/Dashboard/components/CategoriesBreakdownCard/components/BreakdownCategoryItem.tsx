@@ -14,10 +14,13 @@ import numberToCurrency from '../../../../../utils/numberToCurrency'
 function BreakdownCategoryItem({ category }: { category: WalletCategory }) {
   const { t } = useModuleTranslation()
   const { isAmountHidden } = useWalletStore()
-  const { breakdown, type, year, month } = useContext(CategoriesBreakdownContext)
+  const { breakdown, type, year, month } = useContext(
+    CategoriesBreakdownContext
+  )
 
   const filterParams = useMemo(() => {
-    if (year === null || month === null) return `?type=${type}&category=${category.id}`
+    if (year === null || month === null)
+      return `?type=${type}&category=${category.id}`
 
     const startDate = dayjs()
       .year(year)
@@ -49,7 +52,7 @@ function BreakdownCategoryItem({ category }: { category: WalletCategory }) {
         gap="lg"
         minWidth="0"
         p="lg"
-         to={`/wallet/transactions${filterParams}`}
+        to={`/wallet/transactions${filterParams}`}
         width="100%"
       >
         <Flex align="center" gap="md" minWidth="0" width="100%">

@@ -22,10 +22,7 @@ function Statements() {
 
   return (
     <>
-      <ModuleHeader
-        icon="tabler:file-text"
-        title="Financial Statements"
-      />
+      <ModuleHeader icon="tabler:file-text" title="Financial Statements" />
       {isLoading ? (
         <LoadingScreen />
       ) : yearsOptions.length === 0 && monthsOptions.length === 0 ? (
