@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import { ContextMenuItem, useModalStore } from '@lifeforge/ui'
+import { ContextMenu, ContextMenuItem, useModalStore } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -19,7 +19,11 @@ function HeaderMenu() {
   }, [queryClient])
 
   return (
-    <>
+    <ContextMenu
+      componentProps={{
+        menu: { minWidth: '16rem' }
+      }}
+    >
       <ContextMenuItem
         icon="tabler:refresh"
         label="Refresh"
@@ -35,7 +39,7 @@ function HeaderMenu() {
         label="Manage Templates"
         onClick={() => open(ManageTemplatesModal, {})}
       />
-    </>
+    </ContextMenu>
   )
 }
 

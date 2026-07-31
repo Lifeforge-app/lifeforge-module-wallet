@@ -53,7 +53,7 @@ function TransactionItem({
       )}
       {!viewOnly && (
         <ContextMenu
-          styles={{
+          componentProps={{
             menu: {
               minWidth: '16em'
             }

@@ -6,6 +6,7 @@ import { useLocation } from 'react-router'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
+  ContextMenu,
   ContextMenuItem,
   EmptyStateScreen,
   FAB,
@@ -81,21 +82,25 @@ function Assets() {
   return (
     <>
       <ModuleHeader
-        actionButton={
-          <Button
-            display={{ base: 'none', sm: 'flex' }}
-            icon="tabler:plus"
-            tProps={{
-              item: t('items.asset')
-            }}
-            onClick={handleCreateCategory}
-          >
-            new
-          </Button>
-        }
-        contextMenuProps={{
-          children: (
-            <>
+        icon="tabler:wallet"
+        title="Assets"
+        trailing={
+          <>
+            <Button
+              display={{ base: 'none', sm: 'flex' }}
+              icon="tabler:plus"
+              tProps={{
+                item: t('items.asset')
+              }}
+              onClick={handleCreateCategory}
+            >
+              new
+            </Button>
+            <ContextMenu
+              componentProps={{
+                menu: { minWidth: '15rem' }
+              }}
+            >
               <ContextMenuItem
                 icon="tabler:refresh"
                 label="Refresh"
@@ -114,12 +119,9 @@ function Assets() {
                   toggleAmountVisibility()
                 }}
               />
-            </>
-          ),
-          styles: { menu: { minWidth: '15rem' } }
-        }}
-        icon="tabler:wallet"
-        title="Assets"
+            </ContextMenu>
+          </>
+        }
       />
       <Flex align="center" gap="md" mb="lg">
         <SearchInput

@@ -35,7 +35,7 @@ function AssetContextMenu({ asset }: { asset: WalletAsset }) {
   return (
     <Box position={{ base: 'absolute', md: 'static' }} right="1em" top="1em">
       <ContextMenu
-        styles={{
+        componentProps={{
           menu: {
             minWidth: '16em'
           }

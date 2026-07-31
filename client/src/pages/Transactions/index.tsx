@@ -33,15 +33,14 @@ function Transactions() {
   return (
     <>
       <ModuleHeader
-        actionButton={<TransactionCreationMenu variant="desktop" />}
-        contextMenuProps={{
-          children: <HeaderMenu />,
-          styles: {
-            menu: { minWidth: '15rem' }
-          }
-        }}
         icon="tabler:arrows-exchange"
         title="Transactions"
+        trailing={
+          <>
+            <TransactionCreationMenu variant="desktop" />
+            <HeaderMenu />
+          </>
+        }
       />
       <LayoutWithSidebar>
         <Sidebar />

@@ -27,7 +27,9 @@ function ManageTemplatesModal({
   return (
     <Stack minHeight="80vh" minWidth="40vw">
       <ModalHeader
-        headerActions={
+        icon="tabler:template"
+        title={`templates.${choosing ? 'choose' : 'manage'}`}
+        trailing={
           !choosing ? (
             <Button
               icon="tabler:plus"
@@ -36,8 +38,6 @@ function ManageTemplatesModal({
             />
           ) : undefined
         }
-        icon="tabler:template"
-        title={`templates.${choosing ? 'choose' : 'manage'}`}
         onClose={onClose}
       />
       {!choosing && (

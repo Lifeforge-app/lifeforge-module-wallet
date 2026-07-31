@@ -18,15 +18,15 @@ function ManageCategoriesModal({ onClose }: { onClose: () => void }) {
   return (
     <Stack minHeight="80vh" minWidth="40vw">
       <ModalHeader
-        headerActions={
+        icon="tabler:apps"
+        title="categories.manage"
+        trailing={
           <Button
             icon="tabler:plus"
             variant="plain"
             onClick={() => open(ModifyCategoryModal, { type: 'create' })}
           />
         }
-        icon="tabler:apps"
-        title="categories.manage"
         onClose={onClose}
       />
       <CategoriesTabbedView.Root>

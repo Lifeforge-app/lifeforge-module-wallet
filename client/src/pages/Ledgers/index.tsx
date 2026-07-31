@@ -40,7 +40,9 @@ function Ledgers() {
   return (
     <>
       <ModuleHeader
-        actionButton={
+        icon="tabler:book"
+        title="ledgers"
+        trailing={
           <Button
             display={{ base: 'none', md: 'flex' }}
             icon="tabler:plus"
@@ -52,8 +54,6 @@ function Ledgers() {
             New
           </Button>
         }
-        icon="tabler:book"
-        title="ledgers"
       />
       <WithQuery query={ledgersQuery}>
         {ledgers => (

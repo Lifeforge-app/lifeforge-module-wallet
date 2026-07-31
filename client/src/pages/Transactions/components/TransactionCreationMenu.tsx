@@ -76,7 +76,7 @@ function TransactionCreationMenu({
             new
           </Button>
         }
-        styles={{
+        componentProps={{
           menu: {
             minWidth: '18em'
           }
@@ -89,21 +89,19 @@ function TransactionCreationMenu({
 
   return (
     <ContextMenu
+      bottom="1.5rem"
       buttonComponent={<FAB position="static" visibilityBreakpoint="md" />}
-      styles={{
+      componentProps={{
         menu: {
           minWidth: '18em'
         },
         button: {
           position: 'static'
-        },
-        wrapper: {
-          position: 'fixed',
-          right: '1.5rem',
-          bottom: '1.5rem',
-          width: 'min-content'
         }
       }}
+      position="fixed"
+      right="1.5rem"
+      width="min-content"
     >
       {items}
     </ContextMenu>

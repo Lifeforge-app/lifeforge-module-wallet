@@ -53,49 +53,49 @@ function WalletDashboard() {
   return (
     <>
       <ModuleHeader
-        actionButton={
-          <ContextMenu
-            buttonComponent={
-              <Button
-                display={{ base: 'none', md: 'flex' }}
+        trailing={
+          <>
+            <ContextMenu
+              buttonComponent={
+                <Button
+                  icon="tabler:plus"
+                  tProps={{
+                    item: t('apps.lifeforge--wallet:items.transaction')
+                  }}
+                  onClick={() => {}}
+                >
+                  new
+                </Button>
+              }
+              display={{ base: 'none', md: 'block' }}
+            >
+              <ContextMenuItem
                 icon="tabler:plus"
-                tProps={{
-                  item: t('apps.lifeforge--wallet:items.transaction')
+                label="Add Manually"
+                onClick={() => {
+                  navigate('/wallet/transactions#new')
                 }}
-                onClick={() => {}}
-              >
-                new
-              </Button>
-            }
-          >
-            <ContextMenuItem
-              icon="tabler:plus"
-              label="Add Manually"
-              onClick={() => {
-                navigate('/wallet/transactions#new')
-              }}
-            />
-            <ContextMenuItem
-              icon="tabler:scan"
-              label="Scan Receipt"
-              onClick={() => {
-                navigate('/wallet/transactions#scan')
-              }}
-            />
-          </ContextMenu>
+              />
+              <ContextMenuItem
+                icon="tabler:scan"
+                label="Scan Receipt"
+                onClick={() => {
+                  navigate('/wallet/transactions#scan')
+                }}
+              />
+            </ContextMenu>
+            <ContextMenu>
+              <ContextMenuItem
+                checked={isAmountHidden}
+                icon="tabler:eye-off"
+                label="Hide Amount"
+                onClick={() => {
+                  toggleAmountVisibility()
+                }}
+              />
+            </ContextMenu>
+          </>
         }
-        contextMenuProps={{
-          children: (
-            <ContextMenuItem
-              checked={isAmountHidden}
-              icon="tabler:eye-off"
-              label="Hide Amount"
-              onClick={() => {
-                toggleAmountVisibility()
-              }}
-            />
-          )
-        }}
       />
       <Grid gap="sm" pb="2xl" templateCols={{ base: 1, xl: 3 }} width="100%">
         <IncomeExpenseCard icon="tabler:login-2" title="Income" />
@@ -107,10 +107,10 @@ function WalletDashboard() {
         <CategoriesBreakdownCard />
       </Grid>
       <ContextMenu
+        bottom="1.5rem"
         buttonComponent={<FAB visibilityBreakpoint="md" />}
-        styles={{
-          wrapper: { position: 'fixed', right: '1.5rem', bottom: '1.5rem' }
-        }}
+        position="fixed"
+        right="1.5rem"
       >
         <ContextMenuItem
           icon="tabler:plus"

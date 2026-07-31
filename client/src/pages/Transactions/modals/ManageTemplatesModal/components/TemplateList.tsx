@@ -7,7 +7,7 @@ import { Box, EmptyStateScreen, Flex, Scrollbar, Stack } from '@lifeforge/ui'
 import { forgeAPI } from '@/manifest'
 
 import { TemplatesTabbedView } from '../constants/tabbed_view'
-import TemplateItem from './TemplateItem'
+import TemplateItem from './Templateitem'
 
 function TemplateList({
   templates,
