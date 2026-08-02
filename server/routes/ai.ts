@@ -283,17 +283,18 @@ Strict Rules:
 1. Do NOT include payment methods, card names, or wallets (e.g., "using MAE Wallet", "with Visa", "by card", "credit card", "wallet").
 2. Do NOT include dates, relative times, or days of week (e.g., "last Sunday", "today", "yesterday", "Sunday").
 3. Do NOT include transaction amounts or currencies (e.g., "RM39", "$15").
-4. Under no circumstances should any asset/wallet name, payment method, amount, date, day of week, or relative time words be included in the particulars.
+4. Do NOT include location names or merchants (e.g., "at The Library", "Tesco", "Starbucks"). Locations are stored separately in the location field, so they must be excluded from the particulars.
+5. Under no circumstances should any asset/wallet name, payment method, amount, date, day of week, relative time words, or location name be included in the particulars.
 
 Few-Shot Examples:
 - Input transaction: "Spend RM39 for the purchase of book at The Library by BookXCess last sunday using MAE Wallet"
-  Particulars: "Purchase of book by BookXCess"
+  Particulars: "Purchase of book"
 
 - Input transaction: "Starbucks coffee for $5.50 this morning with Visa Card"
-  Particulars: "Starbucks coffee"
+  Particulars: "Coffee"
 
 - Input transaction: "Bought groceries at Tesco yesterday for RM120 using Cash"
-  Particulars: "Groceries at Tesco"
+  Particulars: "Groceries"
 
 Now analyze the list of user transactions and generate the clean, concise particulars for each.`
 
@@ -330,7 +331,7 @@ Expenses Guideline: ${particularPrompt.expenses || 'N/A'}`
         particulars: z
           .string()
           .describe(
-            'Clean transaction particulars (5-10 words). MUST NOT contain dates, times, day of week, amounts, or payment asset names.'
+            'Clean transaction particulars (5-10 words). MUST NOT contain dates, times, day of week, amounts, payment asset names, or location names.'
           )
       })
     )

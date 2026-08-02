@@ -130,8 +130,8 @@ export const autoGenerate = forge
       const prompt = getPromptGenerationPrompt(type)
 
       const result = await fetchAI({
-        provider: 'openai',
-        model: 'gpt-4o',
+        provider: 'deepseek',
+        model: 'deepseek-v4-flash',
         messages: [
           {
             role: 'system',
