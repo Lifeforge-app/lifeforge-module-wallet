@@ -46,7 +46,7 @@ function InnerHeader() {
       <Stack>
         <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
           {t(
-            `apps.lifeforge--wallet:header.${
+            `header.${
               !type && !category && !asset && !ledger && searchQuery === ''
                 ? 'all'
                 : 'filtered'

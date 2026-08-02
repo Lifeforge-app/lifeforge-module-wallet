@@ -60,7 +60,7 @@ function WalletDashboard() {
                 <Button
                   icon="tabler:plus"
                   tProps={{
-                    item: t('apps.lifeforge--wallet:items.transaction')
+                    item: t('items.transaction')
                   }}
                   onClick={() => {}}
                 >

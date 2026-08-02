@@ -25,7 +25,7 @@ function AssetsSection() {
           name: 'allAssets',
           color: 'white',
           id: null,
-          amount: undefined
+          current_balance: 0
         }
       ].concat(assetsQuery.data ?? ([] as any)),
     [assetsQuery.data, t]
@@ -40,10 +40,10 @@ function AssetsSection() {
         }}
         label="assets"
       />
-      {ITEMS.map(({ icon, name, id, amount }) => (
+      {ITEMS.map(({ icon, name, id, current_balance }) => (
         <AssetsSectionItem
           key={id}
-          amount={amount}
+          amount={current_balance}
           icon={icon}
           id={id}
           label={name}

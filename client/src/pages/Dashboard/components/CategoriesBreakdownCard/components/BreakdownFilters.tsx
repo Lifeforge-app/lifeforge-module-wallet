@@ -41,9 +41,7 @@ function BreakdownFilters({
               }
               size="1.5rem"
             />
-            <Text>
-              {t(`apps.lifeforge--wallet:transactionTypes.${selectedType}`)}
-            </Text>
+            <Text>{t(`transactionTypes.${selectedType}`)}</Text>
           </Flex>
         )}
         value={selectedType}
@@ -53,7 +51,7 @@ function BreakdownFilters({
           <ListboxOption
             key={type}
             icon={type === 'income' ? 'tabler:login-2' : 'tabler:logout'}
-            label={t(`apps.lifeforge--wallet:transactionTypes.${type}`)}
+            label={t(`transactionTypes.${type}`)}
             value={type}
           />
         ))}
