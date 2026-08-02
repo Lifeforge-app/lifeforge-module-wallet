@@ -275,5 +275,17 @@
   },
   "actions": {
     "convert": "转换"
+  },
+  "spendingHeatmap": {
+    "controls": {
+      "title": "热力图控制",
+      "metric": "指标",
+      "byAmount": "按金额",
+      "byCount": "按次数",
+      "layers": "图层",
+      "showHeatmap": "显示热力图",
+      "showMarkers": "显示标记",
+      "autoHiddenZoom": "(高缩放级别下自动隐藏)"
+    }
   }
 }

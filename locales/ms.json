@@ -275,5 +275,17 @@
   },
   "actions": {
     "convert": "menukar"
+  },
+  "spendingHeatmap": {
+    "controls": {
+      "title": "Kawalan Peta Panas",
+      "metric": "Metrik",
+      "byAmount": "Mengikut Jumlah",
+      "byCount": "Mengikut Bilangan",
+      "layers": "Lapisan",
+      "showHeatmap": "Tunjuk Peta Panas",
+      "showMarkers": "Tunjuk Penanda",
+      "autoHiddenZoom": "(Disembunyikan secara automatik pada zum tinggi)"
+    }
   }
 }

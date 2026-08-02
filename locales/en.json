@@ -275,5 +275,17 @@
   },
   "actions": {
     "convert": "converted"
+  },
+  "spendingHeatmap": {
+    "controls": {
+      "title": "Heatmap Controls",
+      "metric": "Metric",
+      "byAmount": "By Amount",
+      "byCount": "By Count",
+      "layers": "Layers",
+      "showHeatmap": "Show Heatmap",
+      "showMarkers": "Show Markers",
+      "autoHiddenZoom": "(Auto-hidden at high zoom)"
+    }
   }
 }
