@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
 import {
@@ -7,7 +9,8 @@ import {
   LayoutWithSidebar,
   ModuleHeader,
   Stack,
-  WithQuery
+  WithQuery,
+  useModalStore
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -18,6 +21,10 @@ import SearchBar from './components/SearchBar'
 import Sidebar from './components/Sidebar'
 import TransactionCreationMenu from './components/TransactionCreationMenu'
 import TransactionList from './components/TransactionList'
+import ManageTemplatesModal from './modals/ManageTemplatesModal'
+import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
+import NaturalLanguageModal from './modals/NaturalLanguageModal'
+import ScanReceiptModal from './modals/ScanReceiptModal'
 
 export type WalletTransaction = InferOutput<
   typeof forgeAPI.transactions.list
@@ -28,7 +35,27 @@ export type WalletCategory = InferOutput<
 >[number]
 
 function Transactions() {
+  const { hash } = useLocation()
+  const { open } = useModalStore()
   const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
+
+  useEffect(() => {
+    if (hash === '#new') {
+      open(ModifyTransactionsModal, { type: 'create' })
+    }
+
+    if (hash === '#template') {
+      open(ManageTemplatesModal, { choosing: true })
+    }
+
+    if (hash === '#scan') {
+      open(ScanReceiptModal, {})
+    }
+
+    if (hash === '#ai') {
+      open(NaturalLanguageModal, {})
+    }
+  }, [hash])
 
   return (
     <>

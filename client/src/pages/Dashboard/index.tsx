@@ -11,19 +11,16 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import { useNavigate } from 'react-router'
-
-import { useModuleTranslation } from '@lifeforge/localization'
 import {
-  Button,
   ContextMenu,
   ContextMenuItem,
-  FAB,
   Grid,
   ModuleHeader
 } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
+
+import TransactionCreationMenu from '../Transactions/components/TransactionCreationMenu'
 
 import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
@@ -46,8 +43,6 @@ ChartJS.register(
 )
 
 function WalletDashboard() {
-  const navigate = useNavigate()
-  const { t } = useModuleTranslation(['common.buttons'])
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
 
   return (
@@ -55,35 +50,7 @@ function WalletDashboard() {
       <ModuleHeader
         trailing={
           <>
-            <ContextMenu
-              buttonComponent={
-                <Button
-                  icon="tabler:plus"
-                  tProps={{
-                    item: t('items.transaction')
-                  }}
-                  onClick={() => {}}
-                >
-                  new
-                </Button>
-              }
-              display={{ base: 'none', md: 'block' }}
-            >
-              <ContextMenuItem
-                icon="tabler:plus"
-                label="Add Manually"
-                onClick={() => {
-                  navigate('/wallet/transactions#new')
-                }}
-              />
-              <ContextMenuItem
-                icon="tabler:scan"
-                label="Scan Receipt"
-                onClick={() => {
-                  navigate('/wallet/transactions#scan')
-                }}
-              />
-            </ContextMenu>
+            <TransactionCreationMenu mode="navigate" variant="desktop" />
             <ContextMenu>
               <ContextMenuItem
                 checked={isAmountHidden}
@@ -106,27 +73,7 @@ function WalletDashboard() {
         <TransactionsCard />
         <CategoriesBreakdownCard />
       </Grid>
-      <ContextMenu
-        bottom="1.5rem"
-        buttonComponent={<FAB visibilityBreakpoint="md" />}
-        position="fixed"
-        right="1.5rem"
-      >
-        <ContextMenuItem
-          icon="tabler:plus"
-          label="Add Manually"
-          onClick={() => {
-            navigate('/wallet/transactions#new')
-          }}
-        />
-        <ContextMenuItem
-          icon="tabler:scan"
-          label="Scan Receipt"
-          onClick={() => {
-            navigate('/wallet/transactions#scan')
-          }}
-        />
-      </ContextMenu>
+      <TransactionCreationMenu mode="navigate" variant="mobile" />
     </>
   )
 }

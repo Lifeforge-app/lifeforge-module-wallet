@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
@@ -16,49 +15,49 @@ import NaturalLanguageModal from '../modals/NaturalLanguageModal'
 import ScanReceiptModal from '../modals/ScanReceiptModal'
 
 function TransactionCreationMenu({
+  mode = 'modal',
   variant
 }: {
+  mode?: 'modal' | 'navigate'
   variant: 'desktop' | 'mobile'
 }) {
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
-  const { hash } = useLocation()
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (hash === '#new') {
-      open(ModifyTransactionsModal, { type: 'create' })
+  const handleAction = (targetHash: string, callback: () => void) => () => {
+    if (mode === 'navigate') {
+      navigate(`/wallet/transactions#${targetHash}`)
+    } else {
+      callback()
     }
-
-    if (hash === '#scan') {
-      open(ScanReceiptModal, {})
-    }
-
-    if (hash === '#ai') {
-      open(NaturalLanguageModal, {})
-    }
-  }, [hash])
+  }
 
   const items = (
     <>
       <ContextMenuItem
         icon="tabler:plus"
         label="Add Manually"
-        onClick={() => open(ModifyTransactionsModal, { type: 'create' })}
+        onClick={handleAction('new', () =>
+          open(ModifyTransactionsModal, { type: 'create' })
+        )}
       />
       <ContextMenuItem
         icon="tabler:template"
         label="From Template"
-        onClick={() => open(ManageTemplatesModal, { choosing: true })}
+        onClick={handleAction('template', () =>
+          open(ManageTemplatesModal, { choosing: true })
+        )}
       />
       <ContextMenuItem
         icon="tabler:scan"
         label="Scan Receipt"
-        onClick={() => open(ScanReceiptModal, {})}
+        onClick={handleAction('scan', () => open(ScanReceiptModal, {}))}
       />
       <ContextMenuItem
         icon="tabler:brain"
         label="fromNaturalLanguage"
-        onClick={() => open(NaturalLanguageModal, {})}
+        onClick={handleAction('ai', () => open(NaturalLanguageModal, {}))}
       />
     </>
   )
@@ -88,23 +87,18 @@ function TransactionCreationMenu({
   }
 
   return (
-    <ContextMenu
-      bottom="1.5rem"
-      buttonComponent={<FAB position="static" visibilityBreakpoint="md" />}
-      componentProps={{
-        menu: {
-          minWidth: '18em'
-        },
-        button: {
-          position: 'static'
+    <FAB
+      menuProps={{
+        componentProps: {
+          menu: {
+            minWidth: '18em'
+          }
         }
       }}
-      position="fixed"
-      right="1.5rem"
-      width="min-content"
+      visibilityBreakpoint="md"
     >
       {items}
-    </ContextMenu>
+    </FAB>
   )
 }
 
