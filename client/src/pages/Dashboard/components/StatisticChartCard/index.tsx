@@ -117,7 +117,7 @@ function StatisticChardCard() {
     <Widget
       actionComponent={
         <RangeSelector
-          display={{ base: 'none', sm: 'block' }}
+          display={{ base: 'none', sm: 'flex' }}
           range={range}
           setRange={setRange}
         />
@@ -128,7 +128,7 @@ function StatisticChardCard() {
       title="Statistics"
     >
       <RangeSelector
-        display={{ sm: 'none' }}
+        display={{ base: 'flex', sm: 'none' }}
         range={range}
         setRange={setRange}
       />
