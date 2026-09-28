@@ -24,7 +24,6 @@ function TransactionTypeSection() {
               transfer: 'tabler:arrows-exchange'
             }[transaction.type]
           }
-          size="1.25rem"
         />
         <Text>
           {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}

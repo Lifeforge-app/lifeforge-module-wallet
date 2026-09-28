@@ -96,7 +96,6 @@ function TransactionIncomeExpensesItem({
                 <Icon
                   color={{ base: 'muted', print: 'zinc-500' }}
                   icon="tabler:file-text"
-                  size="1.25rem"
                 />
               </button>
             )}

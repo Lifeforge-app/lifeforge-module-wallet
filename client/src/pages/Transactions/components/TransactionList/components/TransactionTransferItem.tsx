@@ -72,7 +72,7 @@ function TransactionTransferItem({
             </Text>
             {transaction.receipt && (
               <button onClick={handleViewReceipt}>
-                <Icon color="muted" icon="tabler:file-text" size="1.25rem" />
+                <Icon color="muted" icon="tabler:file-text" />
               </button>
             )}
           </Flex>
