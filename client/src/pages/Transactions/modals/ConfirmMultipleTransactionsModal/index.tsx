@@ -119,7 +119,7 @@ function ConfirmMultipleTransactionsModal({
         <Text color="muted">
           {t('modals.naturalLanguage.confirmDescription')}
         </Text>
-        <Stack gap="sm">
+        <Stack>
           {transactions.map(tx => (
             <TransactionCard key={tx.id} tx={tx} onUpdate={setTransactions} />
           ))}

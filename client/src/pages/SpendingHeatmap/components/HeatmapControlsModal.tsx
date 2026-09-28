@@ -89,7 +89,7 @@ function HeatmapControlsModal({
           namespace={false}
           options={metricOptions}
         />
-        <Stack gap="sm">
+        <Stack>
           <Text color="bg-600">{t('spendingHeatmap.controls.layers')}</Text>
           <CheckboxField
             control={form.control}
