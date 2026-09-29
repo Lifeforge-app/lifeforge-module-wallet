@@ -6,9 +6,9 @@ import {
   Card,
   ConfirmationModal,
   Flex,
+  IconTooltip,
   Stack,
   Text,
-  Tooltip,
   surface,
   useModalStore
 } from '@lifeforge/ui'
@@ -115,7 +115,7 @@ function TransactionCard({
         />
       )}
       {!isValid && (
-        <Tooltip
+        <IconTooltip
           icon="tabler:alert-triangle"
           iconProps={{ color: 'yellow-500' }}
           id={`missing-details-${tx.id}`}
@@ -145,7 +145,7 @@ function TransactionCard({
               </Box>
             </Stack>
           </Text>
-        </Tooltip>
+        </IconTooltip>
       )}
       <Flex align="center" gap="xs">
         <Button icon="tabler:pencil" variant="plain" onClick={handleEdit} />
