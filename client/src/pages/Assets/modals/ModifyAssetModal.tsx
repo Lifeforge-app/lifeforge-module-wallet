@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
 import { useForgeMutation } from '@lifeforge/api'
 import {
+  CheckboxField,
   CurrencyField,
   FormModal,
   IconField,
@@ -17,7 +18,9 @@ import { forgeAPI } from '@/manifest'
 const schema = z.object({
   name: z.string().min(1, 'Asset name is required'),
   icon: z.string().min(1, 'Asset icon is required'),
-  starting_balance: z.number()
+  starting_balance: z.number(),
+  is_liability: z.boolean(),
+  credit_limit: z.number().min(0)
 })
 
 function ModifyAssetModal({
@@ -48,6 +51,8 @@ function ModifyAssetModal({
     mode: 'all',
     resolver: zodResolver(schema)
   })
+
+  const isLiability = useWatch({ control: form.control, name: 'is_liability' })
 
   return (
     <FormModal
@@ -88,6 +93,20 @@ function ModifyAssetModal({
         label="Initial Balance"
         name="starting_balance"
       />
+      <CheckboxField
+        control={form.control}
+        icon="tabler:credit-card"
+        label="Is Liability"
+        name="is_liability"
+      />
+      {isLiability && (
+        <CurrencyField
+          control={form.control}
+          icon="tabler:gauge"
+          label="Credit Limit"
+          name="credit_limit"
+        />
+      )}
     </FormModal>
   )
 }

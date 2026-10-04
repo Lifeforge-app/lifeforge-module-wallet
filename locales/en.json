@@ -61,7 +61,15 @@
     "transactionsCount": {
       "title": "Transactions Count"
     },
-    "totalAssets": "Total Assets"
+    "totalAssets": "Total Assets",
+    "totalLiabilities": "Total Liabilities",
+    "netWorth": "Net Worth"
+  },
+  "tags": {
+    "liability": "Liability"
+  },
+  "labels": {
+    "overLimit": "Over limit by"
   },
   "transactionCount": "Transactions",
   "receiptUploadInfo": "Only PDF and image files are accepted",
@@ -217,6 +225,8 @@
     "categoryColor": "Category Color",
     "categoryType": "Category Type",
     "initialBalance": "Initial Balance",
+    "isLiability": "Is Liability",
+    "creditLimit": "Credit Limit",
     "fromAsset": "From Asset",
     "toAsset": "To Asset",
     "month": "Month",

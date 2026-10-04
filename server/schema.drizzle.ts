@@ -30,7 +30,9 @@ export const walletAssets = pgTable('assets', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull().default(''),
   icon: text('icon').notNull().default(''),
-  starting_balance: doublePrecision('starting_balance').notNull().default(0)
+  starting_balance: doublePrecision('starting_balance').notNull().default(0),
+  is_liability: boolean('is_liability').notNull().default(false),
+  credit_limit: doublePrecision('credit_limit').notNull().default(0)
 })
 
 export const walletLedgers = pgTable('ledgers', {

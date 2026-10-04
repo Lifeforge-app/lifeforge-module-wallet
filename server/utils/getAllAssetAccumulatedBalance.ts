@@ -23,7 +23,9 @@ export async function getAllAssetAccumulatedBalance(
   db: WalletDb,
   year: string,
   month: string
-): Promise<Record<string, { last: number; current: number }>> {
+): Promise<
+  Record<string, { last: number; current: number; is_liability: boolean }>
+> {
   const parsedYear = parseInt(year)
 
   const parsedMonth = parseInt(month)
@@ -43,7 +45,8 @@ export async function getAllAssetAccumulatedBalance(
     db
       .select({
         id: walletAssets.id,
-        starting_balance: walletAssets.starting_balance
+        starting_balance: walletAssets.starting_balance,
+        is_liability: walletAssets.is_liability
       })
       .from(walletAssets),
     db
@@ -75,7 +78,10 @@ export async function getAllAssetAccumulatedBalance(
       )
   ])
 
-  const result: Record<string, { last: number; current: number }> = {}
+  const result: Record<
+    string,
+    { last: number; current: number; is_liability: boolean }
+  > = {}
 
   for (const asset of assets) {
     const incomeExpenses = incomeExpensesRaw
@@ -124,7 +130,8 @@ export async function getAllAssetAccumulatedBalance(
 
     result[asset.id] = {
       last: parseFloat(lastMonthBalance.toFixed(2)),
-      current: parseFloat(currentMonthBalance.toFixed(2))
+      current: parseFloat(currentMonthBalance.toFixed(2)),
+      is_liability: asset.is_liability
     }
   }
 

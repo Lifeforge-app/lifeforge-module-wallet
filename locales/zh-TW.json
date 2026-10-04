@@ -61,7 +61,15 @@
     "transactionsCount": {
       "title": "交易筆數"
     },
-    "totalAssets": "總資產"
+    "totalAssets": "總資產",
+    "totalLiabilities": "總負債",
+    "netWorth": "淨資產"
+  },
+  "tags": {
+    "liability": "負債"
+  },
+  "labels": {
+    "overLimit": "超出限額"
   },
   "transactionCount": "筆交易",
   "receiptUploadInfo": "僅接受 PDF 和圖片文件",
@@ -216,6 +224,8 @@
     "categoryColor": "類別顏色",
     "categoryType": "類別類型",
     "initialBalance": "初始餘額",
+    "isLiability": "是負債",
+    "creditLimit": "信用額度",
     "fromAsset": "轉出資產",
     "toAsset": "轉入資產",
     "month": "月份",

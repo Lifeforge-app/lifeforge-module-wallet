@@ -1752,12 +1752,20 @@ export const contract = {
             },
             "starting_balance": {
               "type": "number"
+            },
+            "is_liability": {
+              "type": "boolean"
+            },
+            "credit_limit": {
+              "type": "number"
             }
           },
           "required": [
             "name",
             "icon",
-            "starting_balance"
+            "starting_balance",
+            "is_liability",
+            "credit_limit"
           ],
           "additionalProperties": false
         }
@@ -1782,13 +1790,23 @@ export const contract = {
               "type": "number",
               "minimum": -140737488355328,
               "maximum": 140737488355327
+            },
+            "is_liability": {
+              "type": "boolean"
+            },
+            "credit_limit": {
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             }
           },
           "required": [
             "id",
             "name",
             "icon",
-            "starting_balance"
+            "starting_balance",
+            "is_liability",
+            "credit_limit"
           ],
           "additionalProperties": false
         }
@@ -1888,6 +1906,12 @@ export const contract = {
               "starting_balance": {
                 "type": "number"
               },
+              "is_liability": {
+                "type": "boolean"
+              },
+              "credit_limit": {
+                "type": "number"
+              },
               "transaction_count": {
                 "type": "number"
               },
@@ -1900,6 +1924,8 @@ export const contract = {
               "name",
               "icon",
               "starting_balance",
+              "is_liability",
+              "credit_limit",
               "transaction_count",
               "current_balance"
             ],
@@ -1967,12 +1993,20 @@ export const contract = {
             },
             "starting_balance": {
               "type": "number"
+            },
+            "is_liability": {
+              "type": "boolean"
+            },
+            "credit_limit": {
+              "type": "number"
             }
           },
           "required": [
             "name",
             "icon",
-            "starting_balance"
+            "starting_balance",
+            "is_liability",
+            "credit_limit"
           ],
           "additionalProperties": false
         }
@@ -1997,13 +2031,23 @@ export const contract = {
               "type": "number",
               "minimum": -140737488355328,
               "maximum": 140737488355327
+            },
+            "is_liability": {
+              "type": "boolean"
+            },
+            "credit_limit": {
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             }
           },
           "required": [
             "id",
             "name",
             "icon",
-            "starting_balance"
+            "starting_balance",
+            "is_liability",
+            "credit_limit"
           ],
           "additionalProperties": false
         }
@@ -2957,11 +3001,61 @@ export const contract = {
                     "percentage"
                   ],
                   "additionalProperties": false
+                },
+                "liabilitiesTotal": {
+                  "type": "object",
+                  "properties": {
+                    "last": {
+                      "type": "number"
+                    },
+                    "current": {
+                      "type": "number"
+                    },
+                    "change": {
+                      "type": "number"
+                    },
+                    "percentage": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "last",
+                    "current",
+                    "change",
+                    "percentage"
+                  ],
+                  "additionalProperties": false
+                },
+                "netWorth": {
+                  "type": "object",
+                  "properties": {
+                    "last": {
+                      "type": "number"
+                    },
+                    "current": {
+                      "type": "number"
+                    },
+                    "change": {
+                      "type": "number"
+                    },
+                    "percentage": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "last",
+                    "current",
+                    "change",
+                    "percentage"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
                 "balances",
-                "total"
+                "total",
+                "liabilitiesTotal",
+                "netWorth"
               ],
               "additionalProperties": false
             },
@@ -4326,6 +4420,15 @@ export const contract = {
               "transfer": {
                 "type": "number"
               },
+              "incomeAmount": {
+                "type": "number"
+              },
+              "expensesAmount": {
+                "type": "number"
+              },
+              "transferAmount": {
+                "type": "number"
+              },
               "total": {
                 "type": "number"
               },
@@ -4337,6 +4440,9 @@ export const contract = {
               "income",
               "expenses",
               "transfer",
+              "incomeAmount",
+              "expensesAmount",
+              "transferAmount",
               "total",
               "count"
             ],

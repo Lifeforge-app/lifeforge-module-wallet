@@ -61,7 +61,15 @@
     "transactionsCount": {
       "title": "交易笔数"
     },
-    "totalAssets": "总资产"
+    "totalAssets": "总资产",
+    "totalLiabilities": "总负债",
+    "netWorth": "净资产"
+  },
+  "tags": {
+    "liability": "负债"
+  },
+  "labels": {
+    "overLimit": "超出限额"
   },
   "transactionCount": "笔交易",
   "receiptUploadInfo": "仅接受 PDF 和图片文件",
@@ -216,6 +224,8 @@
     "categoryColor": "类别颜色",
     "categoryType": "类别类型",
     "initialBalance": "初始余额",
+    "isLiability": "是负债",
+    "creditLimit": "信用额度",
     "fromAsset": "转出资产",
     "toAsset": "转入资产",
     "month": "月份",

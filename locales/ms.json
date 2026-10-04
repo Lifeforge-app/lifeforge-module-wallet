@@ -61,7 +61,15 @@
     "transactionsCount": {
       "title": "Bilangan Transaksi"
     },
-    "totalAssets": "Jumlah Aset"
+    "totalAssets": "Jumlah Aset",
+    "totalLiabilities": "Jumlah Liabiliti",
+    "netWorth": "Nilai Bersih"
+  },
+  "tags": {
+    "liability": "Liabiliti"
+  },
+  "labels": {
+    "overLimit": "Melebihi had"
   },
   "transactionCount": "Transaksi",
   "receiptUploadInfo": "Hanya fail PDF dan imej diterima",
@@ -216,6 +224,8 @@
     "categoryColor": "Warna Kategori",
     "categoryType": "Jenis Kategori",
     "initialBalance": "Baki Permulaan",
+    "isLiability": "Adalah Liabiliti",
+    "creditLimit": "Had Kredit",
     "fromAsset": "Dari Aset",
     "toAsset": "Ke Aset",
     "month": "Bulan",
