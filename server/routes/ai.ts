@@ -12,6 +12,7 @@ import forge, { type WalletSchema } from '../forge'
 import {
   walletAssets,
   walletCategories,
+  walletPlatforms,
   walletTransactionTemplates,
   walletTransactionsPrompts
 } from '../schema.drizzle'
@@ -28,6 +29,7 @@ type ExtractedData = {
   type: 'income' | 'expenses' | 'transfer'
   particulars?: string
   category?: string
+  platform?: string | null
   amount: number
   location?: string
   asset?: string | null
@@ -39,24 +41,30 @@ async function fetchInitialData(
   db: WalletDb,
   getAPIKey: GetAPIKeyFunc
 ) {
-  const [particularPrompt, categories, key, assets] = await Promise.all([
-    db.query.transactions_prompts.findFirst().catch(() => null),
-    db
-      .select()
-      .from(walletCategories)
-      .catch(() => []),
-    getAPIKey('gcloud').catch(() => null),
-    db
-      .select()
-      .from(walletAssets)
-      .catch(() => [])
-  ])
+  const [particularPrompt, categories, key, assets, platforms] =
+    await Promise.all([
+      db.query.transactions_prompts.findFirst().catch(() => null),
+      db
+        .select()
+        .from(walletCategories)
+        .catch(() => []),
+      getAPIKey('gcloud').catch(() => null),
+      db
+        .select()
+        .from(walletAssets)
+        .catch(() => []),
+      db
+        .select()
+        .from(walletPlatforms)
+        .catch(() => [])
+    ])
 
   return {
     particularPrompt,
     categories,
     key,
-    assets
+    assets,
+    platforms
   }
 }
 
@@ -65,13 +73,20 @@ async function extractBasicDetails(
   description: string,
   todayStr: string,
   categoryNames: string[],
-  assetNames: string[]
+  assetNames: string[],
+  platformNames: string[]
 ) {
   const hasCategories = categoryNames.length > 0
 
   const hasAssets = assetNames.length > 0
 
+  const hasPlatforms = platformNames.length > 0
+
   const assetEnum = hasAssets ? z.enum(assetNames) : z.string()
+
+  const platformEnum = hasPlatforms
+    ? z.enum(['None', ...platformNames] as [string, ...string[]])
+    : z.literal('None')
 
   const FullTransactionDetails = z.discriminatedUnion('type', [
     z.object({
@@ -80,6 +95,9 @@ async function extractBasicDetails(
       category: hasCategories
         ? z.enum(categoryNames).describe('The matched category')
         : z.string().describe('The matched category name'),
+      platform: platformEnum.describe(
+        'The matched purchase platform for expenses, or "None"'
+      ),
       amount: z.number().describe('Numeric amount without currency symbol'),
       location: z.string().describe('Location name or "Unknown"'),
       asset: assetEnum.describe(
@@ -119,13 +137,15 @@ Strict Rules:
   - Never output descriptive relative terms (like "Today", "Yesterday", "2 days ago") in the date field; always output the calculated absolute calendar date in YYYY-MM-DD format.
 - Determine transaction type: 'income', 'expenses', or 'transfer'.
   - For income or expenses: extract category, location, and the asset/wallet used.
+  - For expenses, extract the purchase platform/marketplace (e.g. Shopee, Lazada, Taobao) ONLY if it is explicitly stated, choosing from the Available Platforms list. If none is mentioned or nothing matches, use "None". For income, always use "None".
   - For transfer: extract only date, amount, and the from/to assets (from, to). Skip category, location, and single asset.
 - Extract the clean, numerical transaction amount without currency signs. CRITICAL: Never invent or assume an amount. Only extract an amount if it is explicitly stated in the description (e.g., "RM39", "$15", "50 dollars", "spent 20"). If no amount is explicitly mentioned, you MUST set amount to 0.
 - Extract the merchant name/location ONLY if it is explicitly stated. CRITICAL: Never arbitrarily add, guess, infer, or fabricate a location. If the text does not explicitly mention a location or merchant, you MUST use "Unknown".
 - Extract the payment asset/wallet used for the transaction. If the text does not contain any clue about which account or method was used, use "Unknown".
 
 Available Categories: ${hasCategories ? categoryNames.join(', ') : 'None'}
-Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}`
+Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}
+Available Platforms: ${hasPlatforms ? platformNames.join(', ') : 'None'}`
       },
       {
         role: 'user',
@@ -453,6 +473,7 @@ export const fromNaturalLanguage = forge
           }),
           location_name: z.string(),
           asset: z.string().optional(),
+          platform: z.string().optional(),
           from: z.string().optional(),
           to: z.string().optional(),
           ledgers: z.array(z.string()).optional()
@@ -470,7 +491,7 @@ export const fromNaturalLanguage = forge
   }) {
     const todayStr = dayjs().format('YYYY-MM-DD')
 
-    const { particularPrompt, categories, key, assets } =
+    const { particularPrompt, categories, key, assets, platforms } =
       await fetchInitialData(db, getAPIKey)
 
     const categoryMap = new Map(
@@ -493,12 +514,23 @@ export const fromNaturalLanguage = forge
       return a.name
     })
 
+    const platformMap = new Map(
+      platforms.map(function (p) {
+        return [p.name, p.id]
+      })
+    )
+
+    const platformNames = platforms.map(function (p) {
+      return p.name
+    })
+
     const extractedData = await extractBasicDetails(
       fetchAI,
       description,
       todayStr,
       categoryNames,
-      assetNames
+      assetNames,
+      platformNames
     )
 
     if (!extractedData || !extractedData.transactions) {
@@ -577,6 +609,7 @@ export const fromNaturalLanguage = forge
           }
           location_name: string
           asset: string | undefined
+          platform: string | undefined
           ledgers: string[] | undefined
         } = {
           date: item.date,
@@ -592,6 +625,10 @@ export const fromNaturalLanguage = forge
           asset:
             item.asset && item.asset !== 'Unknown'
               ? assetMap.get(item.asset)
+              : undefined,
+          platform:
+            item.type === 'expenses' && item.platform && item.platform !== 'None'
+              ? platformMap.get(item.platform)
               : undefined,
           ledgers: undefined
         }
@@ -638,6 +675,14 @@ export const fromNaturalLanguage = forge
 
         if (!finalResult.asset && matchedTemplate?.asset) {
           finalResult.asset = matchedTemplate.asset
+        }
+
+        if (
+          finalResult.type === 'expenses' &&
+          !finalResult.platform &&
+          matchedTemplate?.platform
+        ) {
+          finalResult.platform = matchedTemplate.platform
         }
 
         return finalResult

@@ -20,6 +20,7 @@ const templateInputDto = z.object({
   particulars: z.string(),
   asset: z.string().optional(),
   category: z.string().optional(),
+  platform: z.string().optional(),
   ledgers: z.array(z.string()).optional(),
   location: LocationSchema.optional()
 })
@@ -32,6 +33,7 @@ function mapTemplate(body: z.infer<typeof templateInputDto>) {
     particulars: body.particulars,
     asset: body.asset || null,
     category: body.category || null,
+    platform: body.platform || null,
     ledgers: body.ledgers ?? [],
     location_coords: {
       lon: body.location?.location.longitude ?? 0,

@@ -6,7 +6,11 @@ import type { BuiltModuleSchema } from '@lifeforge/drizzle'
 import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
 
 import type { WalletSchema } from '../forge'
-import { walletCategories, walletTransactionTemplates } from '../schema.drizzle'
+import {
+  walletCategories,
+  walletPlatforms,
+  walletTransactionTemplates
+} from '../schema.drizzle'
 
 type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
@@ -31,12 +35,17 @@ export async function getTransactionDetails(
     }
     location_name: string
     asset?: string
+    platform: string | null
     ledgers?: string[]
   }
 
-  const [particularPrompt, categories, key] = await Promise.all([
+  const [particularPrompt, categories, platforms, key] = await Promise.all([
     db.query.transactions_prompts.findFirst().catch(() => null),
     db.select().from(walletCategories),
+    db
+      .select()
+      .from(walletPlatforms)
+      .catch(() => []),
     getAPIKey('gcloud')
   ])
 
@@ -44,10 +53,20 @@ export async function getTransactionDetails(
 
   const categoryNames = categories.map(c => c.name) as [string, ...string[]]
 
+  const platformMap = new Map(platforms.map(p => [p.name, p.id]))
+
+  const platformEnum =
+    platforms.length > 0
+      ? z.enum(['None', ...platforms.map(p => p.name)] as [string, ...string[]])
+      : z.literal('None')
+
   const FullTransactionDetails = z.object({
     date: z.string().describe('Transaction date in YYYY-MM-DD format'),
     type: z.enum(['income', 'expenses']),
     category: z.enum(categoryNames),
+    platform: platformEnum.describe(
+      'The purchase platform for expenses, or "None"'
+    ),
     amount: z.number().describe('Numeric amount without currency symbol'),
     location: z.string().describe('Location name or "Unknown"')
   })
@@ -58,7 +77,7 @@ export async function getTransactionDetails(
     messages: [
       {
         role: 'system',
-        content: `Extract transaction details from receipt text. Categories: ${categoryNames.join(', ')}`
+        content: `Extract transaction details from receipt text. Categories: ${categoryNames.join(', ')}. Purchase platforms: ${platforms.length > 0 ? platforms.map(p => p.name).join(', ') : 'None'}. Extract the purchase platform only for expenses if explicitly present; otherwise use "None".`
       },
       {
         role: 'user',
@@ -77,6 +96,10 @@ export async function getTransactionDetails(
     type: extractedData.type,
     amount: extractedData.amount,
     category: categoryMap.get(extractedData.category) ?? '',
+    platform:
+      extractedData.type === 'expenses' && extractedData.platform !== 'None'
+        ? (platformMap.get(extractedData.platform) ?? null)
+        : null,
     particulars: '',
     location_coords: {
       lon: 0,
@@ -136,6 +159,7 @@ export async function getTransactionDetails(
           ...finalResult,
           category: selectedTemplate.category || finalResult.category,
           asset: selectedTemplate.asset ?? '',
+          platform: finalResult.platform || selectedTemplate.platform || null,
           ledgers: selectedTemplate.ledgers
         }
       }

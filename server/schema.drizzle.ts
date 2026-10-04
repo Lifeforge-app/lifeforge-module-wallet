@@ -50,6 +50,13 @@ export const walletCategories = pgTable('categories', {
   type: walletIncomeExpenseTypeEnum('type').notNull().default('expenses')
 })
 
+export const walletPlatforms = pgTable('platforms', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull().default(''),
+  icon: text('icon').notNull().default(''),
+  color: text('color').notNull().default('')
+})
+
 export const walletTransactions = pgTable('transactions', {
   id: uuid('id').defaultRandom().primaryKey(),
   type: walletTransactionTypeEnum('type').notNull().default('income_expenses'),
@@ -73,6 +80,9 @@ export const walletTransactionsIncomeExpenses = pgTable(
       onDelete: 'set null'
     }),
     category: uuid('category').references(() => walletCategories.id, {
+      onDelete: 'set null'
+    }),
+    platform: uuid('platform').references(() => walletPlatforms.id, {
       onDelete: 'set null'
     }),
     ledgers: jsonb('ledgers').$type<string[]>().notNull().default([]),
@@ -100,6 +110,9 @@ export const walletTransactionTemplates = pgTable('transaction_templates', {
     onDelete: 'set null'
   }),
   category: uuid('category').references(() => walletCategories.id, {
+    onDelete: 'set null'
+  }),
+  platform: uuid('platform').references(() => walletPlatforms.id, {
     onDelete: 'set null'
   }),
   ledgers: jsonb('ledgers').$type<string[]>().notNull().default([]),
@@ -152,6 +165,7 @@ export const tables = {
   assets: walletAssets,
   ledgers: walletLedgers,
   categories: walletCategories,
+  platforms: walletPlatforms,
   transactions: walletTransactions,
   transactions_income_expenses: walletTransactionsIncomeExpenses,
   transactions_transfer: walletTransactionsTransfer,
@@ -174,6 +188,10 @@ export const relations = (r: RelationsBuilder<typeof tables>) => ({
     category_info: r.one.categories({
       from: r.transactions_income_expenses.category,
       to: r.categories.id
+    }),
+    platform_info: r.one.platforms({
+      from: r.transactions_income_expenses.platform,
+      to: r.platforms.id
     })
   },
   transactions_transfer: {
@@ -198,6 +216,10 @@ export const relations = (r: RelationsBuilder<typeof tables>) => ({
     category_info: r.one.categories({
       from: r.transaction_templates.category,
       to: r.categories.id
+    }),
+    platform_info: r.one.platforms({
+      from: r.transaction_templates.platform,
+      to: r.platforms.id
     })
   },
   budgets: {

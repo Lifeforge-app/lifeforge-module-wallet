@@ -40,6 +40,9 @@ export const contract = {
                 "category": {
                   "type": "string"
                 },
+                "platform": {
+                  "type": "string"
+                },
                 "ledgers": {
                   "type": "array",
                   "items": {
@@ -212,6 +215,9 @@ export const contract = {
                         "type": "string"
                       },
                       "category": {
+                        "type": "string"
+                      },
+                      "platform": {
                         "type": "string"
                       },
                       "ledgers": {
@@ -457,6 +463,16 @@ export const contract = {
                     }
                   ]
                 },
+                "platform": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "ledgers": {
                   "type": "array",
                   "items": {
@@ -501,6 +517,7 @@ export const contract = {
                 "particulars",
                 "asset",
                 "category",
+                "platform",
                 "ledgers",
                 "location_name",
                 "location_coords"
@@ -562,6 +579,16 @@ export const contract = {
                     }
                   ]
                 },
+                "platform": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "ledgers": {
                   "type": "array",
                   "items": {
@@ -606,6 +633,7 @@ export const contract = {
                 "particulars",
                 "asset",
                 "category",
+                "platform",
                 "ledgers",
                 "location_name",
                 "location_coords"
@@ -642,6 +670,9 @@ export const contract = {
             "category": {
               "type": "string"
             },
+            "platform": {
+              "type": "string"
+            },
             "asset": {
               "type": "string"
             },
@@ -653,6 +684,19 @@ export const contract = {
             },
             "endDate": {
               "type": "string"
+            },
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
             },
             "page": {
               "type": "string"
@@ -794,6 +838,16 @@ export const contract = {
                           }
                         ]
                       },
+                      "platform": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "ledgers": {
                         "type": "array",
                         "items": {
@@ -838,6 +892,7 @@ export const contract = {
                       "particulars",
                       "asset",
                       "category",
+                      "platform",
                       "ledgers",
                       "location_name",
                       "location_coords"
@@ -899,6 +954,16 @@ export const contract = {
                           }
                         ]
                       },
+                      "platform": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "ledgers": {
                         "type": "array",
                         "items": {
@@ -943,6 +1008,7 @@ export const contract = {
                       "particulars",
                       "asset",
                       "category",
+                      "platform",
                       "ledgers",
                       "location_name",
                       "location_coords"
@@ -1042,6 +1108,16 @@ export const contract = {
                 }
               ]
             },
+            "platform": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "particulars": {
               "type": "string"
             },
@@ -1070,6 +1146,7 @@ export const contract = {
             "amount",
             "type",
             "category",
+            "platform",
             "particulars",
             "location_coords",
             "location_name"
@@ -1129,6 +1206,9 @@ export const contract = {
                   "type": "string"
                 },
                 "category": {
+                  "type": "string"
+                },
+                "platform": {
                   "type": "string"
                 },
                 "ledgers": {
@@ -1340,6 +1420,9 @@ export const contract = {
                 "type": "string"
               },
               "asset": {
+                "type": "string"
+              },
+              "platform": {
                 "type": "string"
               },
               "from": {
@@ -2258,6 +2341,210 @@ export const contract = {
       }
     }
   },
+  "platforms": {
+    "create": {
+      "method": "post",
+      "description": "Create a new purchase platform",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "icon",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "CREATED": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "icon",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "list": {
+      "method": "get",
+      "description": "Get all purchase platforms",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {},
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "icon",
+              "color",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "remove": {
+      "method": "post",
+      "description": "Delete a purchase platform",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "NO_CONTENT": true
+      }
+    },
+    "update": {
+      "method": "post",
+      "description": "Update platform details",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "icon",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "icon",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
   "templates": {
     "create": {
       "method": "post",
@@ -2291,6 +2578,9 @@ export const contract = {
               "type": "string"
             },
             "category": {
+              "type": "string"
+            },
+            "platform": {
               "type": "string"
             },
             "ledgers": {
@@ -2394,6 +2684,18 @@ export const contract = {
                 }
               ]
             },
+            "platform": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "ledgers": {
               "type": "array",
               "items": {
@@ -2435,6 +2737,7 @@ export const contract = {
             "particulars",
             "asset",
             "category",
+            "platform",
             "ledgers",
             "location_name",
             "location_coords"
@@ -2520,6 +2823,18 @@ export const contract = {
                       }
                     ]
                   },
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "ledgers": {
                     "type": "array",
                     "items": {
@@ -2561,6 +2876,7 @@ export const contract = {
                   "particulars",
                   "asset",
                   "category",
+                  "platform",
                   "ledgers",
                   "location_name",
                   "location_coords"
@@ -2620,6 +2936,18 @@ export const contract = {
                       }
                     ]
                   },
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "ledgers": {
                     "type": "array",
                     "items": {
@@ -2661,6 +2989,7 @@ export const contract = {
                   "particulars",
                   "asset",
                   "category",
+                  "platform",
                   "ledgers",
                   "location_name",
                   "location_coords"
@@ -2743,6 +3072,9 @@ export const contract = {
               "type": "string"
             },
             "category": {
+              "type": "string"
+            },
+            "platform": {
               "type": "string"
             },
             "ledgers": {
@@ -2846,6 +3178,18 @@ export const contract = {
                 }
               ]
             },
+            "platform": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "ledgers": {
               "type": "array",
               "items": {
@@ -2887,6 +3231,7 @@ export const contract = {
             "particulars",
             "asset",
             "category",
+            "platform",
             "ledgers",
             "location_name",
             "location_coords"
@@ -3304,6 +3649,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -3348,6 +3703,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -3409,6 +3765,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -3453,6 +3819,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -3604,6 +3971,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -3648,6 +4025,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -3709,6 +4087,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -3753,6 +4141,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -3904,6 +4293,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -3948,6 +4347,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -4009,6 +4409,16 @@ export const contract = {
                                   }
                                 ]
                               },
+                              "platform": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "ledgers": {
                                 "type": "array",
                                 "items": {
@@ -4053,6 +4463,7 @@ export const contract = {
                               "particulars",
                               "asset",
                               "category",
+                              "platform",
                               "ledgers",
                               "location_name",
                               "location_coords"
@@ -4087,13 +4498,48 @@ export const contract = {
                 "totalCount"
               ],
               "additionalProperties": false
+            },
+            "platformBreakdown": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  },
+                  "percentage": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "platform",
+                  "amount",
+                  "count",
+                  "percentage"
+                ],
+                "additionalProperties": false
+              }
             }
           },
           "required": [
             "overview",
             "assets",
             "categoryComparison",
-            "transactions"
+            "transactions",
+            "platformBreakdown"
           ],
           "additionalProperties": false
         }
@@ -4155,12 +4601,27 @@ export const contract = {
             },
             "month": {
               "type": "string"
+            },
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
             }
           },
-          "required": [
-            "year",
-            "month"
-          ],
           "additionalProperties": false
         }
       },
@@ -4241,8 +4702,19 @@ export const contract = {
               "enum": [
                 "week",
                 "month",
-                "ytd"
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
               ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
             }
           },
           "required": [
@@ -4375,6 +4847,78 @@ export const contract = {
         }
       }
     },
+    "getSpendingByPlatform": {
+      "method": "get",
+      "description": "Get expenses breakdown by purchase platform for a month",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "string"
+            },
+            "month": {
+              "type": "string"
+            },
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "count": {
+                "type": "number"
+              },
+              "percentage": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "platform",
+              "amount",
+              "count",
+              "percentage"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
     "getTransactionCountByDay": {
       "method": "get",
       "description": "Get transaction counts by day for a specific month",
@@ -4468,6 +5012,25 @@ export const contract = {
             },
             "month": {
               "type": "string"
+            },
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -4485,11 +5048,23 @@ export const contract = {
               },
               "accumulatedAmount": {
                 "type": "number"
+              },
+              "previousCount": {
+                "type": "number"
+              },
+              "previousAmount": {
+                "type": "number"
+              },
+              "percentageChange": {
+                "type": "number"
               }
             },
             "required": [
               "transactionCount",
-              "accumulatedAmount"
+              "accumulatedAmount",
+              "previousCount",
+              "previousAmount",
+              "percentageChange"
             ],
             "additionalProperties": false
           }

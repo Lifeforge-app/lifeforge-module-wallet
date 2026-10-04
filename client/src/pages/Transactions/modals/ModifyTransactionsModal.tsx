@@ -33,6 +33,7 @@ import CreateAnotherField, {
   createAnotherSchema
 } from '../components/CreateAnotherFIeld'
 import ModifyCategoryModal from './ModifyCategoryModal'
+import ModifyPlatformModal from './ModifyPlatformModal'
 
 const schema = z
   .object({
@@ -44,6 +45,7 @@ const schema = z
     to: z.string().optional(),
     particulars: z.string().optional(),
     category: z.string().optional(),
+    platform: z.string().optional(),
     asset: z.string().optional(),
     ledgers: z.array(z.string()).optional(),
     location: z
@@ -120,11 +122,15 @@ function ModifyTransactionsModal({
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
-  const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
+  
+const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
+    useWalletData()
 
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
+
+  const platforms = platformsQuery.data ?? []
 
   const ledgers = ledgersQuery.data ?? []
 
@@ -158,6 +164,7 @@ function ModifyTransactionsModal({
         : {
             asset: initialData?.asset ?? undefined,
             category: initialData?.category ?? undefined,
+            platform: initialData?.platform ?? undefined,
             ledgers: initialData?.ledgers,
             particulars: initialData?.particulars,
             location: initialData?.location_name
@@ -202,6 +209,13 @@ function ModifyTransactionsModal({
     color: ledger.color
   }))
 
+  const platformOptions = platforms.map(platform => ({
+    text: platform.name,
+    value: platform.id,
+    icon: platform.icon,
+    color: platform.color
+  }))
+
   return (
     <FormModal
       form={form}
@@ -222,6 +236,7 @@ function ModifyTransactionsModal({
                   date: dayjs(data.date).format('YYYY-MM-DD'),
                   asset: data.asset!,
                   category: data.category!,
+                  platform: data.platform,
                   ledgers: data.ledgers ?? [],
                   location: data.location ?? null,
                   particulars: data.particulars!,
@@ -372,6 +387,24 @@ function ModifyTransactionsModal({
             name="category"
             options={categoryOptions}
           />
+          {watchedType === 'expenses' && (
+            <ListboxField
+              actionButtonOption={{
+                text: t('common.buttons:new', {
+                  item: t('items.platform')
+                }),
+                icon: 'tabler:plus',
+                onClick: () => {
+                  open(ModifyPlatformModal, { type: 'create' })
+                }
+              }}
+              control={form.control}
+              icon="tabler:building-store"
+              label="Platform"
+              name="platform"
+              options={platformOptions}
+            />
+          )}
           <ListboxField
             required
             actionButtonOption={{

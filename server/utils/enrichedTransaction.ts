@@ -20,6 +20,7 @@ const incomeExpensesFields = {
   particulars: z.string(),
   asset: z.string().nullable(),
   category: z.string().nullable(),
+  platform: z.string().nullable(),
   ledgers: z.array(z.string()),
   location_name: z.string(),
   location_coords: locationCoordsDto.nullable()
@@ -59,6 +60,7 @@ export function mapToEnrichedTransaction(
     particulars: sub?.particulars ?? '',
     asset: sub?.asset ?? null,
     category: sub?.category ?? null,
+    platform: sub?.platform ?? null,
     ledgers: sub?.ledgers ?? [],
     location_name: sub?.location_name ?? '',
     location_coords: sub?.location_coords ?? null

@@ -1,10 +1,14 @@
+import { useState } from 'react'
+
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Alert,
   Button,
   ModalHeader,
+  SearchInput,
   Stack,
   WithQueryData,
+  surface,
   useModalStore
 } from '@lifeforge/ui'
 
@@ -23,6 +27,7 @@ function ManageTemplatesModal({
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
+  const [searchQuery, setSearchQuery] = useState('')
 
   return (
     <Stack minHeight="80vh" minWidth="40vw">
@@ -47,10 +52,19 @@ function ManageTemplatesModal({
       )}
       <TemplatesTabbedView.Root>
         <TemplatesTabbedView.Selector />
+        <SearchInput
+          bg={surface.lightInteractive}
+          debounceMs={300}
+          my="md"
+          searchTarget="template"
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
         <WithQueryData contract={forgeAPI.templates.list}>
           {templates => (
             <TemplateList
               choosing={choosing}
+              searchQuery={searchQuery}
               templates={templates}
               onClose={onClose}
             />

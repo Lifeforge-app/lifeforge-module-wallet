@@ -15,6 +15,7 @@ export default function useFilter() {
   const [filter, setFilter] = useQueryStates({
     type: parseAsString.withDefault(''),
     category: parseAsString.withDefault(''),
+    platform: parseAsString.withDefault(''),
     asset: parseAsString.withDefault(''),
     ledger: parseAsString.withDefault(''),
     startDate: parseAsString.withDefault(''),

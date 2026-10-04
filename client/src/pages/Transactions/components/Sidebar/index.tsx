@@ -8,6 +8,7 @@ import CategoriesSection from './components/CategoriesSection'
 import DateRangeSelector from './components/DateRangeSelector'
 import LedgerSection from './components/LedgerSection'
 import MiniCalendar from './components/MiniCalendar'
+import PlatformsSection from './components/PlatformsSection'
 import TypeSection from './components/TypeSection'
 
 function Sidebar() {
@@ -24,6 +25,8 @@ function Sidebar() {
       <TypeSection />
       <SidebarDivider />
       <CategoriesSection />
+      {type !== 'transfer' && <SidebarDivider />}
+      <PlatformsSection />
       {type !== 'transfer' && <SidebarDivider />}
       <AssetsSection />
       <SidebarDivider />

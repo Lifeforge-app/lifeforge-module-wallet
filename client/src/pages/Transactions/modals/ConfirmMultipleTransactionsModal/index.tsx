@@ -18,6 +18,7 @@ export interface LocalTransaction {
   location_name?: string
   location_coords?: { lat: number; lon: number }
   asset?: string
+  platform?: string
   from?: string
   to?: string
   ledgers?: string[]
@@ -90,6 +91,7 @@ function ConfirmMultipleTransactionsModal({
           particulars: tx.particulars || '',
           category: tx.category || '',
           asset: tx.asset || '',
+          platform: tx.platform || undefined,
           ledgers: tx.ledgers || [],
           location: tx.location_name
             ? {

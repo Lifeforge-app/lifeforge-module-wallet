@@ -11,11 +11,14 @@ import {
   LocationField,
   TAILWIND_PALETTE,
   TextField,
-  createDefaultValues
+  createDefaultValues,
+  useModalStore
 } from '@lifeforge/ui'
 
 import { type WalletTemplate, useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
+
+import ModifyPlatformModal from './ModifyPlatformModal'
 
 const schema = z.object({
   name: z.string().min(1, 'Template name is required'),
@@ -24,6 +27,7 @@ const schema = z.object({
   amount: z.number(),
   asset: z.string().min(1, 'Asset is required'),
   category: z.string().min(1, 'Category is required'),
+  platform: z.string().optional(),
   ledgers: z.array(z.string()),
   location: z
     .object({
@@ -48,11 +52,16 @@ function ModifyTemplatesModal({
   }
 }) {
   const { t } = useModuleTranslation()
-  const { categoriesQuery, assetsQuery, ledgersQuery } = useWalletData()
+  const { open } = useModalStore()
+  
+const { categoriesQuery, assetsQuery, platformsQuery, ledgersQuery } =
+    useWalletData()
 
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
+
+  const platforms = platformsQuery.data ?? []
 
   const ledgers = ledgersQuery.data ?? []
 
@@ -72,6 +81,7 @@ function ModifyTemplatesModal({
       ...initialData,
       asset: initialData?.asset ?? undefined,
       category: initialData?.category ?? undefined,
+      platform: initialData?.platform ?? undefined,
       type: initialData?.type ?? 'income',
       location: initialData?.location_name
         ? {
@@ -110,6 +120,13 @@ function ModifyTemplatesModal({
     value: ledger.id,
     icon: ledger.icon,
     color: ledger.color
+  }))
+
+  const platformOptions = platforms.map(platform => ({
+    text: platform.name,
+    value: platform.id,
+    icon: platform.icon,
+    color: platform.color
   }))
 
   return (
@@ -181,6 +198,24 @@ function ModifyTemplatesModal({
         name="category"
         options={categoryOptions}
       />
+      {watchedType === 'expenses' && (
+        <ListboxField
+          actionButtonOption={{
+            text: t('common.buttons:new', {
+              item: t('items.platform')
+            }),
+            icon: 'tabler:plus',
+            onClick: () => {
+              open(ModifyPlatformModal, { type: 'create' })
+            }
+          }}
+          control={form.control}
+          icon="tabler:building-store"
+          label="Platform"
+          name="platform"
+          options={platformOptions}
+        />
+      )}
       <ListboxField
         required
         control={form.control}

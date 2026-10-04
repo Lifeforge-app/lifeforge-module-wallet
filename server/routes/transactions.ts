@@ -21,6 +21,7 @@ import {
   walletTransactionsIncomeExpenses,
   walletTransactionsTransfer
 } from '../schema.drizzle'
+import { RANGE_MODE, resolveDateRange } from '../utils/dateRange'
 import {
   EnrichedTransactionOutput,
   mapToEnrichedTransaction,
@@ -36,6 +37,8 @@ const MutateTransactionInputSchema = z.union([
     particulars: z.string().optional(),
     asset: z.string().optional(),
     category: z.string().optional(),
+
+    platform: z.string().optional(),
     ledgers: z.array(z.string()).optional(),
     location: LocationSchema.optional().nullable()
   }),
@@ -57,6 +60,7 @@ function mapIncomeExpenses(data: z.infer<typeof MutateTransactionInputSchema>) {
     particulars: data.particulars ?? '',
     asset: data.asset || null,
     category: data.category || null,
+    platform: data.platform || null,
     ledgers: data.ledgers ?? [],
     location_name: data.location?.name ?? '',
     location_coords: {
@@ -74,10 +78,12 @@ export const list = forge
         q: z.string().optional(),
         type: z.enum(['income', 'expenses', 'transfer']).optional(),
         category: z.string().optional(),
+        platform: z.string().optional(),
         asset: z.string().optional(),
         ledger: z.string().optional(),
         startDate: z.string().optional(),
         endDate: z.string().optional(),
+        range: RANGE_MODE.optional(),
         page: z.string().optional(),
         perPage: z.string().optional()
       })
@@ -99,10 +105,12 @@ export const list = forge
         q,
         type,
         category,
+        platform,
         asset,
         ledger,
         startDate,
         endDate,
+        range,
         page,
         perPage
       },
@@ -126,6 +134,28 @@ export const list = forge
         )
       }
 
+      if (range) {
+        const dateRange = resolveDateRange(range, startDate, endDate)
+
+        if (dateRange.startDate) {
+          conditions.push(
+            gte(
+              walletTransactions.date,
+              dayjs(dateRange.startDate).startOf('day').toDate()
+            )
+          )
+        }
+
+        if (dateRange.endDate) {
+          conditions.push(
+            lte(
+              walletTransactions.date,
+              dayjs(dateRange.endDate).endOf('day').toDate()
+            )
+          )
+        }
+      }
+
       if (type === 'transfer') {
         conditions.push(eq(walletTransactions.type, 'transfer'))
       } else if (type === 'income' || type === 'expenses') {
@@ -143,6 +173,10 @@ export const list = forge
 
       if (category) {
         conditions.push(eq(walletTransactionsIncomeExpenses.category, category))
+      }
+
+      if (platform) {
+        conditions.push(eq(walletTransactionsIncomeExpenses.platform, platform))
       }
 
       if (asset) {
@@ -262,6 +296,7 @@ export const getById = forge
       particulars: sub?.particulars ?? '',
       asset: sub?.asset ?? null,
       category: sub?.category ?? null,
+      platform: sub?.platform ?? null,
       ledgers: sub?.ledgers ?? [],
       location_name: sub?.location_name ?? '',
       location_coords: sub?.location_coords ?? null
@@ -491,6 +526,7 @@ export const scanReceipt = forge
         amount: z.number(),
         type: z.enum(['income', 'expenses']),
         category: z.string().nullable(),
+        platform: z.string().nullable(),
         particulars: z.string(),
         location_coords: z.object({
           lon: z.number(),
