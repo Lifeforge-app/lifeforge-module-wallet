@@ -23,13 +23,17 @@ function TransactionIncomeExpensesItem({
   transaction: WalletTransaction
 }) {
   const { open } = useModalStore()
-  const { categoriesQuery, ledgersQuery, assetsQuery } = useWalletData()
+
+  const { categoriesQuery, ledgersQuery, assetsQuery, platformsQuery } =
+    useWalletData()
 
   const categories = categoriesQuery.data ?? []
 
   const ledgers = ledgersQuery.data ?? []
 
   const assets = assetsQuery.data ?? []
+
+  const platforms = platformsQuery.data ?? []
 
   const handleViewReceipt = useCallback(
     (e: React.MouseEvent) => {
@@ -49,6 +53,12 @@ function TransactionIncomeExpensesItem({
 
   if (transaction.type === 'transfer') return null
 
+  const platform = platforms.find(p => p.id === transaction.platform)
+
+  const category = categories.find(c => c.id === transaction.category)
+
+  const asset = assets.find(a => a.id === transaction.asset)
+
   return (
     <Flex align="center" gap="xl" justify="between" minWidth="0" width="100%">
       <Flex
@@ -59,22 +69,15 @@ function TransactionIncomeExpensesItem({
         width="100%"
       >
         <Box
-          height="3rem"
-          r="full"
+          p="md"
+          r="md"
           style={{
-            backgroundColor:
-              categories.find(category => category.id === transaction.category)
-                ?.color ?? 'transparent'
+            backgroundColor: category ? `${category.color}20` : 'transparent',
+            color: category?.color
           }}
-          width="0.25rem"
-        />
-        <Icon
-          color={{ base: 'muted', print: 'zinc-500' }}
-          icon={
-            assets.find(asset => asset.id === transaction.asset)?.icon ?? ''
-          }
-          size="2rem"
-        />
+        >
+          <Icon icon={category?.icon ?? 'tabler:category'} size="1.5rem" />
+        </Box>
         <Stack
           direction={{ base: 'column-reverse', sm: 'column' }}
           gap="xs"
@@ -114,6 +117,22 @@ function TransactionIncomeExpensesItem({
               >
                 {dayjs(transaction.date).format('MMM DD, YYYY')}
               </Text>
+              {asset && (
+                <>
+                  <Icon icon="tabler:circle-filled" size="0.25rem" />
+                  <Flex align="center" gap="xs">
+                    <Icon icon={asset.icon} size="1rem" />
+                    <Text
+                      color="muted"
+                      display={{ base: 'none', md: 'block' }}
+                      size="sm"
+                      weight="medium"
+                    >
+                      {asset.name}
+                    </Text>
+                  </Flex>
+                </>
+              )}
               {transaction.ledgers.length > 0 && (
                 <>
                   <Icon icon="tabler:circle-filled" size="0.25rem" />
@@ -151,6 +170,26 @@ function TransactionIncomeExpensesItem({
                       + {transaction.ledgers.length - 1} more
                     </Text>
                   )}
+                </>
+              )}
+              {platform && (
+                <>
+                  <Icon icon="tabler:circle-filled" size="0.25rem" />
+                  <Flex align="center" gap="xs">
+                    <Icon
+                      icon={platform.icon}
+                      size="1rem"
+                      style={{ color: platform.color }}
+                    />
+                    <Text
+                      color="muted"
+                      display={{ base: 'none', md: 'block' }}
+                      size="sm"
+                      weight="medium"
+                    >
+                      {platform.name}
+                    </Text>
+                  </Flex>
                 </>
               )}
             </Flex>

@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import { useCallback } from 'react'
 
 import {
+  Box,
   Flex,
   Icon,
   Stack,
@@ -66,7 +67,16 @@ function TransactionTransferItem({
         minWidth="0"
         width="100%"
       >
-        <Icon color="muted" icon="tabler:transfer" size="2rem" />
+        <Box
+          p="md"
+          r="md"
+          style={{
+            backgroundColor: 'rgba(59,130,246,0.2)',
+            color: 'rgb(59,130,246)'
+          }}
+        >
+          <Icon icon="tabler:transfer" size="1.5rem" />
+        </Box>
         <Stack
           direction={{ base: 'column-reverse', sm: 'column' }}
           gap="none"
