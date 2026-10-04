@@ -30,6 +30,10 @@
     "allTransactions": "所有交易",
     "filteredTransactions": "篩選後的交易"
   },
+  "transactionGroups": {
+    "today": "今天",
+    "yesterday": "昨天"
+  },
   "widgets": {
     "categoriesBreakdown": {
       "title": "收支類別分析",
@@ -63,13 +67,15 @@
     },
     "totalAssets": "總資產",
     "totalLiabilities": "總負債",
-    "netWorth": "淨資產"
+    "netWorth": "淨資產",
+    "platformsBreakdown": "平台消費統計"
   },
   "tags": {
     "liability": "負債"
   },
   "labels": {
-    "overLimit": "超出限額"
+    "overLimit": "超出限額",
+    "vsPrevious": "較上期"
   },
   "transactionCount": "筆交易",
   "receiptUploadInfo": "僅接受 PDF 和圖片文件",
@@ -89,6 +95,10 @@
     "assets": {
       "title": "未找到資產",
       "description": "您尚未創建任何資產。點擊上面的按鈕添加一個。"
+    },
+    "platforms": {
+      "title": "未找到平台",
+      "description": "您尚未創建任何購買平台。"
     },
     "ledger": {
       "title": "未找到帳本",
@@ -117,11 +127,13 @@
     "allLedgers": "所有帳本",
     "allAssets": "所有資產",
     "allCategories": "所有類別",
+    "allPlatforms": "所有平台",
     "allTypes": "所有類型",
     "transactionTypes": "交易類型",
     "ledgers": "帳本",
     "assets": "資產",
     "categories": "類別",
+    "platforms": "平台",
     "dateRange": "日期範圍",
     "calendarHeatmap": "日曆熱圖"
   },
@@ -153,7 +165,8 @@
     "autoGenerate": "自動生成",
     "savePrompts": "保存提示",
     "fromNaturalLanguage": "從自然語言",
-    "createTemplateFrom": "從交易創建模板"
+    "createTemplateFrom": "從交易創建模板",
+    "print": "列印"
   },
   "modals": {
     "transactions": {
@@ -164,6 +177,11 @@
     "assets": {
       "create": "建立資產",
       "update": "更新資產"
+    },
+    "platforms": {
+      "create": "建立平台",
+      "update": "更新平台",
+      "manage": "管理平台"
     },
     "ledgers": {
       "create": "建立帳本",
@@ -210,6 +228,10 @@
     "asset": "資產",
     "ledger": "帳本",
     "category": "類別",
+    "platform": "平台",
+    "platformName": "平台名稱",
+    "platformIcon": "平台圖示",
+    "platformColor": "平台顏色",
     "receipt": "收據",
     "balance": "餘額",
     "particulars": "摘要",
@@ -246,6 +268,7 @@
     "asset": "資產",
     "ledger": "帳本",
     "category": "類別",
+    "platform": "平台",
     "receipt": "收據",
     "template": "模板"
   },
@@ -261,7 +284,9 @@
   "rangeModes": {
     "week": "過去7天",
     "month": "過去30天",
+    "mtd": "本月至今",
     "year": "過去365天",
+    "ytd": "年初至今",
     "all": "所有時間",
     "custom": "自訂範圍",
     "quarter": "過去90天"
@@ -285,6 +310,30 @@
   },
   "actions": {
     "convert": "轉換"
+  },
+  "statement": {
+    "personal": "個人",
+    "financialStatements": "財務報表",
+    "forTheMonthEnded": "截至",
+    "endOfStatements": "財務報表結束",
+    "overview": "總覽",
+    "assets": "資產",
+    "change": "變動",
+    "income": "收入",
+    "expenses": "支出",
+    "netIncomeLoss": "淨收入 / （虧損）",
+    "category": "類別",
+    "platform": "平台",
+    "unassigned": "未分配",
+    "transactions": "交易",
+    "total": "總計",
+    "date": "日期",
+    "particular": "摘要",
+    "asset": "資產",
+    "amount": "金額",
+    "transferFromTo": "從 {{from}} 轉帳至 {{to}}",
+    "unknownAsset": "未知資產",
+    "totalType": "{{type}}總計"
   },
   "spendingHeatmap": {
     "controls": {

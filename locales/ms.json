@@ -30,6 +30,10 @@
     "allTransactions": "Semua Transaksi",
     "filteredTransactions": "Transaksi Ditapis"
   },
+  "transactionGroups": {
+    "today": "Hari Ini",
+    "yesterday": "Semalam"
+  },
   "widgets": {
     "categoriesBreakdown": {
       "title": "Pecahan Kategori",
@@ -63,13 +67,15 @@
     },
     "totalAssets": "Jumlah Aset",
     "totalLiabilities": "Jumlah Liabiliti",
-    "netWorth": "Nilai Bersih"
+    "netWorth": "Nilai Bersih",
+    "platformsBreakdown": "Pecahan Platform"
   },
   "tags": {
     "liability": "Liabiliti"
   },
   "labels": {
-    "overLimit": "Melebihi had"
+    "overLimit": "Melebihi had",
+    "vsPrevious": "berbanding tempoh sebelumnya"
   },
   "transactionCount": "Transaksi",
   "receiptUploadInfo": "Hanya fail PDF dan imej diterima",
@@ -89,6 +95,10 @@
     "assets": {
       "title": "Tiada Aset Dijumpai",
       "description": "Anda belum mencipta sebarang aset lagi. Klik butang di atas untuk menambah satu."
+    },
+    "platforms": {
+      "title": "Tiada Platform Dijumpai",
+      "description": "Anda belum mencipta sebarang platform pembelian."
     },
     "ledger": {
       "title": "Tiada Lejar Dijumpai",
@@ -117,11 +127,13 @@
     "allLedgers": "Semua Lejar",
     "allAssets": "Semua Aset",
     "allCategories": "Semua Kategori",
+    "allPlatforms": "Semua Platform",
     "allTypes": "Semua Jenis",
     "transactionTypes": "Jenis Transaksi",
     "ledgers": "Lejar",
     "assets": "Aset",
     "categories": "Kategori",
+    "platforms": "Platform",
     "dateRange": "Julat Tarikh",
     "calendarHeatmap": "Peta Panas Kalendar"
   },
@@ -153,7 +165,8 @@
     "autoGenerate": "Jana Automatik",
     "savePrompts": "Simpan Petunjuk",
     "fromNaturalLanguage": "Dari Bahasa Tabii",
-    "createTemplateFrom": "Cipta Templat Daripada..."
+    "createTemplateFrom": "Cipta Templat Daripada...",
+    "print": "Cetak"
   },
   "modals": {
     "transactions": {
@@ -164,6 +177,11 @@
     "assets": {
       "create": "Cipta Aset",
       "update": "Kemas Kini Aset"
+    },
+    "platforms": {
+      "create": "Cipta Platform",
+      "update": "Kemas Kini Platform",
+      "manage": "Urus Platform"
     },
     "ledgers": {
       "create": "Cipta Lejar",
@@ -210,6 +228,10 @@
     "asset": "Aset",
     "ledger": "Lejar",
     "category": "Kategori",
+    "platform": "Platform",
+    "platformName": "Nama Platform",
+    "platformIcon": "Ikon Platform",
+    "platformColor": "Warna Platform",
     "receipt": "Resit",
     "balance": "Baki",
     "particulars": "Butiran",
@@ -246,6 +268,7 @@
     "asset": "Aset",
     "ledger": "Lejar",
     "category": "Kategori",
+    "platform": "Platform",
     "receipt": "Resit",
     "template": "Templat"
   },
@@ -261,7 +284,9 @@
   "rangeModes": {
     "week": "7 Hari Terakhir",
     "month": "30 Hari Lalu",
+    "mtd": "Bulan Hingga Kini",
     "year": "365 Hari Terakhir",
+    "ytd": "Tahun Hingga Kini",
     "all": "Sepanjang Masa",
     "custom": "Julat Tersuai",
     "quarter": "90 Hari Terakhir"
@@ -285,6 +310,30 @@
   },
   "actions": {
     "convert": "menukar"
+  },
+  "statement": {
+    "personal": "Peribadi",
+    "financialStatements": "Penyata Kewangan",
+    "forTheMonthEnded": "Bagi bulan berakhir",
+    "endOfStatements": "Tamat Penyata Kewangan",
+    "overview": "Gambaran Keseluruhan",
+    "assets": "Aset",
+    "change": "Perubahan",
+    "income": "Pendapatan",
+    "expenses": "Perbelanjaan",
+    "netIncomeLoss": "Pendapatan Bersih / (Kerugian)",
+    "category": "Kategori",
+    "platform": "Platform",
+    "unassigned": "Tidak Ditentukan",
+    "transactions": "Transaksi",
+    "total": "Jumlah",
+    "date": "Tarikh",
+    "particular": "Butiran",
+    "asset": "Aset",
+    "amount": "Jumlah",
+    "transferFromTo": "Pindahan dari {{from}} ke {{to}}",
+    "unknownAsset": "Aset Tidak Diketahui",
+    "totalType": "Jumlah {{type}}"
   },
   "spendingHeatmap": {
     "controls": {

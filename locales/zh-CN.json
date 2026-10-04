@@ -30,6 +30,10 @@
     "allTransactions": "所有交易",
     "filteredTransactions": "筛选后的交易"
   },
+  "transactionGroups": {
+    "today": "今天",
+    "yesterday": "昨天"
+  },
   "widgets": {
     "categoriesBreakdown": {
       "title": "收支类别分析",
@@ -63,13 +67,15 @@
     },
     "totalAssets": "总资产",
     "totalLiabilities": "总负债",
-    "netWorth": "净资产"
+    "netWorth": "净资产",
+    "platformsBreakdown": "平台消费统计"
   },
   "tags": {
     "liability": "负债"
   },
   "labels": {
-    "overLimit": "超出限额"
+    "overLimit": "超出限额",
+    "vsPrevious": "较上期"
   },
   "transactionCount": "笔交易",
   "receiptUploadInfo": "仅接受 PDF 和图片文件",
@@ -89,6 +95,10 @@
     "assets": {
       "title": "未找到资产",
       "description": "您尚未创建任何资产。点击上面的按钮添加一个。"
+    },
+    "platforms": {
+      "title": "未找到平台",
+      "description": "您尚未创建任何购买平台。"
     },
     "ledger": {
       "title": "未找到帐本",
@@ -117,11 +127,13 @@
     "allLedgers": "所有帐本",
     "allAssets": "所有资产",
     "allCategories": "所有类别",
+    "allPlatforms": "所有平台",
     "allTypes": "所有类型",
     "transactionTypes": "交易类型",
     "ledgers": "帐本",
     "assets": "资产",
     "categories": "类别",
+    "platforms": "平台",
     "dateRange": "日期范围",
     "calendarHeatmap": "日历热图"
   },
@@ -153,7 +165,8 @@
     "autoGenerate": "自动生成",
     "savePrompts": "保存提示",
     "fromNaturalLanguage": "从自然语言",
-    "createTemplateFrom": "从交易创建模板"
+    "createTemplateFrom": "从交易创建模板",
+    "print": "打印"
   },
   "modals": {
     "transactions": {
@@ -164,6 +177,11 @@
     "assets": {
       "create": "建立资产",
       "update": "更新资产"
+    },
+    "platforms": {
+      "create": "建立平台",
+      "update": "更新平台",
+      "manage": "管理平台"
     },
     "ledgers": {
       "create": "建立帐本",
@@ -210,6 +228,10 @@
     "asset": "资产",
     "ledger": "帐本",
     "category": "类别",
+    "platform": "平台",
+    "platformName": "平台名称",
+    "platformIcon": "平台图示",
+    "platformColor": "平台颜色",
     "receipt": "收据",
     "balance": "余额",
     "particulars": "摘要",
@@ -246,6 +268,7 @@
     "asset": "资产",
     "ledger": "帐本",
     "category": "类别",
+    "platform": "平台",
     "receipt": "收据",
     "template": "模板"
   },
@@ -261,7 +284,9 @@
   "rangeModes": {
     "week": "过去7天",
     "month": "过去30天",
+    "mtd": "本月至今",
     "year": "过去365天",
+    "ytd": "年初至今",
     "all": "所有时间",
     "custom": "自定义范围",
     "quarter": "过去90天"
@@ -285,6 +310,30 @@
   },
   "actions": {
     "convert": "转换"
+  },
+  "statement": {
+    "personal": "个人",
+    "financialStatements": "财务报表",
+    "forTheMonthEnded": "截至",
+    "endOfStatements": "财务报表结束",
+    "overview": "总览",
+    "assets": "资产",
+    "change": "变动",
+    "income": "收入",
+    "expenses": "支出",
+    "netIncomeLoss": "净收入 / （亏损）",
+    "category": "类别",
+    "platform": "平台",
+    "unassigned": "未分配",
+    "transactions": "交易",
+    "total": "总计",
+    "date": "日期",
+    "particular": "摘要",
+    "asset": "资产",
+    "amount": "金额",
+    "transferFromTo": "从 {{from}} 转帐至 {{to}}",
+    "unknownAsset": "未知资产",
+    "totalType": "{{type}}总计"
   },
   "spendingHeatmap": {
     "controls": {

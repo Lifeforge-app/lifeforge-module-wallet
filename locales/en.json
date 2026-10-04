@@ -30,6 +30,10 @@
     "allTransactions": "All Transactions",
     "filteredTransactions": "Filtered Transactions"
   },
+  "transactionGroups": {
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
   "widgets": {
     "categoriesBreakdown": {
       "title": "Categories Breakdown",
@@ -63,13 +67,15 @@
     },
     "totalAssets": "Total Assets",
     "totalLiabilities": "Total Liabilities",
-    "netWorth": "Net Worth"
+    "netWorth": "Net Worth",
+    "platformsBreakdown": "Platforms Breakdown"
   },
   "tags": {
     "liability": "Liability"
   },
   "labels": {
-    "overLimit": "Over limit by"
+    "overLimit": "Over limit by",
+    "vsPrevious": "vs previous period"
   },
   "transactionCount": "Transactions",
   "receiptUploadInfo": "Only PDF and image files are accepted",
@@ -89,6 +95,10 @@
     "assets": {
       "title": "No Assets Found",
       "description": "You haven't created any assets yet. Click the button above to add one."
+    },
+    "platforms": {
+      "title": "No Platforms Found",
+      "description": "You haven't created any purchase platforms yet."
     },
     "ledger": {
       "title": "No Ledgers Found",
@@ -117,11 +127,13 @@
     "allLedgers": "All Ledgers",
     "allAssets": "All Assets",
     "allCategories": "All Categories",
+    "allPlatforms": "All Platforms",
     "allTypes": "All Types",
     "transactionTypes": "Transaction Types",
     "ledgers": "Ledgers",
     "assets": "Assets",
     "categories": "Categories",
+    "platforms": "Platforms",
     "dateRange": "Date Range",
     "calendarHeatmap": "Calendar Heatmap"
   },
@@ -153,7 +165,8 @@
     "autoGenerate": "Auto Generate",
     "savePrompts": "Save Prompts",
     "fromNaturalLanguage": "From Natural Language",
-    "createTemplateFrom": "Create Template From..."
+    "createTemplateFrom": "Create Template From...",
+    "print": "Print"
   },
   "modals": {
     "transactions": {
@@ -164,6 +177,11 @@
     "assets": {
       "create": "Create Asset",
       "update": "Update Asset"
+    },
+    "platforms": {
+      "create": "Create Platform",
+      "update": "Update Platform",
+      "manage": "Manage Platforms"
     },
     "ledgers": {
       "create": "Create Ledger",
@@ -210,6 +228,10 @@
     "asset": "Asset",
     "ledger": "Ledger",
     "category": "Category",
+    "platform": "Platform",
+    "platformName": "Platform Name",
+    "platformIcon": "Platform Icon",
+    "platformColor": "Platform Color",
     "receipt": "Receipt",
     "balance": "Balance",
     "particulars": "Particulars",
@@ -246,6 +268,7 @@
     "asset": "Asset",
     "ledger": "Ledger",
     "category": "Category",
+    "platform": "Platform",
     "receipt": "Receipt",
     "template": "Template"
   },
@@ -261,7 +284,9 @@
   "rangeModes": {
     "week": "Last 7 Days",
     "month": "Last 30 Days",
+    "mtd": "Month To Date",
     "year": "Last 365 Days",
+    "ytd": "Year To Date",
     "all": "All Time",
     "custom": "Custom Range",
     "quarter": "Last 90 Days"
@@ -285,6 +310,30 @@
   },
   "actions": {
     "convert": "converted"
+  },
+  "statement": {
+    "personal": "Personal",
+    "financialStatements": "Financial Statements",
+    "forTheMonthEnded": "For the month ended",
+    "endOfStatements": "End of Financial Statements",
+    "overview": "Overview",
+    "assets": "Assets",
+    "change": "Change",
+    "income": "Income",
+    "expenses": "Expenses",
+    "netIncomeLoss": "Net Income / (Loss)",
+    "category": "Category",
+    "platform": "Platform",
+    "unassigned": "Unassigned",
+    "transactions": "Transactions",
+    "total": "Total",
+    "date": "Date",
+    "particular": "Particular",
+    "asset": "Asset",
+    "amount": "Amount",
+    "transferFromTo": "Transfer from {{from}} to {{to}}",
+    "unknownAsset": "Unknown Asset",
+    "totalType": "Total {{type}}"
   },
   "spendingHeatmap": {
     "controls": {
