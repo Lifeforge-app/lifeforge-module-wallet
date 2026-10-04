@@ -61,14 +61,18 @@ function TransactionIncomeExpensesItem({
 
   return (
     <Flex align="center" gap="xl" justify="between" minWidth="0" width="100%">
-      <Flex
-        align="center"
-        flex="1"
-        gap={{ base: 'sm', sm: 'md' }}
-        minWidth="0"
-        width="100%"
-      >
+      <Flex align="center" flex="1" gap="md" minWidth="0" width="100%">
         <Box
+          display={{ base: 'block', sm: 'none' }}
+          height="3rem"
+          r="full"
+          style={{
+            backgroundColor: category?.color ?? 'transparent'
+          }}
+          width="0.25rem"
+        />
+        <Box
+          display={{ base: 'none', sm: 'block' }}
           p="md"
           r="md"
           style={{

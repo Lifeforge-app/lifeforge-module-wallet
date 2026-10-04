@@ -61,13 +61,18 @@ function TransactionTransferItem({
 
   return (
     <Flex align="center" gap="xl" justify="between" minWidth="0" width="100%">
-      <Flex
-        align="center"
-        gap={{ base: 'sm', sm: 'md' }}
-        minWidth="0"
-        width="100%"
-      >
+      <Flex align="center" gap="md" minWidth="0" width="100%">
         <Box
+          display={{ base: 'block', sm: 'none' }}
+          height="3rem"
+          r="full"
+          style={{
+            backgroundColor: 'rgb(59,130,246)'
+          }}
+          width="0.25rem"
+        />
+        <Box
+          display={{ base: 'none', sm: 'block' }}
           p="md"
           r="md"
           style={{
