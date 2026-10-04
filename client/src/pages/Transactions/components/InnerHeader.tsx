@@ -15,9 +15,10 @@ import { useWalletData } from '@/hooks/useWalletData'
 function InnerHeader() {
   const { t } = useModuleTranslation(['common.buttons'])
   const { setIsSidebarOpen } = useModuleSidebarState()
-  const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
+  const { assetsQuery, categoriesQuery, ledgersQuery, platformsQuery } =
+    useWalletData()
 
-  const { searchQuery, type, category, asset, ledger, updateFilter } =
+  const { searchQuery, type, category, platform, asset, ledger, updateFilter } =
     useFilter()
 
   const transactionsQuery = useTransactionsQuery()
@@ -25,6 +26,8 @@ function InnerHeader() {
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
+
+  const platforms = platformsQuery.data ?? []
 
   const ledgers = ledgersQuery.data ?? []
 
@@ -34,7 +37,12 @@ function InnerHeader() {
         <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
           {t(
             `header.${
-              !type && !category && !asset && !ledger && searchQuery === ''
+              !type &&
+              !category &&
+              !platform &&
+              !asset &&
+              !ledger &&
+              searchQuery === ''
                 ? 'all'
                 : 'filtered'
             }Transactions`
@@ -77,6 +85,15 @@ function InnerHeader() {
               })),
               isColored: true
             },
+            platform: {
+              data: platforms.map(platform => ({
+                id: platform.id,
+                icon: platform.icon,
+                color: platform.color,
+                label: platform.name
+              })),
+              isColored: true
+            },
             asset: {
               data: assets.map(asset => ({
                 id: asset.id,
@@ -97,6 +114,7 @@ function InnerHeader() {
           values={{
             type,
             category,
+            platform,
             asset,
             ledger
           }}
@@ -104,6 +122,8 @@ function InnerHeader() {
             type: (value: string | null) => updateFilter('type', value ?? ''),
             category: (value: string | null) =>
               updateFilter('category', value ?? ''),
+            platform: (value: string | null) =>
+              updateFilter('platform', value ?? ''),
             asset: (value: string | null) => updateFilter('asset', value ?? ''),
             ledger: (value: string | null) =>
               updateFilter('ledger', value ?? '')

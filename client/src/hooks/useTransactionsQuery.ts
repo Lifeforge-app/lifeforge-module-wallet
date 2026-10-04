@@ -9,6 +9,7 @@ export default function useTransactionsQuery() {
     searchQuery,
     type,
     category,
+    platform,
     asset,
     ledger,
     startDate,
@@ -24,6 +25,7 @@ export default function useTransactionsQuery() {
           ? (type as 'income' | 'expenses' | 'transfer')
           : undefined,
         category: category || undefined,
+        platform: platform || undefined,
         asset: asset || undefined,
         ledger: ledger || undefined,
         startDate: startDate || undefined,
