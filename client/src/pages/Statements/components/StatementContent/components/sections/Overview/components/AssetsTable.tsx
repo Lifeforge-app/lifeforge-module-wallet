@@ -1,7 +1,16 @@
 import dayjs from 'dayjs'
 
-import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
+import { useModuleTranslation } from '@lifeforge/localization'
+import {
+  Flex,
+  Icon,
+  Stack,
+  Text,
+  WithQuery,
+  colorWithOpacity
+} from '@lifeforge/ui'
 
+import LiabilityUtilisation from '@/components/LiabilityUtilisation'
 import { useWalletData } from '@/hooks/useWalletData'
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -9,6 +18,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 function AssetsTable({ month }: { month: number }) {
   const { assetsQuery } = useWalletData()
   const { statementQuery } = useStatementData()
+  const { t } = useModuleTranslation()
 
   return (
     <WithQuery query={assetsQuery}>
@@ -147,10 +157,27 @@ function AssetsTable({ month }: { month: number }) {
                             fontSize: '1.125rem'
                           }}
                         >
-                          <Flex align="center" gap="sm">
-                            <Icon icon={asset.icon} size="1.5rem" />
-                            <Text whiteSpace="nowrap">{asset.name}</Text>
-                          </Flex>
+                          <Stack gap="xs">
+                            <Flex align="center" gap="sm">
+                              <Icon icon={asset.icon} size="1.5rem" />
+                              <Text whiteSpace="nowrap">{asset.name}</Text>
+                              {asset.is_liability && (
+                                <Text
+                                  size="sm"
+                                  style={{
+                                    color: '#e11d48',
+                                    border: '1px solid #e11d48',
+                                    borderRadius: '999px',
+                                    padding: '0 0.5rem',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  {t('tags.liability')}
+                                </Text>
+                              )}
+                            </Flex>
+                            <LiabilityUtilisation asset={asset} />
+                          </Stack>
                         </td>
                         <td
                           style={{
@@ -201,78 +228,85 @@ function AssetsTable({ month }: { month: number }) {
                       </tr>
                     )
                   })}
-                <tr>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem'
-                    }}
-                  >
-                    <Text size="xl" weight="semibold">
-                      Total Assets
-                    </Text>
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double'
-                    }}
-                  >
-                    {numberToCurrency(assetData.total.last)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double'
-                    }}
-                  >
-                    {numberToCurrency(assetData.total.current)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double',
-                      color:
-                        assetData.total.change < 0 ? '#e11d48' : undefined
-                    }}
-                  >
-                    {assetData.total.change < 0
-                      ? `(${numberToCurrency(Math.abs(assetData.total.change))})`
-                      : numberToCurrency(assetData.total.change)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double',
-                      color:
-                        assetData.total.percentage < 0 ? '#e11d48' : undefined
-                    }}
-                  >
-                    {assetData.total.percentage < 0
-                      ? `(${Math.abs(assetData.total.percentage).toFixed(2)}%)`
-                      : `${assetData.total.percentage.toFixed(2)}%`}
-                  </td>
-                </tr>
+                {[
+                  { label: t('widgets.totalAssets'), data: assetData.total },
+                  {
+                    label: t('widgets.totalLiabilities'),
+                    data: assetData.liabilitiesTotal
+                  },
+                  { label: t('widgets.netWorth'), data: assetData.netWorth }
+                ].map(row => (
+                  <tr key={row.label}>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        fontSize: '1.125rem'
+                      }}
+                    >
+                      <Text size="xl" weight="semibold">
+                        {row.label}
+                      </Text>
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'right',
+                        fontSize: '1.125rem',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap',
+                        borderTop: '2px solid',
+                        borderBottom: '6px double'
+                      }}
+                    >
+                      {numberToCurrency(row.data.last)}
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'right',
+                        fontSize: '1.125rem',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap',
+                        borderTop: '2px solid',
+                        borderBottom: '6px double'
+                      }}
+                    >
+                      {numberToCurrency(row.data.current)}
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'right',
+                        fontSize: '1.125rem',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap',
+                        borderTop: '2px solid',
+                        borderBottom: '6px double',
+                        color: row.data.change < 0 ? '#e11d48' : undefined
+                      }}
+                    >
+                      {row.data.change < 0
+                        ? `(${numberToCurrency(Math.abs(row.data.change))})`
+                        : numberToCurrency(row.data.change)}
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'right',
+                        fontSize: '1.125rem',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap',
+                        borderTop: '2px solid',
+                        borderBottom: '6px double',
+                        color: row.data.percentage < 0 ? '#e11d48' : undefined
+                      }}
+                    >
+                      {row.data.percentage < 0
+                        ? `(${Math.abs(row.data.percentage).toFixed(2)}%)`
+                        : `${row.data.percentage.toFixed(2)}%`}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}

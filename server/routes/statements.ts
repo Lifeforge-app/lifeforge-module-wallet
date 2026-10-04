@@ -65,7 +65,9 @@ export const get = forge
         }),
         assets: z.object({
           balances: z.record(z.string(), assetBalanceDto),
-          total: assetBalanceDto
+          total: assetBalanceDto,
+          liabilitiesTotal: assetBalanceDto,
+          netWorth: assetBalanceDto
         }),
         categoryComparison: z.object({
           income: comparisonDto,
@@ -249,11 +251,25 @@ export const get = forge
 
     const balances: Record<string, z.infer<typeof assetBalanceDto>> = {}
 
-    let totalLast = 0
-    let totalCurrent = 0
+    const buildBalance = (last: number, current: number) => {
+      const change = current - last
+
+      return {
+        last: parseFloat(last.toFixed(2)),
+        current: parseFloat(current.toFixed(2)),
+        change: parseFloat(change.toFixed(2)),
+        percentage: percentageChange(change, last)
+      }
+    }
+
+    let assetLast = 0
+    let assetCurrent = 0
+
+    let liabilityLast = 0
+    let liabilityCurrent = 0
 
     for (const assetId in balanceMap) {
-      const { last, current } = balanceMap[assetId]
+      const { last, current, is_liability } = balanceMap[assetId]
 
       const change = current - last
 
@@ -264,11 +280,14 @@ export const get = forge
         percentage: percentageChange(change, last)
       }
 
-      totalLast += last
-      totalCurrent += current
+      if (is_liability) {
+        liabilityLast += last
+        liabilityCurrent += current
+      } else {
+        assetLast += last
+        assetCurrent += current
+      }
     }
-
-    const totalChange = totalCurrent - totalLast
 
     const incomeBlock = buildBlock(blocks.income)
     const expensesBlock = buildBlock(blocks.expenses)
@@ -282,12 +301,9 @@ export const get = forge
       },
       assets: {
         balances,
-        total: {
-          last: parseFloat(totalLast.toFixed(2)),
-          current: parseFloat(totalCurrent.toFixed(2)),
-          change: parseFloat(totalChange.toFixed(2)),
-          percentage: percentageChange(totalChange, totalLast)
-        }
+        total: buildBalance(assetLast, assetCurrent),
+        liabilitiesTotal: buildBalance(-liabilityLast, -liabilityCurrent),
+        netWorth: buildBalance(assetLast + liabilityLast, assetCurrent + liabilityCurrent)
       },
       categoryComparison: {
         income: buildComparison('income'),

@@ -22,11 +22,11 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
+import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
 
-import TotalBalance from './components/AssetAmount'
 import AssetItem from './components/AssetItem'
 import ModifyAssetModal from './modals/ModifyAssetModal'
 
@@ -41,13 +41,6 @@ function Assets() {
   const { assetsQuery } = useWalletData()
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
   const { hash } = useLocation()
-
-  const totalBalance = useMemo(() => {
-    return (assetsQuery.data ?? []).reduce(
-      (sum, asset) => sum + asset.current_balance,
-      0
-    )
-  }, [assetsQuery.data])
 
   const [searchQuery, setSearchQuery] = useQueryState('q', {
     defaultValue: ''
@@ -147,21 +140,15 @@ function Assets() {
         </Listbox>
       </Flex>
       <WithQuery query={assetsQuery}>
-        {() => (
+        {assets => (
           <>
             <Widget
-              actionComponent={
-                <TotalBalance
-                  amount={totalBalance}
-                  display={{ base: 'none', sm: 'flex' }}
-                />
-              }
               height="min-content"
               icon="tabler:currency-dollar"
               mb="lg"
-              title="Total Assets"
+              title="Net Worth"
             >
-              <TotalBalance amount={totalBalance} display={{ sm: 'none' }} />
+              <NetWorthSummary spread assets={assets} />
             </Widget>
             {filteredAssets.length > 0 ? (
               <Stack mb="2xl">

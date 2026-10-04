@@ -9,12 +9,15 @@ import {
   Icon,
   Scrollbar,
   Stack,
+  TagChip,
   Text,
   Widget,
   WithQuery,
   surface
 } from '@lifeforge/ui'
 
+import LiabilityUtilisation from '@/components/LiabilityUtilisation'
+import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
 
@@ -34,57 +37,73 @@ function AssetsBalanceCard() {
         </Button>
       }
       gridColumnSpan={1}
-      gridRowSpan={2}
+      gridRowSpan={3}
       icon="tabler:wallet"
-      minHeight={{ base: '24rem', xl: '0' }}
+      minHeight={{ base: '32rem', xl: '0' }}
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
         {assets =>
           assets.length > 0 ? (
-            <Scrollbar>
-              <Stack as="ul" gap="sm" pb="sm">
-                {assets.map(asset => (
-                  <Card
-                    key={asset.id}
-                    as={Link}
-                    bg={surface.lightInteractive}
-                    direction={{ base: 'column', sm: 'row' }}
-                    gap="md"
-                    to={`/wallet/transactions?asset=${asset.id}`}
-                  >
-                    <Flex align="center" gap="md" minWidth="0" width="100%">
-                      <Icon icon={asset.icon} size="1.5rem" />
-                      <Text truncate weight="semibold">
-                        {asset.name}
-                      </Text>
-                    </Flex>
-                    <Flex
-                      align={isAmountHidden ? 'center' : 'end'}
-                      gap="sm"
-                      mt={{ base: 'md', sm: 'none' }}
+            <Stack gap="lg" height="100%" width="100%">
+              <Card bg={surface.light}>
+                <NetWorthSummary assets={assets} />
+              </Card>
+              <Scrollbar>
+                <Stack as="ul" gap="sm" pb="sm">
+                  {assets.map(asset => (
+                    <Card
+                      key={asset.id}
+                      align="center"
+                      as={Link}
+                      bg={surface.lightInteractive}
+                      direction={{ base: 'column', sm: 'row' }}
+                      gap="md"
+                      to={`/wallet/transactions?asset=${asset.id}`}
                     >
-                      <Text color="muted" size="xl">
-                        RM
-                      </Text>
-                      {isAmountHidden ? (
-                        <Flex align="center">
-                          {Array(4)
-                            .fill(0)
-                            .map((_, i) => (
-                              <Icon key={i} icon="uil:asterisk" size="1rem" />
-                            ))}
+                      <Stack gap="xs" minWidth="0" width="100%">
+                        <Flex align="center" gap="md" minWidth="0">
+                          <Icon icon={asset.icon} size="1.5rem" />
+                          <Text truncate weight="semibold">
+                            {asset.name}
+                          </Text>
+                          {asset.is_liability && (
+                            <TagChip
+                              color="#ef4444"
+                              icon="tabler:credit-card"
+                              label={t('tags.liability')}
+                            />
+                          )}
                         </Flex>
-                      ) : (
-                        <Text size="3xl" weight="medium">
-                          {numberToCurrency(asset.current_balance)}
+                        <LiabilityUtilisation asset={asset} />
+                      </Stack>
+                      <Flex
+                        align={isAmountHidden ? 'center' : 'end'}
+                        gap="sm"
+                        mt={{ base: 'md', sm: 'none' }}
+                      >
+                        <Text color="muted" size="xl">
+                          RM
                         </Text>
-                      )}
-                    </Flex>
-                  </Card>
-                ))}
-              </Stack>
-            </Scrollbar>
+                        {isAmountHidden ? (
+                          <Flex align="center">
+                            {Array(4)
+                              .fill(0)
+                              .map((_, i) => (
+                                <Icon key={i} icon="uil:asterisk" size="1rem" />
+                              ))}
+                          </Flex>
+                        ) : (
+                          <Text size="3xl" weight="medium">
+                            {numberToCurrency(asset.current_balance)}
+                          </Text>
+                        )}
+                      </Flex>
+                    </Card>
+                  ))}
+                </Stack>
+              </Scrollbar>
+            </Stack>
           ) : (
             <EmptyStateScreen
               smaller
