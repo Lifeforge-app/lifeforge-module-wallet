@@ -7,6 +7,7 @@ import { Button, Icon, Widget } from '@lifeforge/ui'
 import { forgeAPI } from '@/manifest'
 
 import type { WalletCategory } from '../../../Transactions'
+import type { DashboardRange } from '../../providers/DashboardRangeProvider'
 import BreakdownContent from './components/BreakdownContent'
 
 type CategoryBreakdown = InferOutput<
@@ -17,14 +18,16 @@ export const CategoriesBreakdownContext = createContext<{
   breakdown: CategoryBreakdown
   categories: WalletCategory[]
   type: 'income' | 'expenses'
-  year: number | null
-  month: number | null
+  range: DashboardRange
+  startDate: string
+  endDate: string
 }>({
   breakdown: {},
   categories: [],
   type: 'expenses',
-  year: null,
-  month: null
+  range: 'mtd',
+  startDate: '',
+  endDate: ''
 })
 
 function CategoriesBreakdownCard() {
@@ -44,11 +47,7 @@ function CategoriesBreakdownCard() {
           <Icon icon="tabler:chevron-right" />
         </Button>
       }
-      gridColumnSpan={1}
-      gridRowSpan={5}
-      height="100%"
       icon="tabler:chart-donut-3"
-      minHeight="0"
       title="Categories Breakdown"
     >
       <BreakdownContent

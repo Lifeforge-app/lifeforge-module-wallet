@@ -19,7 +19,7 @@ function BreakdownDetails() {
               height
             }}
           >
-            <Stack gap="none">
+            <Stack>
               {categories.map(category => (
                 <BreakdownCategoryItem key={category.id} category={category} />
               ))}

@@ -1,90 +1,103 @@
 import { useQuery } from '@tanstack/react-query'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, Icon, Text, Widget, WithQuery } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
+import numberToCurrency from '@/utils/numberToCurrency'
 
-import numberToCurrency from '../../../utils/numberToCurrency'
+import { useDashboardRange } from '../providers/DashboardRangeProvider'
 
 function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const isIncome = title.toLowerCase() === 'income'
 
+  const type = isIncome ? 'income' : 'expenses'
+
+  const { t } = useModuleTranslation()
+  const { queryInput } = useDashboardRange()
   const { isAmountHidden } = useWalletStore()
 
-  const incomeExpensesQuery = useQuery(
-    forgeAPI.analytics.getIncomeExpensesSummary
-      .input({
-        year: new Date().getFullYear().toString(),
-        month: (new Date().getMonth() + 1).toString()
-      })
-      .queryOptions()
+  const typesCountQuery = useQuery(
+    forgeAPI.analytics.getTypesCount.input(queryInput).queryOptions()
   )
 
   return (
-    <Widget
-      gridColumnSpan={1}
-      gridRowSpan={1}
-      icon={icon}
-      title={isIncome ? 'income' : 'expenses'}
-    >
-      <WithQuery query={incomeExpensesQuery}>
-        {data => (
-          <Flex direction="column" height="100%" justify="evenly">
-            <Flex align="end" gap="sm" height="auto" width="100%">
-              <Flex asChild align="baseline" gap="sm" height="auto">
-                <Text size={{ base: '4xl', xl: '5xl' }} weight="medium">
-                  <Text color="muted" size={{ base: '2xl', xl: '3xl' }}>
-                    RM
+    <Widget icon={icon} title={isIncome ? 'income' : 'expenses'}>
+      <WithQuery query={typesCountQuery}>
+        {data => {
+          const entry = data[type]
+
+          const change = entry.percentageChange
+
+          const hasComparison = entry.previousAmount > 0
+
+          const isFlat = Math.abs(change) < 0.05
+
+          const isGood = isIncome ? change >= 0 : change <= 0
+
+          const comparisonColor = isFlat
+            ? 'muted'
+            : isGood
+              ? 'green-500'
+              : 'red-500'
+
+          const comparisonIcon = isFlat
+            ? 'tabler:minus'
+            : change > 0
+              ? 'tabler:trending-up'
+              : 'tabler:trending-down'
+
+          return (
+            <Flex direction="column" height="100%" justify="evenly">
+              <Flex align="end" gap="sm" height="auto" width="100%">
+                <Flex asChild align="baseline" gap="sm" height="auto">
+                  <Text size={{ base: '4xl', xl: '5xl' }} weight="medium">
+                    <Text color="muted" size={{ base: '2xl', xl: '3xl' }}>
+                      RM
+                    </Text>
+                    {isAmountHidden ? (
+                      <Flex align="center">
+                        {Array(4)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Icon
+                              key={i}
+                              icon="uil:asterisk"
+                              size={{ base: '1.5rem', xl: '2rem' }}
+                            />
+                          ))}
+                      </Flex>
+                    ) : (
+                      numberToCurrency(entry.accumulatedAmount)
+                    )}
                   </Text>
-                  {isAmountHidden ? (
-                    <Flex align="center">
-                      {Array(4)
-                        .fill(0)
-                        .map((_, i) => (
-                          <Icon
-                            key={i}
-                            icon="uil:asterisk"
-                            size={{ base: '1.5rem', xl: '2rem' }}
-                          />
-                        ))}
-                    </Flex>
-                  ) : (
-                    numberToCurrency(
-                      +data[`total${title}` as 'totalIncome' | 'totalExpenses']
-                    )
-                  )}
-                </Text>
+                </Flex>
+              </Flex>
+              <Flex align="center" gap="sm" mt="md">
+                {hasComparison ? (
+                  <>
+                    <Icon
+                      color={comparisonColor}
+                      icon={comparisonIcon}
+                      size="1.25rem"
+                    />
+                    <Text color={comparisonColor} whiteSpace="nowrap">
+                      {Math.abs(change).toFixed(1)}%
+                    </Text>
+                    <Text color="muted" whiteSpace="nowrap">
+                      {t('labels.vsPrevious')}
+                    </Text>
+                  </>
+                ) : (
+                  <Text color="muted" whiteSpace="nowrap">
+                    {entry.transactionCount} {t('transactionCount')}
+                  </Text>
+                )}
               </Flex>
             </Flex>
-            <Flex align="baseline" gap="sm" mt="md">
-              <Flex asChild align={isAmountHidden ? 'center' : 'baseline'}>
-                <Text
-                  color={isIncome ? 'green-500' : 'red-500'}
-                  whiteSpace="nowrap"
-                >
-                  {isIncome ? '+' : '-'} RM
-                  {isAmountHidden ? (
-                    <Flex align="center" display="inline-flex" ml="sm">
-                      {Array(4)
-                        .fill(0)
-                        .map((_, i) => (
-                          <Icon key={i} icon="uil:asterisk" size="1rem" />
-                        ))}
-                    </Flex>
-                  ) : (
-                    numberToCurrency(
-                      +data[
-                        `monthly${title}` as 'monthlyIncome' | 'monthlyExpenses'
-                      ]
-                    )
-                  )}
-                </Text>
-              </Flex>
-              <Text>from this month</Text>
-            </Flex>
-          </Flex>
-        )}
+          )
+        }}
       </WithQuery>
     </Widget>
   )

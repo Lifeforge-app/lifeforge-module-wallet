@@ -36,10 +36,7 @@ function AssetsBalanceCard() {
           <Icon icon="tabler:chevron-right" />
         </Button>
       }
-      gridColumnSpan={1}
-      gridRowSpan={3}
       icon="tabler:wallet"
-      minHeight={{ base: '32rem', xl: '0' }}
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>

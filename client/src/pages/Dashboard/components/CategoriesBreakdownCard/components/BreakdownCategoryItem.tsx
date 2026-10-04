@@ -1,12 +1,12 @@
-import dayjs from 'dayjs'
 import { useContext, useMemo } from 'react'
 import { Link } from 'react-router'
 
 import { useModuleTranslation } from '@lifeforge/localization'
-import { Box, Flex, Icon, Stack, Text, WithDivide } from '@lifeforge/ui'
+import { Box, Card, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
 
 import type { WalletCategory } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
+import getDateRange from '@/utils/getDateRange'
 
 import { CategoriesBreakdownContext } from '..'
 import numberToCurrency from '../../../../../utils/numberToCurrency'
@@ -14,47 +14,39 @@ import numberToCurrency from '../../../../../utils/numberToCurrency'
 function BreakdownCategoryItem({ category }: { category: WalletCategory }) {
   const { t } = useModuleTranslation()
   const { isAmountHidden } = useWalletStore()
-  const { breakdown, type, year, month } = useContext(
+  
+const { breakdown, type, range, startDate, endDate } = useContext(
     CategoriesBreakdownContext
   )
 
   const filterParams = useMemo(() => {
-    if (year === null || month === null)
-      return `?type=${type}&category=${category.id}`
+    const dates = getDateRange(
+      range,
+      startDate || undefined,
+      endDate || undefined
+    )
 
-    const startDate = dayjs()
-      .year(year)
-      .month(month)
-      .startOf('month')
-      .format('YYYY-MM-DD')
-    const endDate = dayjs()
-      .year(year)
-      .month(month)
-      .endOf('month')
-      .format('YYYY-MM-DD')
+    const params = new URLSearchParams({ type, category: category.id })
 
-    return `?type=${type}&startDate=${startDate}&endDate=${endDate}&category=${category.id}`
-  }, [year, month, type, category.id])
+    if (dates.startDate) params.set('startDate', dates.startDate)
+
+    if (dates.endDate) params.set('endDate', dates.endDate)
+
+    return `?${params.toString()}`
+  }, [range, startDate, endDate, type, category.id])
 
   return (
-    <WithDivide
+    <Card
       key={category.id}
-      axis="y"
-      color={{ base: 'bg-200', dark: 'bg-800' }}
+      as={Link}
+      bg={surface.lightInteractive}
+      direction="row"
+      gap="lg"
+      justify="between"
+      minWidth="0"
+      to={`/wallet/transactions${filterParams}`}
+      width="100%"
     >
-      <Flex
-        as={Link}
-        bg={{
-          base: 'transparent',
-          hover: 'bg-100',
-          darkHover: 'bg-800'
-        }}
-        gap="lg"
-        minWidth="0"
-        p="lg"
-        to={`/wallet/transactions${filterParams}`}
-        width="100%"
-      >
         <Flex align="center" gap="md" minWidth="0" width="100%">
           <Box
             p="sm"
@@ -100,8 +92,7 @@ function BreakdownCategoryItem({ category }: { category: WalletCategory }) {
             {breakdown[category.id]?.percentage.toFixed(2)}%
           </Text>
         </Stack>
-      </Flex>
-    </WithDivide>
+    </Card>
   )
 }
 

@@ -11,18 +11,29 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
+import type { ReactNode } from 'react'
 
-import { ContextMenu, ContextMenuItem, Grid, ModuleHeader } from '@lifeforge/ui'
+import {
+  Box,
+  type BoxProps,
+  ContextMenu,
+  ContextMenuItem,
+  Grid,
+  ModuleHeader
+} from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import TransactionCreationMenu from '../Transactions/components/TransactionCreationMenu'
 import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
+import DashboardRangeSelector from './components/DashboardRangeSelector'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
+import PlatformsBreakdownCard from './components/PlatformsBreakdownCard'
 import StatisticChartCard from './components/StatisticChartCard'
 import TransactionsCard from './components/TransactionsCard'
-import TransactionsCountCard from './components/TransactionsCountCard'
+import { dashboardGrid } from './dashboardGrid.css'
+import { DashboardRangeProvider } from './providers/DashboardRangeProvider'
 
 ChartJS.register(
   CategoryScale,
@@ -37,11 +48,48 @@ ChartJS.register(
   LogarithmicScale
 )
 
+// Each key maps to a named area in `dashboardGrid.css.ts`.
+const WIDGETS: {
+  key: string
+  element: ReactNode
+  minHeight?: BoxProps['minHeight']
+}[] = [
+  {
+    key: 'income',
+    element: <IncomeExpenseCard icon="tabler:login-2" title="Income" />
+  },
+  {
+    key: 'expenses',
+    element: <IncomeExpenseCard icon="tabler:logout-2" title="Expenses" />
+  },
+  {
+    key: 'assetsBalance',
+    element: <AssetsBalanceCard />,
+    minHeight: { base: '32rem', xl: '0' }
+  },
+  { key: 'statisticChart', element: <StatisticChartCard /> },
+  {
+    key: 'recentTransactions',
+    element: <TransactionsCard />,
+    minHeight: '0'
+  },
+  {
+    key: 'categoriesBreakdown',
+    element: <CategoriesBreakdownCard />,
+    minHeight: '0'
+  },
+  {
+    key: 'platformsBreakdown',
+    element: <PlatformsBreakdownCard />,
+    minHeight: '24rem'
+  }
+]
+
 function WalletDashboard() {
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
 
   return (
-    <>
+    <DashboardRangeProvider>
       <ModuleHeader
         trailing={
           <>
@@ -59,17 +107,16 @@ function WalletDashboard() {
           </>
         }
       />
-      <Grid gap="sm" pb="2xl" templateCols={{ base: 1, xl: 3 }} width="100%">
-        <IncomeExpenseCard icon="tabler:login-2" title="Income" />
-        <IncomeExpenseCard icon="tabler:logout-2" title="Expenses" />
-        <AssetsBalanceCard />
-        <StatisticChartCard />
-        <TransactionsCard />
-        <TransactionsCountCard />
-        <CategoriesBreakdownCard />
+      <DashboardRangeSelector />
+      <Grid className={dashboardGrid} pb="2xl" width="100%">
+        {WIDGETS.map(({ key, element, minHeight }) => (
+          <Box key={key} gridArea={key} minHeight={minHeight} minWidth="0">
+            {element}
+          </Box>
+        ))}
       </Grid>
       <TransactionCreationMenu mode="navigate" variant="mobile" />
-    </>
+    </DashboardRangeProvider>
   )
 }
 

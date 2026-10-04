@@ -44,7 +44,7 @@ function BreakdownDoughnutChart() {
 
       return (
         <Bordered asChild borderColor={{ base: 'bg-200', dark: 'bg-700' }}>
-          <Stack bg={surface.light} p="lg" r="lg">
+          <Stack bg={surface.default} p="lg" r="lg">
             <Flex align="center" gap="sm">
               <Box
                 height="0.625rem"

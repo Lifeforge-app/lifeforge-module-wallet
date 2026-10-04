@@ -10,12 +10,11 @@ import {
   WithQuery
 } from '@lifeforge/ui'
 
-import { useWalletData } from '@/hooks/useWalletData'
-
+import useDashboardTransactionsQuery from '../../hooks/useDashboardTransactionsQuery'
 import TransactionList from './components/TransactionList'
 
 function TransactionsCard() {
-  const { transactionsQuery } = useWalletData()
+  const transactionsQuery = useDashboardTransactionsQuery()
 
   return (
     <Widget
@@ -24,10 +23,7 @@ function TransactionsCard() {
           <Icon icon="tabler:chevron-right" />
         </Button>
       }
-      gridColumnSpan={{ xl: 2 }}
-      gridRowSpan={6}
       icon="tabler:list"
-      minHeight="0"
       title="Recent Transactions"
     >
       <WithQuery query={transactionsQuery}>

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import {
   Bar,
   CartesianGrid,
@@ -28,15 +28,15 @@ import { forgeAPI } from '@/manifest'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import RangeSelector from './components/RangeSelector'
+import { useDashboardRange } from '../providers/DashboardRangeProvider'
 
 function StatisticChartCard() {
   const { t } = useModuleTranslation()
   const { bgTempPalette, derivedTheme } = usePersonalization()
-  const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
+  const { queryInput } = useDashboardRange()
 
   const chartDataQuery = useQuery(
-    forgeAPI.analytics.getChartData.input({ range }).queryOptions()
+    forgeAPI.analytics.getChartData.input(queryInput).queryOptions()
   )
 
   const data = chartDataQuery.data ?? []
@@ -114,24 +114,7 @@ function StatisticChartCard() {
   }
 
   return (
-    <Widget
-      actionComponent={
-        <RangeSelector
-          display={{ base: 'none', sm: 'flex' }}
-          range={range}
-          setRange={setRange}
-        />
-      }
-      gridColumnSpan={{ xl: 2 }}
-      gridRowSpan={2}
-      icon="tabler:chart-dots"
-      title="Statistics"
-    >
-      <RangeSelector
-        display={{ base: 'flex', sm: 'none' }}
-        range={range}
-        setRange={setRange}
-      />
+    <Widget icon="tabler:chart-dots" title="Statistics">
       <Flex centered flex="1" height="100%" minHeight="24rem" width="100%">
         <WithQuery query={chartDataQuery}>
           {chartData =>
