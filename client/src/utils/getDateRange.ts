@@ -1,15 +1,17 @@
 import dayjs from 'dayjs'
 
+export type RangeMode =
+  | 'week'
+  | 'month'
+  | 'mtd'
+  | 'quarter'
+  | 'year'
+  | 'ytd'
+  | 'all'
+  | 'custom'
+
 export default function getDateRange(
-  rangeMode:
-    | 'week'
-    | 'month'
-    | 'year'
-    | 'all'
-    | 'custom'
-    | 'quarter'
-    | 'mtd'
-    | 'ytd',
+  rangeMode: RangeMode,
   startDate?: string,
   endDate?: string
 ): { startDate: string | null; endDate: string | null } {
