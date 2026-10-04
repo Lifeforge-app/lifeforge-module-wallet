@@ -414,14 +414,47 @@ export const update = forge
 
       if (body.type === 'transfer') {
         await db
-          .update(walletTransactionsTransfer)
-          .set({ from: body.from || null, to: body.to || null })
-          .where(eq(walletTransactionsTransfer.base_transaction, id))
+          .delete(walletTransactionsIncomeExpenses)
+          .where(eq(walletTransactionsIncomeExpenses.base_transaction, id))
+
+        const existingTransfer = await db.query.transactions_transfer.findFirst({
+          where: { base_transaction: id }
+        })
+
+        if (existingTransfer) {
+          await db
+            .update(walletTransactionsTransfer)
+            .set({ from: body.from || null, to: body.to || null })
+            .where(eq(walletTransactionsTransfer.base_transaction, id))
+        } else {
+          await db.insert(walletTransactionsTransfer).values({
+            base_transaction: id,
+            from: body.from || null,
+            to: body.to || null
+          })
+        }
       } else {
         await db
-          .update(walletTransactionsIncomeExpenses)
-          .set({ type: body.type, ...mapIncomeExpenses(body)! })
-          .where(eq(walletTransactionsIncomeExpenses.base_transaction, id))
+          .delete(walletTransactionsTransfer)
+          .where(eq(walletTransactionsTransfer.base_transaction, id))
+
+        const existingIncomeExpenses =
+          await db.query.transactions_income_expenses.findFirst({
+            where: { base_transaction: id }
+          })
+
+        if (existingIncomeExpenses) {
+          await db
+            .update(walletTransactionsIncomeExpenses)
+            .set({ type: body.type, ...mapIncomeExpenses(body)! })
+            .where(eq(walletTransactionsIncomeExpenses.base_transaction, id))
+        } else {
+          await db.insert(walletTransactionsIncomeExpenses).values({
+            base_transaction: id,
+            type: body.type,
+            ...mapIncomeExpenses(body)!
+          })
+        }
       }
 
       return response.ok(baseTransaction)
