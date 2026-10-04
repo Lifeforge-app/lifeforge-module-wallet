@@ -618,7 +618,7 @@ export const contract = {
     },
     "list": {
       "method": "get",
-      "description": "Get all wallet transactions",
+      "description": "Get paginated wallet transactions",
       "noAuth": false,
       "encrypted": true,
       "isDownloadable": false,
@@ -639,10 +639,25 @@ export const contract = {
                 "transfer"
               ]
             },
-            "year": {
+            "category": {
               "type": "string"
             },
-            "month": {
+            "asset": {
+              "type": "string"
+            },
+            "ledger": {
+              "type": "string"
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
+            },
+            "page": {
+              "type": "string"
+            },
+            "perPage": {
               "type": "string"
             }
           },
@@ -652,287 +667,312 @@ export const contract = {
       "output": {
         "OK": {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  },
-                  "type": {
-                    "type": "string",
-                    "const": "transfer"
-                  },
-                  "amount": {
-                    "type": "number",
-                    "minimum": -140737488355328,
-                    "maximum": 140737488355327
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "receipt": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "updated": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "from": {
-                    "anyOf": [
-                      {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "transfer"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "minimum": -140737488355328,
+                        "maximum": 140737488355327
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "receipt": {
                         "type": "string"
                       },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "to": {
-                    "anyOf": [
-                      {
-                        "type": "string"
+                      "created": {
+                        "type": "string",
+                        "format": "date-time"
                       },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "id",
-                  "type",
-                  "amount",
-                  "date",
-                  "receipt",
-                  "created",
-                  "updated",
-                  "from",
-                  "to"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  },
-                  "type": {
-                    "type": "string",
-                    "const": "income"
-                  },
-                  "amount": {
-                    "type": "number",
-                    "minimum": -140737488355328,
-                    "maximum": 140737488355327
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "receipt": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "updated": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "particulars": {
-                    "type": "string"
-                  },
-                  "asset": {
-                    "anyOf": [
-                      {
-                        "type": "string"
+                      "updated": {
+                        "type": "string",
+                        "format": "date-time"
                       },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "category": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "ledgers": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "location_name": {
-                    "type": "string"
-                  },
-                  "location_coords": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "lon": {
-                            "type": "number"
+                      "from": {
+                        "anyOf": [
+                          {
+                            "type": "string"
                           },
-                          "lat": {
-                            "type": "number"
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "lon",
-                          "lat"
-                        ],
-                        "additionalProperties": false
+                        ]
                       },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "id",
-                  "type",
-                  "amount",
-                  "date",
-                  "receipt",
-                  "created",
-                  "updated",
-                  "particulars",
-                  "asset",
-                  "category",
-                  "ledgers",
-                  "location_name",
-                  "location_coords"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  },
-                  "type": {
-                    "type": "string",
-                    "const": "expenses"
-                  },
-                  "amount": {
-                    "type": "number",
-                    "minimum": -140737488355328,
-                    "maximum": 140737488355327
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "receipt": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "updated": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "particulars": {
-                    "type": "string"
-                  },
-                  "asset": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "category": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "ledgers": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "location_name": {
-                    "type": "string"
-                  },
-                  "location_coords": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "lon": {
-                            "type": "number"
+                      "to": {
+                        "anyOf": [
+                          {
+                            "type": "string"
                           },
-                          "lat": {
-                            "type": "number"
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "lon",
-                          "lat"
-                        ],
-                        "additionalProperties": false
-                      },
-                      {
-                        "type": "null"
+                        ]
                       }
-                    ]
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "amount",
+                      "date",
+                      "receipt",
+                      "created",
+                      "updated",
+                      "from",
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "income"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "minimum": -140737488355328,
+                        "maximum": 140737488355327
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "receipt": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updated": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "particulars": {
+                        "type": "string"
+                      },
+                      "asset": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "category": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "ledgers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "location_name": {
+                        "type": "string"
+                      },
+                      "location_coords": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "lon": {
+                                "type": "number"
+                              },
+                              "lat": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "lon",
+                              "lat"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "amount",
+                      "date",
+                      "receipt",
+                      "created",
+                      "updated",
+                      "particulars",
+                      "asset",
+                      "category",
+                      "ledgers",
+                      "location_name",
+                      "location_coords"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "expenses"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "minimum": -140737488355328,
+                        "maximum": 140737488355327
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "receipt": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updated": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "particulars": {
+                        "type": "string"
+                      },
+                      "asset": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "category": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "ledgers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "location_name": {
+                        "type": "string"
+                      },
+                      "location_coords": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "lon": {
+                                "type": "number"
+                              },
+                              "lat": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "lon",
+                              "lat"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "amount",
+                      "date",
+                      "receipt",
+                      "created",
+                      "updated",
+                      "particulars",
+                      "asset",
+                      "category",
+                      "ledgers",
+                      "location_name",
+                      "location_coords"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "id",
-                  "type",
-                  "amount",
-                  "date",
-                  "receipt",
-                  "created",
-                  "updated",
-                  "particulars",
-                  "asset",
-                  "category",
-                  "ledgers",
-                  "location_name",
-                  "location_coords"
-                ],
-                "additionalProperties": false
+                ]
               }
-            ]
-          }
+            },
+            "page": {
+              "type": "number"
+            },
+            "perPage": {
+              "type": "number"
+            },
+            "totalItems": {
+              "type": "number"
+            },
+            "totalPages": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "items",
+            "page",
+            "perPage",
+            "totalItems",
+            "totalPages"
+          ],
+          "additionalProperties": false
         }
       }
     },
@@ -1751,55 +1791,6 @@ export const contract = {
             "starting_balance"
           ],
           "additionalProperties": false
-        }
-      }
-    },
-    "getAllAssetAccumulatedBalance": {
-      "method": "get",
-      "description": "Get all asset balances for a specific month",
-      "noAuth": false,
-      "encrypted": true,
-      "isDownloadable": false,
-      "media": null,
-      "input": {
-        "query": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "object",
-          "properties": {
-            "year": {
-              "type": "string"
-            },
-            "month": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "year",
-            "month"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "output": {
-        "OK": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "last": {
-                "type": "number"
-              },
-              "current": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "last",
-              "current"
-            ],
-            "additionalProperties": false
-          }
         }
       }
     },
@@ -2855,6 +2846,1160 @@ export const contract = {
             "ledgers",
             "location_name",
             "location_coords"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "statements": {
+    "get": {
+      "method": "get",
+      "description": "Get fully computed financial statement for a month",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "string"
+            },
+            "month": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "year",
+            "month"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "overview": {
+              "type": "object",
+              "properties": {
+                "monthlyIncome": {
+                  "type": "number"
+                },
+                "monthlyExpenses": {
+                  "type": "number"
+                },
+                "netIncome": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "monthlyIncome",
+                "monthlyExpenses",
+                "netIncome"
+              ],
+              "additionalProperties": false
+            },
+            "assets": {
+              "type": "object",
+              "properties": {
+                "balances": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "last": {
+                        "type": "number"
+                      },
+                      "current": {
+                        "type": "number"
+                      },
+                      "change": {
+                        "type": "number"
+                      },
+                      "percentage": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "last",
+                      "current",
+                      "change",
+                      "percentage"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "total": {
+                  "type": "object",
+                  "properties": {
+                    "last": {
+                      "type": "number"
+                    },
+                    "current": {
+                      "type": "number"
+                    },
+                    "change": {
+                      "type": "number"
+                    },
+                    "percentage": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "last",
+                    "current",
+                    "change",
+                    "percentage"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "balances",
+                "total"
+              ],
+              "additionalProperties": false
+            },
+            "categoryComparison": {
+              "type": "object",
+              "properties": {
+                "income": {
+                  "type": "object",
+                  "properties": {
+                    "currentTotal": {
+                      "type": "number"
+                    },
+                    "previousTotal": {
+                      "type": "number"
+                    },
+                    "totalChange": {
+                      "type": "number"
+                    },
+                    "totalPercentageChange": {
+                      "type": "number"
+                    },
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "currentAmount": {
+                            "type": "number"
+                          },
+                          "previousAmount": {
+                            "type": "number"
+                          },
+                          "change": {
+                            "type": "number"
+                          },
+                          "percentageChange": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "currentAmount",
+                          "previousAmount",
+                          "change",
+                          "percentageChange"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "currentTotal",
+                    "previousTotal",
+                    "totalChange",
+                    "totalPercentageChange",
+                    "items"
+                  ],
+                  "additionalProperties": false
+                },
+                "expenses": {
+                  "type": "object",
+                  "properties": {
+                    "currentTotal": {
+                      "type": "number"
+                    },
+                    "previousTotal": {
+                      "type": "number"
+                    },
+                    "totalChange": {
+                      "type": "number"
+                    },
+                    "totalPercentageChange": {
+                      "type": "number"
+                    },
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "currentAmount": {
+                            "type": "number"
+                          },
+                          "previousAmount": {
+                            "type": "number"
+                          },
+                          "change": {
+                            "type": "number"
+                          },
+                          "percentageChange": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "currentAmount",
+                          "previousAmount",
+                          "change",
+                          "percentageChange"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "currentTotal",
+                    "previousTotal",
+                    "totalChange",
+                    "totalPercentageChange",
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "income",
+                "expenses"
+              ],
+              "additionalProperties": false
+            },
+            "transactions": {
+              "type": "object",
+              "properties": {
+                "income": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "transfer"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "from",
+                              "to"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "income"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "expenses"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "expenses": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "transfer"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "from",
+                              "to"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "income"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "expenses"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "transfer": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "transfer"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "from",
+                              "to"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "income"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "const": "expenses"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "minimum": -140737488355328,
+                                "maximum": 140737488355327
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "receipt": {
+                                "type": "string"
+                              },
+                              "created": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "particulars": {
+                                "type": "string"
+                              },
+                              "asset": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "category": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledgers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "location_name": {
+                                "type": "string"
+                              },
+                              "location_coords": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "lon": {
+                                        "type": "number"
+                                      },
+                                      "lat": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "lon",
+                                      "lat"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "amount",
+                              "date",
+                              "receipt",
+                              "created",
+                              "updated",
+                              "particulars",
+                              "asset",
+                              "category",
+                              "ledgers",
+                              "location_name",
+                              "location_coords"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "totalCount": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "income",
+                "expenses",
+                "transfer",
+                "totalCount"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "overview",
+            "assets",
+            "categoryComparison",
+            "transactions"
           ],
           "additionalProperties": false
         }

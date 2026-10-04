@@ -9,37 +9,24 @@ import {
 } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
-import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
+import useTransactionsQuery from '@/hooks/useTransactionsQuery'
 import { useWalletData } from '@/hooks/useWalletData'
 
 function InnerHeader() {
-  const { transactionsQuery, assetsQuery, categoriesQuery, ledgersQuery } =
-    useWalletData()
+  const { t } = useModuleTranslation(['common.buttons'])
+  const { setIsSidebarOpen } = useModuleSidebarState()
+  const { assetsQuery, categoriesQuery, ledgersQuery } = useWalletData()
 
   const { searchQuery, type, category, asset, ledger, updateFilter } =
     useFilter()
 
-  const { setIsSidebarOpen } = useModuleSidebarState()
-  const { t } = useModuleTranslation(['common.buttons'])
+  const transactionsQuery = useTransactionsQuery()
 
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
 
   const ledgers = ledgersQuery.data ?? []
-
-  const filteredTransactions = useFilteredTransactions(
-    transactionsQuery.data ?? [],
-    {
-      type,
-      category,
-      asset,
-      ledger,
-      startDate: '',
-      endDate: '',
-      searchQuery
-    }
-  )
 
   return (
     <Flex align="center" justify="between">
@@ -53,7 +40,7 @@ function InnerHeader() {
             }Transactions`
           )}{' '}
           <Text color="muted" size="base">
-            ({filteredTransactions.length.toLocaleString()})
+            ({(transactionsQuery.data?.totalItems ?? 0).toLocaleString()})
           </Text>
         </Text>
         <TagsFilter

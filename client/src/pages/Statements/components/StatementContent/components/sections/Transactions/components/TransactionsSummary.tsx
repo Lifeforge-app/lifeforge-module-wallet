@@ -1,15 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
-import { forgeAPI } from '@/manifest'
+import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 
-function TransactionsSummary({ month, year }: { month: number; year: number }) {
-  const typesCountQuery = useQuery(
-    forgeAPI.analytics.getTypesCount
-      .input({ year: year.toString(), month: (month + 1).toString() })
-      .queryOptions()
-  )
+function TransactionsSummary() {
+  const { statementQuery } = useStatementData()
 
   const ROWS = [
     {
@@ -33,54 +27,45 @@ function TransactionsSummary({ month, year }: { month: number; year: number }) {
   ] as const
 
   return (
-    <WithQuery query={typesCountQuery}>
-      {data => {
-        const total =
-          (data.income?.transactionCount ?? 0) +
-          (data.expenses?.transactionCount ?? 0) +
-          (data.transfer?.transactionCount ?? 0)
-
-        return (
-          <Flex direction="column" mt="lg" width="100%">
-            {ROWS.map((row, index) => (
-              <Flex
-                key={row.label}
-                align="center"
-                bg={
-                  index % 2 === 1 ? colorWithOpacity('bg-500', '5%') : undefined
-                }
-                justify="between"
-                p="md"
-              >
-                <Flex align="center" gap="sm">
-                  <Icon color={row.color} icon={row.icon} size="1.5rem" />
-                  <Text size="xl">{row.label}</Text>
-                </Flex>
-                <Text size="lg">
-                  {data[row.type]?.transactionCount ?? 0} entries
-                </Text>
-              </Flex>
-            ))}
+    <WithQuery query={statementQuery}>
+      {({ transactions }) => (
+        <Flex direction="column" mt="lg" width="100%">
+          {ROWS.map((row, index) => (
             <Flex
+              key={row.label}
               align="center"
-              bg={colorWithOpacity('bg-500', '5%')}
+              bg={
+                index % 2 === 1 ? colorWithOpacity('bg-500', '5%') : undefined
+              }
               justify="between"
+              p="md"
             >
-              <Text p="md" size="xl" weight="semibold">
-                Total
-              </Text>
-              <Text
-                p="md"
-                size="lg"
-                style={{ borderTop: '2px solid', borderBottom: '6px double' }}
-                weight="medium"
-              >
-                {total} entries
-              </Text>
+              <Flex align="center" gap="sm">
+                <Icon color={row.color} icon={row.icon} size="1.5rem" />
+                <Text size="xl">{row.label}</Text>
+              </Flex>
+              <Text size="lg">{transactions[row.type].count} entries</Text>
             </Flex>
+          ))}
+          <Flex
+            align="center"
+            bg={colorWithOpacity('bg-500', '5%')}
+            justify="between"
+          >
+            <Text p="md" size="xl" weight="semibold">
+              Total
+            </Text>
+            <Text
+              p="md"
+              size="lg"
+              style={{ borderTop: '2px solid', borderBottom: '6px double' }}
+              weight="medium"
+            >
+              {transactions.totalCount} entries
+            </Text>
           </Flex>
-        )
-      }}
+        </Flex>
+      )}
     </WithQuery>
   )
 }

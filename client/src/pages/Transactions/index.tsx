@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 
@@ -13,6 +12,7 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
+import useTransactionsQuery from '@/hooks/useTransactionsQuery'
 import { forgeAPI } from '@/manifest'
 
 import HeaderMenu from './components/HeaderMenu'
@@ -28,7 +28,7 @@ import ScanReceiptModal from './modals/ScanReceiptModal'
 
 export type WalletTransaction = InferOutput<
   typeof forgeAPI.transactions.list
->[number]
+>['items'][number]
 
 export type WalletCategory = InferOutput<
   typeof forgeAPI.categories.list
@@ -37,7 +37,7 @@ export type WalletCategory = InferOutput<
 function Transactions() {
   const { hash } = useLocation()
   const { open } = useModalStore()
-  const transactionsQuery = useQuery(forgeAPI.transactions.list.queryOptions())
+  const transactionsQuery = useTransactionsQuery()
 
   useEffect(() => {
     if (hash === '#new') {
@@ -77,7 +77,7 @@ function Transactions() {
           <Stack gap="md" height="100%" my="lg" width="100%">
             <WithQuery query={transactionsQuery}>
               {transactions =>
-                transactions.length > 0 ? (
+                transactions.items.length > 0 ? (
                   <TransactionList />
                 ) : (
                   <EmptyStateScreen

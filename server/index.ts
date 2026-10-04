@@ -6,6 +6,7 @@ import * as assetsRouter from './routes/assets'
 import * as categoriesRouter from './routes/categories'
 import * as ledgersRouter from './routes/ledgers'
 import * as promptsRouter from './routes/prompts'
+import * as statementsRouter from './routes/statements'
 import * as templatesRouter from './routes/templates'
 import * as transactionsRouter from './routes/transactions'
 
@@ -19,6 +20,7 @@ const routes = forgeRouter({
   assets: assetsRouter,
   ledgers: ledgersRouter,
   templates: templatesRouter,
+  statements: statementsRouter,
   analytics: analyticsRouter
 })
 

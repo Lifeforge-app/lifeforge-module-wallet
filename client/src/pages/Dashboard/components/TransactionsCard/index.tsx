@@ -34,7 +34,7 @@ function TransactionsCard() {
         {transactions => (
           <Flex height="100%" minHeight="32rem" width="100%">
             <Scrollbar>
-              {transactions.length > 0 ? (
+              {transactions.items.length > 0 ? (
                 <TransactionList />
               ) : (
                 <EmptyStateScreen

@@ -1,36 +1,15 @@
 import { EmptyStateScreen, Pagination, Scrollbar, Stack } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
-import { useFilteredTransactions } from '@/hooks/useFilteredTransactions'
-import { useWalletData } from '@/hooks/useWalletData'
+import useTransactionsQuery from '@/hooks/useTransactionsQuery'
 
 import TransactionItem from './components/TransactionItem'
 
 function TransactionList() {
-  const { transactionsQuery } = useWalletData()
-  const filters = useFilter()
+  const transactionsQuery = useTransactionsQuery()
+  const { page, setPage } = useFilter()
 
-  const {
-    page,
-    setPage,
-    type,
-    category,
-    asset,
-    ledger,
-    startDate,
-    endDate,
-    searchQuery
-  } = filters
-
-  const transactions = useFilteredTransactions(transactionsQuery.data ?? [], {
-    type,
-    category,
-    asset,
-    ledger,
-    startDate,
-    endDate,
-    searchQuery
-  })
+  const transactions = transactionsQuery.data?.items ?? []
 
   if (transactions.length === 0) {
     return (
@@ -47,12 +26,12 @@ function TransactionList() {
     <>
       <Pagination
         page={page}
-        totalPages={Math.ceil(transactions.length / 25)}
+        totalPages={transactionsQuery.data?.totalPages ?? 1}
         onPageChange={setPage}
       />
       <Scrollbar>
         <Stack>
-          {transactions.slice((page - 1) * 25, page * 25).map(transaction => (
+          {transactions.map(transaction => (
             <TransactionItem key={transaction.id} transaction={transaction} />
           ))}
         </Stack>

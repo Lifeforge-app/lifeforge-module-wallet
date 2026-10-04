@@ -6,7 +6,7 @@ import { forgeAPI } from '@/manifest'
 
 export type WalletTransaction = InferOutput<
   typeof forgeAPI.transactions.list
->[number]
+>['items'][number]
 
 export type WalletAsset = InferOutput<typeof forgeAPI.assets.list>[number]
 

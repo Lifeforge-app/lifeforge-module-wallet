@@ -24,7 +24,7 @@ function TransactionList() {
     <WithQuery query={transactionsQuery}>
       {transactions => (
         <Stack gap="none">
-          {transactions.slice(0, 20).map(transaction => (
+          {transactions.items.map(transaction => (
             <WithDivide key={transaction.id} axis="y">
               <Flex gap="xl" p="lg">
                 <Flex align="center" gap="md" minWidth="0" width="100%">

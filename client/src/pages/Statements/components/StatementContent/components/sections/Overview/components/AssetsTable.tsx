@@ -1,29 +1,20 @@
-import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 
 import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
-import { forgeAPI } from '@/manifest'
+import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-function AssetsTable({ month, year }: { month: number; year: number }) {
+function AssetsTable({ month }: { month: number }) {
   const { assetsQuery } = useWalletData()
-
-  const balancesQuery = useQuery(
-    forgeAPI.assets.getAllAssetAccumulatedBalance
-      .input({
-        year: year.toString(),
-        month: (month + 1).toString()
-      })
-      .queryOptions()
-  )
+  const { statementQuery } = useStatementData()
 
   return (
     <WithQuery query={assetsQuery}>
       {assets => (
-        <WithQuery query={balancesQuery}>
-          {balances => (
+        <WithQuery query={statementQuery}>
+          {({ assets: assetData }) => (
             <table
               style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
             >
@@ -53,9 +44,7 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
                       whiteSpace: 'nowrap'
                     }}
                   >
-                    {dayjs()
-                      .month(month - 1)
-                      .format('MMM YYYY')}
+                    {dayjs().month(month - 1).format('MMM YYYY')}
                   </th>
                   <th
                     style={{
@@ -133,202 +122,157 @@ function AssetsTable({ month, year }: { month: number; year: number }) {
                 </tr>
               </thead>
               <tbody>
-                {(() => {
-                  const sorted = assets.sort((a, b) =>
-                    a.name.localeCompare(b.name)
-                  )
+                {[...assets]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((asset, index) => {
+                    const balance = assetData.balances[asset.id]
 
-                  const totals = sorted.reduce(
-                    (acc, asset) => {
-                      const balance = balances[asset.id]
+                    if (!balance) return null
 
-                      if (balance) {
-                        acc.last += balance.last
-                        acc.current += balance.current
-                      }
+                    const { last, current, change, percentage } = balance
 
-                      return acc
-                    },
-                    { last: 0, current: 0 }
-                  )
-
-                  const totalChange = totals.current - totals.last
-                  const totalPercentage =
-                    totals.last !== 0 ? (totalChange / totals.last) * 100 : 0
-
-                  return (
-                    <>
-                      {sorted.map((asset, index) => {
-                        const assetBalance = balances[asset.id]
-
-                        const change = assetBalance.current - assetBalance.last
-
-                        const percentage =
-                          assetBalance.last !== 0
-                            ? (change / assetBalance.last) * 100
-                            : 0
-
-                        return (
-                          <tr
-                            key={asset.id}
-                            style={{
-                              backgroundColor:
-                                index % 2 === 0
-                                  ? colorWithOpacity('bg-500', '5%').toString()
-                                  : undefined
-                            }}
-                          >
-                            <td
-                              style={{
-                                padding: '0.75rem',
-                                fontSize: '1.125rem'
-                              }}
-                            >
-                              <Flex align="center" gap="sm">
-                                <Icon icon={asset.icon} size="1.5rem" />
-                                <Text whiteSpace="nowrap">{asset.name}</Text>
-                              </Flex>
-                            </td>
-                            <td
-                              style={{
-                                padding: '0.75rem',
-                                textAlign: 'right',
-                                fontSize: '1.125rem',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {balancesQuery.isLoading
-                                ? '...'
-                                : numberToCurrency(assetBalance.last)}
-                            </td>
-                            <td
-                              style={{
-                                padding: '0.75rem',
-                                textAlign: 'right',
-                                fontSize: '1.125rem',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {balancesQuery.isLoading
-                                ? '...'
-                                : numberToCurrency(assetBalance.current)}
-                            </td>
-                            <td
-                              style={{
-                                padding: '0.75rem',
-                                textAlign: 'right',
-                                fontSize: '1.125rem',
-                                whiteSpace: 'nowrap',
-                                color: change < 0 ? '#e11d48' : undefined
-                              }}
-                            >
-                              {balancesQuery.isLoading
-                                ? '...'
-                                : change < 0
-                                  ? `(${numberToCurrency(Math.abs(change))})`
-                                  : numberToCurrency(change)}
-                            </td>
-                            <td
-                              style={{
-                                padding: '0.75rem',
-                                textAlign: 'right',
-                                fontSize: '1.125rem',
-                                whiteSpace: 'nowrap',
-                                color: percentage < 0 ? '#e11d48' : undefined
-                              }}
-                            >
-                              {balancesQuery.isLoading
-                                ? '...'
-                                : percentage < 0
-                                  ? `(${Math.abs(percentage).toFixed(2)}%)`
-                                  : `${percentage.toFixed(2)}%`}
-                            </td>
-                          </tr>
-                        )
-                      })}
-                      <tr>
+                    return (
+                      <tr
+                        key={asset.id}
+                        style={{
+                          backgroundColor:
+                            index % 2 === 0
+                              ? colorWithOpacity('bg-500', '5%').toString()
+                              : undefined
+                        }}
+                      >
                         <td
                           style={{
                             padding: '0.75rem',
                             fontSize: '1.125rem'
                           }}
                         >
-                          <Text size="xl" weight="semibold">
-                            Total Assets
-                          </Text>
+                          <Flex align="center" gap="sm">
+                            <Icon icon={asset.icon} size="1.5rem" />
+                            <Text whiteSpace="nowrap">{asset.name}</Text>
+                          </Flex>
                         </td>
                         <td
                           style={{
                             padding: '0.75rem',
                             textAlign: 'right',
                             fontSize: '1.125rem',
-                            fontWeight: '500',
-                            whiteSpace: 'nowrap',
-                            borderTop: '2px solid',
-                            borderBottom: '6px double'
+                            whiteSpace: 'nowrap'
                           }}
                         >
-                          {balancesQuery.isLoading
-                            ? '...'
-                            : numberToCurrency(totals.last)}
+                          {numberToCurrency(last)}
                         </td>
                         <td
                           style={{
                             padding: '0.75rem',
                             textAlign: 'right',
                             fontSize: '1.125rem',
-                            fontWeight: '500',
-                            whiteSpace: 'nowrap',
-                            borderTop: '2px solid',
-                            borderBottom: '6px double'
+                            whiteSpace: 'nowrap'
                           }}
                         >
-                          {balancesQuery.isLoading
-                            ? '...'
-                            : numberToCurrency(totals.current)}
+                          {numberToCurrency(current)}
                         </td>
                         <td
                           style={{
                             padding: '0.75rem',
                             textAlign: 'right',
                             fontSize: '1.125rem',
-                            fontWeight: '500',
                             whiteSpace: 'nowrap',
-                            borderTop: '2px solid',
-                            borderBottom: '6px double',
-                            color: totalChange < 0 ? '#e11d48' : undefined
+                            color: change < 0 ? '#e11d48' : undefined
                           }}
                         >
-                          {balancesQuery.isLoading
-                            ? '...'
-                            : totalChange < 0
-                              ? `(${numberToCurrency(Math.abs(totalChange))})`
-                              : numberToCurrency(totalChange)}
+                          {change < 0
+                            ? `(${numberToCurrency(Math.abs(change))})`
+                            : numberToCurrency(change)}
                         </td>
                         <td
                           style={{
                             padding: '0.75rem',
                             textAlign: 'right',
                             fontSize: '1.125rem',
-                            fontWeight: '500',
                             whiteSpace: 'nowrap',
-                            borderTop: '2px solid',
-                            borderBottom: '6px double',
-                            color: totalPercentage < 0 ? '#e11d48' : undefined
+                            color: percentage < 0 ? '#e11d48' : undefined
                           }}
                         >
-                          {balancesQuery.isLoading
-                            ? '...'
-                            : Math.abs(totals.last) < 0.001
-                              ? '-'
-                              : totalPercentage < 0
-                                ? `(${Math.abs(totalPercentage).toFixed(2)}%)`
-                                : `${totalPercentage.toFixed(2)}%`}
+                          {percentage < 0
+                            ? `(${Math.abs(percentage).toFixed(2)}%)`
+                            : `${percentage.toFixed(2)}%`}
                         </td>
                       </tr>
-                    </>
-                  )
-                })()}
+                    )
+                  })}
+                <tr>
+                  <td
+                    style={{
+                      padding: '0.75rem',
+                      fontSize: '1.125rem'
+                    }}
+                  >
+                    <Text size="xl" weight="semibold">
+                      Total Assets
+                    </Text>
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'right',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      borderTop: '2px solid',
+                      borderBottom: '6px double'
+                    }}
+                  >
+                    {numberToCurrency(assetData.total.last)}
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'right',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      borderTop: '2px solid',
+                      borderBottom: '6px double'
+                    }}
+                  >
+                    {numberToCurrency(assetData.total.current)}
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'right',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      borderTop: '2px solid',
+                      borderBottom: '6px double',
+                      color:
+                        assetData.total.change < 0 ? '#e11d48' : undefined
+                    }}
+                  >
+                    {assetData.total.change < 0
+                      ? `(${numberToCurrency(Math.abs(assetData.total.change))})`
+                      : numberToCurrency(assetData.total.change)}
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'right',
+                      fontSize: '1.125rem',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      borderTop: '2px solid',
+                      borderBottom: '6px double',
+                      color:
+                        assetData.total.percentage < 0 ? '#e11d48' : undefined
+                    }}
+                  >
+                    {assetData.total.percentage < 0
+                      ? `(${Math.abs(assetData.total.percentage).toFixed(2)}%)`
+                      : `${assetData.total.percentage.toFixed(2)}%`}
+                  </td>
+                </tr>
               </tbody>
             </table>
           )}

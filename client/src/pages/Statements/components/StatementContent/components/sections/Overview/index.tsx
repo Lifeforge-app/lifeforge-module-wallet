@@ -18,7 +18,7 @@ function Overview({ month, year }: { month: number; year: number }) {
         <Text color={{ base: 'custom-500', print: 'custom-600' }}>01. </Text>
         Overview
       </Text>
-      <OverviewSummary month={month} year={year} />
+      <OverviewSummary />
       <Text
         as="h2"
         mt="3xl"
@@ -30,7 +30,7 @@ function Overview({ month, year }: { month: number; year: number }) {
         <Text>1.1 </Text>
         Assets
       </Text>
-      <AssetsTable month={month} year={year} />
+      <AssetsTable month={month} />
       {(['income', 'expenses'] as const).map(type => (
         <IncomeExpensesTable key={type} month={month} type={type} year={year} />
       ))}

@@ -1,45 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
 
 import { Flex, Icon, TagChip, Text, colorWithOpacity } from '@lifeforge/ui'
 
-import { useWalletData } from '@/hooks/useWalletData'
-import { forgeAPI } from '@/manifest'
+import { type WalletTransaction, useWalletData } from '@/hooks/useWalletData'
 import numberToCurrency from '@/utils/numberToCurrency'
 
 function TransactionList({
   type,
-  month,
-  year
+  transactions,
+  total
 }: {
   type: 'income' | 'expenses' | 'transfer'
-  month: number
-  year: number
+  transactions: WalletTransaction[]
+  total: number
 }) {
   const { assetsQuery, categoriesQuery } = useWalletData()
-
-  const transactionsQuery = useQuery(
-    forgeAPI.transactions.list
-      .input({ year: year.toString(), month: (month + 1).toString(), type })
-      .queryOptions()
-  )
-
-  const transactions = transactionsQuery.data ?? []
 
   const assets = assetsQuery.data ?? []
 
   const categories = categoriesQuery.data ?? []
-
-  const sortedTransactions = useMemo(
-    () => [...transactions].sort((a, b) => dayjs(a.date).diff(dayjs(b.date))),
-    [transactions]
-  )
-
-  const total = useMemo(
-    () => transactions.reduce((acc, curr) => acc + curr.amount, 0),
-    [transactions]
-  )
 
   return (
     <>
@@ -171,7 +150,7 @@ function TransactionList({
           </tr>
         </thead>
         <tbody>
-          {sortedTransactions.map((transaction, index) => (
+          {transactions.map((transaction, index) => (
             <tr
               key={transaction.id}
               style={{

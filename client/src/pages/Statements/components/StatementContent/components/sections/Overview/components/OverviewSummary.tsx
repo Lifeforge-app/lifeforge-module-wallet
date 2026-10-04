@@ -1,21 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { Flex, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
-import { forgeAPI } from '@/manifest'
+import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-function OverviewSummary({ month, year }: { month: number; year: number }) {
-  const incomeExpensesQuery = useQuery(
-    forgeAPI.analytics.getIncomeExpensesSummary
-      .input({ year: year.toString(), month: (month + 1).toString() })
-      .queryOptions()
-  )
+function OverviewSummary() {
+  const { statementQuery } = useStatementData()
 
   return (
-    <WithQuery query={incomeExpensesQuery}>
-      {({ monthlyIncome, monthlyExpenses }) => {
-        const netIncome = monthlyIncome - monthlyExpenses
+    <WithQuery query={statementQuery}>
+      {({ overview }) => {
+        const { monthlyIncome, monthlyExpenses, netIncome } = overview
 
         return (
           <Flex direction="column" mt="lg" width="100%">

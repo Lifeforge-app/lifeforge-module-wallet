@@ -1,5 +1,7 @@
 import { Flex, PrintArea, Transition } from '@lifeforge/ui'
 
+import { StatementDataProvider } from '@/pages/Statements/providers/StatementDataProvider'
+
 import StatementEndedText from '../StatementEndedText'
 import StatementHeader from './components/StatementHeader'
 import Overview from './components/sections/Overview'
@@ -32,10 +34,12 @@ function StatementContent({
           }}
           width="100%"
         >
-          <StatementHeader month={month} year={year} />
-          <Overview month={month} year={year} />
-          <Transactions month={month} year={year} />
-          <StatementEndedText />
+          <StatementDataProvider month={month} year={year}>
+            <StatementHeader month={month} year={year} />
+            <Overview month={month} year={year} />
+            <Transactions />
+            <StatementEndedText />
+          </StatementDataProvider>
         </Flex>
       </Transition>
     </PrintArea>

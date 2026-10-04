@@ -1,5 +1,14 @@
-import { and, eq, gte, ilike, lte } from 'drizzle-orm'
-import { createSelectSchema } from 'drizzle-orm/zod'
+import {
+  and,
+  countDistinct,
+  desc,
+  eq,
+  gte,
+  ilike,
+  lte,
+  or,
+  sql
+} from 'drizzle-orm'
 import dayjs from 'dayjs'
 import fs from 'fs'
 import z from 'zod'
@@ -12,39 +21,12 @@ import {
   walletTransactionsIncomeExpenses,
   walletTransactionsTransfer
 } from '../schema.drizzle'
+import {
+  EnrichedTransactionOutput,
+  mapToEnrichedTransaction,
+  transactionDto
+} from '../utils/enrichedTransaction'
 import { getTransactionDetails } from '../utils/transactions'
-
-const transactionDto = createSelectSchema(walletTransactions).extend({
-  type: z.enum(['transfer', 'income_expenses'])
-})
-
-const locationCoordsDto = z.object({
-  lon: z.number(),
-  lat: z.number()
-})
-
-const incomeExpensesFields = {
-  particulars: z.string(),
-  asset: z.string().nullable(),
-  category: z.string().nullable(),
-  ledgers: z.array(z.string()),
-  location_name: z.string(),
-  location_coords: locationCoordsDto.nullable()
-}
-
-const EnrichedTransactionOutput = z.discriminatedUnion('type', [
-  transactionDto.extend({
-    type: z.literal('transfer'),
-    from: z.string().nullable(),
-    to: z.string().nullable()
-  }),
-  transactionDto.merge(z.object(incomeExpensesFields)).extend({
-    type: z.literal('income')
-  }),
-  transactionDto.merge(z.object(incomeExpensesFields)).extend({
-    type: z.literal('expenses')
-  })
-])
 
 const MutateTransactionInputSchema = z.union([
   z.object({
@@ -86,121 +68,161 @@ function mapIncomeExpenses(data: z.infer<typeof MutateTransactionInputSchema>) {
 
 export const list = forge
   .query({
-    description: 'Get all wallet transactions',
+    description: 'Get paginated wallet transactions',
     input: {
       query: z.object({
         q: z.string().optional(),
         type: z.enum(['income', 'expenses', 'transfer']).optional(),
-        year: z.string().optional(),
-        month: z.string().optional()
+        category: z.string().optional(),
+        asset: z.string().optional(),
+        ledger: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        page: z.string().optional(),
+        perPage: z.string().optional()
       })
     },
     output: {
-      OK: z.array(EnrichedTransactionOutput)
+      OK: z.object({
+        items: z.array(EnrichedTransactionOutput),
+        page: z.number(),
+        perPage: z.number(),
+        totalItems: z.number(),
+        totalPages: z.number()
+      })
     }
   })
-  .callback(async ({ db, query: { q, type, year, month }, response }) => {
-    const parsedYear = year ? parseInt(year) : undefined
+  .callback(
+    async ({
+      db,
+      query: {
+        q,
+        type,
+        category,
+        asset,
+        ledger,
+        startDate,
+        endDate,
+        page,
+        perPage
+      },
+      response
+    }) => {
+      const parsedPage = parseInt(page ?? '1', 10) || 1
 
-    const parsedMonth = month ? parseInt(month) : undefined
+      const parsedPerPage = parseInt(perPage ?? '25', 10) || 25
 
-    const dateConditions = []
+      const conditions = []
 
-    if (parsedYear !== undefined && parsedMonth !== undefined) {
-      dateConditions.push(
-        gte(
-          walletTransactions.date,
-          dayjs()
-            .year(parsedYear)
-            .month(parsedMonth - 1)
-            .startOf('month')
-            .toDate()
-        ),
-        lte(
-          walletTransactions.date,
-          dayjs()
-            .year(parsedYear)
-            .month(parsedMonth - 1)
-            .endOf('month')
-            .toDate()
+      if (startDate) {
+        conditions.push(
+          gte(walletTransactions.date, dayjs(startDate).startOf('day').toDate())
         )
-      )
-    }
+      }
 
-    const incomeExpenses = await db
-      .select({
-        base: walletTransactions,
-        sub: walletTransactionsIncomeExpenses
-      })
-      .from(walletTransactionsIncomeExpenses)
-      .innerJoin(
-        walletTransactions,
-        eq(
-          walletTransactionsIncomeExpenses.base_transaction,
-          walletTransactions.id
+      if (endDate) {
+        conditions.push(
+          lte(walletTransactions.date, dayjs(endDate).endOf('day').toDate())
         )
-      )
-      .where(
-        and(
-          ...(q
-            ? [ilike(walletTransactionsIncomeExpenses.particulars, `%${q}%`)]
-            : []),
-          ...dateConditions
+      }
+
+      if (type === 'transfer') {
+        conditions.push(eq(walletTransactions.type, 'transfer'))
+      } else if (type === 'income' || type === 'expenses') {
+        conditions.push(eq(walletTransactionsIncomeExpenses.type, type))
+      }
+
+      if (q) {
+        conditions.push(
+          or(
+            ilike(walletTransactionsIncomeExpenses.particulars, `%${q}%`),
+            ilike(walletTransactionsIncomeExpenses.location_name, `%${q}%`)
+          )
         )
-      )
+      }
 
-    const transfers = await db
-      .select({
-        base: walletTransactions,
-        sub: walletTransactionsTransfer
-      })
-      .from(walletTransactionsTransfer)
-      .innerJoin(
-        walletTransactions,
-        eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
-      )
-      .where(dateConditions.length > 0 ? and(...dateConditions) : undefined)
+      if (category) {
+        conditions.push(eq(walletTransactionsIncomeExpenses.category, category))
+      }
 
-    const allTransactions: z.infer<typeof EnrichedTransactionOutput>[] = []
+      if (asset) {
+        conditions.push(
+          or(
+            and(
+              eq(walletTransactions.type, 'income_expenses'),
+              eq(walletTransactionsIncomeExpenses.asset, asset)
+            ),
+            and(
+              eq(walletTransactions.type, 'transfer'),
+              or(
+                eq(walletTransactionsTransfer.from, asset),
+                eq(walletTransactionsTransfer.to, asset)
+              )
+            )
+          )
+        )
+      }
 
-    for (const { base, sub } of incomeExpenses) {
-      allTransactions.push({
-        ...base,
-        type: sub.type as 'income' | 'expenses',
-        particulars: sub.particulars,
-        asset: sub.asset,
-        category: sub.category,
-        ledgers: sub.ledgers,
-        location_name: sub.location_name,
-        location_coords: sub.location_coords
-      })
-    }
+      if (ledger) {
+        conditions.push(
+          sql`jsonb_exists(${walletTransactionsIncomeExpenses.ledgers}, ${ledger})`
+        )
+      }
 
-    for (const { base, sub } of transfers) {
-      allTransactions.push({
-        ...base,
-        type: 'transfer',
-        from: sub.from,
-        to: sub.to
-      })
-    }
+      const where = conditions.length > 0 ? and(...conditions) : undefined
 
-    return response.ok(
-      allTransactions
-        .filter(transaction => !type || transaction.type === type)
-        .sort((a, b) => {
-          const aDate = a.date.getTime()
-
-          const bDate = b.date.getTime()
-
-          if (aDate === bDate) {
-            return b.created.getTime() - a.created.getTime()
-          }
-
-          return bDate - aDate
+      const rows = await db
+        .select({
+          base: walletTransactions,
+          sub: walletTransactionsIncomeExpenses,
+          transfer: walletTransactionsTransfer
         })
-    )
-  })
+        .from(walletTransactions)
+        .leftJoin(
+          walletTransactionsIncomeExpenses,
+          eq(
+            walletTransactionsIncomeExpenses.base_transaction,
+            walletTransactions.id
+          )
+        )
+        .leftJoin(
+          walletTransactionsTransfer,
+          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+        )
+        .where(where)
+        .orderBy(desc(walletTransactions.date), desc(walletTransactions.created))
+        .limit(parsedPerPage)
+        .offset((parsedPage - 1) * parsedPerPage)
+
+      const [totalRow] = await db
+        .select({ value: countDistinct(walletTransactions.id) })
+        .from(walletTransactions)
+        .leftJoin(
+          walletTransactionsIncomeExpenses,
+          eq(
+            walletTransactionsIncomeExpenses.base_transaction,
+            walletTransactions.id
+          )
+        )
+        .leftJoin(
+          walletTransactionsTransfer,
+          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+        )
+        .where(where)
+
+      const items = rows.map(({ base, sub, transfer }) =>
+        mapToEnrichedTransaction(base, sub, transfer)
+      )
+
+      return response.ok({
+        items,
+        page: parsedPage,
+        perPage: parsedPerPage,
+        totalItems: totalRow.value,
+        totalPages: Math.ceil(totalRow.value / parsedPerPage)
+      })
+    }
+  )
 
 export const getById = forge
   .query({
