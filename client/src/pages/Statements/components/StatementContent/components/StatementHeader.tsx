@@ -1,8 +1,11 @@
 import dayjs from 'dayjs'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, Icon, Text } from '@lifeforge/ui'
 
 function StatementHeader({ month, year }: { month: number; year: number }) {
+  const { t } = useModuleTranslation()
+
   return (
     <>
       <Flex
@@ -31,9 +34,9 @@ function StatementHeader({ month, year }: { month: number; year: number }) {
         transform="uppercase"
         weight="bold"
       >
-        Personal
+        {t('statement.personal')}
         <br />
-        Financial Statements
+        {t('statement.financialStatements')}
       </Text>
       <Text
         color="muted"
@@ -41,7 +44,7 @@ function StatementHeader({ month, year }: { month: number; year: number }) {
         mt="md"
         size="3xl"
       >
-        For the month ended{' '}
+        {t('statement.forTheMonthEnded')}{' '}
         <Text color={{ base: 'bg-100', print: 'bg-950' }} weight="bold">
           {dayjs()
             .year(year)

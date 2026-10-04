@@ -1,3 +1,4 @@
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
@@ -5,6 +6,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 
 function OverviewSummary() {
   const { statementQuery } = useStatementData()
+  const { t } = useModuleTranslation()
 
   return (
     <WithQuery query={statementQuery}>
@@ -14,7 +16,7 @@ function OverviewSummary() {
         return (
           <Flex direction="column" mt="lg" width="100%">
             <Flex align="center" justify="between" p="md">
-              <Text size="xl">Income</Text>
+              <Text size="xl">{t('statement.income')}</Text>
               <Text size="lg">RM {numberToCurrency(monthlyIncome)}</Text>
             </Flex>
             <Flex
@@ -23,12 +25,12 @@ function OverviewSummary() {
               justify="between"
               p="md"
             >
-              <Text size="xl">Expenses</Text>
+              <Text size="xl">{t('statement.expenses')}</Text>
               <Text size="lg">RM ({numberToCurrency(monthlyExpenses)})</Text>
             </Flex>
             <Flex align="center" justify="between">
               <Text p="md" size="xl" weight="semibold">
-                Net Income / (Loss)
+                {t('statement.netIncomeLoss')}
               </Text>
               <Text
                 color={netIncome < 0 ? 'rose-600' : undefined}

@@ -1,6 +1,9 @@
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Box, Flex, Text, colorWithOpacity } from '@lifeforge/ui'
 
 function StatementEndedText() {
+  const { t } = useModuleTranslation()
+
   return (
     <Flex align="center" gap="md" my="xl">
       <Box
@@ -15,7 +18,7 @@ function StatementEndedText() {
         weight="semibold"
         whiteSpace="nowrap"
       >
-        End of Financial Statements
+        {t('statement.endOfStatements')}
       </Text>
       <Box
         bg={{ base: 'bg-800', print: colorWithOpacity('bg-500', '5%') }}

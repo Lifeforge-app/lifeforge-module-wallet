@@ -1,7 +1,15 @@
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
-import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
+import { useModuleTranslation } from '@lifeforge/localization'
+import {
+  Flex,
+  Icon,
+  Text,
+  WithQuery,
+  colorWithOpacity,
+  usePersonalization
+} from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
@@ -25,6 +33,10 @@ function IncomeExpensesTable({
 }) {
   const { categoriesQuery } = useWalletData()
   const { statementQuery } = useStatementData()
+  const { t } = useModuleTranslation()
+  const { getMostReadableColor } = usePersonalization()
+
+  const headerTextColor = getMostReadableColor()
 
   const categories = categoriesQuery.data ?? []
 
@@ -62,7 +74,7 @@ function IncomeExpensesTable({
               weight="semibold"
             >
               <Text>1.{type === 'income' ? '2' : '3'} </Text>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+              {t(`transactionTypes.${type}`)}
             </Text>
             <table
               style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
@@ -71,7 +83,7 @@ function IncomeExpensesTable({
                 <tr
                   style={{
                     backgroundColor: 'var(--color-custom-500)',
-                    color: 'white'
+                    color: headerTextColor
                   }}
                 >
                   <th
@@ -83,7 +95,7 @@ function IncomeExpensesTable({
                       fontWeight: '500'
                     }}
                   >
-                    Category
+                    {t('statement.category')}
                   </th>
                   <th
                     style={{
@@ -117,7 +129,7 @@ function IncomeExpensesTable({
                       whiteSpace: 'nowrap'
                     }}
                   >
-                    Change
+                    {t('statement.change')}
                   </th>
                 </tr>
                 <tr
@@ -252,7 +264,9 @@ function IncomeExpensesTable({
                 <tr>
                   <td style={{ padding: '0.75rem', fontSize: '1.125rem' }}>
                     <Text size="xl" weight="semibold">
-                      Total {type === 'income' ? 'Income' : 'Expenses'}
+                      {t('statement.totalType', {
+                        type: t(`transactionTypes.${type}`)
+                      })}
                     </Text>
                   </td>
                   <td

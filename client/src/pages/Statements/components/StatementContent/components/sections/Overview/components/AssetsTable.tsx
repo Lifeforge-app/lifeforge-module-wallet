@@ -7,7 +7,8 @@ import {
   Stack,
   Text,
   WithQuery,
-  colorWithOpacity
+  colorWithOpacity,
+  usePersonalization
 } from '@lifeforge/ui'
 
 import LiabilityUtilisation from '@/components/LiabilityUtilisation'
@@ -19,6 +20,9 @@ function AssetsTable({ month }: { month: number }) {
   const { assetsQuery } = useWalletData()
   const { statementQuery } = useStatementData()
   const { t } = useModuleTranslation()
+  const { getMostReadableColor } = usePersonalization()
+
+  const headerTextColor = getMostReadableColor()
 
   return (
     <WithQuery query={assetsQuery}>
@@ -32,7 +36,7 @@ function AssetsTable({ month }: { month: number }) {
                 <tr
                   style={{
                     backgroundColor: 'var(--color-custom-500)',
-                    color: 'white'
+                    color: headerTextColor
                   }}
                 >
                   <th
@@ -44,7 +48,7 @@ function AssetsTable({ month }: { month: number }) {
                       fontWeight: '500'
                     }}
                   >
-                    Assets
+                    {t('statement.assets')}
                   </th>
                   <th
                     style={{
@@ -75,7 +79,7 @@ function AssetsTable({ month }: { month: number }) {
                       whiteSpace: 'nowrap'
                     }}
                   >
-                    Change
+                    {t('statement.change')}
                   </th>
                 </tr>
                 <tr

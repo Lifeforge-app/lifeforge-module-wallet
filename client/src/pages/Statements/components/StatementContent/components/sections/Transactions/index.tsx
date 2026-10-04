@@ -1,3 +1,4 @@
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Text, WithQuery } from '@lifeforge/ui'
 
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
@@ -7,6 +8,7 @@ import TransactionsSummary from './components/TransactionsSummary'
 
 function Transactions() {
   const { statementQuery } = useStatementData()
+  const { t } = useModuleTranslation()
 
   return (
     <>
@@ -19,7 +21,7 @@ function Transactions() {
         weight="semibold"
       >
         <Text color={{ base: 'custom-500', print: 'custom-600' }}>02. </Text>
-        Transactions
+        {t('statement.transactions')}
       </Text>
       <TransactionsSummary />
       <WithQuery query={statementQuery}>

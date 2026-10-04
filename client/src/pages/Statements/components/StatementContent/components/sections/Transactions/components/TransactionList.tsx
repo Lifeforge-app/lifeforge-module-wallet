@@ -1,6 +1,14 @@
 import dayjs from 'dayjs'
 
-import { Flex, Icon, TagChip, Text, colorWithOpacity } from '@lifeforge/ui'
+import { useModuleTranslation } from '@lifeforge/localization'
+import {
+  Flex,
+  Icon,
+  TagChip,
+  Text,
+  colorWithOpacity,
+  usePersonalization
+} from '@lifeforge/ui'
 
 import { type WalletTransaction, useWalletData } from '@/hooks/useWalletData'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -15,6 +23,10 @@ function TransactionList({
   total: number
 }) {
   const { assetsQuery, categoriesQuery } = useWalletData()
+  const { t } = useModuleTranslation()
+  const { getMostReadableColor } = usePersonalization()
+
+  const headerTextColor = getMostReadableColor()
 
   const assets = assetsQuery.data ?? []
 
@@ -31,14 +43,14 @@ function TransactionList({
         weight="semibold"
       >
         <Text>2.{['income', 'expenses', 'transfer'].indexOf(type) + 1} </Text>
-        {type.charAt(0).toUpperCase() + type.slice(1)}
+        {t(`transactionTypes.${type}`)}
       </Text>
       <table style={{ width: '100%', marginTop: '1.5rem' }}>
         <thead>
           <tr
             style={{
               backgroundColor: 'var(--color-custom-500)',
-              color: 'white'
+              color: headerTextColor
             }}
           >
             <th
@@ -49,7 +61,7 @@ function TransactionList({
                 whiteSpace: 'nowrap'
               }}
             >
-              Date
+              {t('statement.date')}
             </th>
             <th
               style={{
@@ -60,7 +72,7 @@ function TransactionList({
                 fontWeight: '500'
               }}
             >
-              Particular
+              {t('statement.particular')}
             </th>
             {type !== 'transfer' && (
               <>
@@ -72,7 +84,7 @@ function TransactionList({
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  Asset
+                  {t('statement.asset')}
                 </th>
                 <th
                   style={{
@@ -82,7 +94,7 @@ function TransactionList({
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  Category
+                  {t('statement.category')}
                 </th>
               </>
             )}
@@ -94,7 +106,7 @@ function TransactionList({
                 whiteSpace: 'nowrap'
               }}
             >
-              Amount
+              {t('statement.amount')}
             </th>
           </tr>
           <tr
@@ -176,18 +188,16 @@ function TransactionList({
                   fontSize: '1.125rem'
                 }}
               >
-                {transaction.type === 'transfer' ? (
-                  <>
-                    Transfer from{' '}
-                    {assets.find(a => a.id === transaction.from)?.name ??
-                      'Unknown Asset'}{' '}
-                    to{' '}
-                    {assets.find(a => a.id === transaction.to)?.name ??
-                      'Unknown Asset'}
-                  </>
-                ) : (
-                  transaction.particulars
-                )}
+                {transaction.type === 'transfer'
+                  ? t('statement.transferFromTo', {
+                      from:
+                        assets.find(a => a.id === transaction.from)?.name ??
+                        t('statement.unknownAsset'),
+                      to:
+                        assets.find(a => a.id === transaction.to)?.name ??
+                        t('statement.unknownAsset')
+                    })
+                  : transaction.particulars}
               </td>
               {transaction.type !== 'transfer' && (
                 <td
@@ -258,7 +268,9 @@ function TransactionList({
                 whiteSpace: 'nowrap'
               }}
             >
-              Total {type.charAt(0).toUpperCase() + type.slice(1)}
+              {t('statement.totalType', {
+                type: t(`transactionTypes.${type}`)
+              })}
             </td>
             <td
               style={{

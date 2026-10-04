@@ -1,26 +1,28 @@
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
 
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 
 function TransactionsSummary() {
   const { statementQuery } = useStatementData()
+  const { t } = useModuleTranslation()
 
   const ROWS = [
     {
       type: 'income' as const,
-      label: 'Income',
+      label: t('transactionTypes.income'),
       icon: 'tabler:login-2',
       color: 'green-500'
     },
     {
       type: 'expenses' as const,
-      label: 'Expenses',
+      label: t('transactionTypes.expenses'),
       icon: 'tabler:logout',
       color: 'red-500'
     },
     {
       type: 'transfer' as const,
-      label: 'Transfer',
+      label: t('transactionTypes.transfer'),
       icon: 'tabler:arrows-exchange',
       color: 'blue-500'
     }
@@ -44,7 +46,9 @@ function TransactionsSummary() {
                 <Icon color={row.color} icon={row.icon} size="1.5rem" />
                 <Text size="xl">{row.label}</Text>
               </Flex>
-              <Text size="lg">{transactions[row.type].count} entries</Text>
+              <Text size="lg">
+                {transactions[row.type].count} {t('transactionCount')}
+              </Text>
             </Flex>
           ))}
           <Flex
@@ -53,7 +57,7 @@ function TransactionsSummary() {
             justify="between"
           >
             <Text p="md" size="xl" weight="semibold">
-              Total
+              {t('statement.total')}
             </Text>
             <Text
               p="md"
@@ -61,7 +65,7 @@ function TransactionsSummary() {
               style={{ borderTop: '2px solid', borderBottom: '6px double' }}
               weight="medium"
             >
-              {transactions.totalCount} entries
+              {transactions.totalCount} {t('transactionCount')}
             </Text>
           </Flex>
         </Flex>

@@ -1,10 +1,14 @@
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Text } from '@lifeforge/ui'
 
 import AssetsTable from './components/AssetsTable'
 import IncomeExpensesTable from './components/IncomeExpensesTable'
 import OverviewSummary from './components/OverviewSummary'
+import PlatformsTable from './components/PlatformsTable'
 
 function Overview({ month, year }: { month: number; year: number }) {
+  const { t } = useModuleTranslation()
+
   return (
     <>
       <Text
@@ -16,7 +20,7 @@ function Overview({ month, year }: { month: number; year: number }) {
         weight="semibold"
       >
         <Text color={{ base: 'custom-500', print: 'custom-600' }}>01. </Text>
-        Overview
+        {t('statement.overview')}
       </Text>
       <OverviewSummary />
       <Text
@@ -28,12 +32,13 @@ function Overview({ month, year }: { month: number; year: number }) {
         weight="semibold"
       >
         <Text>1.1 </Text>
-        Assets
+        {t('statement.assets')}
       </Text>
       <AssetsTable month={month} />
       {(['income', 'expenses'] as const).map(type => (
         <IncomeExpensesTable key={type} month={month} type={type} year={year} />
       ))}
+      <PlatformsTable />
     </>
   )
 }
