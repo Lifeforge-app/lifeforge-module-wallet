@@ -11,21 +11,16 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import {
-  ContextMenu,
-  ContextMenuItem,
-  Grid,
-  ModuleHeader
-} from '@lifeforge/ui'
+
+import { ContextMenu, ContextMenuItem, Grid, ModuleHeader } from '@lifeforge/ui'
 
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import TransactionCreationMenu from '../Transactions/components/TransactionCreationMenu'
-
 import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
-import StatisticChardCard from './components/StatisticChartCard'
+import StatisticChartCard from './components/StatisticChartCard'
 import TransactionsCard from './components/TransactionsCard'
 import TransactionsCountCard from './components/TransactionsCountCard'
 
@@ -68,9 +63,9 @@ function WalletDashboard() {
         <IncomeExpenseCard icon="tabler:login-2" title="Income" />
         <IncomeExpenseCard icon="tabler:logout-2" title="Expenses" />
         <AssetsBalanceCard />
-        <StatisticChardCard />
-        <TransactionsCountCard />
+        <StatisticChartCard />
         <TransactionsCard />
+        <TransactionsCountCard />
         <CategoriesBreakdownCard />
       </Grid>
       <TransactionCreationMenu mode="navigate" variant="mobile" />

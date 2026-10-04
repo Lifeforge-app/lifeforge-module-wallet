@@ -30,7 +30,7 @@ import numberToCurrency from '@/utils/numberToCurrency'
 
 import RangeSelector from './components/RangeSelector'
 
-function StatisticChardCard() {
+function StatisticChartCard() {
   const { t } = useModuleTranslation()
   const { bgTempPalette, derivedTheme } = usePersonalization()
   const [range, setRange] = useState<'week' | 'month' | 'ytd'>('week')
@@ -211,4 +211,4 @@ function StatisticChardCard() {
   )
 }
 
-export default StatisticChardCard
+export default StatisticChartCard

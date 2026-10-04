@@ -45,7 +45,7 @@ function CategoriesBreakdownCard() {
         </Button>
       }
       gridColumnSpan={1}
-      gridRowSpan={6}
+      gridRowSpan={5}
       height="100%"
       icon="tabler:chart-donut-3"
       minHeight="0"
