@@ -20,9 +20,7 @@ function ReceiptSection() {
         onClick={() => {
           open(ViewImageModal, {
             src: forgeAPI.getMedia({
-              collectionId: transaction.collectionId,
-              recordId: transaction.id,
-              fieldId: transaction.receipt || ''
+              key: transaction.receipt || ''
             })
           })
         }}

@@ -151,13 +151,13 @@ function ModifyTransactionsModal({
         initialData?.receipt
       ),
       ...(initialData?.type === 'transfer'
-        ? {
-            from: initialData?.from,
-            to: initialData?.to
+          ? {
+            from: initialData?.from ?? undefined,
+            to: initialData?.to ?? undefined
           }
         : {
-            asset: initialData?.asset,
-            category: initialData?.category,
+            asset: initialData?.asset ?? undefined,
+            category: initialData?.category ?? undefined,
             ledgers: initialData?.ledgers,
             particulars: initialData?.particulars,
             location: initialData?.location_name

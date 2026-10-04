@@ -1,22 +1,27 @@
 import dayjs from 'dayjs'
 import z from 'zod'
 
-import type { IPBService } from '@lifeforge/pocketbase'
-import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
+import type { BuiltModuleSchema } from '@lifeforge/drizzle'
+import type {
+  FetchAIFunc,
+  SearchLocationsFunc
+} from '@lifeforge/server-utils'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 
-import forge from '../forge'
-import { schemas } from '../schema'
-import type schema from '../schema'
+import forge, { type WalletSchema } from '../forge'
+import {
+  walletAssets,
+  walletCategories,
+  walletTransactionTemplates,
+  walletTransactionsPrompts
+} from '../schema.drizzle'
 
-type GetAPIKeyFunc = (
-  id: string,
-  pb: IPBService<typeof schema>
-) => Promise<string>
+type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
-type InferSchema<T extends keyof typeof schemas> = z.infer<(typeof schema)[T]>
+type GetAPIKeyFunc = (id: string) => Promise<string>
 
-type TransactionPrompt = InferSchema<'transactions_prompts'>
-type TransactionTemplate = InferSchema<'transaction_templates'>
+type TransactionPrompt = typeof walletTransactionsPrompts.$inferSelect
+type TransactionTemplate = typeof walletTransactionTemplates.$inferSelect
 
 type ExtractedData = {
   date: string
@@ -31,31 +36,20 @@ type ExtractedData = {
 }
 
 async function fetchInitialData(
-  pb: IPBService<typeof schema>,
+  db: WalletDb,
   getAPIKey: GetAPIKeyFunc
 ) {
   const [particularPrompt, categories, key, assets] = await Promise.all([
-    pb.getFirstListItem
-      .collection('transactions_prompts')
-      .execute()
-      .catch(() => {
-        return null
-      }),
-    pb.getFullList
-      .collection('categories')
-      .execute()
-      .catch(() => {
-        return []
-      }),
-    getAPIKey('gcloud', pb).catch(() => {
-      return null
-    }),
-    pb.getFullList
-      .collection('assets')
-      .execute()
-      .catch(() => {
-        return []
-      })
+    db.query.transactions_prompts.findFirst().catch(() => null),
+    db
+      .select()
+      .from(walletCategories)
+      .catch(() => []),
+    getAPIKey('gcloud').catch(() => null),
+    db
+      .select()
+      .from(walletAssets)
+      .catch(() => [])
   ])
 
   return {
@@ -68,7 +62,6 @@ async function fetchInitialData(
 
 async function extractBasicDetails(
   fetchAI: FetchAIFunc,
-  pb: IPBService<typeof schema>,
   description: string,
   todayStr: string,
   categoryNames: string[],
@@ -109,7 +102,6 @@ async function extractBasicDetails(
   })
 
   const result = await fetchAI({
-    pb,
     provider: 'deepseek',
     model: 'deepseek-v4-flash',
     messages: [
@@ -147,7 +139,6 @@ Available Assets: ${hasAssets ? assetNames.join(', ') : 'None'}`
 
 async function batchMatchTemplates(
   fetchAI: FetchAIFunc,
-  pb: IPBService<typeof schema>,
   templates: TransactionTemplate[],
   transactions: ExtractedData[],
   description: string
@@ -194,7 +185,6 @@ async function batchMatchTemplates(
     .join('\n')
 
   const templateData = await fetchAI({
-    pb,
     provider: 'deepseek',
     model: 'deepseek-v4-flash',
     messages: [
@@ -254,9 +244,8 @@ ${description}`
 
 async function batchGenerateParticulars(
   fetchAI: FetchAIFunc,
-  pb: IPBService<typeof schema>,
   transactions: ExtractedData[],
-  particularPrompt: TransactionPrompt | null,
+  particularPrompt: TransactionPrompt | null | undefined,
   description: string,
   baseParticularsMap: Map<number, string | undefined>
 ): Promise<Map<number, string>> {
@@ -338,7 +327,6 @@ Expenses Guideline: ${particularPrompt.expenses || 'N/A'}`
   })
 
   const particularsData = await fetchAI({
-    pb,
     provider: 'deepseek',
     model: 'deepseek-v4-flash',
     messages: [
@@ -473,7 +461,7 @@ export const fromNaturalLanguage = forge
   })
   .callback(async function ({
     response,
-    pb,
+    db,
     body: { description },
     core: {
       api: { fetchAI, getAPIKey, searchLocations }
@@ -481,11 +469,9 @@ export const fromNaturalLanguage = forge
   }) {
     const todayStr = dayjs().format('YYYY-MM-DD')
 
-    // 1. Fetch initial data from DB
     const { particularPrompt, categories, key, assets } =
-      await fetchInitialData(pb, getAPIKey)
+      await fetchInitialData(db, getAPIKey)
 
-    // Map categories and assets
     const categoryMap = new Map(
       categories.map(function (c) {
         return [c.name, c.id]
@@ -506,10 +492,8 @@ export const fromNaturalLanguage = forge
       return a.name
     })
 
-    // 2. Extract basic transaction details
     const extractedData = await extractBasicDetails(
       fetchAI,
-      pb,
       description,
       todayStr,
       categoryNames,
@@ -520,24 +504,20 @@ export const fromNaturalLanguage = forge
       throw new Error('Failed to extract transaction details')
     }
 
-    const allTemplates = await pb.getFullList
-      .collection('transaction_templates')
-      .execute()
-      .catch(() => {
-        return []
-      })
+    const allTemplates = await db
+      .select()
+      .from(walletTransactionTemplates)
+      .catch(() => [])
 
-    // Batch match templates for all transactions
     const matchedTemplates = await batchMatchTemplates(
       fetchAI,
-      pb,
       allTemplates,
       extractedData.transactions,
       description
     )
 
-    // Construct base particulars map
     const baseParticularsMap = new Map<number, string | undefined>()
+
     extractedData.transactions.forEach((tx, idx) => {
       const template = matchedTemplates[idx]
 
@@ -546,17 +526,14 @@ export const fromNaturalLanguage = forge
       }
     })
 
-    // Batch generate particulars for all transactions
     const particularsMap = await batchGenerateParticulars(
       fetchAI,
-      pb,
       extractedData.transactions,
       particularPrompt,
       description,
       baseParticularsMap
     )
 
-    // Batch resolve all unique locations before processing transactions
     const locationCoordsMap = await batchResolveLocationCoords(
       searchLocations,
       key,
@@ -604,7 +581,7 @@ export const fromNaturalLanguage = forge
           date: item.date,
           type: item.type,
           amount: item.amount,
-          category: categoryMap.get(item.category) || item.category || null,
+          category: (item.category ? categoryMap.get(item.category) : null) || null,
           particulars: particularsMap.get(idx) || '',
           location_coords: {
             lon: 0,
@@ -649,9 +626,8 @@ export const fromNaturalLanguage = forge
           }
         }
 
-        // 5. Resolve location coordinates from pre-resolved map if not already set by template
         if (!finalResult.location_name?.trim()) {
-          const resolvedLoc = locationCoordsMap.get(item.location) || null
+          const resolvedLoc = locationCoordsMap.get(item.location ?? '') || null
 
           if (resolvedLoc) {
             finalResult.location_coords = resolvedLoc.coords
@@ -659,7 +635,6 @@ export const fromNaturalLanguage = forge
           }
         }
 
-        // 6. Fallback to template asset if AI didn't resolve one
         if (!finalResult.asset && matchedTemplate?.asset) {
           finalResult.asset = matchedTemplate.asset
         }

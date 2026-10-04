@@ -14,125 +14,85 @@ export const contract = {
       "input": {
         "body": {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "allOf": [
+          "anyOf": [
             {
               "type": "object",
               "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "income",
+                    "expenses"
+                  ]
+                },
                 "amount": {
                   "type": "number"
                 },
                 "date": {
                   "type": "string"
-                }
-              },
-              "required": [
-                "amount",
-                "date"
-              ]
-            },
-            {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "income",
-                        "expenses"
-                      ]
-                    },
-                    "particulars": {
-                      "type": "string"
-                    },
-                    "asset": {
-                      "type": "string"
-                    },
-                    "category": {
-                      "type": "string"
-                    },
-                    "ledgers": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "location": {
-                      "anyOf": [
-                        {
+                },
+                "particulars": {
+                  "type": "string"
+                },
+                "asset": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "ledgers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "location": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "formattedAddress": {
+                          "type": "string"
+                        },
+                        "location": {
                           "type": "object",
                           "properties": {
-                            "name": {
-                              "type": "string"
+                            "latitude": {
+                              "type": "number"
                             },
-                            "formattedAddress": {
-                              "type": "string"
-                            },
-                            "location": {
-                              "type": "object",
-                              "properties": {
-                                "latitude": {
-                                  "type": "number"
-                                },
-                                "longitude": {
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "latitude",
-                                "longitude"
-                              ]
+                            "longitude": {
+                              "type": "number"
                             }
                           },
                           "required": [
-                            "name",
-                            "formattedAddress",
-                            "location"
-                          ]
-                        },
-                        {
-                          "type": "null"
+                            "latitude",
+                            "longitude"
+                          ],
+                          "additionalProperties": false
                         }
-                      ]
-                    }
-                  },
-                  "required": [
-                    "type",
-                    "particulars",
-                    "asset",
-                    "category",
-                    "ledgers"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "from": {
-                      "type": "string"
+                      },
+                      "required": [
+                        "name",
+                        "formattedAddress",
+                        "location"
+                      ],
+                      "additionalProperties": false
                     },
-                    "to": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string",
-                      "const": "transfer"
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "from",
-                    "to",
-                    "type"
                   ]
                 }
-              ]
-            }
-          ]
-        }
-      },
-      "output": {
-        "CREATED": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "oneOf": [
+              },
+              "required": [
+                "type",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
             {
               "type": "object",
               "properties": {
@@ -146,24 +106,6 @@ export const contract = {
                 "date": {
                   "type": "string"
                 },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
-                },
-                "receipt": {
-                  "type": "string"
-                },
                 "from": {
                   "type": "string"
                 },
@@ -173,65 +115,62 @@ export const contract = {
               },
               "required": [
                 "type",
-                "amount",
-                "date",
-                "created",
-                "updated",
-                "id",
-                "collectionId",
-                "collectionName",
-                "from",
-                "to"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "income_expenses"
-                },
-                "amount": {
-                  "type": "number"
-                },
-                "date": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
-                },
-                "receipt": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "type",
-                "amount",
-                "date",
-                "created",
-                "updated",
-                "id",
-                "collectionId",
-                "collectionName"
+                "amount"
               ],
               "additionalProperties": false
             }
           ]
-        },
-        "NOT_FOUND": true
+        }
+      },
+      "output": {
+        "CREATED": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "transfer",
+                "income_expenses"
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "receipt": {
+              "type": "string"
+            },
+            "created": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updated": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "amount",
+            "date",
+            "receipt",
+            "created",
+            "updated"
+          ],
+          "additionalProperties": false
+        }
       }
     },
     "createMultiple": {
@@ -249,117 +188,110 @@ export const contract = {
             "transactions": {
               "type": "array",
               "items": {
-                "allOf": [
+                "anyOf": [
                   {
                     "type": "object",
                     "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "income",
+                          "expenses"
+                        ]
+                      },
                       "amount": {
                         "type": "number"
                       },
                       "date": {
                         "type": "string"
-                      }
-                    },
-                    "required": [
-                      "amount",
-                      "date"
-                    ]
-                  },
-                  {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "income",
-                              "expenses"
-                            ]
-                          },
-                          "particulars": {
-                            "type": "string"
-                          },
-                          "asset": {
-                            "type": "string"
-                          },
-                          "category": {
-                            "type": "string"
-                          },
-                          "ledgers": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "location": {
-                            "anyOf": [
-                              {
+                      },
+                      "particulars": {
+                        "type": "string"
+                      },
+                      "asset": {
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string"
+                      },
+                      "ledgers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "location": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "formattedAddress": {
+                                "type": "string"
+                              },
+                              "location": {
                                 "type": "object",
                                 "properties": {
-                                  "name": {
-                                    "type": "string"
+                                  "latitude": {
+                                    "type": "number"
                                   },
-                                  "formattedAddress": {
-                                    "type": "string"
-                                  },
-                                  "location": {
-                                    "type": "object",
-                                    "properties": {
-                                      "latitude": {
-                                        "type": "number"
-                                      },
-                                      "longitude": {
-                                        "type": "number"
-                                      }
-                                    },
-                                    "required": [
-                                      "latitude",
-                                      "longitude"
-                                    ]
+                                  "longitude": {
+                                    "type": "number"
                                   }
                                 },
                                 "required": [
-                                  "name",
-                                  "formattedAddress",
-                                  "location"
-                                ]
-                              },
-                              {
-                                "type": "null"
+                                  "latitude",
+                                  "longitude"
+                                ],
+                                "additionalProperties": false
                               }
-                            ]
-                          }
-                        },
-                        "required": [
-                          "type",
-                          "particulars",
-                          "asset",
-                          "category",
-                          "ledgers"
-                        ]
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "from": {
-                            "type": "string"
+                            },
+                            "required": [
+                              "name",
+                              "formattedAddress",
+                              "location"
+                            ],
+                            "additionalProperties": false
                           },
-                          "to": {
-                            "type": "string"
-                          },
-                          "type": {
-                            "type": "string",
-                            "const": "transfer"
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "from",
-                          "to",
-                          "type"
                         ]
                       }
-                    ]
+                    },
+                    "required": [
+                      "type",
+                      "amount"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "transfer"
+                      },
+                      "amount": {
+                        "type": "number"
+                      },
+                      "date": {
+                        "type": "string"
+                      },
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "amount"
+                    ],
+                    "additionalProperties": false
                   }
                 ]
               }
@@ -407,50 +339,64 @@ export const contract = {
             {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
                 "type": {
                   "type": "string",
                   "const": "transfer"
                 },
                 "amount": {
-                  "type": "number"
+                  "type": "number",
+                  "minimum": -140737488355328,
+                  "maximum": 140737488355327
                 },
                 "date": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 "receipt": {
                   "type": "string"
                 },
+                "created": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated": {
+                  "type": "string",
+                  "format": "date-time"
+                },
                 "from": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "to": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
               "required": [
+                "id",
                 "type",
                 "amount",
                 "date",
+                "receipt",
                 "created",
                 "updated",
-                "id",
-                "collectionId",
-                "collectionName",
                 "from",
                 "to"
               ],
@@ -459,42 +405,57 @@ export const contract = {
             {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
                 "type": {
                   "type": "string",
                   "const": "income"
                 },
                 "amount": {
-                  "type": "number"
+                  "type": "number",
+                  "minimum": -140737488355328,
+                  "maximum": 140737488355327
                 },
                 "date": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 "receipt": {
                   "type": "string"
+                },
+                "created": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated": {
+                  "type": "string",
+                  "format": "date-time"
                 },
                 "particulars": {
                   "type": "string"
                 },
                 "asset": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "category": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "ledgers": {
                   "type": "array",
@@ -506,31 +467,37 @@ export const contract = {
                   "type": "string"
                 },
                 "location_coords": {
-                  "type": "object",
-                  "properties": {
-                    "lat": {
-                      "type": "number"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "lon": {
+                          "type": "number"
+                        },
+                        "lat": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "lon",
+                        "lat"
+                      ],
+                      "additionalProperties": false
                     },
-                    "lon": {
-                      "type": "number"
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "lat",
-                    "lon"
-                  ],
-                  "additionalProperties": false
+                  ]
                 }
               },
               "required": [
+                "id",
                 "type",
                 "amount",
                 "date",
+                "receipt",
                 "created",
                 "updated",
-                "id",
-                "collectionId",
-                "collectionName",
                 "particulars",
                 "asset",
                 "category",
@@ -543,42 +510,57 @@ export const contract = {
             {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
                 "type": {
                   "type": "string",
                   "const": "expenses"
                 },
                 "amount": {
-                  "type": "number"
+                  "type": "number",
+                  "minimum": -140737488355328,
+                  "maximum": 140737488355327
                 },
                 "date": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 "receipt": {
                   "type": "string"
+                },
+                "created": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated": {
+                  "type": "string",
+                  "format": "date-time"
                 },
                 "particulars": {
                   "type": "string"
                 },
                 "asset": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "category": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "ledgers": {
                   "type": "array",
@@ -590,31 +572,37 @@ export const contract = {
                   "type": "string"
                 },
                 "location_coords": {
-                  "type": "object",
-                  "properties": {
-                    "lat": {
-                      "type": "number"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "lon": {
+                          "type": "number"
+                        },
+                        "lat": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "lon",
+                        "lat"
+                      ],
+                      "additionalProperties": false
                     },
-                    "lon": {
-                      "type": "number"
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "lat",
-                    "lon"
-                  ],
-                  "additionalProperties": false
+                  ]
                 }
               },
               "required": [
+                "id",
                 "type",
                 "amount",
                 "date",
+                "receipt",
                 "created",
                 "updated",
-                "id",
-                "collectionId",
-                "collectionName",
                 "particulars",
                 "asset",
                 "category",
@@ -625,8 +613,7 @@ export const contract = {
               "additionalProperties": false
             }
           ]
-        },
-        "NOT_FOUND": true
+        }
       }
     },
     "list": {
@@ -671,50 +658,64 @@ export const contract = {
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "type": {
                     "type": "string",
                     "const": "transfer"
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -140737488355328,
+                    "maximum": 140737488355327
                   },
                   "date": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string"
-                  },
-                  "updated": {
-                    "type": "string"
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                   },
                   "receipt": {
                     "type": "string"
                   },
+                  "created": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
                   "from": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "to": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
                 "required": [
+                  "id",
                   "type",
                   "amount",
                   "date",
+                  "receipt",
                   "created",
                   "updated",
-                  "id",
-                  "collectionId",
-                  "collectionName",
                   "from",
                   "to"
                 ],
@@ -723,42 +724,57 @@ export const contract = {
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "type": {
                     "type": "string",
                     "const": "income"
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -140737488355328,
+                    "maximum": 140737488355327
                   },
                   "date": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string"
-                  },
-                  "updated": {
-                    "type": "string"
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                   },
                   "receipt": {
                     "type": "string"
+                  },
+                  "created": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated": {
+                    "type": "string",
+                    "format": "date-time"
                   },
                   "particulars": {
                     "type": "string"
                   },
                   "asset": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "category": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "ledgers": {
                     "type": "array",
@@ -770,31 +786,37 @@ export const contract = {
                     "type": "string"
                   },
                   "location_coords": {
-                    "type": "object",
-                    "properties": {
-                      "lat": {
-                        "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "lon": {
+                            "type": "number"
+                          },
+                          "lat": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "lon",
+                          "lat"
+                        ],
+                        "additionalProperties": false
                       },
-                      "lon": {
-                        "type": "number"
+                      {
+                        "type": "null"
                       }
-                    },
-                    "required": [
-                      "lat",
-                      "lon"
-                    ],
-                    "additionalProperties": false
+                    ]
                   }
                 },
                 "required": [
+                  "id",
                   "type",
                   "amount",
                   "date",
+                  "receipt",
                   "created",
                   "updated",
-                  "id",
-                  "collectionId",
-                  "collectionName",
                   "particulars",
                   "asset",
                   "category",
@@ -807,42 +829,57 @@ export const contract = {
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "type": {
                     "type": "string",
                     "const": "expenses"
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -140737488355328,
+                    "maximum": 140737488355327
                   },
                   "date": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string"
-                  },
-                  "updated": {
-                    "type": "string"
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                   },
                   "receipt": {
                     "type": "string"
+                  },
+                  "created": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated": {
+                    "type": "string",
+                    "format": "date-time"
                   },
                   "particulars": {
                     "type": "string"
                   },
                   "asset": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "category": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "ledgers": {
                     "type": "array",
@@ -854,31 +891,37 @@ export const contract = {
                     "type": "string"
                   },
                   "location_coords": {
-                    "type": "object",
-                    "properties": {
-                      "lat": {
-                        "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "lon": {
+                            "type": "number"
+                          },
+                          "lat": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "lon",
+                          "lat"
+                        ],
+                        "additionalProperties": false
                       },
-                      "lon": {
-                        "type": "number"
+                      {
+                        "type": "null"
                       }
-                    },
-                    "required": [
-                      "lat",
-                      "lon"
-                    ],
-                    "additionalProperties": false
+                    ]
                   }
                 },
                 "required": [
+                  "id",
                   "type",
                   "amount",
                   "date",
+                  "receipt",
                   "created",
                   "updated",
-                  "id",
-                  "collectionId",
-                  "collectionName",
                   "particulars",
                   "asset",
                   "category",
@@ -916,8 +959,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "scanReceipt": {
@@ -951,7 +993,14 @@ export const contract = {
               ]
             },
             "category": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "particulars": {
               "type": "string"
@@ -986,10 +1035,6 @@ export const contract = {
             "location_name"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -1020,125 +1065,85 @@ export const contract = {
         },
         "body": {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "allOf": [
+          "anyOf": [
             {
               "type": "object",
               "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "income",
+                    "expenses"
+                  ]
+                },
                 "amount": {
                   "type": "number"
                 },
                 "date": {
                   "type": "string"
-                }
-              },
-              "required": [
-                "amount",
-                "date"
-              ]
-            },
-            {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "income",
-                        "expenses"
-                      ]
-                    },
-                    "particulars": {
-                      "type": "string"
-                    },
-                    "asset": {
-                      "type": "string"
-                    },
-                    "category": {
-                      "type": "string"
-                    },
-                    "ledgers": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "location": {
-                      "anyOf": [
-                        {
+                },
+                "particulars": {
+                  "type": "string"
+                },
+                "asset": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "ledgers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "location": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "formattedAddress": {
+                          "type": "string"
+                        },
+                        "location": {
                           "type": "object",
                           "properties": {
-                            "name": {
-                              "type": "string"
+                            "latitude": {
+                              "type": "number"
                             },
-                            "formattedAddress": {
-                              "type": "string"
-                            },
-                            "location": {
-                              "type": "object",
-                              "properties": {
-                                "latitude": {
-                                  "type": "number"
-                                },
-                                "longitude": {
-                                  "type": "number"
-                                }
-                              },
-                              "required": [
-                                "latitude",
-                                "longitude"
-                              ]
+                            "longitude": {
+                              "type": "number"
                             }
                           },
                           "required": [
-                            "name",
-                            "formattedAddress",
-                            "location"
-                          ]
-                        },
-                        {
-                          "type": "null"
+                            "latitude",
+                            "longitude"
+                          ],
+                          "additionalProperties": false
                         }
-                      ]
-                    }
-                  },
-                  "required": [
-                    "type",
-                    "particulars",
-                    "asset",
-                    "category",
-                    "ledgers"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "from": {
-                      "type": "string"
+                      },
+                      "required": [
+                        "name",
+                        "formattedAddress",
+                        "location"
+                      ],
+                      "additionalProperties": false
                     },
-                    "to": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string",
-                      "const": "transfer"
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "from",
-                    "to",
-                    "type"
                   ]
                 }
-              ]
-            }
-          ]
-        }
-      },
-      "output": {
-        "OK": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "oneOf": [
+              },
+              "required": [
+                "type",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
             {
               "type": "object",
               "properties": {
@@ -1152,24 +1157,6 @@ export const contract = {
                 "date": {
                   "type": "string"
                 },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
-                },
-                "receipt": {
-                  "type": "string"
-                },
                 "from": {
                   "type": "string"
                 },
@@ -1179,65 +1166,62 @@ export const contract = {
               },
               "required": [
                 "type",
-                "amount",
-                "date",
-                "created",
-                "updated",
-                "id",
-                "collectionId",
-                "collectionName",
-                "from",
-                "to"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "income_expenses"
-                },
-                "amount": {
-                  "type": "number"
-                },
-                "date": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                },
-                "updated": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "collectionId": {
-                  "type": "string"
-                },
-                "collectionName": {
-                  "type": "string"
-                },
-                "receipt": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "type",
-                "amount",
-                "date",
-                "created",
-                "updated",
-                "id",
-                "collectionId",
-                "collectionName"
+                "amount"
               ],
               "additionalProperties": false
             }
           ]
-        },
-        "NOT_FOUND": true
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "transfer",
+                "income_expenses"
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "receipt": {
+              "type": "string"
+            },
+            "created": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updated": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "amount",
+            "date",
+            "receipt",
+            "created",
+            "updated"
+          ],
+          "additionalProperties": false
+        }
       }
     },
     "fromNaturalLanguage": {
@@ -1382,10 +1366,6 @@ export const contract = {
           "OK": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "string"
-          },
-          "BAD_REQUEST": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "string"
           }
         }
       },
@@ -1511,6 +1491,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -1526,29 +1511,17 @@ export const contract = {
                 "income",
                 "expenses"
               ]
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
             "color",
-            "type",
-            "id",
-            "collectionId",
-            "collectionName"
+            "type"
           ],
           "additionalProperties": false
-        },
-        "CONFLICT": true
+        }
       }
     },
     "list": {
@@ -1566,6 +1539,9 @@ export const contract = {
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string"
+              },
               "type": {
                 "type": "string",
                 "enum": [
@@ -1584,26 +1560,15 @@ export const contract = {
               },
               "amount": {
                 "type": "number"
-              },
-              "id": {
-                "type": "string"
-              },
-              "collectionId": {
-                "type": "string"
-              },
-              "collectionName": {
-                "type": "string"
               }
             },
             "required": [
+              "id",
               "type",
               "name",
               "icon",
               "color",
-              "amount",
-              "id",
-              "collectionId",
-              "collectionName"
+              "amount"
             ],
             "additionalProperties": false
           }
@@ -1633,8 +1598,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "update": {
@@ -1693,6 +1657,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -1708,29 +1677,17 @@ export const contract = {
                 "income",
                 "expenses"
               ]
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
             "color",
-            "type",
-            "id",
-            "collectionId",
-            "collectionName"
+            "type"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -1770,6 +1727,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -1777,25 +1739,16 @@ export const contract = {
               "type": "string"
             },
             "starting_balance": {
-              "type": "number"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
-            "starting_balance",
-            "id",
-            "collectionId",
-            "collectionName"
+            "starting_balance"
           ],
           "additionalProperties": false
         }
@@ -1914,8 +1867,7 @@ export const contract = {
             "endBalance"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     },
     "list": {
@@ -1933,6 +1885,9 @@ export const contract = {
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string"
+              },
               "name": {
                 "type": "string"
               },
@@ -1947,26 +1902,15 @@ export const contract = {
               },
               "current_balance": {
                 "type": "number"
-              },
-              "id": {
-                "type": "string"
-              },
-              "collectionId": {
-                "type": "string"
-              },
-              "collectionName": {
-                "type": "string"
               }
             },
             "required": [
+              "id",
               "name",
               "icon",
               "starting_balance",
               "transaction_count",
-              "current_balance",
-              "id",
-              "collectionId",
-              "collectionName"
+              "current_balance"
             ],
             "additionalProperties": false
           }
@@ -1996,8 +1940,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "update": {
@@ -2048,6 +1991,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -2055,29 +2003,19 @@ export const contract = {
               "type": "string"
             },
             "starting_balance": {
-              "type": "number"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
-            "starting_balance",
-            "id",
-            "collectionId",
-            "collectionName"
+            "starting_balance"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -2117,6 +2055,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -2125,28 +2068,16 @@ export const contract = {
             },
             "color": {
               "type": "string"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
-            "color",
-            "id",
-            "collectionId",
-            "collectionName"
+            "color"
           ],
           "additionalProperties": false
-        },
-        "CONFLICT": true
+        }
       }
     },
     "list": {
@@ -2164,6 +2095,9 @@ export const contract = {
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string"
+              },
               "name": {
                 "type": "string"
               },
@@ -2175,25 +2109,14 @@ export const contract = {
               },
               "amount": {
                 "type": "number"
-              },
-              "id": {
-                "type": "string"
-              },
-              "collectionId": {
-                "type": "string"
-              },
-              "collectionName": {
-                "type": "string"
               }
             },
             "required": [
+              "id",
               "name",
               "color",
               "icon",
-              "amount",
-              "id",
-              "collectionId",
-              "collectionName"
+              "amount"
             ],
             "additionalProperties": false
           }
@@ -2223,8 +2146,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "update": {
@@ -2275,6 +2197,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -2283,28 +2210,16 @@ export const contract = {
             },
             "color": {
               "type": "string"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "name",
             "icon",
-            "color",
-            "id",
-            "collectionId",
-            "collectionName"
+            "color"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -2387,10 +2302,7 @@ export const contract = {
             "name",
             "type",
             "amount",
-            "particulars",
-            "asset",
-            "category",
-            "ledgers"
+            "particulars"
           ],
           "additionalProperties": false
         }
@@ -2400,6 +2312,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -2411,16 +2328,36 @@ export const contract = {
               ]
             },
             "amount": {
-              "type": "number"
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             },
             "particulars": {
               "type": "string"
             },
             "asset": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "category": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ledgers": {
               "type": "array",
@@ -2432,32 +2369,31 @@ export const contract = {
               "type": "string"
             },
             "location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lon": {
+                      "type": "number"
+                    },
+                    "lat": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lon",
+                    "lat"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
+              ]
             }
           },
           "required": [
+            "id",
             "name",
             "type",
             "amount",
@@ -2466,14 +2402,10 @@ export const contract = {
             "category",
             "ledgers",
             "location_name",
-            "location_coords",
-            "id",
-            "collectionId",
-            "collectionName"
+            "location_coords"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     },
     "list": {
@@ -2506,6 +2438,11 @@ export const contract = {
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "name": {
                     "type": "string"
                   },
@@ -2517,16 +2454,36 @@ export const contract = {
                     ]
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -140737488355328,
+                    "maximum": 140737488355327
                   },
                   "particulars": {
                     "type": "string"
                   },
                   "asset": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "category": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "ledgers": {
                     "type": "array",
@@ -2538,32 +2495,31 @@ export const contract = {
                     "type": "string"
                   },
                   "location_coords": {
-                    "type": "object",
-                    "properties": {
-                      "lat": {
-                        "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "lon": {
+                            "type": "number"
+                          },
+                          "lat": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "lon",
+                          "lat"
+                        ],
+                        "additionalProperties": false
                       },
-                      "lon": {
-                        "type": "number"
+                      {
+                        "type": "null"
                       }
-                    },
-                    "required": [
-                      "lat",
-                      "lon"
-                    ],
-                    "additionalProperties": false
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
+                    ]
                   }
                 },
                 "required": [
+                  "id",
                   "name",
                   "type",
                   "amount",
@@ -2572,10 +2528,7 @@ export const contract = {
                   "category",
                   "ledgers",
                   "location_name",
-                  "location_coords",
-                  "id",
-                  "collectionId",
-                  "collectionName"
+                  "location_coords"
                 ],
                 "additionalProperties": false
               }
@@ -2585,6 +2538,11 @@ export const contract = {
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "name": {
                     "type": "string"
                   },
@@ -2596,16 +2554,36 @@ export const contract = {
                     ]
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -140737488355328,
+                    "maximum": 140737488355327
                   },
                   "particulars": {
                     "type": "string"
                   },
                   "asset": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "category": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "ledgers": {
                     "type": "array",
@@ -2617,32 +2595,31 @@ export const contract = {
                     "type": "string"
                   },
                   "location_coords": {
-                    "type": "object",
-                    "properties": {
-                      "lat": {
-                        "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "lon": {
+                            "type": "number"
+                          },
+                          "lat": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "lon",
+                          "lat"
+                        ],
+                        "additionalProperties": false
                       },
-                      "lon": {
-                        "type": "number"
+                      {
+                        "type": "null"
                       }
-                    },
-                    "required": [
-                      "lat",
-                      "lon"
-                    ],
-                    "additionalProperties": false
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
+                    ]
                   }
                 },
                 "required": [
+                  "id",
                   "name",
                   "type",
                   "amount",
@@ -2651,10 +2628,7 @@ export const contract = {
                   "category",
                   "ledgers",
                   "location_name",
-                  "location_coords",
-                  "id",
-                  "collectionId",
-                  "collectionName"
+                  "location_coords"
                 ],
                 "additionalProperties": false
               }
@@ -2686,8 +2660,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "update": {
@@ -2781,10 +2754,7 @@ export const contract = {
             "name",
             "type",
             "amount",
-            "particulars",
-            "asset",
-            "category",
-            "ledgers"
+            "particulars"
           ],
           "additionalProperties": false
         }
@@ -2794,6 +2764,11 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "name": {
               "type": "string"
             },
@@ -2805,16 +2780,36 @@ export const contract = {
               ]
             },
             "amount": {
-              "type": "number"
+              "type": "number",
+              "minimum": -140737488355328,
+              "maximum": 140737488355327
             },
             "particulars": {
               "type": "string"
             },
             "asset": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "category": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ledgers": {
               "type": "array",
@@ -2826,32 +2821,31 @@ export const contract = {
               "type": "string"
             },
             "location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lon": {
+                      "type": "number"
+                    },
+                    "lat": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lon",
+                    "lat"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
+              ]
             }
           },
           "required": [
+            "id",
             "name",
             "type",
             "amount",
@@ -2860,14 +2854,10 @@ export const contract = {
             "category",
             "ledgers",
             "location_name",
-            "location_coords",
-            "id",
-            "collectionId",
-            "collectionName"
+            "location_coords"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -3132,15 +3122,6 @@ export const contract = {
               },
               "count": {
                 "type": "number"
-              },
-              "id": {
-                "type": "string"
-              },
-              "collectionId": {
-                "type": "string"
-              },
-              "collectionName": {
-                "type": "string"
               }
             },
             "required": [
@@ -3148,10 +3129,7 @@ export const contract = {
               "lng",
               "locationName",
               "amount",
-              "count",
-              "id",
-              "collectionId",
-              "collectionName"
+              "count"
             ],
             "additionalProperties": false
           }

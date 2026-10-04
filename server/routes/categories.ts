@@ -1,96 +1,114 @@
+import { asc, count, eq } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import z from 'zod'
 
 import forge from '../forge'
-import walletSchemas from '../schema'
+import {
+  walletCategories,
+  walletTransactionsIncomeExpenses
+} from '../schema.drizzle'
+
+const categoryDto = createSelectSchema(walletCategories).extend({
+  type: z.enum(['income', 'expenses'])
+})
+
+const categoryAggregateDto = z.object({
+  id: z.string(),
+  type: z.enum(['income', 'expenses']),
+  name: z.string(),
+  icon: z.string(),
+  color: z.string(),
+  amount: z.number()
+})
+
+const categoryInputDto = z.object({
+  name: z.string(),
+  icon: z.string(),
+  color: z.string(),
+  type: z.enum(['income', 'expenses'])
+})
 
 export const list = forge
   .query({
     description: 'Get all transaction categories',
     output: {
-      OK: z.array(walletSchemas.categories_aggregated)
+      OK: z.array(categoryAggregateDto)
     }
   })
-  .callback(async ({ pb, response }) =>
-    response.ok(
-      await pb.getFullList
-        .collection('categories_aggregated')
-        .sort(['name'])
-        .execute()
-    )
-  )
+  .callback(async ({ db, response }) => {
+    const rows = await db
+      .select({
+        id: walletCategories.id,
+        type: walletCategories.type,
+        name: walletCategories.name,
+        icon: walletCategories.icon,
+        color: walletCategories.color,
+        amount: count(walletTransactionsIncomeExpenses.id)
+      })
+      .from(walletCategories)
+      .leftJoin(
+        walletTransactionsIncomeExpenses,
+        eq(walletTransactionsIncomeExpenses.category, walletCategories.id)
+      )
+      .groupBy(walletCategories.id)
+      .orderBy(asc(walletCategories.name))
+
+    return response.ok(rows)
+  })
 
 export const create = forge
   .mutation({
     description: 'Create a new transaction category',
     input: {
-      body: walletSchemas.categories.pick({
-        name: true,
-        icon: true,
-        color: true,
-        type: true
-      })
+      body: categoryInputDto
     },
     output: {
-      CREATED: walletSchemas.categories,
-      CONFLICT: true
+      CREATED: categoryDto
     }
   })
-  .callback(async ({ pb, body, response }) =>
-    response.created(
-      await pb.create.collection('categories').data(body).execute()
-    )
-  )
+  .callback(async ({ db, body, response }) => {
+    const [created] = await db.insert(walletCategories).values(body).returning()
+
+    return response.created(created)
+  })
 
 export const update = forge
   .mutation({
     description: 'Update category details',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletCategories)
       }),
-      body: walletSchemas.categories.pick({
-        name: true,
-        icon: true,
-        color: true,
-        type: true
-      })
-    },
-    existenceCheck: {
-      query: {
-        id: 'categories'
-      }
+      body: categoryInputDto
     },
     output: {
-      OK: walletSchemas.categories,
-      NOT_FOUND: true
+      OK: categoryDto
     }
   })
-  .callback(async ({ pb, query: { id }, body, response }) =>
-    response.ok(
-      await pb.update.collection('categories').id(id).data(body).execute()
-    )
-  )
+  .callback(async ({ db, query: { id }, body, response }) => {
+    const [updated] = await db
+      .update(walletCategories)
+      .set(body)
+      .where(eq(walletCategories.id, id))
+      .returning()
+
+    return response.ok(updated)
+  })
 
 export const remove = forge
   .mutation({
     description: 'Delete a transaction category',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletCategories)
       })
     },
-    existenceCheck: {
-      query: {
-        id: 'categories'
-      }
-    },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('categories').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db.delete(walletCategories).where(eq(walletCategories.id, id))
 
     return response.noContent()
   })

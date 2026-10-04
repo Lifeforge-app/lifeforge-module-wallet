@@ -1,46 +1,115 @@
+import { eq } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import Moment from 'moment'
-import MomentRange from 'moment-range'
 import z from 'zod'
 
 import forge from '../forge'
-import walletSchemas from '../schema'
+import {
+  walletAssets,
+  walletTransactions,
+  walletTransactionsIncomeExpenses,
+  walletTransactionsTransfer
+} from '../schema.drizzle'
 import getDateRange from '../utils/getDateRange'
-
-// @ts-expect-error - MomentRange types are not fully compatible with Moment
-const moment = MomentRange.extendMoment(Moment)
 
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isSameOrAfter)
+
+const assetDto = createSelectSchema(walletAssets)
+
+const assetAggregateDto = z.object({
+  id: z.string(),
+  name: z.string(),
+  icon: z.string(),
+  starting_balance: z.number(),
+  transaction_count: z.number(),
+  current_balance: z.number()
+})
+
+const assetInputDto = z.object({
+  name: z.string(),
+  icon: z.string(),
+  starting_balance: z.number()
+})
 
 export const list = forge
   .query({
     description: 'Get all wallet assets',
     output: {
-      OK: z.array(
-        walletSchemas.assets_aggregated.extend({
-          current_balance: z.number()
-        })
-      )
+      OK: z.array(assetAggregateDto)
     }
   })
-  .callback(async ({ pb, response }) =>
-    response.ok(
-      await pb.getFullList
-        .collection('assets_aggregated')
-        .sort(['name'])
-        .execute()
-    )
-  )
+  .callback(async ({ db, response }) => {
+    const [assets, incomeExpenses, transfers] = await Promise.all([
+      db.select().from(walletAssets),
+      db
+        .select({
+          type: walletTransactionsIncomeExpenses.type,
+          amount: walletTransactions.amount,
+          asset: walletTransactionsIncomeExpenses.asset
+        })
+        .from(walletTransactionsIncomeExpenses)
+        .innerJoin(
+          walletTransactions,
+          eq(
+            walletTransactionsIncomeExpenses.base_transaction,
+            walletTransactions.id
+          )
+        ),
+      db
+        .select({
+          amount: walletTransactions.amount,
+          from: walletTransactionsTransfer.from,
+          to: walletTransactionsTransfer.to
+        })
+        .from(walletTransactionsTransfer)
+        .innerJoin(
+          walletTransactions,
+          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+        )
+    ])
+
+    const rows = assets
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(asset => {
+        let currentBalance = asset.starting_balance
+        let transactionCount = 0
+
+        for (const t of incomeExpenses) {
+          if (t.asset !== asset.id) continue
+
+          transactionCount++
+          currentBalance += t.type === 'income' ? t.amount : -t.amount
+        }
+
+        for (const t of transfers) {
+          if (t.from !== asset.id && t.to !== asset.id) continue
+
+          transactionCount++
+          currentBalance += t.from === asset.id ? -t.amount : t.amount
+        }
+
+        return {
+          id: asset.id,
+          name: asset.name,
+          icon: asset.icon,
+          starting_balance: asset.starting_balance,
+          transaction_count: transactionCount,
+          current_balance: parseFloat(currentBalance.toFixed(2))
+        }
+      })
+
+    return response.ok(rows)
+  })
 
 export const getAssetAccumulatedBalance = forge
   .query({
     description: 'Get asset balance over time',
     input: {
       query: z.object({
-        id: z.string(),
+        id: forge.existsIn(z.string(), walletAssets),
         rangeMode: z.enum([
           'week',
           'month',
@@ -53,93 +122,67 @@ export const getAssetAccumulatedBalance = forge
         endDate: z.string().optional()
       })
     },
-    existenceCheck: {
-      query: {
-        id: 'assets'
-      }
-    },
     output: {
       OK: z.object({
         balances: z.record(z.string(), z.number()),
         startBalance: z.number(),
         endBalance: z.number()
-      }),
-      NOT_FOUND: true
+      })
     }
   })
   .callback(
-    async ({ pb, query: { id, rangeMode, startDate, endDate }, response }) => {
+    async ({ db, query: { id, rangeMode, startDate, endDate }, response }) => {
       const dateRange = getDateRange(rangeMode, startDate, endDate)
 
-      const { starting_balance } = await pb.getOne
-        .collection('assets')
-        .id(id)
-        .fields({
-          starting_balance: true
-        })
-        .execute()
+      const asset = (await db.query.assets.findFirst({ where: { id } }))!
 
-      const allIncomeExpensesTransactions = await pb.getFullList
-        .collection('transactions_income_expenses')
-        .expand({
-          base_transaction: 'transactions'
-        })
-        .filter([
-          {
-            field: 'asset',
-            operator: '=',
-            value: id
-          }
-        ])
-        .fields({
-          type: true,
-          'expand.base_transaction.amount': true,
-          'expand.base_transaction.date': true
-        })
-        .execute()
+      const starting_balance = asset.starting_balance
 
-      const allTransferTransactions = await pb.getFullList
-        .collection('transactions_transfer')
-        .expand({
-          base_transaction: 'transactions'
+      const incomeExpenses = await db
+        .select({
+          type: walletTransactionsIncomeExpenses.type,
+          amount: walletTransactions.amount,
+          date: walletTransactions.date
         })
-        .filter([
-          {
-            combination: '||',
-            filters: [
-              {
-                field: 'from',
-                operator: '=',
-                value: id
-              },
-              {
-                field: 'to',
-                operator: '=',
-                value: id
-              }
-            ]
-          }
-        ])
-        .fields({
-          'expand.base_transaction.amount': true,
-          'expand.base_transaction.date': true,
-          from: true,
-          to: true
+        .from(walletTransactionsIncomeExpenses)
+        .innerJoin(
+          walletTransactions,
+          eq(
+            walletTransactionsIncomeExpenses.base_transaction,
+            walletTransactions.id
+          )
+        )
+        .where(eq(walletTransactionsIncomeExpenses.asset, id))
+
+      const transfers = await db
+        .select({
+          amount: walletTransactions.amount,
+          date: walletTransactions.date,
+          from: walletTransactionsTransfer.from,
+          to: walletTransactionsTransfer.to
         })
-        .execute()
+        .from(walletTransactionsTransfer)
+        .innerJoin(
+          walletTransactions,
+          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+        )
 
       const allTransactions = [
-        ...allIncomeExpensesTransactions.map(t => ({
-          type: t.type,
-          amount: t.expand!.base_transaction!.amount!,
-          date: t.expand!.base_transaction!.date!
+        ...incomeExpenses.map(t => ({
+          type: t.type as 'income' | 'expenses',
+          amount: t.amount,
+          date: t.date
         })),
-        ...allTransferTransactions.map(t => ({
-          type: t.from === id ? 'expenses' : 'income',
-          amount: t.expand!.base_transaction!.amount!,
-          date: t.expand!.base_transaction!.date!
-        }))
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        ...transfers
+          .filter(t => t.from === id || t.to === id)
+          .map(t => ({
+            type: (t.from === id ? 'expenses' : 'income') as
+              | 'income'
+              | 'expenses',
+            amount: t.amount,
+            date: t.date
+          }))
+      ].sort((a, b) => b.date.getTime() - a.date.getTime())
 
       if (allTransactions.length === 0) {
         return response.ok({
@@ -153,20 +196,23 @@ export const getAssetAccumulatedBalance = forge
 
       const accumulatedBalance: Record<string, number> = {}
 
-      const allDateInBetween = moment
-        .range(
-          moment(allTransactions[allTransactions.length - 1].date),
-          moment()
-        )
-        .by('day')
+      const firstDate = dayjs(
+        allTransactions[allTransactions.length - 1].date
+      ).startOf('day')
 
-      for (const date of allDateInBetween) {
-        const dateStr = date.format('YYYY-MM-DD')
+      const endDay = dayjs().startOf('day')
+
+      for (
+        let current = firstDate;
+        current.isBefore(endDay) || current.isSame(endDay, 'day');
+        current = current.add(1, 'day')
+      ) {
+        const dateStr = current.format('YYYY-MM-DD')
 
         accumulatedBalance[dateStr] = parseFloat(currentBalance.toFixed(2))
 
         const transactionsOnDate = allTransactions.filter(t =>
-          moment(t.date).isSame(date, 'day')
+          dayjs(t.date).isSame(current, 'day')
         )
 
         for (const transaction of transactionsOnDate) {
@@ -180,14 +226,14 @@ export const getAssetAccumulatedBalance = forge
 
       const filtered = Object.fromEntries(
         Object.entries(accumulatedBalance).filter(([date]) => {
-          const dateMoment = moment(date)
+          const dateMoment = dayjs(date)
 
           const isAfterStartDate = dateRange.startDate
-            ? dateMoment.isSameOrAfter(moment(dateRange.startDate), 'day')
+            ? dateMoment.isSameOrAfter(dayjs(dateRange.startDate), 'day')
             : true
 
           const isBeforeEndDate = dateRange.endDate
-            ? dateMoment.isSameOrBefore(moment(dateRange.endDate), 'day')
+            ? dateMoment.isSameOrBefore(dayjs(dateRange.endDate), 'day')
             : true
 
           return isAfterStartDate && isBeforeEndDate
@@ -224,7 +270,7 @@ export const getAllAssetAccumulatedBalance = forge
       )
     }
   })
-  .callback(async ({ pb, query: { year, month }, response }) => {
+  .callback(async ({ db, query: { year, month }, response }) => {
     const parsedYear = parseInt(year)
 
     const parsedMonth = parseInt(month)
@@ -240,62 +286,62 @@ export const getAllAssetAccumulatedBalance = forge
       .startOf('month')
       .subtract(1, 'day')
 
-    const assets = await pb.getFullList
-      .collection('assets')
-      .fields({
-        id: true,
-        starting_balance: true
-      })
-      .execute()
-
-    const allIncomeExpensesTransactions = await pb.getFullList
-      .collection('transactions_income_expenses')
-      .expand({
-        base_transaction: 'transactions'
-      })
-      .fields({
-        type: true,
-        asset: true,
-        'expand.base_transaction.amount': true,
-        'expand.base_transaction.date': true
-      })
-      .execute()
-
-    const allTransferTransactions = await pb.getFullList
-      .collection('transactions_transfer')
-      .expand({
-        base_transaction: 'transactions'
-      })
-      .fields({
-        'expand.base_transaction.amount': true,
-        'expand.base_transaction.date': true,
-        from: true,
-        to: true
-      })
-      .execute()
+    const [assets, incomeExpensesRaw, transfersRaw] = await Promise.all([
+      db
+        .select({ id: walletAssets.id, starting_balance: walletAssets.starting_balance })
+        .from(walletAssets),
+      db
+        .select({
+          type: walletTransactionsIncomeExpenses.type,
+          asset: walletTransactionsIncomeExpenses.asset,
+          amount: walletTransactions.amount,
+          date: walletTransactions.date
+        })
+        .from(walletTransactionsIncomeExpenses)
+        .innerJoin(
+          walletTransactions,
+          eq(
+            walletTransactionsIncomeExpenses.base_transaction,
+            walletTransactions.id
+          )
+        ),
+      db
+        .select({
+          amount: walletTransactions.amount,
+          date: walletTransactions.date,
+          from: walletTransactionsTransfer.from,
+          to: walletTransactionsTransfer.to
+        })
+        .from(walletTransactionsTransfer)
+        .innerJoin(
+          walletTransactions,
+          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+        )
+    ])
 
     const result: Record<string, { last: number; current: number }> = {}
 
     for (const asset of assets) {
-      const incomeExpenses = allIncomeExpensesTransactions
+      const incomeExpenses = incomeExpensesRaw
         .filter(t => t.asset === asset.id)
         .map(t => ({
           type: t.type as 'income' | 'expenses',
-          amount: t.expand!.base_transaction!.amount!,
-          date: t.expand!.base_transaction!.date!
+          amount: t.amount,
+          date: t.date
         }))
 
-      const transfers = allTransferTransactions
+      const transfers = transfersRaw
         .filter(t => t.from === asset.id || t.to === asset.id)
         .map(t => ({
           type: (t.from === asset.id ? 'expenses' : 'income') as
-            'income' | 'expenses',
-          amount: t.expand!.base_transaction!.amount!,
-          date: t.expand!.base_transaction!.date!
+            | 'income'
+            | 'expenses',
+          amount: t.amount,
+          date: t.date
         }))
 
       const allTransactions = [...incomeExpenses, ...transfers].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (a, b) => a.date.getTime() - b.date.getTime()
       )
 
       let balance = asset.starting_balance
@@ -333,69 +379,55 @@ export const create = forge
   .mutation({
     description: 'Create a new wallet asset',
     input: {
-      body: walletSchemas.assets.pick({
-        name: true,
-        icon: true,
-        starting_balance: true
-      })
+      body: assetInputDto
     },
     output: {
-      CREATED: walletSchemas.assets
+      CREATED: assetDto
     }
   })
-  .callback(async ({ pb, body, response }) =>
-    response.created(await pb.create.collection('assets').data(body).execute())
-  )
+  .callback(async ({ db, body, response }) => {
+    const [created] = await db.insert(walletAssets).values(body).returning()
+
+    return response.created(created)
+  })
 
 export const update = forge
   .mutation({
     description: 'Update asset details',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletAssets)
       }),
-      body: walletSchemas.assets.pick({
-        name: true,
-        icon: true,
-        starting_balance: true
-      })
-    },
-    existenceCheck: {
-      query: {
-        id: 'assets'
-      }
+      body: assetInputDto
     },
     output: {
-      OK: walletSchemas.assets,
-      NOT_FOUND: true
+      OK: assetDto
     }
   })
-  .callback(async ({ pb, query: { id }, body, response }) =>
-    response.ok(
-      await pb.update.collection('assets').id(id).data(body).execute()
-    )
-  )
+  .callback(async ({ db, query: { id }, body, response }) => {
+    const [updated] = await db
+      .update(walletAssets)
+      .set(body)
+      .where(eq(walletAssets.id, id))
+      .returning()
+
+    return response.ok(updated)
+  })
 
 export const remove = forge
   .mutation({
     description: 'Delete a wallet asset',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletAssets)
       })
     },
-    existenceCheck: {
-      query: {
-        id: 'assets'
-      }
-    },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('assets').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db.delete(walletAssets).where(eq(walletAssets.id, id))
 
     return response.noContent()
   })

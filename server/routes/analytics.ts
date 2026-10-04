@@ -1,10 +1,20 @@
+import { eq } from 'drizzle-orm'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import z from 'zod'
 
-import forge from '../forge'
-import walletSchemas from '../schema'
+import type { BuiltModuleSchema } from '@lifeforge/drizzle'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+
+import forge, { type WalletSchema } from '../forge'
+import {
+  walletTransactions,
+  walletTransactionsIncomeExpenses,
+  walletTransactionsTransfer
+} from '../schema.drizzle'
+
+type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isSameOrAfter)
@@ -59,6 +69,40 @@ const ChartDataOutput = z.array(
   })
 )
 
+async function fetchTransactions(db: WalletDb) {
+  const [incomeExpenses, transfers] = await Promise.all([
+    db
+      .select({
+        type: walletTransactionsIncomeExpenses.type,
+        amount: walletTransactions.amount,
+        date: walletTransactions.date,
+        category: walletTransactionsIncomeExpenses.category,
+        location_name: walletTransactionsIncomeExpenses.location_name,
+        location_coords: walletTransactionsIncomeExpenses.location_coords
+      })
+      .from(walletTransactionsIncomeExpenses)
+      .innerJoin(
+        walletTransactions,
+        eq(
+          walletTransactionsIncomeExpenses.base_transaction,
+          walletTransactions.id
+        )
+      ),
+    db
+      .select({
+        amount: walletTransactions.amount,
+        date: walletTransactions.date
+      })
+      .from(walletTransactionsTransfer)
+      .innerJoin(
+        walletTransactions,
+        eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+      )
+  ])
+
+  return { incomeExpenses, transfers }
+}
+
 export const getTypesCount = forge
   .query({
     description: 'Get transaction counts and totals by type',
@@ -72,58 +116,42 @@ export const getTypesCount = forge
       OK: TypesCountOutput
     }
   })
-  .callback(async ({ pb, query: { year, month }, response }) => {
+  .callback(async ({ db, query: { year, month }, response }) => {
     const parsedYear = year ? parseInt(year) : undefined
 
     const parsedMonth = month ? parseInt(month) : undefined
 
-    if (parsedYear !== undefined && parsedMonth !== undefined) {
-      const data = await pb.getFullList
-        .collection('transactions_amount_aggregated')
-        .filter([
-          { field: 'year', operator: '=', value: year },
-          { field: 'month', operator: '=', value: month }
-        ])
-        .execute()
+    const hasRange = parsedYear !== undefined && parsedMonth !== undefined
 
-      const typesCount: Record<
-        string,
-        { transactionCount: number; accumulatedAmount: number }
-      > = {
-        income: { transactionCount: 0, accumulatedAmount: 0 },
-        expenses: { transactionCount: 0, accumulatedAmount: 0 },
-        transfer: { transactionCount: 0, accumulatedAmount: 0 }
-      }
+    const { incomeExpenses, transfers } = await fetchTransactions(db)
 
-      for (const row of data) {
-        typesCount.income.transactionCount += row.income_count || 0
-        typesCount.income.accumulatedAmount += row.income || 0
-        typesCount.expenses.transactionCount += row.expenses_count || 0
-        typesCount.expenses.accumulatedAmount += row.expenses || 0
-        typesCount.transfer.transactionCount += row.transfer_count || 0
-        typesCount.transfer.accumulatedAmount += row.transfer || 0
-      }
+    const inRange = (date: Date) =>
+      !hasRange ||
+      (date.getFullYear() === parsedYear &&
+        date.getMonth() + 1 === parsedMonth)
 
-      return response.ok(typesCount)
+    const typesCount: Record<
+      string,
+      { transactionCount: number; accumulatedAmount: number }
+    > = {
+      income: { transactionCount: 0, accumulatedAmount: 0 },
+      expenses: { transactionCount: 0, accumulatedAmount: 0 },
+      transfer: { transactionCount: 0, accumulatedAmount: 0 }
     }
 
-    const types = await pb.getFullList
-      .collection('transaction_types_aggregated')
-      .execute()
+    for (const transaction of incomeExpenses) {
+      if (!inRange(transaction.date)) continue
 
-    const typesCount = types.reduce(
-      (acc, cur) => ({
-        ...acc,
-        [cur.name]: {
-          transactionCount: cur.transaction_count,
-          accumulatedAmount: cur.accumulated_amount as number
-        }
-      }),
-      {} as Record<
-        string,
-        { transactionCount: number; accumulatedAmount: number }
-      >
-    )
+      typesCount[transaction.type].transactionCount++
+      typesCount[transaction.type].accumulatedAmount += transaction.amount
+    }
+
+    for (const transaction of transfers) {
+      if (!inRange(transaction.date)) continue
+
+      typesCount.transfer.transactionCount++
+      typesCount.transfer.accumulatedAmount += transaction.amount
+    }
 
     return response.ok(typesCount)
   })
@@ -141,70 +169,41 @@ export const getIncomeExpensesSummary = forge
       OK: IncomeExpensesSummaryOutput
     }
   })
-  .callback(async ({ pb, query: { year, month }, response }) => {
+  .callback(async ({ db, query: { year, month }, response }) => {
     const parsedYear = parseInt(year)
 
     const parsedMonth = parseInt(month)
 
-    const start = dayjs(`${parsedYear}-${parsedMonth}-01`)
-      .startOf('month')
-      .format('YYYY-MM-DD')
+    const start = dayjs(`${parsedYear}-${parsedMonth}-01`).startOf('month')
 
-    const end = dayjs(`${parsedYear}-${parsedMonth}-01`)
-      .endOf('month')
-      .format('YYYY-MM-DD')
+    const end = dayjs(`${parsedYear}-${parsedMonth}-01`).endOf('month')
 
-    const transactions = await pb.getFullList
-      .collection('transactions_income_expenses')
-      .expand({ base_transaction: 'transactions' })
-      .fields({
-        type: true,
-        'expand.base_transaction.date': true,
-        'expand.base_transaction.amount': true
-      })
-      .execute()
+    const { incomeExpenses } = await fetchTransactions(db)
 
-    const inThisMonth = transactions.filter(
-      transaction =>
-        dayjs(
-          dayjs(transaction.expand!.base_transaction!.date!).format(
-            'YYYY-MM-DD'
-          )
-        ).isSameOrAfter(start) &&
-        dayjs(
-          dayjs(transaction.expand!.base_transaction!.date!).format(
-            'YYYY-MM-DD'
-          )
-        ).isSameOrBefore(end)
+    const inThisMonth = incomeExpenses.filter(transaction =>
+      dayjs(transaction.date).isSameOrAfter(start) &&
+      dayjs(transaction.date).isSameOrBefore(end)
     )
 
-    const totalIncome = transactions.reduce((acc, cur) => {
-      if (cur.type === 'income')
-        return acc + cur.expand!.base_transaction!.amount!
+    const totalIncome = incomeExpenses.reduce(
+      (acc, cur) => (cur.type === 'income' ? acc + cur.amount : acc),
+      0
+    )
 
-      return acc
-    }, 0)
+    const totalExpenses = incomeExpenses.reduce(
+      (acc, cur) => (cur.type === 'expenses' ? acc + cur.amount : acc),
+      0
+    )
 
-    const totalExpenses = transactions.reduce((acc, cur) => {
-      if (cur.type === 'expenses')
-        return acc + cur.expand!.base_transaction!.amount!
+    const monthlyIncome = inThisMonth.reduce(
+      (acc, cur) => (cur.type === 'income' ? acc + cur.amount : acc),
+      0
+    )
 
-      return acc
-    }, 0)
-
-    const monthlyIncome = inThisMonth.reduce((acc, cur) => {
-      if (cur.type === 'income')
-        return acc + cur.expand!.base_transaction!.amount!
-
-      return acc
-    }, 0)
-
-    const monthlyExpenses = inThisMonth.reduce((acc, cur) => {
-      if (cur.type === 'expenses')
-        return acc + cur.expand!.base_transaction!.amount!
-
-      return acc
-    }, 0)
+    const monthlyExpenses = inThisMonth.reduce(
+      (acc, cur) => (cur.type === 'expenses' ? acc + cur.amount : acc),
+      0
+    )
 
     return response.ok({
       totalIncome,
@@ -227,7 +226,7 @@ export const getCategoriesBreakdown = forge
       OK: CategoryBreakdownOutput
     }
   })
-  .callback(async ({ pb, query: { year, month }, response }) => {
+  .callback(async ({ db, query: { year, month }, response }) => {
     const parsedYear = parseInt(year)
 
     const parsedMonth = parseInt(month)
@@ -236,28 +235,19 @@ export const getCategoriesBreakdown = forge
       .year(parsedYear)
       .month(parsedMonth - 1)
       .startOf('month')
-      .format('YYYY-MM-DD')
 
     const endDate = dayjs()
       .year(parsedYear)
       .month(parsedMonth - 1)
       .endOf('month')
-      .format('YYYY-MM-DD')
 
-    const transactions = await pb.getFullList
-      .collection('transactions_income_expenses')
-      .expand({ category: 'categories', base_transaction: 'transactions' })
-      .filter([
-        { field: 'base_transaction.date', operator: '>=', value: startDate },
-        { field: 'base_transaction.date', operator: '<=', value: endDate }
-      ])
-      .fields({
-        type: true,
-        'expand.base_transaction.amount': true,
-        'expand.base_transaction.date': true,
-        'expand.category.id': true
-      })
-      .execute()
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const transactions = incomeExpenses.filter(
+      transaction =>
+        dayjs(transaction.date).isSameOrAfter(startDate) &&
+        dayjs(transaction.date).isSameOrBefore(endDate)
+    )
 
     const incomeByCategory: Record<
       string,
@@ -270,9 +260,9 @@ export const getCategoriesBreakdown = forge
     > = {}
 
     for (const transaction of transactions) {
-      const categoryId = transaction.expand?.category?.id
+      const categoryId = transaction.category
 
-      const amount = transaction.expand?.base_transaction?.amount || 0
+      const amount = transaction.amount
 
       const type = transaction.type
 
@@ -324,19 +314,54 @@ export const getSpendingByLocation = forge
     description: 'Get spending aggregated by location for heatmap',
     output: {
       OK: z.array(
-        walletSchemas.expenses_location_aggregated.extend({
-          lng: z.number(),
+        z.object({
           lat: z.number(),
-          amount: z.number()
+          lng: z.number(),
+          locationName: z.string(),
+          amount: z.number(),
+          count: z.number()
         })
       )
     }
   })
-  .callback(async ({ pb, response }) =>
-    response.ok(
-      await pb.getFullList.collection('expenses_location_aggregated').execute()
-    )
-  )
+  .callback(async ({ db, response }) => {
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const grouped: Record<
+      string,
+      { lat: number; lng: number; locationName: string; amount: number; count: number }
+    > = {}
+
+    for (const transaction of incomeExpenses) {
+      if (transaction.type !== 'expenses') continue
+
+      if (
+        !transaction.location_name ||
+        !transaction.location_coords ||
+        transaction.location_coords.lat === 0 ||
+        transaction.location_coords.lon === 0
+      ) {
+        continue
+      }
+
+      const key = `${transaction.location_coords.lat}_${transaction.location_coords.lon}_${transaction.location_name}`
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          lat: transaction.location_coords.lat,
+          lng: transaction.location_coords.lon,
+          locationName: transaction.location_name,
+          amount: 0,
+          count: 0
+        }
+      }
+
+      grouped[key].amount += transaction.amount
+      grouped[key].count += 1
+    }
+
+    return response.ok(Object.values(grouped))
+  })
 
 export const getAvailableYearMonths = forge
   .query({
@@ -345,11 +370,10 @@ export const getAvailableYearMonths = forge
       OK: AvailableYearMonthsOutput
     }
   })
-  .callback(async ({ pb, response }) => {
-    const transactions = await pb.getFullList
-      .collection('transactions')
-      .fields({ date: true })
-      .execute()
+  .callback(async ({ db, response }) => {
+    const transactions = await db
+      .select({ date: walletTransactions.date })
+      .from(walletTransactions)
 
     const yearMonthMap: Record<number, Set<number>> = {}
 
@@ -363,6 +387,7 @@ export const getAvailableYearMonths = forge
       if (!yearMonthMap[year]) {
         yearMonthMap[year] = new Set()
       }
+
       yearMonthMap[year].add(month)
     }
 
@@ -393,7 +418,7 @@ export const getTransactionCountByDay = forge
       OK: TransactionCountByDayOutput
     }
   })
-  .callback(async ({ pb, query: { year, month, viewFilter }, response }) => {
+  .callback(async ({ db, query: { year, month, viewFilter }, response }) => {
     const parsedYear = parseInt(year)
 
     const parsedMonth = parseInt(month) + 1
@@ -405,13 +430,7 @@ export const getTransactionCountByDay = forge
       'income' | 'expenses' | 'transfer'
     )[]) ?? ['income', 'expenses', 'transfer']
 
-    const data = await pb.getFullList
-      .collection('transactions_amount_aggregated')
-      .filter([
-        { field: 'year', operator: '=', value: parsedYear },
-        { field: 'month', operator: '=', value: parsedMonth }
-      ])
-      .execute()
+    const { incomeExpenses, transfers } = await fetchTransactions(db)
 
     const countMap: Record<
       string,
@@ -424,26 +443,58 @@ export const getTransactionCountByDay = forge
       }
     > = {}
 
-    for (const row of data) {
-      const dateKey = `${row.year}-${row.month}-${row.date}`
-
-      countMap[dateKey] = {
-        income: 0,
-        expenses: 0,
-        transfer: 0,
-        total: 0,
-        count: 0
+    const ensure = (dateKey: string) => {
+      if (!countMap[dateKey]) {
+        countMap[dateKey] = {
+          income: 0,
+          expenses: 0,
+          transfer: 0,
+          total: 0,
+          count: 0
+        }
       }
 
-      const types = ['income', 'expenses', 'transfer'] as const
+      return countMap[dateKey]
+    }
 
-      for (const type of types) {
+    const isInMonth = (date: Date) =>
+      date.getFullYear() === parsedYear && date.getMonth() + 1 === parsedMonth
+
+    for (const transaction of incomeExpenses) {
+      if (!isInMonth(transaction.date)) continue
+
+      const date = dayjs(transaction.date)
+
+      const dateKey = `${date.year()}-${date.month() + 1}-${date.date()}`
+
+      const entry = ensure(dateKey)
+
+      if (parsedViewFilter.includes(transaction.type as 'income' | 'expenses')) {
+        entry[transaction.type as 'income' | 'expenses'] += 1
+      }
+    }
+
+    for (const transaction of transfers) {
+      if (!isInMonth(transaction.date)) continue
+
+      const date = dayjs(transaction.date)
+
+      const dateKey = `${date.year()}-${date.month() + 1}-${date.date()}`
+
+      const entry = ensure(dateKey)
+
+      if (parsedViewFilter.includes('transfer')) {
+        entry.transfer += 1
+      }
+    }
+
+    for (const dateKey in countMap) {
+      const entry = countMap[dateKey]
+
+      for (const type of ['income', 'expenses', 'transfer'] as const) {
         if (parsedViewFilter.includes(type)) {
-          const count = row[`${type}_count`] || 0
-
-          countMap[dateKey][type] = count
-          countMap[dateKey].total += count
-          countMap[dateKey].count += count > 0 ? count : 0
+          entry.total += entry[type]
+          entry.count += entry[type] > 0 ? entry[type] : 0
         }
       }
     }
@@ -463,13 +514,13 @@ export const getChartData = forge
       OK: ChartDataOutput
     }
   })
-  .callback(async ({ pb, query: { range }, response }) => {
+  .callback(async ({ db, query: { range }, response }) => {
     const now = dayjs()
 
     const currentYear = now.year()
 
-    let startDate: string
-    let endDate: string
+    let startDate: dayjs.Dayjs
+    let endDate: dayjs.Dayjs
     let groupBy: 'day' | 'month'
 
     const labels: string[] = []
@@ -478,8 +529,8 @@ export const getChartData = forge
       case 'week': {
         const startOfWeek = dayjs().startOf('week')
 
-        startDate = startOfWeek.format('YYYY-MM-DD')
-        endDate = dayjs().endOf('week').format('YYYY-MM-DD')
+        startDate = startOfWeek
+        endDate = dayjs().endOf('week')
         groupBy = 'day'
 
         for (let i = 0; i <= 6; i++) {
@@ -493,8 +544,8 @@ export const getChartData = forge
 
         const endOfMonth = dayjs().endOf('month')
 
-        startDate = startOfMonth.format('YYYY-MM-DD')
-        endDate = endOfMonth.format('YYYY-MM-DD')
+        startDate = startOfMonth
+        endDate = endOfMonth
         groupBy = 'day'
 
         for (let i = 0; i < endOfMonth.date(); i++) {
@@ -504,8 +555,8 @@ export const getChartData = forge
       }
 
       case 'ytd': {
-        startDate = dayjs().startOf('year').format('YYYY-MM-DD')
-        endDate = dayjs().endOf('month').format('YYYY-MM-DD')
+        startDate = dayjs().startOf('year')
+        endDate = dayjs().endOf('month')
         groupBy = 'month'
 
         for (let i = 0; i <= now.month(); i++) {
@@ -515,14 +566,13 @@ export const getChartData = forge
       }
     }
 
-    const transactions = await pb.getFullList
-      .collection('transactions_income_expenses')
-      .expand({ base_transaction: 'transactions' })
-      .filter([
-        { field: 'base_transaction.date', operator: '>=', value: startDate },
-        { field: 'base_transaction.date', operator: '<=', value: endDate }
-      ])
-      .execute()
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const transactions = incomeExpenses.filter(
+      transaction =>
+        dayjs(transaction.date).isSameOrAfter(startDate) &&
+        dayjs(transaction.date).isSameOrBefore(endDate)
+    )
 
     const resultMap: Record<string, { income: number; expenses: number }> = {}
 
@@ -531,27 +581,23 @@ export const getChartData = forge
     }
 
     for (const transaction of transactions) {
-      const base = transaction.expand?.base_transaction
-
-      if (!base) continue
-
-      const transactionYear = dayjs(base.date).year()
+      const transactionYear = dayjs(transaction.date).year()
 
       if (transactionYear !== currentYear) continue
 
       let dateKey: string
 
       if (groupBy === 'day') {
-        dateKey = dayjs(base.date).format('MMM DD')
+        dateKey = dayjs(transaction.date).format('MMM DD')
       } else {
-        dateKey = dayjs(base.date).format('MMM')
+        dateKey = dayjs(transaction.date).format('MMM')
       }
 
       if (resultMap[dateKey]) {
         if (transaction.type === 'income') {
-          resultMap[dateKey].income += base.amount
+          resultMap[dateKey].income += transaction.amount
         } else if (transaction.type === 'expenses') {
-          resultMap[dateKey].expenses += base.amount
+          resultMap[dateKey].expenses += transaction.amount
         }
       }
     }

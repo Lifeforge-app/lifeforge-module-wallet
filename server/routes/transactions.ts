@@ -1,3 +1,5 @@
+import { and, eq, gte, ilike, lte } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import dayjs from 'dayjs'
 import fs from 'fs'
 import z from 'zod'
@@ -5,78 +7,82 @@ import z from 'zod'
 import { LocationSchema } from '@lifeforge/server-utils'
 
 import forge from '../forge'
-import walletSchemas from '../schema'
+import {
+  walletTransactions,
+  walletTransactionsIncomeExpenses,
+  walletTransactionsTransfer
+} from '../schema.drizzle'
 import { getTransactionDetails } from '../utils/transactions'
 
-const BaseFields = walletSchemas.transactions
-  .omit({ receipt: true })
-  .extend({ receipt: z.string().optional() })
-
-const IncomeExpensesFields = walletSchemas.transactions_income_expenses.omit({
-  base_transaction: true
+const transactionDto = createSelectSchema(walletTransactions).extend({
+  type: z.enum(['transfer', 'income_expenses'])
 })
 
-const DbTransactionOutput = z.discriminatedUnion('type', [
-  BaseFields.extend({
-    type: z.literal('transfer'),
-    from: z.string(),
-    to: z.string()
-  }),
-  BaseFields.extend({
-    type: z.literal('income_expenses')
-  })
-])
+const locationCoordsDto = z.object({
+  lon: z.number(),
+  lat: z.number()
+})
+
+const incomeExpensesFields = {
+  particulars: z.string(),
+  asset: z.string().nullable(),
+  category: z.string().nullable(),
+  ledgers: z.array(z.string()),
+  location_name: z.string(),
+  location_coords: locationCoordsDto.nullable()
+}
 
 const EnrichedTransactionOutput = z.discriminatedUnion('type', [
-  BaseFields.extend({
+  transactionDto.extend({
     type: z.literal('transfer'),
-    from: z.string(),
-    to: z.string()
+    from: z.string().nullable(),
+    to: z.string().nullable()
   }),
-  BaseFields.merge(IncomeExpensesFields).extend({
+  transactionDto.merge(z.object(incomeExpensesFields)).extend({
     type: z.literal('income')
   }),
-  BaseFields.merge(IncomeExpensesFields).extend({
+  transactionDto.merge(z.object(incomeExpensesFields)).extend({
     type: z.literal('expenses')
   })
 ])
 
-const MutateTransactionInputSchema = walletSchemas.transactions
-  .omit({
-    type: true,
-    receipt: true,
-    created: true,
-    updated: true,
-    id: true,
-    collectionId: true,
-    collectionName: true
+const MutateTransactionInputSchema = z.union([
+  z.object({
+    type: z.enum(['income', 'expenses']),
+    amount: z.number(),
+    date: z.string().optional(),
+    particulars: z.string().optional(),
+    asset: z.string().optional(),
+    category: z.string().optional(),
+    ledgers: z.array(z.string()).optional(),
+    location: LocationSchema.optional().nullable()
+  }),
+  z.object({
+    type: z.literal('transfer'),
+    amount: z.number(),
+    date: z.string().optional(),
+    from: z.string().optional(),
+    to: z.string().optional()
   })
-  .and(
-    z.union([
-      walletSchemas.transactions_income_expenses
-        .omit({
-          base_transaction: true,
-          location_name: true,
-          location_coords: true,
-          id: true,
-          collectionId: true,
-          collectionName: true
-        })
-        .extend({
-          location: LocationSchema.optional().nullable()
-        }),
-      walletSchemas.transactions_transfer
-        .omit({
-          base_transaction: true,
-          id: true,
-          collectionId: true,
-          collectionName: true
-        })
-        .extend({
-          type: z.literal('transfer')
-        })
-    ])
-  )
+])
+
+function mapIncomeExpenses(data: z.infer<typeof MutateTransactionInputSchema>) {
+  if (data.type === 'transfer') {
+    return null
+  }
+
+  return {
+    particulars: data.particulars ?? '',
+    asset: data.asset || null,
+    category: data.category || null,
+    ledgers: data.ledgers ?? [],
+    location_name: data.location?.name ?? '',
+    location_coords: {
+      lon: data.location?.location.longitude ?? 0,
+      lat: data.location?.location.latitude ?? 0
+    }
+  }
+}
 
 export const list = forge
   .query({
@@ -93,77 +99,89 @@ export const list = forge
       OK: z.array(EnrichedTransactionOutput)
     }
   })
-  .callback(async ({ pb, query: { q, type, year, month }, response }) => {
+  .callback(async ({ db, query: { q, type, year, month }, response }) => {
     const parsedYear = year ? parseInt(year) : undefined
 
     const parsedMonth = month ? parseInt(month) : undefined
 
-    const dateFilters =
-      parsedYear !== undefined && parsedMonth !== undefined
-        ? ([
-            {
-              field: 'base_transaction.date' as const,
-              operator: '>=' as const,
-              value: dayjs()
-                .year(parsedYear)
-                .month(parsedMonth - 1)
-                .startOf('month')
-                .format('YYYY-MM-DD')
-            },
-            {
-              field: 'base_transaction.date' as const,
-              operator: '<=' as const,
-              value: dayjs()
-                .year(parsedYear)
-                .month(parsedMonth - 1)
-                .endOf('month')
-                .format('YYYY-MM-DD')
-            }
-          ] as const)
-        : []
+    const dateConditions = []
 
-    const incomeExpensesTransactions = await pb.getFullList
-      .collection('transactions_income_expenses')
-      .expand({ base_transaction: 'transactions' })
-      .filter([
-        q
-          ? { field: 'particulars' as const, operator: '~' as const, value: q }
-          : null,
-        ...dateFilters
-      ])
-      .execute()
+    if (parsedYear !== undefined && parsedMonth !== undefined) {
+      dateConditions.push(
+        gte(
+          walletTransactions.date,
+          dayjs()
+            .year(parsedYear)
+            .month(parsedMonth - 1)
+            .startOf('month')
+            .toDate()
+        ),
+        lte(
+          walletTransactions.date,
+          dayjs()
+            .year(parsedYear)
+            .month(parsedMonth - 1)
+            .endOf('month')
+            .toDate()
+        )
+      )
+    }
 
-    const transferTransactions = await pb.getFullList
-      .collection('transactions_transfer')
-      .expand({ base_transaction: 'transactions' })
-      .filter([...dateFilters])
-      .execute()
+    const incomeExpenses = await db
+      .select({
+        base: walletTransactions,
+        sub: walletTransactionsIncomeExpenses
+      })
+      .from(walletTransactionsIncomeExpenses)
+      .innerJoin(
+        walletTransactions,
+        eq(
+          walletTransactionsIncomeExpenses.base_transaction,
+          walletTransactions.id
+        )
+      )
+      .where(
+        and(
+          ...(q
+            ? [ilike(walletTransactionsIncomeExpenses.particulars, `%${q}%`)]
+            : []),
+          ...dateConditions
+        )
+      )
+
+    const transfers = await db
+      .select({
+        base: walletTransactions,
+        sub: walletTransactionsTransfer
+      })
+      .from(walletTransactionsTransfer)
+      .innerJoin(
+        walletTransactions,
+        eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
+      )
+      .where(dateConditions.length > 0 ? and(...dateConditions) : undefined)
 
     const allTransactions: z.infer<typeof EnrichedTransactionOutput>[] = []
 
-    for (const transaction of incomeExpensesTransactions) {
-      const baseTransaction = transaction.expand!.base_transaction!
-
+    for (const { base, sub } of incomeExpenses) {
       allTransactions.push({
-        ...baseTransaction,
-        type: transaction.type,
-        particulars: transaction.particulars,
-        asset: transaction.asset,
-        category: transaction.category,
-        ledgers: transaction.ledgers,
-        location_name: transaction.location_name,
-        location_coords: transaction.location_coords
+        ...base,
+        type: sub.type as 'income' | 'expenses',
+        particulars: sub.particulars,
+        asset: sub.asset,
+        category: sub.category,
+        ledgers: sub.ledgers,
+        location_name: sub.location_name,
+        location_coords: sub.location_coords
       })
     }
 
-    for (const transaction of transferTransactions) {
-      const baseTransaction = transaction.expand!.base_transaction!
-
+    for (const { base, sub } of transfers) {
       allTransactions.push({
-        ...baseTransaction,
-        type: 'transfer' as const,
-        from: transaction.from,
-        to: transaction.to
+        ...base,
+        type: 'transfer',
+        from: sub.from,
+        to: sub.to
       })
     }
 
@@ -171,12 +189,12 @@ export const list = forge
       allTransactions
         .filter(transaction => !type || transaction.type === type)
         .sort((a, b) => {
-          const aDate = new Date(a.date).getTime()
+          const aDate = a.date.getTime()
 
-          const bDate = new Date(b.date).getTime()
+          const bDate = b.date.getTime()
 
           if (aDate === bDate) {
-            return new Date(b.created).getTime() - new Date(a.created).getTime()
+            return b.created.getTime() - a.created.getTime()
           }
 
           return bDate - aDate
@@ -188,51 +206,44 @@ export const getById = forge
   .query({
     description: 'Get wallet transaction by ID',
     input: {
-      query: z.object({ id: z.string() })
-    },
-    existenceCheck: {
-      query: { id: 'transactions' }
+      query: z.object({ id: forge.existsIn(z.string(), walletTransactions) })
     },
     output: {
-      OK: EnrichedTransactionOutput,
-      NOT_FOUND: true
+      OK: EnrichedTransactionOutput
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    const baseTransaction = await pb.getOne
-      .collection('transactions')
-      .id(id)
-      .execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    const baseTransaction = (await db.query.transactions.findFirst({
+      where: { id }
+    }))!
 
     if (baseTransaction.type === 'transfer') {
-      const transferTransaction = await pb.getFirstListItem
-        .collection('transactions_transfer')
-        .filter([{ field: 'base_transaction', operator: '=', value: id }])
-        .execute()
+      const sub = await db.query.transactions_transfer.findFirst({
+        where: { base_transaction: id }
+      })
 
       return response.ok({
         ...baseTransaction,
         type: 'transfer' as const,
-        from: transferTransaction.from,
-        to: transferTransaction.to
-      })
-    } else {
-      const incomeExpensesTransaction = await pb.getFirstListItem
-        .collection('transactions_income_expenses')
-        .filter([{ field: 'base_transaction', operator: '=', value: id }])
-        .execute()
-
-      return response.ok({
-        ...baseTransaction,
-        type: incomeExpensesTransaction.type,
-        particulars: incomeExpensesTransaction.particulars,
-        asset: incomeExpensesTransaction.asset,
-        category: incomeExpensesTransaction.category,
-        ledgers: incomeExpensesTransaction.ledgers,
-        location_name: incomeExpensesTransaction.location_name,
-        location_coords: incomeExpensesTransaction.location_coords
+        from: sub?.from ?? null,
+        to: sub?.to ?? null
       })
     }
+
+    const sub = await db.query.transactions_income_expenses.findFirst({
+      where: { base_transaction: id }
+    })
+
+    return response.ok({
+      ...baseTransaction,
+      type: (sub?.type ?? 'expenses') as 'income' | 'expenses',
+      particulars: sub?.particulars ?? '',
+      asset: sub?.asset ?? null,
+      category: sub?.category ?? null,
+      ledgers: sub?.ledgers ?? [],
+      location_name: sub?.location_name ?? '',
+      location_coords: sub?.location_coords ?? null
+    })
   })
 
 export const create = forge
@@ -246,82 +257,70 @@ export const create = forge
         optional: true
       }
     },
-    existenceCheck: {
-      body: {
-        category: '[categories]',
-        asset: '[assets]',
-        ledgers: '[ledgers]',
-        from: '[assets]',
-        to: '[assets]'
-      }
-    },
     output: {
-      CREATED: DbTransactionOutput,
-      NOT_FOUND: true
+      CREATED: transactionDto
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       body,
       media: { receipt: rawReceipt },
       core: {
-        media: { convertPDFToImage }
+        media: { convertPDFToImage },
+        storage
       },
       response
     }) => {
-      const data = body as z.infer<typeof MutateTransactionInputSchema>
+      let receiptKey = ''
 
-      const receipt =
-        rawReceipt && typeof rawReceipt !== 'string'
-          ? rawReceipt.originalname.endsWith('.pdf')
-            ? await convertPDFToImage(rawReceipt.path)
-            : new File([fs.readFileSync(rawReceipt.path)], 'receipt.jpg', {
-                type: rawReceipt.mimetype
-              })
-          : undefined
+      if (rawReceipt && typeof rawReceipt !== 'string') {
+        if (rawReceipt.originalName.endsWith('.pdf')) {
+          const image = await convertPDFToImage(rawReceipt.path)
 
-      const baseTransaction = await pb.create
-        .collection('transactions')
-        .data({
-          type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
-          amount: data.amount,
-          date: data.date,
-          receipt
-        })
-        .execute()
+          if (image) {
+            const ref = await storage.save({
+              file: {
+                buffer: Buffer.from(await image.arrayBuffer()),
+                originalName: image.name,
+                mimeType: image.type
+              }
+            })
 
-      if (data.type === 'transfer') {
-        await pb.create
-          .collection('transactions_transfer')
-          .data({
-            from: data.from,
-            to: data.to,
-            base_transaction: baseTransaction.id
-          })
-          .execute()
-      } else {
-        await pb.create
-          .collection('transactions_income_expenses')
-          .data({
-            base_transaction: baseTransaction.id,
-            type: data.type,
-            particulars: data.particulars,
-            asset: data.asset,
-            category: data.category,
-            ledgers: data.ledgers,
-            location_name: data.location?.name ?? '',
-            location_coords: {
-              lon: data.location?.location.longitude ?? 0,
-              lat: data.location?.location.latitude ?? 0
-            }
-          })
-          .execute()
+            receiptKey = ref?.key ?? ''
+          }
+        } else {
+          const ref = await storage.save({ file: rawReceipt })
+
+          receiptKey = ref?.key ?? ''
+        }
       }
 
-      return response.created(
-        baseTransaction as z.infer<typeof DbTransactionOutput>
-      )
+      const [baseTransaction] = await db
+        .insert(walletTransactions)
+        .values({
+          type: body.type === 'transfer' ? 'transfer' : 'income_expenses',
+          amount: body.amount,
+          date: body.date ? new Date(body.date) : new Date(),
+          receipt: receiptKey
+        })
+        .returning()
+
+      if (body.type === 'transfer') {
+        await db.insert(walletTransactionsTransfer).values({
+          from: body.from || null,
+          to: body.to || null,
+          base_transaction: baseTransaction.id
+        })
+      } else {
+        await db.insert(walletTransactionsIncomeExpenses).values({
+          base_transaction: baseTransaction.id,
+          type: body.type,
+          ...mapIncomeExpenses(body)!
+        })
+      }
+
+      return response.created(baseTransaction)
     }
   )
 
@@ -329,7 +328,7 @@ export const update = forge
   .mutation({
     description: 'Update transaction details',
     input: {
-      query: z.object({ id: z.string() }),
+      query: z.object({ id: forge.existsIn(z.string(), walletTransactions) }),
       body: MutateTransactionInputSchema
     },
     media: {
@@ -337,96 +336,73 @@ export const update = forge
         optional: true
       }
     },
-    existenceCheck: {
-      query: { id: 'transactions' },
-      body: {
-        category: '[categories]',
-        asset: '[assets]',
-        from: '[assets]',
-        to: '[assets]',
-        ledgers: '[ledgers]'
-      }
-    },
     output: {
-      OK: DbTransactionOutput,
-      NOT_FOUND: true
+      OK: transactionDto
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       query: { id },
       body,
       media: { receipt: rawReceipt },
       core: {
-        media: { convertPDFToImage }
+        media: { convertPDFToImage },
+        storage
       },
       response
     }) => {
-      const data = body as z.infer<typeof MutateTransactionInputSchema>
+      let receiptUpdate: { receipt?: string } = {}
 
-      const receipt =
-        rawReceipt && typeof rawReceipt !== 'string'
-          ? rawReceipt.originalname.endsWith('.pdf')
-            ? await convertPDFToImage(rawReceipt.path)
-            : new File([fs.readFileSync(rawReceipt.path)], 'receipt.jpg', {
-                type: rawReceipt.mimetype
-              })
-          : undefined
+      if (rawReceipt === 'removed') {
+        receiptUpdate = { receipt: '' }
+      } else if (rawReceipt && typeof rawReceipt !== 'string') {
+        if (rawReceipt.originalName.endsWith('.pdf')) {
+          const image = await convertPDFToImage(rawReceipt.path)
 
-      const baseTransaction = await pb.update
-        .collection('transactions')
-        .id(id)
-        .data({
-          type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
-          amount: data.amount,
-          date: data.date,
-          ...(rawReceipt !== 'keep' && {
-            receipt: rawReceipt === 'removed' ? null : receipt
-          })
-        })
-        .execute()
+          if (image) {
+            const ref = await storage.save({
+              file: {
+                buffer: Buffer.from(await image.arrayBuffer()),
+                originalName: image.name,
+                mimeType: image.type
+              }
+            })
 
-      if (data.type === 'transfer') {
-        const target = await pb.getFirstListItem
-          .collection('transactions_transfer')
-          .filter([{ field: 'base_transaction', operator: '=', value: id }])
-          .execute()
+            receiptUpdate = { receipt: ref?.key ?? '' }
+          }
+        } else {
+          const ref = await storage.save({ file: rawReceipt })
 
-        await pb.update
-          .collection('transactions_transfer')
-          .id(target.id)
-          .data({
-            from: data.from,
-            to: data.to,
-            base_transaction: baseTransaction.id
-          })
-          .execute()
-      } else {
-        const target = await pb.getFirstListItem
-          .collection('transactions_income_expenses')
-          .filter([{ field: 'base_transaction', operator: '=', value: id }])
-          .execute()
-
-        await pb.update
-          .collection('transactions_income_expenses')
-          .id(target.id)
-          .data({
-            type: data.type,
-            particulars: data.particulars,
-            asset: data.asset,
-            category: data.category,
-            ledgers: data.ledgers,
-            location_name: data.location?.name ?? '',
-            location_coords: {
-              lon: data.location?.location.longitude ?? 0,
-              lat: data.location?.location.latitude ?? 0
-            }
-          })
-          .execute()
+          receiptUpdate = { receipt: ref?.key ?? '' }
+        }
       }
 
-      return response.ok(baseTransaction as z.infer<typeof DbTransactionOutput>)
+      const [baseTransaction] = await db
+        .update(walletTransactions)
+        .set({
+          type: body.type === 'transfer' ? 'transfer' : 'income_expenses',
+          amount: body.amount,
+          date: body.date ? new Date(body.date) : new Date(),
+          updated: new Date(),
+          ...receiptUpdate
+        })
+        .where(eq(walletTransactions.id, id))
+        .returning()
+
+      if (body.type === 'transfer') {
+        await db
+          .update(walletTransactionsTransfer)
+          .set({ from: body.from || null, to: body.to || null })
+          .where(eq(walletTransactionsTransfer.base_transaction, id))
+      } else {
+        await db
+          .update(walletTransactionsIncomeExpenses)
+          .set({ type: body.type, ...mapIncomeExpenses(body)! })
+          .where(eq(walletTransactionsIncomeExpenses.base_transaction, id))
+      }
+
+      return response.ok(baseTransaction)
     }
   )
 
@@ -434,18 +410,14 @@ export const remove = forge
   .mutation({
     description: 'Delete a transaction',
     input: {
-      query: z.object({ id: z.string() })
-    },
-    existenceCheck: {
-      query: { id: 'transactions' }
+      query: z.object({ id: forge.existsIn(z.string(), walletTransactions) })
     },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('transactions').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db.delete(walletTransactions).where(eq(walletTransactions.id, id))
 
     return response.noContent()
   })
@@ -453,7 +425,6 @@ export const remove = forge
 export const scanReceipt = forge
   .mutation({
     description: 'Extract transaction data from receipt using OCR',
-    input: {},
     media: {
       file: {
         optional: false
@@ -464,20 +435,19 @@ export const scanReceipt = forge
         date: z.string(),
         amount: z.number(),
         type: z.enum(['income', 'expenses']),
-        category: z.string(),
+        category: z.string().nullable(),
         particulars: z.string(),
         location_coords: z.object({
           lon: z.number(),
           lat: z.number()
         }),
         location_name: z.string()
-      }),
-      BAD_REQUEST: z.string()
+      })
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       media: { file },
       core: {
         media: { convertPDFToImage, parseOCR },
@@ -489,7 +459,7 @@ export const scanReceipt = forge
         return response.badRequest('No file uploaded')
       }
 
-      if (file.originalname.endsWith('.pdf')) {
+      if (file.originalName.endsWith('.pdf')) {
         const image = await convertPDFToImage(file.path)
 
         if (!image) {
@@ -518,7 +488,7 @@ export const scanReceipt = forge
       return response.ok(
         await getTransactionDetails(
           OCRResult,
-          pb,
+          db,
           fetchAI,
           getAPIKey,
           searchLocations
@@ -539,48 +509,30 @@ export const createMultiple = forge
       CREATED: z.null()
     }
   })
-  .callback(async ({ pb, body: { transactions }, response }) => {
-    const results = []
-
-    for (const data of transactions) {
-      const baseTransaction = await pb.create
-        .collection('transactions')
-        .data({
-          type: data.type === 'transfer' ? 'transfer' : 'income_expenses',
-          amount: data.amount,
-          date: data.date
+  .callback(async ({ db, body: { transactions }, response }) => {
+    for (const body of transactions) {
+      const [baseTransaction] = await db
+        .insert(walletTransactions)
+        .values({
+          type: body.type === 'transfer' ? 'transfer' : 'income_expenses',
+          amount: body.amount,
+          date: body.date ? new Date(body.date) : new Date()
         })
-        .execute()
+        .returning()
 
-      if (data.type === 'transfer') {
-        await pb.create
-          .collection('transactions_transfer')
-          .data({
-            from: data.from,
-            to: data.to,
-            base_transaction: baseTransaction.id
-          })
-          .execute()
+      if (body.type === 'transfer') {
+        await db.insert(walletTransactionsTransfer).values({
+          from: body.from || null,
+          to: body.to || null,
+          base_transaction: baseTransaction.id
+        })
       } else {
-        await pb.create
-          .collection('transactions_income_expenses')
-          .data({
-            base_transaction: baseTransaction.id,
-            type: data.type,
-            particulars: data.particulars,
-            asset: data.asset,
-            category: data.category,
-            ledgers: data.ledgers,
-            location_name: data.location?.name ?? '',
-            location_coords: {
-              lon: data.location?.location.longitude ?? 0,
-              lat: data.location?.location.latitude ?? 0
-            }
-          })
-          .execute()
+        await db.insert(walletTransactionsIncomeExpenses).values({
+          base_transaction: baseTransaction.id,
+          type: body.type,
+          ...mapIncomeExpenses(body)!
+        })
       }
-
-      results.push(baseTransaction)
     }
 
     return response.created(null)

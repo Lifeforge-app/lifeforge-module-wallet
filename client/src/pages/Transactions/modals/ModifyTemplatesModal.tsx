@@ -70,6 +70,8 @@ function ModifyTemplatesModal({
     defaultValues: {
       ...createDefaultValues(schema),
       ...initialData,
+      asset: initialData?.asset ?? undefined,
+      category: initialData?.category ?? undefined,
       type: initialData?.type ?? 'income',
       location: initialData?.location_name
         ? {

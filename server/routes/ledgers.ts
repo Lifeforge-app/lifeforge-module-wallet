@@ -1,92 +1,109 @@
+import { asc, count, eq, sql } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import z from 'zod'
 
 import forge from '../forge'
-import walletSchemas from '../schema'
+import {
+  walletLedgers,
+  walletTransactionsIncomeExpenses
+} from '../schema.drizzle'
+
+const ledgerDto = createSelectSchema(walletLedgers)
+
+const ledgerAggregateDto = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.string(),
+  icon: z.string(),
+  amount: z.number()
+})
+
+const ledgerInputDto = z.object({
+  name: z.string(),
+  icon: z.string(),
+  color: z.string()
+})
 
 export const list = forge
   .query({
     description: 'Get all ledgers',
     output: {
-      OK: z.array(walletSchemas.ledgers_aggregated)
+      OK: z.array(ledgerAggregateDto)
     }
   })
-  .callback(async ({ pb, response }) =>
-    response.ok(
-      await pb.getFullList
-        .collection('ledgers_aggregated')
-        .sort(['name'])
-        .execute()
-    )
-  )
+  .callback(async ({ db, response }) => {
+    const rows = await db
+      .select({
+        id: walletLedgers.id,
+        name: walletLedgers.name,
+        color: walletLedgers.color,
+        icon: walletLedgers.icon,
+        amount: count(walletTransactionsIncomeExpenses.id)
+      })
+      .from(walletLedgers)
+      .leftJoin(
+        walletTransactionsIncomeExpenses,
+        sql`jsonb_exists(${walletTransactionsIncomeExpenses.ledgers}, ${walletLedgers.id}::text)`
+      )
+      .groupBy(walletLedgers.id)
+      .orderBy(asc(walletLedgers.name))
+
+    return response.ok(rows)
+  })
 
 export const create = forge
   .mutation({
     description: 'Create a new ledger',
     input: {
-      body: walletSchemas.ledgers.pick({
-        name: true,
-        icon: true,
-        color: true
-      })
+      body: ledgerInputDto
     },
     output: {
-      CREATED: walletSchemas.ledgers,
-      CONFLICT: true
+      CREATED: ledgerDto
     }
   })
-  .callback(async ({ pb, body, response }) =>
-    response.created(await pb.create.collection('ledgers').data(body).execute())
-  )
+  .callback(async ({ db, body, response }) => {
+    const [created] = await db.insert(walletLedgers).values(body).returning()
+
+    return response.created(created)
+  })
 
 export const update = forge
   .mutation({
     description: 'Update ledger details',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletLedgers)
       }),
-      body: walletSchemas.ledgers.pick({
-        name: true,
-        icon: true,
-        color: true
-      })
-    },
-    existenceCheck: {
-      query: {
-        id: 'ledgers'
-      }
+      body: ledgerInputDto
     },
     output: {
-      OK: walletSchemas.ledgers,
-      NOT_FOUND: true
+      OK: ledgerDto
     }
   })
-  .callback(async ({ pb, query: { id }, body, response }) =>
-    response.ok(
-      await pb.update.collection('ledgers').id(id).data(body).execute()
-    )
-  )
+  .callback(async ({ db, query: { id }, body, response }) => {
+    const [updated] = await db
+      .update(walletLedgers)
+      .set(body)
+      .where(eq(walletLedgers.id, id))
+      .returning()
+
+    return response.ok(updated)
+  })
 
 export const remove = forge
   .mutation({
     description: 'Delete a ledger',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletLedgers)
       })
     },
-    existenceCheck: {
-      query: {
-        id: 'ledgers'
-      }
-    },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('ledgers').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db.delete(walletLedgers).where(eq(walletLedgers.id, id))
 
     return response.noContent()
   })

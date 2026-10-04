@@ -1,33 +1,31 @@
+import { eq } from 'drizzle-orm'
 import z from 'zod'
 
 import { getPromptGenerationPrompt } from '../constants/prompts'
 import forge from '../forge'
+import {
+  walletTransactionsIncomeExpenses,
+  walletTransactionsPrompts
+} from '../schema.drizzle'
+
+const promptDto = z.object({
+  income: z.string(),
+  expenses: z.string()
+})
 
 export const get = forge
   .query({
     description: 'Get AI prompts for transaction generation',
     output: {
-      OK: z.object({
-        income: z.string(),
-        expenses: z.string()
-      })
+      OK: promptDto
     }
   })
-  .callback(async ({ pb, response }) => {
-    const records = await pb.getFullList
-      .collection('transactions_prompts')
-      .execute()
-
-    if (records.length === 0) {
-      return response.ok({
-        income: '',
-        expenses: ''
-      })
-    }
+  .callback(async ({ db, response }) => {
+    const record = await db.query.transactions_prompts.findFirst()
 
     return response.ok({
-      income: records[0].income,
-      expenses: records[0].expenses
+      income: record?.income ?? '',
+      expenses: record?.expenses ?? ''
     })
   })
 
@@ -41,39 +39,28 @@ export const update = forge
       })
     },
     output: {
-      OK: z.object({
-        income: z.string(),
-        expenses: z.string()
-      })
+      OK: promptDto
     }
   })
-  .callback(async ({ pb, body, response }) => {
-    const records = await pb.getFullList
-      .collection('transactions_prompts')
-      .execute()
+  .callback(async ({ db, body, response }) => {
+    const record = await db.query.transactions_prompts.findFirst()
 
-    if (records.length === 0) {
-      const newRecord = await pb.create
-        .collection('transactions_prompts')
-        .data(body)
-        .execute()
+    if (!record) {
+      const [created] = await db
+        .insert(walletTransactionsPrompts)
+        .values(body)
+        .returning()
 
-      return response.ok({
-        income: newRecord.income,
-        expenses: newRecord.expenses
-      })
+      return response.ok({ income: created.income, expenses: created.expenses })
     }
 
-    const updatedRecord = await pb.update
-      .collection('transactions_prompts')
-      .id(records[0].id)
-      .data(body)
-      .execute()
+    const [updated] = await db
+      .update(walletTransactionsPrompts)
+      .set(body)
+      .where(eq(walletTransactionsPrompts.id, record.id))
+      .returning()
 
-    return response.ok({
-      income: updatedRecord.income,
-      expenses: updatedRecord.expenses
-    })
+    return response.ok({ income: updated.income, expenses: updated.expenses })
   })
 
 export const autoGenerate = forge
@@ -86,41 +73,32 @@ export const autoGenerate = forge
       })
     },
     output: {
-      OK: z.string(),
-      BAD_REQUEST: z.string()
+      OK: z.string()
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       body: { type, count },
       core: {
         api: { fetchAI }
       },
       response
     }) => {
-      const allTransactions = await pb.getFullList
-        .collection('transactions_income_expenses')
-        .expand({
-          base_transaction: 'transactions'
-        })
-        .filter([
-          {
-            field: 'type',
-            operator: '=',
-            value: type
-          }
-        ])
-        .execute()
+      const rows = await db
+        .select({ particulars: walletTransactionsIncomeExpenses.particulars })
+        .from(walletTransactionsIncomeExpenses)
+        .where(eq(walletTransactionsIncomeExpenses.type, type))
 
       const sampleTransactions: string[] = []
 
       while (
-        sampleTransactions.length < Math.min(count, allTransactions.length)
+        sampleTransactions.length < Math.min(count, rows.length) &&
+        rows.length > 0
       ) {
-        const randomIndex = Math.floor(Math.random() * allTransactions.length)
+        const randomIndex = Math.floor(Math.random() * rows.length)
 
-        const transaction = allTransactions[randomIndex]
+        const transaction = rows[randomIndex]
 
         if (!sampleTransactions.includes(transaction.particulars)) {
           sampleTransactions.push(transaction.particulars)
@@ -141,8 +119,7 @@ export const autoGenerate = forge
             role: 'user',
             content: sampleTransactions.join('\n')
           }
-        ],
-        pb
+        ]
       })
 
       if (!result) {

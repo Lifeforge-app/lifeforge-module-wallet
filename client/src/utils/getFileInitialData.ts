@@ -1,7 +1,7 @@
 import { forgeAPI } from '@/manifest'
 
 export default function getFormFileFieldInitialData(
-  initialData: any,
+  _initialData: any,
   file: File | string | null | undefined
 ) {
   if (!file) {
@@ -29,9 +29,7 @@ export default function getFormFileFieldInitialData(
   if (typeof file === 'string') {
     // Generate preview URL for existing file
     preview = forgeAPI.getMedia({
-      collectionId: initialData.collectionId!,
-      recordId: initialData.id!,
-      fieldId: file
+      key: file
     })
   } else if (file instanceof File) {
     if (file.type.startsWith('image/')) {

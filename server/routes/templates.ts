@@ -1,9 +1,45 @@
+import { asc, eq } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import z from 'zod'
 
 import { LocationSchema } from '@lifeforge/server-utils'
 
 import forge from '../forge'
-import walletSchemas from '../schema'
+import { walletTransactionTemplates } from '../schema.drizzle'
+
+const templateDto = createSelectSchema(walletTransactionTemplates).extend({
+  type: z.enum(['income', 'expenses']),
+  ledgers: z.array(z.string()),
+  location_coords: z.object({ lon: z.number(), lat: z.number() }).nullable()
+})
+
+const templateInputDto = z.object({
+  name: z.string(),
+  type: z.enum(['income', 'expenses']),
+  amount: z.number(),
+  particulars: z.string(),
+  asset: z.string().optional(),
+  category: z.string().optional(),
+  ledgers: z.array(z.string()).optional(),
+  location: LocationSchema.optional()
+})
+
+function mapTemplate(body: z.infer<typeof templateInputDto>) {
+  return {
+    name: body.name,
+    type: body.type,
+    amount: body.amount,
+    particulars: body.particulars,
+    asset: body.asset || null,
+    category: body.category || null,
+    ledgers: body.ledgers ?? [],
+    location_coords: {
+      lon: body.location?.location.longitude ?? 0,
+      lat: body.location?.location.latitude ?? 0
+    },
+    location_name: body.location?.name ?? ''
+  }
+}
 
 export const list = forge
   .query({
@@ -11,154 +47,91 @@ export const list = forge
     output: {
       OK: z.record(
         z.enum(['income', 'expenses']),
-        z.array(walletSchemas.transaction_templates)
+        z.array(templateDto)
       )
     }
   })
-  .callback(async ({ pb, response }) =>
-    response.ok(
-      (
-        await pb.getFullList
-          .collection('transaction_templates')
-          .sort(['type', 'name'])
-          .execute()
-      ).reduce(
-        (acc, template) => {
-          const type = template.type as 'income' | 'expenses'
+  .callback(async ({ db, response }) => {
+    const rows = await db
+      .select()
+      .from(walletTransactionTemplates)
+      .orderBy(asc(walletTransactionTemplates.type), asc(walletTransactionTemplates.name))
 
-          if (!acc[type]) {
-            acc[type] = []
-          }
-          acc[type].push(template)
+    const grouped: Record<'income' | 'expenses', z.infer<typeof templateDto>[]> =
+      {
+        income: [],
+        expenses: []
+      }
 
-          return acc
-        },
-        {
-          income: [],
-          expenses: []
-        } as Record<
-          'income' | 'expenses',
-          z.infer<typeof walletSchemas.transaction_templates>[]
-        >
-      )
-    )
-  )
+    for (const template of rows) {
+      const type = template.type as 'income' | 'expenses'
+
+      if (grouped[type]) {
+        grouped[type].push(template)
+      }
+    }
+
+    return response.ok(grouped)
+  })
 
 export const create = forge
   .mutation({
     description: 'Create a new transaction template',
     input: {
-      body: walletSchemas.transaction_templates
-        .omit({
-          id: true,
-          collectionId: true,
-          collectionName: true,
-          location_coords: true,
-          location_name: true
-        })
-        .extend({
-          location: LocationSchema.optional()
-        })
-    },
-    existenceCheck: {
-      body: {
-        asset: 'assets',
-        category: 'categories',
-        ledgers: '[ledgers]'
-      }
+      body: templateInputDto
     },
     output: {
-      CREATED: walletSchemas.transaction_templates,
-      NOT_FOUND: true
+      CREATED: templateDto
     }
   })
-  .callback(async ({ pb, body, response }) =>
-    response.created(
-      await pb.create
-        .collection('transaction_templates')
-        .data({
-          ...body,
-          location_coords: {
-            lon: body.location?.location.longitude || 0,
-            lat: body.location?.location.latitude || 0
-          },
-          location_name: body.location?.name || ''
-        })
-        .execute()
-    )
-  )
+  .callback(async ({ db, body, response }) => {
+    const [created] = await db
+      .insert(walletTransactionTemplates)
+      .values(mapTemplate(body))
+      .returning()
+
+    return response.created(created)
+  })
 
 export const update = forge
   .mutation({
     description: 'Update transaction template',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletTransactionTemplates)
       }),
-      body: walletSchemas.transaction_templates
-        .omit({
-          id: true,
-          collectionId: true,
-          collectionName: true,
-          location_coords: true,
-          location_name: true
-        })
-        .extend({
-          location: LocationSchema.optional()
-        })
-    },
-    existenceCheck: {
-      query: {
-        id: 'transaction_templates'
-      },
-      body: {
-        asset: 'assets',
-        category: 'categories',
-        ledgers: '[ledgers]'
-      }
+      body: templateInputDto
     },
     output: {
-      OK: walletSchemas.transaction_templates,
-      NOT_FOUND: true
+      OK: templateDto
     }
   })
-  .callback(async ({ pb, query: { id }, body, response }) =>
-    response.ok(
-      await pb.update
-        .collection('transaction_templates')
-        .id(id)
-        .data({
-          ...body,
-          location_coords: {
-            lon: body.location?.location.longitude || 0,
-            lat: body.location?.location.latitude || 0
-          },
-          location_name: body.location?.name || ''
-        })
-        .execute()
-    )
-  )
+  .callback(async ({ db, query: { id }, body, response }) => {
+    const [updated] = await db
+      .update(walletTransactionTemplates)
+      .set(mapTemplate(body))
+      .where(eq(walletTransactionTemplates.id, id))
+      .returning()
+
+    return response.ok(updated)
+  })
 
 export const remove = forge
   .mutation({
     description: 'Delete a transaction template',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), walletTransactionTemplates)
       })
     },
-    existenceCheck: {
-      query: {
-        id: 'transaction_templates'
-      }
-    },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('transaction_templates').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db
+      .delete(walletTransactionTemplates)
+      .where(eq(walletTransactionTemplates.id, id))
 
     return response.noContent()
   })

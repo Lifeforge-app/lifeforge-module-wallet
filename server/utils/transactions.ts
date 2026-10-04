@@ -1,11 +1,23 @@
+import { eq } from 'drizzle-orm'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import z from 'zod'
+
+import type { BuiltModuleSchema } from '@lifeforge/drizzle'
+import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
+
+import type { WalletSchema } from '../forge'
+import { walletCategories, walletTransactionTemplates } from '../schema.drizzle'
+
+type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
+
+type GetAPIKeyFunc = (id: string) => Promise<string>
 
 export async function getTransactionDetails(
   ocrResult: string,
-  pb: any,
-  fetchAI: any,
-  getAPIKey: any,
-  searchLocations: any
+  db: WalletDb,
+  fetchAI: FetchAIFunc,
+  getAPIKey: GetAPIKeyFunc,
+  searchLocations: SearchLocationsFunc
 ) {
   type FinalResult = {
     date: string
@@ -18,24 +30,20 @@ export async function getTransactionDetails(
       lat: number
     }
     location_name: string
+    asset?: string
+    ledgers?: string[]
   }
 
-  // Fetch all data in parallel
   const [particularPrompt, categories, key] = await Promise.all([
-    pb.getFirstListItem
-      .collection('transactions_prompts')
-      .execute()
-      .catch(() => null),
-    pb.getFullList.collection('categories').execute() as any[],
-    getAPIKey('gcloud', pb)
+    db.query.transactions_prompts.findFirst().catch(() => null),
+    db.select().from(walletCategories),
+    getAPIKey('gcloud')
   ])
 
-  // Map category names to IDs for efficient lookup
   const categoryMap = new Map(categories.map(c => [c.name, c.id]))
 
   const categoryNames = categories.map(c => c.name) as [string, ...string[]]
 
-  // Single AI call to extract all basic transaction data + location
   const FullTransactionDetails = z.object({
     date: z.string().describe('Transaction date in YYYY-MM-DD format'),
     type: z.enum(['income', 'expenses']),
@@ -45,7 +53,6 @@ export async function getTransactionDetails(
   })
 
   const extractedData = await fetchAI({
-    pb,
     provider: 'openai',
     model: 'gpt-4o',
     messages: [
@@ -69,7 +76,7 @@ export async function getTransactionDetails(
     date: extractedData.date,
     type: extractedData.type,
     amount: extractedData.amount,
-    category: categoryMap.get(extractedData.category),
+    category: categoryMap.get(extractedData.category) ?? '',
     particulars: '',
     location_coords: {
       lon: 0,
@@ -78,23 +85,18 @@ export async function getTransactionDetails(
     location_name: ''
   }
 
-  const particularsPrompt = particularPrompt?.[
-    extractedData.type as 'income' | 'expenses'
-  ]
-    ? `${particularPrompt[extractedData.type as 'income' | 'expenses']}`
+  const particularsPrompt = particularPrompt?.[extractedData.type]
+    ? `${particularPrompt[extractedData.type]}`
     : 'Generate brief transaction description (5-10 words).'
 
-  // Fetch templates matching the transaction type
-  const templates = (await pb.getFullList
-    .collection('transaction_templates')
-    .filter([{ field: 'type', operator: '=', value: extractedData.type }])
-    .execute()) as any[]
+  const templates = await db
+    .select()
+    .from(walletTransactionTemplates)
+    .where(eq(walletTransactionTemplates.type, extractedData.type))
 
-  // Match template and generate particulars in one AI call (only if templates exist)
   if (templates.length > 0) {
     const templateNames = templates.map(t => t.name)
 
-    // First, try to match template
     const TemplateMatch = z.object({
       template: z
         .enum(['None', ...templateNames] as [string, ...string[]])
@@ -102,7 +104,6 @@ export async function getTransactionDetails(
     })
 
     const templateData = await fetchAI({
-      pb,
       provider: 'openai',
       model: 'gpt-4o',
       messages: [
@@ -131,20 +132,17 @@ export async function getTransactionDetails(
       )
 
       if (selectedTemplate) {
-        // Data from template takes precedence
         finalResult = {
-          ...selectedTemplate,
           ...finalResult,
-          // Ensure category is set from template if available
-          category: selectedTemplate.category || finalResult.category
+          category: selectedTemplate.category || finalResult.category,
+          asset: selectedTemplate.asset ?? '',
+          ledgers: selectedTemplate.ledgers
         }
       }
     }
 
-    // Generate particulars only if not set by template
     if (!finalResult.particulars?.trim()) {
       const particularsData = await fetchAI({
-        pb,
         provider: 'openai',
         model: 'gpt-4o',
         messages: [
@@ -159,9 +157,7 @@ export async function getTransactionDetails(
       }
     }
   } else {
-    // No templates available, just generate particulars
     const particularsData = await fetchAI({
-      pb,
       provider: 'openai',
       model: 'gpt-4o',
       messages: [
@@ -176,7 +172,6 @@ export async function getTransactionDetails(
     }
   }
 
-  // Process location if extracted and API key available
   if (
     !finalResult.location_coords &&
     key &&
