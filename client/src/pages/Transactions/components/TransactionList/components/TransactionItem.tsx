@@ -88,6 +88,7 @@ function TransactionItem({
                     amount: transaction.amount,
                     asset: transaction.asset,
                     category: transaction.category,
+                    platform: transaction.platform,
                     ledgers: transaction.ledgers ?? [],
                     location_name: transaction.location_name,
                     location_coords: transaction.location_coords
