@@ -115,12 +115,13 @@ Strict Rules:
 - Identify the correct date of the transaction:
   - If an absolute date is provided (e.g. "May 25", "12/20/2025"), convert it to YYYY-MM-DD.
   - If a relative date or relative time context is provided (e.g. "today", "yesterday", "2 days ago", "last Friday", "yesterday afternoon", "3 hours ago"), you must calculate the exact calendar date in YYYY-MM-DD format based on the Current Reference Date: ${todayStr} (which represents today's date).
+  - If a date is provided WITHOUT a year (e.g. "May 25", "25/12", "on the 3rd"), you MUST assume the year of the Current Reference Date: ${todayStr}.
   - Never output descriptive relative terms (like "Today", "Yesterday", "2 days ago") in the date field; always output the calculated absolute calendar date in YYYY-MM-DD format.
 - Determine transaction type: 'income', 'expenses', or 'transfer'.
   - For income or expenses: extract category, location, and the asset/wallet used.
   - For transfer: extract only date, amount, and the from/to assets (from, to). Skip category, location, and single asset.
 - Extract the clean, numerical transaction amount without currency signs. CRITICAL: Never invent or assume an amount. Only extract an amount if it is explicitly stated in the description (e.g., "RM39", "$15", "50 dollars", "spent 20"). If no amount is explicitly mentioned, you MUST set amount to 0.
-- Extract the merchant name/location ONLY if it is explicitly stated. Never guess, infer, or fabricate a location. If not explicitly stated, use "Unknown".
+- Extract the merchant name/location ONLY if it is explicitly stated. CRITICAL: Never arbitrarily add, guess, infer, or fabricate a location. If the text does not explicitly mention a location or merchant, you MUST use "Unknown".
 - Extract the payment asset/wallet used for the transaction. If the text does not contain any clue about which account or method was used, use "Unknown".
 
 Available Categories: ${hasCategories ? categoryNames.join(', ') : 'None'}
