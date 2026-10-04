@@ -7,7 +7,7 @@ import TransactionItem from './components/TransactionItem'
 
 function TransactionList() {
   const transactionsQuery = useTransactionsQuery()
-  const { page, setPage } = useFilter()
+  const { page, setPage, asset } = useFilter()
 
   const transactions = transactionsQuery.data?.items ?? []
 
@@ -32,7 +32,11 @@ function TransactionList() {
       <Scrollbar>
         <Stack>
           {transactions.map(transaction => (
-            <TransactionItem key={transaction.id} transaction={transaction} />
+            <TransactionItem
+              key={transaction.id}
+              highlightAsset={asset}
+              transaction={transaction}
+            />
           ))}
         </Stack>
       </Scrollbar>

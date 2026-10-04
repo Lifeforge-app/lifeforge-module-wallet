@@ -20,10 +20,12 @@ import TransactionTransferItem from './TransactionTransferItem'
 
 function TransactionItem({
   transaction,
-  viewOnly
+  viewOnly,
+  highlightAsset
 }: {
   transaction: WalletTransaction
   viewOnly?: boolean
+  highlightAsset?: string
 }) {
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
@@ -47,7 +49,10 @@ function TransactionItem({
       }}
     >
       {transaction.type === 'transfer' ? (
-        <TransactionTransferItem transaction={transaction} />
+        <TransactionTransferItem
+          highlightAsset={highlightAsset}
+          transaction={transaction}
+        />
       ) : (
         <TransactionIncomeExpensesItem transaction={transaction} />
       )}

@@ -17,9 +17,11 @@ import numberToCurrency from '@/utils/numberToCurrency'
 import type { WalletTransaction } from '../../..'
 
 function TransactionTransferItem({
-  transaction
+  transaction,
+  highlightAsset
 }: {
   transaction: WalletTransaction
+  highlightAsset?: string
 }) {
   const { open } = useModalStore()
   const { assetsQuery } = useWalletData()
@@ -43,6 +45,18 @@ function TransactionTransferItem({
   )
 
   if (transaction.type !== 'transfer') return null
+
+  const isIncoming = !!highlightAsset && transaction.to === highlightAsset
+
+  const isOutgoing = !!highlightAsset && transaction.from === highlightAsset
+
+  const amountColor = isIncoming
+    ? 'green-500'
+    : isOutgoing
+      ? 'red-500'
+      : 'blue-500'
+
+  const amountSign = isIncoming ? '+' : isOutgoing ? '-' : ''
 
   return (
     <Flex align="center" gap="xl" justify="between" minWidth="0" width="100%">
@@ -94,7 +108,8 @@ function TransactionTransferItem({
           </Flex>
         </Stack>
       </Flex>
-      <Text color="blue-500" size="lg" weight="medium">
+      <Text color={amountColor} size="lg" weight="medium">
+        {amountSign}
         {numberToCurrency(transaction.amount)}
       </Text>
     </Flex>
