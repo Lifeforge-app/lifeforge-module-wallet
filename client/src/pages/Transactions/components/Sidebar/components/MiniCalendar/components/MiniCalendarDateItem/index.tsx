@@ -5,27 +5,32 @@ import { Box, Text } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
 
+import MiniCalendarTransactionDetails, {
+  type TransactionCount
+} from '../MiniCalendarTransactionDetails'
 import {
   betweenBorderAfter,
   selectedBorderAfter,
   selectedBorderAfterEnd,
   selectedBorderAfterSingle,
   selectedBorderAfterStart,
-  transactionBar
+  transactionBar,
+  transactionBarTrack
 } from './MiniCalendarDateItem.css'
 
-interface TransactionCount {
-  income: number
-  expenses: number
-  transfer: number
-  total: number
-  count: number
-}
+const MAX_HEIGHT = 80
+const MIN_HEIGHT = 12
+const SEGMENTS = [
+  ['income', 'green-500'],
+  ['expenses', 'red-500'],
+  ['transfer', 'blue-500']
+] as const
 
 interface MiniCalendarDateItemProps {
   index: number
   date: Date
   nextToSelect: 'start' | 'end'
+  referenceAmount: number
   setNextToSelect: React.Dispatch<React.SetStateAction<'start' | 'end'>>
   transactionCountMap: Record<string, TransactionCount>
 }
@@ -34,6 +39,7 @@ function MiniCalendarDateItem({
   index,
   date,
   nextToSelect,
+  referenceAmount,
   setNextToSelect,
   transactionCountMap
 }: MiniCalendarDateItemProps) {
@@ -65,6 +71,9 @@ function MiniCalendarDateItem({
     income: 0,
     expenses: 0,
     transfer: 0,
+    incomeAmount: 0,
+    expensesAmount: 0,
+    transferAmount: 0,
     total: 0,
     count: 0
   }
@@ -119,14 +128,22 @@ function MiniCalendarDateItem({
     return ''
   }
 
-  const getOpacityClass = (count: number) => {
-    if (count >= 7) return '70%'
-    if (count >= 5) return '50%'
-    if (count >= 3) return '30%'
-    if (count >= 1) return '10%'
-
-    return '0%'
+  const segmentAmounts = {
+    income: transactionCount.incomeAmount,
+    expenses: transactionCount.expensesAmount,
+    transfer: transactionCount.transferAmount
   }
+
+  const dayAmount =
+    segmentAmounts.income + segmentAmounts.expenses + segmentAmounts.transfer
+
+  const ratio =
+    referenceAmount > 0 ? Math.min(1, dayAmount / referenceAmount) : 0
+
+  const heightPct =
+    dayAmount > 0 && referenceAmount > 0
+      ? Math.max(MIN_HEIGHT, Math.sqrt(ratio) * MAX_HEIGHT)
+      : 0
 
   const handleClick = () => {
     const target = `${date.getFullYear()}-${date.getMonth() + 1}-${actualIndex}`
@@ -162,49 +179,56 @@ function MiniCalendarDateItem({
   }
 
   return (
-    <Box
-      as="button"
-      className={getSelectedClass()}
-      height="2.5rem"
-      position="relative"
-      onClick={handleClick}
-    >
-      <Text
-        align="center"
-        color={isHidden ? { base: 'bg-300', dark: 'bg-600' } : undefined}
-        size="sm"
-        style={isHidden ? { pointerEvents: 'none' } : undefined}
+    <>
+      <Box
+        as="button"
+        aspectRatio="1/1"
+        className={getSelectedClass()}
+        data-tooltip-id={`wallet-transaction-tooltip-${index}`}
+        position="relative"
+        onClick={handleClick}
       >
-        {actualIndex}
-      </Text>
-      {!isHidden && transactionCount.total > 0 && (
-        <Box
-          className={transactionBar}
-          style={{
-            opacity: getOpacityClass(transactionCount.count)
-          }}
+        <Text
+          align="center"
+          color={isHidden ? { base: 'bg-300', dark: 'bg-600' } : undefined}
+          size="sm"
+          style={isHidden ? { pointerEvents: 'none' } : undefined}
         >
-          {(
-            [
-              ['income', 'green-500'],
-              ['expenses', 'red-500'],
-              ['transfer', 'blue-500']
-            ] as const
-          ).map(([type, color]) => (
+          {actualIndex}
+        </Text>
+        {!isHidden && dayAmount > 0 && (
+          <>
+            <Box className={transactionBarTrack} />
             <Box
-              key={type}
-              bg={color}
+              className={transactionBar}
               style={{
-                height: `${Math.round(
-                  (transactionCount[type] / transactionCount.total) * 100
-                )}%`
+                height: `${heightPct}%`,
+                opacity: 0.85
               }}
-              width="100%"
-            />
-          ))}
-        </Box>
+            >
+              {SEGMENTS.map(([type, color]) => (
+                <Box
+                  key={type}
+                  bg={color}
+                  style={{
+                    height: `${(segmentAmounts[type] / dayAmount) * 100}%`
+                  }}
+                  width="100%"
+                />
+              ))}
+            </Box>
+          </>
+        )}
+      </Box>
+      {!isHidden && dayAmount > 0 && (
+        <MiniCalendarTransactionDetails
+          actualIndex={actualIndex}
+          date={date}
+          index={index}
+          transactionCount={transactionCount}
+        />
       )}
-    </Box>
+    </>
   )
 }
 

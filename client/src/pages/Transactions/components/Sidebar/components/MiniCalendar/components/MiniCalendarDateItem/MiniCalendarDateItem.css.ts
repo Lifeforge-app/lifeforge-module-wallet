@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css'
 
-import { COLORS, vars } from '@lifeforge/ui'
+import { COLORS, colorWithOpacity, vars } from '@lifeforge/ui'
 
 export const selectedBorderAfter = style({
   '::after': {
@@ -9,7 +9,7 @@ export const selectedBorderAfter = style({
     left: '50%',
     top: '50%',
     zIndex: -1,
-    height: '3rem',
+    height: '120%',
     width: '100%',
     transform: 'translate(-50%, -50%)',
     borderColor: COLORS['custom-500']
@@ -51,7 +51,7 @@ export const betweenBorderAfter = style({
     left: '50%',
     top: '50%',
     zIndex: -2,
-    height: '3rem',
+    height: '120%',
     width: '100%',
     transform: 'translate(-50%, -50%)',
     borderTop: '1px solid',
@@ -60,16 +60,28 @@ export const betweenBorderAfter = style({
   }
 })
 
+export const transactionBarTrack = style({
+  position: 'absolute',
+  bottom: '0.2rem',
+  left: '50%',
+  zIndex: -2,
+  width: '80%',
+  aspectRatio: '1 / 1',
+  backgroundColor: colorWithOpacity('bg-500', '10%').toString(),
+  borderRadius: vars.radii.sm,
+  overflow: 'hidden',
+  transform: 'translateX(-50%)'
+})
+
 export const transactionBar = style({
   position: 'absolute',
+  bottom: '0.2rem',
   left: '50%',
-  top: '50%',
   zIndex: -1,
   display: 'flex',
-  width: '2.5rem',
-  height: '2.5rem',
+  width: '80%',
   flexDirection: 'column',
   overflow: 'hidden',
   borderRadius: vars.radii.sm,
-  transform: 'translate(-50%, -50%)'
+  transform: 'translateX(-50%)'
 })

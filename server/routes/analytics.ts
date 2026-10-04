@@ -56,6 +56,9 @@ const TransactionCountByDayOutput = z.record(
     income: z.number(),
     expenses: z.number(),
     transfer: z.number(),
+    incomeAmount: z.number(),
+    expensesAmount: z.number(),
+    transferAmount: z.number(),
     total: z.number(),
     count: z.number()
   })
@@ -438,6 +441,9 @@ export const getTransactionCountByDay = forge
         income: number
         expenses: number
         transfer: number
+        incomeAmount: number
+        expensesAmount: number
+        transferAmount: number
         total: number
         count: number
       }
@@ -449,6 +455,9 @@ export const getTransactionCountByDay = forge
           income: 0,
           expenses: 0,
           transfer: 0,
+          incomeAmount: 0,
+          expensesAmount: 0,
+          transferAmount: 0,
           total: 0,
           count: 0
         }
@@ -470,7 +479,13 @@ export const getTransactionCountByDay = forge
       const entry = ensure(dateKey)
 
       if (parsedViewFilter.includes(transaction.type as 'income' | 'expenses')) {
-        entry[transaction.type as 'income' | 'expenses'] += 1
+        if (transaction.type === 'income') {
+          entry.income += 1
+          entry.incomeAmount += transaction.amount
+        } else {
+          entry.expenses += 1
+          entry.expensesAmount += transaction.amount
+        }
       }
     }
 
@@ -485,11 +500,16 @@ export const getTransactionCountByDay = forge
 
       if (parsedViewFilter.includes('transfer')) {
         entry.transfer += 1
+        entry.transferAmount += transaction.amount
       }
     }
 
     for (const dateKey in countMap) {
       const entry = countMap[dateKey]
+
+      entry.incomeAmount = parseFloat(entry.incomeAmount.toFixed(2))
+      entry.expensesAmount = parseFloat(entry.expensesAmount.toFixed(2))
+      entry.transferAmount = parseFloat(entry.transferAmount.toFixed(2))
 
       for (const type of ['income', 'expenses', 'transfer'] as const) {
         if (parsedViewFilter.includes(type)) {
