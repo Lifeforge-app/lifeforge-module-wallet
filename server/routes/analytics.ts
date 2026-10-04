@@ -13,6 +13,12 @@ import {
   walletTransactionsIncomeExpenses,
   walletTransactionsTransfer
 } from '../schema.drizzle'
+import {
+  RANGE_MODE,
+  getPreviousDateRange,
+  isWithinDateRange,
+  resolveDateRange
+} from '../utils/dateRange'
 
 type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
@@ -23,7 +29,10 @@ const TypesCountOutput = z.record(
   z.string(),
   z.object({
     transactionCount: z.number(),
-    accumulatedAmount: z.number()
+    accumulatedAmount: z.number(),
+    previousCount: z.number(),
+    previousAmount: z.number(),
+    percentageChange: z.number()
   })
 )
 
@@ -44,6 +53,15 @@ const CategoryBreakdownOutput = z.object({
   income: z.record(z.string(), CategoryBreakdownItem),
   expenses: z.record(z.string(), CategoryBreakdownItem)
 })
+
+const SpendingByPlatformOutput = z.array(
+  z.object({
+    platform: z.string(),
+    amount: z.number(),
+    count: z.number(),
+    percentage: z.number()
+  })
+)
 
 const AvailableYearMonthsOutput = z.object({
   years: z.array(z.number()),
@@ -80,6 +98,7 @@ async function fetchTransactions(db: WalletDb) {
         amount: walletTransactions.amount,
         date: walletTransactions.date,
         category: walletTransactionsIncomeExpenses.category,
+        platform: walletTransactionsIncomeExpenses.platform,
         location_name: walletTransactionsIncomeExpenses.location_name,
         location_coords: walletTransactionsIncomeExpenses.location_coords
       })
@@ -112,48 +131,117 @@ export const getTypesCount = forge
     input: {
       query: z.object({
         year: z.string().optional(),
-        month: z.string().optional()
+        month: z.string().optional(),
+        range: RANGE_MODE.optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
       })
     },
     output: {
       OK: TypesCountOutput
     }
   })
-  .callback(async ({ db, query: { year, month }, response }) => {
-    const parsedYear = year ? parseInt(year) : undefined
+  .callback(
+    async ({
+      db,
+      query: { year, month, range, startDate, endDate },
+      response
+    }) => {
+      const parsedYear = year ? parseInt(year) : undefined
 
-    const parsedMonth = month ? parseInt(month) : undefined
+      const parsedMonth = month ? parseInt(month) : undefined
 
-    const hasRange = parsedYear !== undefined && parsedMonth !== undefined
+      const hasRange = parsedYear !== undefined && parsedMonth !== undefined
+
+      const dateRange = range
+        ? resolveDateRange(range, startDate, endDate)
+        : null
+
+      const previousRange = range
+        ? getPreviousDateRange(range, startDate, endDate)
+        : null
 
     const { incomeExpenses, transfers } = await fetchTransactions(db)
 
-    const inRange = (date: Date) =>
-      !hasRange ||
-      (date.getFullYear() === parsedYear &&
-        date.getMonth() + 1 === parsedMonth)
+    const inCurrentRange = (date: Date) => {
+      if (dateRange) {
+        return isWithinDateRange(date, dateRange)
+      }
+
+      return (
+        !hasRange ||
+        (date.getFullYear() === parsedYear &&
+          date.getMonth() + 1 === parsedMonth)
+      )
+    }
+
+    const inPreviousRange = (date: Date) =>
+      previousRange ? isWithinDateRange(date, previousRange) : false
 
     const typesCount: Record<
       string,
-      { transactionCount: number; accumulatedAmount: number }
+      {
+        transactionCount: number
+        accumulatedAmount: number
+        previousCount: number
+        previousAmount: number
+        percentageChange: number
+      }
     > = {
-      income: { transactionCount: 0, accumulatedAmount: 0 },
-      expenses: { transactionCount: 0, accumulatedAmount: 0 },
-      transfer: { transactionCount: 0, accumulatedAmount: 0 }
+      income: {
+        transactionCount: 0,
+        accumulatedAmount: 0,
+        previousCount: 0,
+        previousAmount: 0,
+        percentageChange: 0
+      },
+      expenses: {
+        transactionCount: 0,
+        accumulatedAmount: 0,
+        previousCount: 0,
+        previousAmount: 0,
+        percentageChange: 0
+      },
+      transfer: {
+        transactionCount: 0,
+        accumulatedAmount: 0,
+        previousCount: 0,
+        previousAmount: 0,
+        percentageChange: 0
+      }
     }
 
     for (const transaction of incomeExpenses) {
-      if (!inRange(transaction.date)) continue
+      const entry = typesCount[transaction.type]
 
-      typesCount[transaction.type].transactionCount++
-      typesCount[transaction.type].accumulatedAmount += transaction.amount
+      if (inCurrentRange(transaction.date)) {
+        entry.transactionCount++
+        entry.accumulatedAmount += transaction.amount
+      } else if (inPreviousRange(transaction.date)) {
+        entry.previousCount++
+        entry.previousAmount += transaction.amount
+      }
     }
 
     for (const transaction of transfers) {
-      if (!inRange(transaction.date)) continue
+      const entry = typesCount.transfer
 
-      typesCount.transfer.transactionCount++
-      typesCount.transfer.accumulatedAmount += transaction.amount
+      if (inCurrentRange(transaction.date)) {
+        entry.transactionCount++
+        entry.accumulatedAmount += transaction.amount
+      } else if (inPreviousRange(transaction.date)) {
+        entry.previousCount++
+        entry.previousAmount += transaction.amount
+      }
+    }
+
+    for (const entry of Object.values(typesCount)) {
+      entry.percentageChange =
+        entry.previousAmount > 0
+          ? ((entry.accumulatedAmount - entry.previousAmount) /
+              entry.previousAmount) *
+            100
+          : 0
     }
 
     return response.ok(typesCount)
@@ -221,35 +309,44 @@ export const getCategoriesBreakdown = forge
     description: 'Get income and expenses breakdown by category for a month',
     input: {
       query: z.object({
-        year: z.string(),
-        month: z.string()
+        year: z.string().optional(),
+        month: z.string().optional(),
+        range: RANGE_MODE.optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
       })
     },
     output: {
       OK: CategoryBreakdownOutput
     }
   })
-  .callback(async ({ db, query: { year, month }, response }) => {
-    const parsedYear = parseInt(year)
-
-    const parsedMonth = parseInt(month)
-
-    const startDate = dayjs()
-      .year(parsedYear)
-      .month(parsedMonth - 1)
-      .startOf('month')
-
-    const endDate = dayjs()
-      .year(parsedYear)
-      .month(parsedMonth - 1)
-      .endOf('month')
+  .callback(
+    async ({
+      db,
+      query: { year, month, range, startDate, endDate },
+      response
+    }) => {
+      const dateRange = range
+        ? resolveDateRange(range, startDate, endDate)
+        : year && month
+        ? {
+            startDate: dayjs()
+              .year(parseInt(year))
+              .month(parseInt(month) - 1)
+              .startOf('month')
+              .format('YYYY-MM-DD'),
+            endDate: dayjs()
+              .year(parseInt(year))
+              .month(parseInt(month) - 1)
+              .endOf('month')
+              .format('YYYY-MM-DD')
+          }
+        : { startDate: null, endDate: null }
 
     const { incomeExpenses } = await fetchTransactions(db)
 
-    const transactions = incomeExpenses.filter(
-      transaction =>
-        dayjs(transaction.date).isSameOrAfter(startDate) &&
-        dayjs(transaction.date).isSameOrBefore(endDate)
+    const transactions = incomeExpenses.filter(transaction =>
+      isWithinDateRange(transaction.date, dateRange)
     )
 
     const incomeByCategory: Record<
@@ -310,6 +407,92 @@ export const getCategoriesBreakdown = forge
       income: incomeByCategory,
       expenses: expensesByCategory
     })
+  })
+
+export const getSpendingByPlatform = forge
+  .query({
+    description: 'Get expenses breakdown by purchase platform for a month',
+    input: {
+      query: z.object({
+        year: z.string().optional(),
+        month: z.string().optional(),
+        range: RANGE_MODE.optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
+      })
+    },
+    output: {
+      OK: SpendingByPlatformOutput
+    }
+  })
+  .callback(
+    async ({
+      db,
+      query: { year, month, range, startDate, endDate },
+      response
+    }) => {
+      const dateRange = range
+        ? resolveDateRange(range, startDate, endDate)
+        : year && month
+        ? {
+            startDate: dayjs()
+              .year(parseInt(year))
+              .month(parseInt(month) - 1)
+              .startOf('month')
+              .format('YYYY-MM-DD'),
+            endDate: dayjs()
+              .year(parseInt(year))
+              .month(parseInt(month) - 1)
+              .endOf('month')
+              .format('YYYY-MM-DD')
+          }
+        : { startDate: null, endDate: null }
+
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const expenses = incomeExpenses.filter(
+      transaction =>
+        transaction.type === 'expenses' &&
+        isWithinDateRange(transaction.date, dateRange)
+    )
+
+    const grouped: Record<
+      string,
+      { platform: string; amount: number; count: number }
+    > = {}
+
+    for (const transaction of expenses) {
+      if (!transaction.platform) continue
+
+      const key = transaction.platform
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          platform: transaction.platform,
+          amount: 0,
+          count: 0
+        }
+      }
+
+      grouped[key].amount += transaction.amount
+      grouped[key].count += 1
+    }
+
+    const total = Object.values(grouped).reduce(
+      (acc, { amount }) => acc + amount,
+      0
+    )
+
+    const result = Object.values(grouped)
+      .map(item => ({
+        platform: item.platform,
+        amount: parseFloat(item.amount.toFixed(2)),
+        count: item.count,
+        percentage: total > 0 ? (item.amount / total) * 100 : 0
+      }))
+      .sort((a, b) => b.amount - a.amount)
+
+    return response.ok(result)
   })
 
 export const getSpendingByLocation = forge
@@ -527,106 +710,110 @@ export const getChartData = forge
     description: 'Get chart data for income/expenses by date range',
     input: {
       query: z.object({
-        range: z.enum(['week', 'month', 'ytd'])
+        range: z.enum([
+          'week',
+          'month',
+          'mtd',
+          'quarter',
+          'year',
+          'ytd',
+          'all',
+          'custom'
+        ]),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
       })
     },
     output: {
       OK: ChartDataOutput
     }
   })
-  .callback(async ({ db, query: { range }, response }) => {
-    const now = dayjs()
-
-    const currentYear = now.year()
-
-    let startDate: dayjs.Dayjs
-    let endDate: dayjs.Dayjs
-    let groupBy: 'day' | 'month'
-
-    const labels: string[] = []
-
-    switch (range) {
-      case 'week': {
-        const startOfWeek = dayjs().startOf('week')
-
-        startDate = startOfWeek
-        endDate = dayjs().endOf('week')
-        groupBy = 'day'
-
-        for (let i = 0; i <= 6; i++) {
-          labels.push(startOfWeek.clone().add(i, 'day').format('MMM DD'))
-        }
-        break
-      }
-
-      case 'month': {
-        const startOfMonth = dayjs().startOf('month')
-
-        const endOfMonth = dayjs().endOf('month')
-
-        startDate = startOfMonth
-        endDate = endOfMonth
-        groupBy = 'day'
-
-        for (let i = 0; i < endOfMonth.date(); i++) {
-          labels.push(startOfMonth.clone().add(i, 'day').format('MMM DD'))
-        }
-        break
-      }
-
-      case 'ytd': {
-        startDate = dayjs().startOf('year')
-        endDate = dayjs().endOf('month')
-        groupBy = 'month'
-
-        for (let i = 0; i <= now.month(); i++) {
-          labels.push(dayjs().month(i).format('MMM'))
-        }
-        break
-      }
-    }
+  .callback(async ({ db, query: { range, startDate, endDate }, response }) => {
+    const dateRange = resolveDateRange(range, startDate, endDate)
 
     const { incomeExpenses } = await fetchTransactions(db)
 
-    const transactions = incomeExpenses.filter(
-      transaction =>
-        dayjs(transaction.date).isSameOrAfter(startDate) &&
-        dayjs(transaction.date).isSameOrBefore(endDate)
-    )
+    const end = dateRange.endDate
+      ? dayjs(dateRange.endDate).endOf('day')
+      : dayjs().endOf('day')
+
+    const start = dateRange.startDate
+      ? dayjs(dateRange.startDate).startOf('day')
+      : incomeExpenses.length > 0
+        ? dayjs(
+            Math.min(...incomeExpenses.map(t => dayjs(t.date).valueOf()))
+          ).startOf('day')
+        : dayjs().startOf('month')
+
+    const durationDays = end.diff(start, 'day')
+
+    const unit: 'day' | 'week' | 'month' =
+      range === 'quarter'
+        ? 'week'
+        : range === 'year' || range === 'ytd' || range === 'all'
+          ? 'month'
+          : range === 'custom'
+            ? durationDays <= 62
+              ? 'day'
+              : durationDays <= 180
+                ? 'week'
+                : 'month'
+            : 'day'
+
+    const bucketStart = (date: dayjs.Dayjs) =>
+      unit === 'day'
+        ? date.startOf('day')
+        : unit === 'week'
+          ? date.startOf('week')
+          : date.startOf('month')
+
+    const formatLabel = (date: dayjs.Dayjs) =>
+      unit === 'month' ? date.format('MMM YY') : date.format('MMM DD')
+
+    const buckets: { start: dayjs.Dayjs; label: string }[] = []
+
+    let cursor = bucketStart(start)
+
+    while (cursor.isBefore(end, unit) || cursor.isSame(end, unit)) {
+      buckets.push({ start: cursor, label: formatLabel(cursor) })
+
+      cursor = cursor.add(1, unit)
+    }
 
     const resultMap: Record<string, { income: number; expenses: number }> = {}
 
-    for (const label of labels) {
-      resultMap[label] = { income: 0, expenses: 0 }
+    for (const bucket of buckets) {
+      resultMap[bucket.label] = { income: 0, expenses: 0 }
     }
 
-    for (const transaction of transactions) {
-      const transactionYear = dayjs(transaction.date).year()
+    const labelByStart = new Map(
+      buckets.map(bucket => [bucket.start.valueOf(), bucket.label])
+    )
 
-      if (transactionYear !== currentYear) continue
+    for (const transaction of incomeExpenses) {
+      const date = dayjs(transaction.date)
 
-      let dateKey: string
+      if (date.isBefore(start, 'day') || date.isAfter(end, 'day')) continue
 
-      if (groupBy === 'day') {
-        dateKey = dayjs(transaction.date).format('MMM DD')
-      } else {
-        dateKey = dayjs(transaction.date).format('MMM')
-      }
+      const label = labelByStart.get(bucketStart(date).valueOf())
 
-      if (resultMap[dateKey]) {
-        if (transaction.type === 'income') {
-          resultMap[dateKey].income += transaction.amount
-        } else if (transaction.type === 'expenses') {
-          resultMap[dateKey].expenses += transaction.amount
-        }
+      if (!label) continue
+
+      if (transaction.type === 'income') {
+        resultMap[label].income += transaction.amount
+      } else if (transaction.type === 'expenses') {
+        resultMap[label].expenses += transaction.amount
       }
     }
 
     return response.ok(
-      labels.map(date => ({
-        date,
-        income: resultMap[date].income,
-        expenses: resultMap[date].expenses > 0 ? -resultMap[date].expenses : 0
+      buckets.map(bucket => ({
+        date: bucket.label,
+        income: resultMap[bucket.label].income,
+        expenses:
+          resultMap[bucket.label].expenses > 0
+            ? -resultMap[bucket.label].expenses
+            : 0
       }))
     )
   })

@@ -1,5 +1,5 @@
-import { and, asc, eq, gte, lte } from 'drizzle-orm'
 import dayjs from 'dayjs'
+import { and, asc, eq, gte, lte } from 'drizzle-orm'
 import z from 'zod'
 
 import forge from '../forge'
@@ -43,6 +43,15 @@ const transactionBlockDto = z.object({
   count: z.number()
 })
 
+const platformBreakdownDto = z.array(
+  z.object({
+    platform: z.string().nullable(),
+    amount: z.number(),
+    count: z.number(),
+    percentage: z.number()
+  })
+)
+
 function percentageChange(change: number, previous: number): number {
   return previous !== 0 ? (change / previous) * 100 : 0
 }
@@ -78,7 +87,8 @@ export const get = forge
           expenses: transactionBlockDto,
           transfer: transactionBlockDto,
           totalCount: z.number()
-        })
+        }),
+        platformBreakdown: platformBreakdownDto
       })
     }
   })
@@ -293,6 +303,40 @@ export const get = forge
     const expensesBlock = buildBlock(blocks.expenses)
     const transferBlock = buildBlock(blocks.transfer)
 
+    const platformGroups: Record<
+      string,
+      { platform: string | null; amount: number; count: number }
+    > = {}
+
+    for (const transaction of blocks.expenses) {
+      if (transaction.type !== 'expenses') continue
+
+      const key = transaction.platform ?? 'unassigned'
+
+      platformGroups[key] ??= {
+        platform: transaction.platform,
+        amount: 0,
+        count: 0
+      }
+
+      platformGroups[key].amount += transaction.amount
+      platformGroups[key].count += 1
+    }
+
+    const platformTotal = Object.values(platformGroups).reduce(
+      (acc, { amount }) => acc + amount,
+      0
+    )
+
+    const platformBreakdown = Object.values(platformGroups)
+      .map(item => ({
+        platform: item.platform,
+        amount: parseFloat(item.amount.toFixed(2)),
+        count: item.count,
+        percentage: platformTotal > 0 ? (item.amount / platformTotal) * 100 : 0
+      }))
+      .sort((a, b) => b.amount - a.amount)
+
     return response.ok({
       overview: {
         monthlyIncome,
@@ -303,7 +347,10 @@ export const get = forge
         balances,
         total: buildBalance(assetLast, assetCurrent),
         liabilitiesTotal: buildBalance(-liabilityLast, -liabilityCurrent),
-        netWorth: buildBalance(assetLast + liabilityLast, assetCurrent + liabilityCurrent)
+        netWorth: buildBalance(
+          assetLast + liabilityLast,
+          assetCurrent + liabilityCurrent
+        )
       },
       categoryComparison: {
         income: buildComparison('income'),
@@ -315,6 +362,7 @@ export const get = forge
         transfer: transferBlock,
         totalCount:
           incomeBlock.count + expensesBlock.count + transferBlock.count
-      }
+      },
+      platformBreakdown
     })
   })
