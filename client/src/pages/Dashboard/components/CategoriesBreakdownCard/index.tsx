@@ -6,8 +6,9 @@ import { Button, Icon, Widget } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
+import type { WalletRange } from '@/providers/RangeProvider'
+
 import type { WalletCategory } from '../../../Transactions'
-import type { DashboardRange } from '../../providers/DashboardRangeProvider'
 import BreakdownContent from './components/BreakdownContent'
 
 type CategoryBreakdown = InferOutput<
@@ -18,7 +19,7 @@ export const CategoriesBreakdownContext = createContext<{
   breakdown: CategoryBreakdown
   categories: WalletCategory[]
   type: 'income' | 'expenses'
-  range: DashboardRange
+  range: WalletRange
   startDate: string
   endDate: string
 }>({

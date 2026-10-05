@@ -22,18 +22,19 @@ import {
   ModuleHeader
 } from '@lifeforge/ui'
 
+import RangeSelector from '@/components/RangeSelector'
+import { RangeProvider } from '@/providers/RangeProvider'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import TransactionCreationMenu from '../Transactions/components/TransactionCreationMenu'
+import ActivityCalendarCard from './components/ActivityCalendarCard'
 import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
-import DashboardRangeSelector from './components/DashboardRangeSelector'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
 import PlatformsBreakdownCard from './components/PlatformsBreakdownCard'
 import StatisticChartCard from './components/StatisticChartCard'
 import TransactionsCard from './components/TransactionsCard'
 import { dashboardGrid } from './dashboardGrid.css'
-import { DashboardRangeProvider } from './providers/DashboardRangeProvider'
 
 ChartJS.register(
   CategoryScale,
@@ -68,6 +69,7 @@ const WIDGETS: {
     minHeight: { base: '32rem', xl: '0' }
   },
   { key: 'statisticChart', element: <StatisticChartCard /> },
+  { key: 'activityCalendar', element: <ActivityCalendarCard />, minHeight: '0' },
   {
     key: 'recentTransactions',
     element: <TransactionsCard />,
@@ -89,7 +91,7 @@ function WalletDashboard() {
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
 
   return (
-    <DashboardRangeProvider>
+    <RangeProvider>
       <ModuleHeader
         trailing={
           <>
@@ -107,7 +109,7 @@ function WalletDashboard() {
           </>
         }
       />
-      <DashboardRangeSelector />
+      <RangeSelector />
       <Grid className={dashboardGrid} pb="2xl" width="100%">
         {WIDGETS.map(({ key, element, minHeight }) => (
           <Box key={key} gridArea={key} minHeight={minHeight} minWidth="0">
@@ -116,7 +118,7 @@ function WalletDashboard() {
         ))}
       </Grid>
       <TransactionCreationMenu mode="navigate" variant="mobile" />
-    </DashboardRangeProvider>
+    </RangeProvider>
   )
 }
 

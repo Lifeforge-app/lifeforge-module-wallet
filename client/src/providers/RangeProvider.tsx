@@ -1,7 +1,7 @@
 import { parseAsString, useQueryState } from 'nuqs'
 import { createContext, useCallback, useContext, useMemo } from 'react'
 
-export type DashboardRange =
+export type WalletRange =
   | 'week'
   | 'month'
   | 'mtd'
@@ -11,28 +11,23 @@ export type DashboardRange =
   | 'all'
   | 'custom'
 
-interface DashboardRangeContextValue {
-  range: DashboardRange
-  setRange: (range: DashboardRange) => void
+interface WalletRangeContextValue {
+  range: WalletRange
+  setRange: (range: WalletRange) => void
   startDate: string
   endDate: string
   setStartDate: (value: string) => void
   setEndDate: (value: string) => void
   queryInput: {
-    range: DashboardRange
+    range: WalletRange
     startDate?: string
     endDate?: string
   }
 }
 
-const DashboardRangeContext =
-  createContext<DashboardRangeContextValue | null>(null)
+const WalletRangeContext = createContext<WalletRangeContextValue | null>(null)
 
-export function DashboardRangeProvider({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export function RangeProvider({ children }: { children: React.ReactNode }) {
   const [range, setRangeQuery] = useQueryState(
     'range',
     parseAsString.withDefault('mtd')
@@ -49,7 +44,7 @@ export function DashboardRangeProvider({
   )
 
   const setRange = useCallback(
-    (value: DashboardRange) => {
+    (value: WalletRange) => {
       setRangeQuery(value)
     },
     [setRangeQuery]
@@ -69,8 +64,8 @@ export function DashboardRangeProvider({
     [setEndDateQuery]
   )
 
-  const queryInput = useMemo<DashboardRangeContextValue['queryInput']>(() => {
-    const rangeValue = range as DashboardRange
+  const queryInput = useMemo<WalletRangeContextValue['queryInput']>(() => {
+    const rangeValue = range as WalletRange
 
     return rangeValue === 'custom'
       ? {
@@ -83,7 +78,7 @@ export function DashboardRangeProvider({
 
   const value = useMemo(
     () => ({
-      range: range as DashboardRange,
+      range: range as WalletRange,
       setRange,
       startDate,
       endDate,
@@ -95,19 +90,15 @@ export function DashboardRangeProvider({
   )
 
   return (
-    <DashboardRangeContext value={value}>
-      {children}
-    </DashboardRangeContext>
+    <WalletRangeContext value={value}>{children}</WalletRangeContext>
   )
 }
 
-export function useDashboardRange() {
-  const context = useContext(DashboardRangeContext)
+export function useWalletRange() {
+  const context = useContext(WalletRangeContext)
 
   if (!context) {
-    throw new Error(
-      'useDashboardRange must be used within a DashboardRangeProvider'
-    )
+    throw new Error('useWalletRange must be used within a RangeProvider')
   }
 
   return context

@@ -22,13 +22,13 @@ import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import { useDashboardRange } from '../providers/DashboardRangeProvider'
+import { useWalletRange } from '@/providers/RangeProvider'
 
 function PlatformsBreakdownCard() {
   const { platformsQuery } = useWalletData()
   const { isAmountHidden } = useWalletStore()
   const { t } = useModuleTranslation()
-  const { queryInput } = useDashboardRange()
+  const { queryInput } = useWalletRange()
 
   const breakdownQuery = useQuery(
     forgeAPI.analytics.getSpendingByPlatform

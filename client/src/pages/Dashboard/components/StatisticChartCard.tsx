@@ -28,12 +28,12 @@ import { forgeAPI } from '@/manifest'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import { useDashboardRange } from '../providers/DashboardRangeProvider'
+import { useWalletRange } from '@/providers/RangeProvider'
 
 function StatisticChartCard() {
   const { t } = useModuleTranslation()
   const { bgTempPalette, derivedTheme } = usePersonalization()
-  const { queryInput } = useDashboardRange()
+  const { queryInput } = useWalletRange()
 
   const chartDataQuery = useQuery(
     forgeAPI.analytics.getChartData.input(queryInput).queryOptions()

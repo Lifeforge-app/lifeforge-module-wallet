@@ -7,7 +7,7 @@ import { type WalletCategory, useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 
 import { CategoriesBreakdownContext } from '..'
-import { useDashboardRange } from '../../../providers/DashboardRangeProvider'
+import { useWalletRange } from '@/providers/RangeProvider'
 import BreakdownChartLegend from './BreakdownChartLegend'
 import BreakdownDetails from './BreakdownDetails'
 import BreakdownDoughnutChart from './BreakdownDoughnutChart'
@@ -21,7 +21,7 @@ function BreakdownContent({
   setSelectedType: (type: 'income' | 'expenses') => void
 }) {
   const { categoriesQuery } = useWalletData()
-  const { range, startDate, endDate, queryInput } = useDashboardRange()
+  const { range, startDate, endDate, queryInput } = useWalletRange()
 
   const categoriesBreakdownQuery = useQuery(
     forgeAPI.analytics.getCategoriesBreakdown

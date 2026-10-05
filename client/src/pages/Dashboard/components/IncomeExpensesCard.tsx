@@ -7,7 +7,7 @@ import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import { useDashboardRange } from '../providers/DashboardRangeProvider'
+import { useWalletRange } from '@/providers/RangeProvider'
 
 function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const isIncome = title.toLowerCase() === 'income'
@@ -15,7 +15,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const type = isIncome ? 'income' : 'expenses'
 
   const { t } = useModuleTranslation()
-  const { queryInput } = useDashboardRange()
+  const { queryInput } = useWalletRange()
   const { isAmountHidden } = useWalletStore()
 
   const typesCountQuery = useQuery(

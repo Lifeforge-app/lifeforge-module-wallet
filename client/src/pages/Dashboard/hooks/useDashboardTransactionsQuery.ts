@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 
 import { forgeAPI } from '@/manifest'
 
-import { useDashboardRange } from '../providers/DashboardRangeProvider'
+import { useWalletRange } from '@/providers/RangeProvider'
 
 export default function useDashboardTransactionsQuery() {
-  const { queryInput } = useDashboardRange()
+  const { queryInput } = useWalletRange()
 
   return useQuery(forgeAPI.transactions.list.input(queryInput).queryOptions())
 }

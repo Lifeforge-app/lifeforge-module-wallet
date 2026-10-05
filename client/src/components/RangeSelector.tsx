@@ -13,12 +13,9 @@ import {
   surface
 } from '@lifeforge/ui'
 
-import {
-  type DashboardRange,
-  useDashboardRange
-} from '../providers/DashboardRangeProvider'
+import { type WalletRange, useWalletRange } from '@/providers/RangeProvider'
 
-const RANGE_OPTIONS: DashboardRange[] = [
+const RANGE_OPTIONS: WalletRange[] = [
   'week',
   'month',
   'mtd',
@@ -29,11 +26,11 @@ const RANGE_OPTIONS: DashboardRange[] = [
   'custom'
 ]
 
-function DashboardRangeSelector() {
+function RangeSelector() {
   const { t } = useModuleTranslation()
 
   const { range, setRange, startDate, endDate, setStartDate, setEndDate } =
-    useDashboardRange()
+    useWalletRange()
 
   return (
     <Stack gap="sm" mb="sm">
@@ -47,7 +44,7 @@ function DashboardRangeSelector() {
         )}
         value={range}
         width="100%"
-        onChange={(value: DashboardRange) => setRange(value)}
+        onChange={(value: WalletRange) => setRange(value)}
       >
         {RANGE_OPTIONS.map(option => (
           <ListboxOption
@@ -87,4 +84,4 @@ function DashboardRangeSelector() {
   )
 }
 
-export default DashboardRangeSelector
+export default RangeSelector
