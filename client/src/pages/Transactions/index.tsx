@@ -21,7 +21,7 @@ import SearchBar from './components/SearchBar'
 import Sidebar from './components/Sidebar'
 import TransactionCreationMenu from './components/TransactionCreationMenu'
 import TransactionList from './components/TransactionList'
-import ManageTemplatesModal from './modals/ManageTemplatesModal'
+import ChooseTemplateModal from './modals/ChooseTemplateModal'
 import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
 import NaturalLanguageModal from './modals/NaturalLanguageModal'
 import ScanReceiptModal from './modals/ScanReceiptModal'
@@ -45,7 +45,7 @@ function Transactions() {
     }
 
     if (hash === '#template') {
-      open(ManageTemplatesModal, { choosing: true })
+      open(ChooseTemplateModal, {})
     }
 
     if (hash === '#scan') {

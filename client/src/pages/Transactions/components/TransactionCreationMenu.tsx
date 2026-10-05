@@ -9,7 +9,7 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
-import ManageTemplatesModal from '../modals/ManageTemplatesModal'
+import ChooseTemplateModal from '../modals/ChooseTemplateModal'
 import ModifyTransactionsModal from '../modals/ModifyTransactionsModal'
 import NaturalLanguageModal from '../modals/NaturalLanguageModal'
 import ScanReceiptModal from '../modals/ScanReceiptModal'
@@ -46,7 +46,7 @@ function TransactionCreationMenu({
         icon="tabler:template"
         label="From Template"
         onClick={handleAction('template', () =>
-          open(ManageTemplatesModal, { choosing: true })
+          open(ChooseTemplateModal, {})
         )}
       />
       <ContextMenuItem

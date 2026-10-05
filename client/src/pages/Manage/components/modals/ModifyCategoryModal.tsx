@@ -14,9 +14,8 @@ import {
   createDefaultValues
 } from '@lifeforge/ui'
 
+import type { WalletCategory } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
-
-import type { WalletCategory } from '..'
 
 const schema = z.object({
   type: z.enum(['income', 'expenses']),

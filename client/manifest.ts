@@ -13,7 +13,7 @@ const { forgeAPI, ...manifest } = createForgeModule({
       path: 'transactions'
     },
     { label: 'Assets', icon: 'tabler:wallet', path: 'assets' },
-    { label: 'Ledgers', icon: 'tabler:book', path: 'ledgers' },
+    { label: 'Manage', icon: 'tabler:adjustments', path: 'manage' },
     {
       label: 'Spending Heatmap',
       icon: 'tabler:map-pin',
@@ -29,7 +29,7 @@ const { forgeAPI, ...manifest } = createForgeModule({
     '/': lazy(() => import('@/pages/Dashboard')),
     '/transactions': lazy(() => import('@/pages/Transactions')),
     '/assets': lazy(() => import('@/pages/Assets')),
-    '/ledgers': lazy(() => import('@/pages/Ledgers')),
+    '/manage': lazy(() => import('@/pages/Manage')),
     '/spending-heatmap': lazy(() => import('@/pages/SpendingHeatmap')),
     '/statements': lazy(() => import('@/pages/Statements'))
   },
