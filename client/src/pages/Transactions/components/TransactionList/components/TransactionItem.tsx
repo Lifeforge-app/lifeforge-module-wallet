@@ -10,9 +10,9 @@ import {
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
+import ModifyTemplatesModal from '@/pages/Manage/components/modals/ModifyTemplatesModal'
 
 import type { WalletTransaction } from '../../..'
-import ModifyTemplatesModal from '../../../modals/ModifyTemplatesModal'
 import ModifyTransactionsModal from '../../../modals/ModifyTransactionsModal'
 import ViewTransactionModal from '../../../modals/ViewTransactionModal'
 import TransactionIncomeExpensesItem from './TransactionIncomeExpensesItem'
@@ -67,7 +67,7 @@ function TransactionItem({
           {transaction.type !== 'transfer' && (
             <ContextMenuItem
               icon="tabler:copy"
-              label="Copy"
+              label="Copy Particular"
               onClick={() => {
                 navigator.clipboard.writeText(transaction.particulars)
                 toast.success(t('toasts.copyParticulars'))
@@ -97,6 +97,16 @@ function TransactionItem({
               }
             />
           )}
+          <ContextMenuItem
+            icon="tabler:copy-plus"
+            label="Duplicate"
+            onClick={() =>
+              open(ModifyTransactionsModal, {
+                type: 'create',
+                initialData: transaction
+              })
+            }
+          />
           <ContextMenuItem
             icon="tabler:pencil"
             label="Edit"
