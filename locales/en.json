@@ -9,9 +9,9 @@
       "title": "Assets",
       "description": "Manage your assets securely and efficiently in your wallet."
     },
-    "ledgers": {
-      "title": "Ledgers",
-      "description": "Manage and view your financial transactions and accounts in the ledger."
+    "manage": {
+      "title": "Manage",
+      "description": "Manage your categories, platforms, templates and ledgers in one place."
     },
     "transactions": {
       "title": "Transactions",
@@ -33,6 +33,12 @@
   "transactionGroups": {
     "today": "Today",
     "yesterday": "Yesterday"
+  },
+  "manage": {
+    "categories": "Categories",
+    "platforms": "Platforms",
+    "templates": "Templates",
+    "ledgers": "Ledgers"
   },
   "widgets": {
     "categoriesBreakdown": {
@@ -68,7 +74,8 @@
     "totalAssets": "Total Assets",
     "totalLiabilities": "Total Liabilities",
     "netWorth": "Net Worth",
-    "platformsBreakdown": "Platforms Breakdown"
+    "platformsBreakdown": "Platforms Breakdown",
+    "activityCalendar": "Activity Calendar"
   },
   "tags": {
     "liability": "Liability"
@@ -166,7 +173,9 @@
     "savePrompts": "Save Prompts",
     "fromNaturalLanguage": "From Natural Language",
     "createTemplateFrom": "Create Template From...",
-    "print": "Print"
+    "print": "Print",
+    "duplicate": "Duplicate",
+    "copyParticular": "Copy Particular"
   },
   "modals": {
     "transactions": {

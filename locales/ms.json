@@ -9,9 +9,9 @@
       "title": "Aset",
       "description": "Urus aset anda dengan selamat dan cekap dalam dompet anda."
     },
-    "ledgers": {
-      "title": "Buku Tunai",
-      "description": "Urus dan lihat transaksi kewangan dan akaun anda dalam lejer."
+    "manage": {
+      "title": "Urus",
+      "description": "Urus kategori, platform, templat dan lejar anda di satu tempat."
     },
     "transactions": {
       "title": "Transaksi",
@@ -33,6 +33,12 @@
   "transactionGroups": {
     "today": "Hari Ini",
     "yesterday": "Semalam"
+  },
+  "manage": {
+    "categories": "Kategori",
+    "platforms": "Platform",
+    "templates": "Templat",
+    "ledgers": "Lejar"
   },
   "widgets": {
     "categoriesBreakdown": {
@@ -68,7 +74,8 @@
     "totalAssets": "Jumlah Aset",
     "totalLiabilities": "Jumlah Liabiliti",
     "netWorth": "Nilai Bersih",
-    "platformsBreakdown": "Pecahan Platform"
+    "platformsBreakdown": "Pecahan Platform",
+    "activityCalendar": "Kalendar Aktiviti"
   },
   "tags": {
     "liability": "Liabiliti"
@@ -166,7 +173,9 @@
     "savePrompts": "Simpan Petunjuk",
     "fromNaturalLanguage": "Dari Bahasa Tabii",
     "createTemplateFrom": "Cipta Templat Daripada...",
-    "print": "Cetak"
+    "print": "Cetak",
+    "duplicate": "Duplikasi",
+    "copyParticular": "Salin Butiran"
   },
   "modals": {
     "transactions": {

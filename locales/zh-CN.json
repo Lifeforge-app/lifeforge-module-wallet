@@ -9,9 +9,9 @@
       "title": "资产",
       "description": "在您的钱包中安全高效地管理您的资产。"
     },
-    "ledgers": {
-      "title": "分类账",
-      "description": "管理和查看您在账本中的财务交易和账户。"
+    "manage": {
+      "title": "管理",
+      "description": "在一个地方管理您的类别、平台、模板和帐本。"
     },
     "transactions": {
       "title": "交易记录",
@@ -33,6 +33,12 @@
   "transactionGroups": {
     "today": "今天",
     "yesterday": "昨天"
+  },
+  "manage": {
+    "categories": "类别",
+    "platforms": "平台",
+    "templates": "模板",
+    "ledgers": "帐本"
   },
   "widgets": {
     "categoriesBreakdown": {
@@ -68,7 +74,8 @@
     "totalAssets": "总资产",
     "totalLiabilities": "总负债",
     "netWorth": "净资产",
-    "platformsBreakdown": "平台消费统计"
+    "platformsBreakdown": "平台消费统计",
+    "activityCalendar": "活动日历"
   },
   "tags": {
     "liability": "负债"
@@ -166,7 +173,9 @@
     "savePrompts": "保存提示",
     "fromNaturalLanguage": "从自然语言",
     "createTemplateFrom": "从交易创建模板",
-    "print": "打印"
+    "print": "打印",
+    "duplicate": "创建副本",
+    "copyParticular": "复制摘要"
   },
   "modals": {
     "transactions": {
