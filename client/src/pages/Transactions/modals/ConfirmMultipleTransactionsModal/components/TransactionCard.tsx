@@ -56,6 +56,8 @@ function TransactionCard({
               particulars:
                 data.type !== 'transfer' ? data.particulars || '' : '',
               category: data.type !== 'transfer' ? data.category || null : null,
+              platform:
+                data.type !== 'transfer' ? data.platform || undefined : undefined,
               asset: data.type !== 'transfer' ? data.asset : undefined,
               ledgers: data.type !== 'transfer' ? (data.ledgers ?? []) : [],
               location_name:

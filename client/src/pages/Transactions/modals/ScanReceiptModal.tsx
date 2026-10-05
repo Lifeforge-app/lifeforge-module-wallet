@@ -6,7 +6,6 @@ import z from 'zod'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
-  CheckboxField,
   FileField,
   FormModal,
   toast,
@@ -20,12 +19,12 @@ import CreateAnotherField, {
   type CreateAnotherValue,
   createAnotherSchema
 } from '../components/CreateAnotherFIeld'
+import DuplicateTransactionModal from './DuplicateTransactionModal'
 import ManagePromptsModal from './ManagePromptsModal'
 import ModifyTransactionsModal from './ModifyTransactionsModal'
 
 const schema = z.object({
   receipt: z.any(),
-  keepReceiptAfterScan: z.boolean(),
   createAnother: createAnotherSchema
 })
 
@@ -45,7 +44,6 @@ function ScanReceiptModal({
     resolver: zodResolver(schema),
     defaultValues: {
       receipt: { type: 'empty' } as FileValue,
-      keepReceiptAfterScan: true,
       createAnother
     }
   })
@@ -90,14 +88,25 @@ function ScanReceiptModal({
 
           onClose()
 
+          const scannedData = {
+            ...data,
+            receipt: theFile as never
+          }
+
+          if (data.matchedTransactionIds.length > 0) {
+            open(DuplicateTransactionModal, {
+              matchedTransactionIds: data.matchedTransactionIds,
+              createAnother: values.createAnother,
+              scannedData
+            })
+
+            return
+          }
+
           open(ModifyTransactionsModal, {
             type: 'create',
             createAnother: values.createAnother,
-            initialData: {
-              ...data,
-              type: data.type ?? 'expenses',
-              receipt: (values.keepReceiptAfterScan ? theFile : '') as never
-            }
+            initialData: scannedData
           })
         }
       }}
@@ -124,12 +133,6 @@ function ScanReceiptModal({
           application: ['pdf']
         }}
         name="receipt"
-      />
-      <CheckboxField
-        control={form.control}
-        icon="tabler:file-check"
-        label="keepAfterScan"
-        name="keepReceiptAfterScan"
       />
       <CreateAnotherField control={form.control} />
     </FormModal>

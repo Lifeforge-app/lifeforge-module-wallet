@@ -105,7 +105,7 @@ function TransactionIncomeExpensesItem({
               </button>
             )}
           </Flex>
-          <Text asChild color="muted">
+          <Text asChild color="muted" whiteSpace="nowrap">
             <Flex align="center" gap="sm">
               <Text
                 display={{ base: 'block', sm: 'none' }}
@@ -143,7 +143,7 @@ function TransactionIncomeExpensesItem({
                   <Text size="sm" weight="medium">
                     In
                   </Text>
-                  <Flex align="center" gap="xs">
+                  <Flex align="center" gap="xs" minWidth="0">
                     <Icon
                       icon={
                         ledgers.find(
@@ -159,6 +159,7 @@ function TransactionIncomeExpensesItem({
                       }}
                     />
                     <Text
+                      truncate
                       color="muted"
                       display={{ base: 'none', md: 'block' }}
                       size="sm"

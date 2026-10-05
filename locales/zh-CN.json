@@ -203,7 +203,13 @@
     },
     "receipts": {
       "scan": "扫描收据",
-      "view": "查看收据"
+      "view": "查看收据",
+      "duplicate": {
+        "title": "可能重复",
+        "description": "已存在具有相同日期、金额和类型的交易。您想创建新交易还是更新现有交易？",
+        "createNew": "创建新交易",
+        "useExisting": "使用现有交易"
+      }
     },
     "assetsBalanceChart": "资产余额图表",
     "templates": {
@@ -269,7 +275,6 @@
       "label": "交易描述",
       "placeholder": "上周日使用 MAE 钱包在 The Library 花了 RM39 买了一本书"
     },
-    "keepAfterScan": "扫描后保留收据",
     "createAnother": "再创建一个"
   },
   "items": {

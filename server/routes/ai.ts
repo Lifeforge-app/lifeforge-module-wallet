@@ -95,9 +95,7 @@ async function extractBasicDetails(
       category: hasCategories
         ? z.enum(categoryNames).describe('The matched category')
         : z.string().describe('The matched category name'),
-      platform: platformEnum.describe(
-        'The matched purchase platform for expenses, or "None"'
-      ),
+      platform: platformEnum.describe('The matched purchase platform, or "None"'),
       amount: z.number().describe('Numeric amount without currency symbol'),
       location: z.string().describe('Location name or "Unknown"'),
       asset: assetEnum.describe(
@@ -137,7 +135,7 @@ Strict Rules:
   - Never output descriptive relative terms (like "Today", "Yesterday", "2 days ago") in the date field; always output the calculated absolute calendar date in YYYY-MM-DD format.
 - Determine transaction type: 'income', 'expenses', or 'transfer'.
   - For income or expenses: extract category, location, and the asset/wallet used.
-  - For expenses, extract the purchase platform/marketplace (e.g. Shopee, Lazada, Taobao) ONLY if it is explicitly stated, choosing from the Available Platforms list. If none is mentioned or nothing matches, use "None". For income, always use "None".
+  - Extract the purchase platform/marketplace (e.g. Shopee, Lazada, Taobao) ONLY if it is explicitly stated, choosing from the Available Platforms list. If none is mentioned or nothing matches, use "None".
   - For transfer: extract only date, amount, and the from/to assets (from, to). Skip category, location, and single asset.
 - Extract the clean, numerical transaction amount without currency signs. CRITICAL: Never invent or assume an amount. Only extract an amount if it is explicitly stated in the description (e.g., "RM39", "$15", "50 dollars", "spent 20"). If no amount is explicitly mentioned, you MUST set amount to 0.
 - Extract the merchant name/location ONLY if it is explicitly stated. CRITICAL: Never arbitrarily add, guess, infer, or fabricate a location. If the text does not explicitly mention a location or merchant, you MUST use "Unknown".
@@ -627,7 +625,7 @@ export const fromNaturalLanguage = forge
               ? assetMap.get(item.asset)
               : undefined,
           platform:
-            item.type === 'expenses' && item.platform && item.platform !== 'None'
+            item.platform && item.platform !== 'None'
               ? platformMap.get(item.platform)
               : undefined,
           ledgers: undefined
@@ -677,11 +675,7 @@ export const fromNaturalLanguage = forge
           finalResult.asset = matchedTemplate.asset
         }
 
-        if (
-          finalResult.type === 'expenses' &&
-          !finalResult.platform &&
-          matchedTemplate?.platform
-        ) {
+        if (!finalResult.platform && matchedTemplate?.platform) {
           finalResult.platform = matchedTemplate.platform
         }
 

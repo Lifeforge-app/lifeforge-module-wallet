@@ -1,27 +1,38 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, gte, lte } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import z from 'zod'
 
 import type { BuiltModuleSchema } from '@lifeforge/drizzle'
-import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
+import type {
+  CoreContext,
+  FetchAIFunc,
+  SearchLocationsFunc
+} from '@lifeforge/server-utils'
 
 import type { WalletSchema } from '../forge'
 import {
   walletCategories,
   walletPlatforms,
-  walletTransactionTemplates
+  walletTransactionTemplates,
+  walletTransactions,
+  walletTransactionsIncomeExpenses
 } from '../schema.drizzle'
+
+dayjs.extend(customParseFormat)
 
 type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
 type GetAPIKeyFunc = (id: string) => Promise<string>
 
 export async function getTransactionDetails(
-  ocrResult: string,
+  imageDataUrl: string,
   db: WalletDb,
   fetchAI: FetchAIFunc,
   getAPIKey: GetAPIKeyFunc,
-  searchLocations: SearchLocationsFunc
+  searchLocations: SearchLocationsFunc,
+  logging: CoreContext['logging']
 ) {
   type FinalResult = {
     date: string
@@ -37,6 +48,7 @@ export async function getTransactionDetails(
     asset?: string
     platform: string | null
     ledgers?: string[]
+    matchedTransactionIds: string[]
   }
 
   const [particularPrompt, categories, platforms, key] = await Promise.all([
@@ -61,27 +73,34 @@ export async function getTransactionDetails(
       : z.literal('None')
 
   const FullTransactionDetails = z.object({
-    date: z.string().describe('Transaction date in YYYY-MM-DD format'),
+    date: z
+      .string()
+      .describe(
+        'Transaction date in DD/MM/YYYY format, never later than the current date'
+      ),
     type: z.enum(['income', 'expenses']),
     category: z.enum(categoryNames),
-    platform: platformEnum.describe(
-      'The purchase platform for expenses, or "None"'
-    ),
+    platform: platformEnum.describe('The purchase platform, or "None"'),
     amount: z.number().describe('Numeric amount without currency symbol'),
     location: z.string().describe('Location name or "Unknown"')
   })
 
   const extractedData = await fetchAI({
-    provider: 'openai',
-    model: 'gpt-4o',
+    provider: 'openrouter',
+    model: 'inclusionai/ling-3.0-flash-vl',
     messages: [
       {
         role: 'system',
-        content: `Extract transaction details from receipt text. Categories: ${categoryNames.join(', ')}. Purchase platforms: ${platforms.length > 0 ? platforms.map(p => p.name).join(', ') : 'None'}. Extract the purchase platform only for expenses if explicitly present; otherwise use "None".`
+        content: `Extract transaction details from the receipt image. Return the date in DD/MM/YYYY format. The scanned date must never exceed the current date (${dayjs().format('DD/MM/YYYY')}); if the receipt shows a future date or the date cannot be determined, use the current date instead. Categories: ${categoryNames.join(', ')}. Purchase platforms: ${platforms.length > 0 ? platforms.map(p => p.name).join(', ') : 'None'}. Extract the purchase platform if explicitly present; otherwise use "None".`
       },
       {
         role: 'user',
-        content: ocrResult
+        content: [
+          {
+            type: 'image_url',
+            image_url: { url: imageDataUrl }
+          }
+        ]
       }
     ],
     structure: FullTransactionDetails
@@ -91,13 +110,26 @@ export async function getTransactionDetails(
     throw new Error('Failed to extract transaction details')
   }
 
+  const parsedDate = dayjs(extractedData.date, 'DD/MM/YYYY')
+  const fallbackDate = dayjs(extractedData.date)
+
+  extractedData.date = parsedDate.isValid()
+    ? parsedDate.format('YYYY-MM-DD')
+    : fallbackDate.isValid()
+      ? fallbackDate.format('YYYY-MM-DD')
+      : dayjs().format('YYYY-MM-DD')
+
+  logging.info(
+    `Extracted receipt details: type=${extractedData.type} amount=${extractedData.amount} date=${extractedData.date} location=${extractedData.location}`
+  )
+
   let finalResult: FinalResult = {
     date: extractedData.date,
     type: extractedData.type,
     amount: extractedData.amount,
     category: categoryMap.get(extractedData.category) ?? '',
     platform:
-      extractedData.type === 'expenses' && extractedData.platform !== 'None'
+      extractedData.platform !== 'None'
         ? (platformMap.get(extractedData.platform) ?? null)
         : null,
     particulars: '',
@@ -105,7 +137,8 @@ export async function getTransactionDetails(
       lon: 0,
       lat: 0
     },
-    location_name: ''
+    location_name: '',
+    matchedTransactionIds: []
   }
 
   const particularsPrompt = particularPrompt?.[extractedData.type]
@@ -127,8 +160,8 @@ export async function getTransactionDetails(
     })
 
     const templateData = await fetchAI({
-      provider: 'openai',
-      model: 'gpt-4o',
+      provider: 'deepseek',
+      model: 'deepseek-flash',
       messages: [
         {
           role: 'system',
@@ -143,7 +176,16 @@ export async function getTransactionDetails(
         },
         {
           role: 'user',
-          content: `${extractedData.amount} ${extractedData.category}\n${ocrResult}`
+          content: [
+            {
+              type: 'text',
+              text: `${extractedData.amount} ${extractedData.category}`
+            },
+            {
+              type: 'image_url',
+              image_url: { url: imageDataUrl }
+            }
+          ]
         }
       ],
       structure: TemplateMatch
@@ -167,11 +209,19 @@ export async function getTransactionDetails(
 
     if (!finalResult.particulars?.trim()) {
       const particularsData = await fetchAI({
-        provider: 'openai',
-        model: 'gpt-4o',
+        provider: 'deepseek',
+        model: 'deepseek-flash',
         messages: [
           { role: 'system', content: particularsPrompt },
-          { role: 'user', content: ocrResult }
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image_url',
+                image_url: { url: imageDataUrl }
+              }
+            ]
+          }
         ],
         structure: z.object({ particulars: z.string() })
       })
@@ -182,11 +232,19 @@ export async function getTransactionDetails(
     }
   } else {
     const particularsData = await fetchAI({
-      provider: 'openai',
-      model: 'gpt-4o',
+      provider: 'deepseek',
+      model: 'deepseek-flash',
       messages: [
         { role: 'system', content: particularsPrompt },
-        { role: 'user', content: ocrResult }
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: imageDataUrl }
+            }
+          ]
+        }
       ],
       structure: z.object({ particulars: z.string() })
     })
@@ -212,6 +270,39 @@ export async function getTransactionDetails(
       finalResult.location_name = locations[0].name
     }
   }
+
+  const candidates = await db
+    .select({
+      id: walletTransactions.id
+    })
+    .from(walletTransactions)
+    .innerJoin(
+      walletTransactionsIncomeExpenses,
+      eq(
+        walletTransactionsIncomeExpenses.base_transaction,
+        walletTransactions.id
+      )
+    )
+    .where(
+      and(
+        gte(
+          walletTransactions.date,
+          dayjs(finalResult.date).startOf('day').toDate()
+        ),
+        lte(
+          walletTransactions.date,
+          dayjs(finalResult.date).endOf('day').toDate()
+        ),
+        eq(walletTransactions.amount, finalResult.amount),
+        eq(walletTransactionsIncomeExpenses.type, finalResult.type)
+      )
+    )
+
+  finalResult.matchedTransactionIds = candidates.map(c => c.id)
+
+  logging.info(
+    `Found ${candidates.length} existing transaction(s) on ${finalResult.date} with amount ${finalResult.amount} and type ${finalResult.type}`
+  )
 
   return finalResult
 }

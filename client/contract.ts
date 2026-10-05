@@ -1139,6 +1139,12 @@ export const contract = {
             },
             "location_name": {
               "type": "string"
+            },
+            "matchedTransactionIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
@@ -1149,7 +1155,8 @@ export const contract = {
             "platform",
             "particulars",
             "location_coords",
-            "location_name"
+            "location_name",
+            "matchedTransactionIds"
           ],
           "additionalProperties": false
         }

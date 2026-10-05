@@ -203,7 +203,13 @@
     },
     "receipts": {
       "scan": "Scan Receipt",
-      "view": "View Receipt"
+      "view": "View Receipt",
+      "duplicate": {
+        "title": "Possible Duplicate",
+        "description": "A transaction with the same date, amount and type already exists. Do you want to create a new transaction or update the existing one?",
+        "createNew": "Create New",
+        "useExisting": "Use Existing"
+      }
     },
     "assetsBalanceChart": "Assets Balance Chart",
     "templates": {
@@ -247,7 +253,6 @@
     "ledgerColor": "Ledger Color",
     "assetName": "Asset Name",
     "ledgerName": "Ledger Name",
-    "keepAfterScan": "Keep Receipt After Scan",
     "categoryName": {
       "label": "Category Name",
       "placeholder": "e.g. Groceries, Salary, Rent"

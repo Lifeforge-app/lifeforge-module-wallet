@@ -198,24 +198,22 @@ const { categoriesQuery, assetsQuery, platformsQuery, ledgersQuery } =
         name="category"
         options={categoryOptions}
       />
-      {watchedType === 'expenses' && (
-        <ListboxField
-          actionButtonOption={{
-            text: t('common.buttons:new', {
-              item: t('items.platform')
-            }),
-            icon: 'tabler:plus',
-            onClick: () => {
-              open(ModifyPlatformModal, { type: 'create' })
-            }
-          }}
-          control={form.control}
-          icon="tabler:building-store"
-          label="Platform"
-          name="platform"
-          options={platformOptions}
-        />
-      )}
+      <ListboxField
+        actionButtonOption={{
+          text: t('common.buttons:new', {
+            item: t('items.platform')
+          }),
+          icon: 'tabler:plus',
+          onClick: () => {
+            open(ModifyPlatformModal, { type: 'create' })
+          }
+        }}
+        control={form.control}
+        icon="tabler:building-store"
+        label="Platform"
+        name="platform"
+        options={platformOptions}
+      />
       <ListboxField
         required
         control={form.control}

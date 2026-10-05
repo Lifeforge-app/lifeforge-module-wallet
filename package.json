@@ -41,6 +41,10 @@
         "usage": "Create transactions from natural language and images using llm",
         "required": false
       },
+      "openrouter": {
+        "usage": "Extract transaction details from receipt images using vision model",
+        "required": false
+      },
       "gcloud": {
         "usage": "To fetch location from google map api",
         "required": false

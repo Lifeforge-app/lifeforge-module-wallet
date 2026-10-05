@@ -2,9 +2,11 @@ import { useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Card,
+  type CardProps,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  surface,
   toast,
   useModalStore
 } from '@lifeforge/ui'
@@ -21,11 +23,13 @@ import TransactionTransferItem from './TransactionTransferItem'
 function TransactionItem({
   transaction,
   viewOnly,
-  highlightAsset
+  highlightAsset,
+  bg = surface.defaultInteractive
 }: {
   transaction: WalletTransaction
   viewOnly?: boolean
   highlightAsset?: string
+  bg?: CardProps['bg']
 }) {
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
@@ -39,6 +43,7 @@ function TransactionItem({
     <Card
       isInteractive
       align="center"
+      bg={bg}
       direction="row"
       gap="md"
       justify="between"

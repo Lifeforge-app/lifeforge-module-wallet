@@ -203,7 +203,13 @@
     },
     "receipts": {
       "scan": "Imbas Resit",
-      "view": "Lihat Resit"
+      "view": "Lihat Resit",
+      "duplicate": {
+        "title": "Kemungkinan Duplikasi",
+        "description": "Transaksi dengan tarikh, jumlah dan jenis yang sama sudah wujud. Adakah anda mahu mencipta transaksi baharu atau mengemas kini transaksi sedia ada?",
+        "createNew": "Cipta Baharu",
+        "useExisting": "Guna Sedia Ada"
+      }
     },
     "assetsBalanceChart": "Carta Baki Asset",
     "templates": {
@@ -269,8 +275,7 @@
       "label": "Penerangan Transaksi",
       "placeholder": "Belanja RM39 di Perpustakaan pada hari Ahad lepas menggunakan Dompet MAE untuk sebuah buku"
     },
-    "createAnother": "Buat Satu Lagi",
-    "keepAfterScan": "Simpan Resit Selepas Imbasan"
+    "createAnother": "Buat Satu Lagi"
   },
   "items": {
     "transaction": "Transaksi",

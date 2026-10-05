@@ -532,7 +532,8 @@ export const scanReceipt = forge
           lon: z.number(),
           lat: z.number()
         }),
-        location_name: z.string()
+        location_name: z.string(),
+        matchedTransactionIds: z.array(z.string())
       })
     }
   })
@@ -541,14 +542,17 @@ export const scanReceipt = forge
       db,
       media: { file },
       core: {
-        media: { convertPDFToImage, parseOCR },
-        api: { fetchAI, getAPIKey, searchLocations }
+        media: { convertPDFToImage },
+        api: { fetchAI, getAPIKey, searchLocations },
+        logging
       },
       response
     }) => {
       if (!file || typeof file === 'string') {
         return response.badRequest('No file uploaded')
       }
+
+      logging.info(`Scanning receipt "${file.originalName}" (${file.mimeType})`)
 
       if (file.originalName.endsWith('.pdf')) {
         const image = await convertPDFToImage(file.path)
@@ -568,21 +572,24 @@ export const scanReceipt = forge
         return response.badRequest('Receipt image not found')
       }
 
-      const OCRResult = await parseOCR('medium/receipt.png')
+      const base64Image = fs.readFileSync('medium/receipt.png', {
+        encoding: 'base64'
+      })
 
-      if (!OCRResult) {
-        return response.badRequest('OCR parsing failed')
-      }
+      const mimeType = file.originalName.endsWith('.pdf')
+        ? 'image/png'
+        : file.mimeType
 
       fs.unlinkSync('medium/receipt.png')
 
       return response.ok(
         await getTransactionDetails(
-          OCRResult,
+          `data:${mimeType};base64,${base64Image}`,
           db,
           fetchAI,
           getAPIKey,
-          searchLocations
+          searchLocations,
+          logging
         )
       )
     }
