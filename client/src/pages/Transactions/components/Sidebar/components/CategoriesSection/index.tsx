@@ -6,7 +6,7 @@ import { SidebarTitle, WithQuery, useModalStore } from '@lifeforge/ui'
 import useFilter from '@/hooks/useFilter'
 import { useWalletData } from '@/hooks/useWalletData'
 
-import ModifyCategoryModal from '../../../modals/ModifyCategoryModal'
+import ModifyCategoryModal from '@/pages/Manage/components/modals/ModifyCategoryModal'
 import CategoriesSectionItem from './CategoriesSectionItem'
 
 function CategoriesSection() {

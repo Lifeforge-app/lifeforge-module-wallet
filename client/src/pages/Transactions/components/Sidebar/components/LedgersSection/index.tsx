@@ -1,17 +1,17 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router'
 
 import { useModuleTranslation } from '@lifeforge/localization'
-import { SidebarTitle, WithQuery } from '@lifeforge/ui'
+import { SidebarTitle, WithQuery, useModalStore } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
 import { useWalletData } from '@/hooks/useWalletData'
+import ModifyLedgerModal from '@/pages/Manage/components/modals/ModifyLedgerModal'
 
 import LedgerSectionItem from './LedgerSectionItem'
 
 function LedgerSection() {
   const { t } = useModuleTranslation()
-  const navigate = useNavigate()
+  const { open } = useModalStore()
   const { ledgersQuery } = useWalletData()
   const { ledger } = useFilter()
 
@@ -35,7 +35,7 @@ function LedgerSection() {
         actionButton={{
           icon: 'tabler:plus',
           onClick: () => {
-            navigate('/wallet/ledgers#new')
+            open(ModifyLedgerModal, { type: 'create' })
           }
         }}
         label="ledgers"

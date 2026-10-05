@@ -5,7 +5,7 @@ import { SidebarTitle, WithQuery, useModalStore } from '@lifeforge/ui'
 import useFilter from '@/hooks/useFilter'
 import { useWalletData } from '@/hooks/useWalletData'
 
-import ModifyPlatformModal from '../../../modals/ModifyPlatformModal'
+import ModifyPlatformModal from '@/pages/Manage/components/modals/ModifyPlatformModal'
 import PlatformsSectionItem from './PlatformsSectionItem'
 
 function PlatformsSection() {
