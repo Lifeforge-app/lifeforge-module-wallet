@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
+import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
@@ -24,7 +25,9 @@ import {
 import { useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 import ModifyAssetModal from '@/pages/Assets/modals/ModifyAssetModal'
-import ModifyLedgerModal from '@/pages/Ledgers/modals/ModifyLedgerModal'
+import ModifyCategoryModal from '@/pages/Manage/components/modals/ModifyCategoryModal'
+import ModifyLedgerModal from '@/pages/Manage/components/modals/ModifyLedgerModal'
+import ModifyPlatformModal from '@/pages/Manage/components/modals/ModifyPlatformModal'
 
 import type { WalletTransaction } from '..'
 import CreateAnotherField, {
@@ -32,8 +35,6 @@ import CreateAnotherField, {
   type CreateAnotherValue,
   createAnotherSchema
 } from '../components/CreateAnotherFIeld'
-import ModifyCategoryModal from './ModifyCategoryModal'
-import ModifyPlatformModal from './ModifyPlatformModal'
 
 const schema = z
   .object({
@@ -122,8 +123,8 @@ function ModifyTransactionsModal({
 }) {
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
-  
-const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
+
+  const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
     useWalletData()
 
   const assets = assetsQuery.data ?? []
@@ -157,7 +158,7 @@ const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
         initialData?.receipt
       ),
       ...(initialData?.type === 'transfer'
-          ? {
+        ? {
             from: initialData?.from ?? undefined,
             to: initialData?.to ?? undefined
           }
@@ -186,6 +187,24 @@ const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
   const watchedType = useWatch({ control: form.control, name: 'type' })
 
   const isTransfer = watchedType === 'transfer'
+
+  useEffect(() => {
+    if (watchedType === 'transfer') {
+      const asset = form.getValues('asset')
+
+      if (asset && !form.getValues('from')) {
+        form.setValue('from', asset)
+      }
+
+      return
+    }
+
+    const from = form.getValues('from')
+
+    if (from && !form.getValues('asset')) {
+      form.setValue('asset', from)
+    }
+  }, [watchedType, form])
 
   const categoryOptions = categories
     .filter(cat => cat.type === watchedType)
