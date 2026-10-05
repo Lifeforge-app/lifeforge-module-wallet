@@ -63,6 +63,18 @@ const SpendingByPlatformOutput = z.array(
   })
 )
 
+const EntityBreakdownItem = z.object({
+  income: z.number(),
+  expenses: z.number(),
+  count: z.number()
+})
+
+const EntityBreakdownOutput = z.object({
+  categories: z.record(z.string(), EntityBreakdownItem),
+  platforms: z.record(z.string(), EntityBreakdownItem),
+  ledgers: z.record(z.string(), EntityBreakdownItem)
+})
+
 const AvailableYearMonthsOutput = z.object({
   years: z.array(z.number()),
   monthsByYear: z.record(z.string(), z.array(z.number()))
@@ -90,6 +102,14 @@ const ChartDataOutput = z.array(
   })
 )
 
+const DailyBreakdownOutput = z.array(
+  z.object({
+    date: z.string(),
+    income: z.number(),
+    expenses: z.number()
+  })
+)
+
 async function fetchTransactions(db: WalletDb) {
   const [incomeExpenses, transfers] = await Promise.all([
     db
@@ -99,6 +119,7 @@ async function fetchTransactions(db: WalletDb) {
         date: walletTransactions.date,
         category: walletTransactionsIncomeExpenses.category,
         platform: walletTransactionsIncomeExpenses.platform,
+        ledgers: walletTransactionsIncomeExpenses.ledgers,
         location_name: walletTransactionsIncomeExpenses.location_name,
         location_coords: walletTransactionsIncomeExpenses.location_coords
       })
@@ -495,6 +516,80 @@ export const getSpendingByPlatform = forge
     return response.ok(result)
   })
 
+export const getEntityBreakdown = forge
+  .query({
+    description:
+      'Get accumulated income and expenses per category, platform and ledger for a range',
+    input: {
+      query: z.object({
+        range: RANGE_MODE.optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
+      })
+    },
+    output: {
+      OK: EntityBreakdownOutput
+    }
+  })
+  .callback(async ({ db, query: { range, startDate, endDate }, response }) => {
+    const dateRange = resolveDateRange(range, startDate, endDate)
+
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const transactions = incomeExpenses.filter(transaction =>
+      isWithinDateRange(transaction.date, dateRange)
+    )
+
+    type BreakdownMap = Record<
+      string,
+      { income: number; expenses: number; count: number }
+    >
+
+    const categories: BreakdownMap = {}
+
+    const platforms: BreakdownMap = {}
+
+    const ledgers: BreakdownMap = {}
+
+    const accumulate = (
+      map: BreakdownMap,
+      key: string,
+      type: 'income' | 'expenses',
+      amount: number
+    ) => {
+      map[key] ??= { income: 0, expenses: 0, count: 0 }
+
+      map[key][type] += amount
+      map[key].count += 1
+    }
+
+    for (const transaction of transactions) {
+      if (transaction.category) {
+        accumulate(
+          categories,
+          transaction.category,
+          transaction.type,
+          transaction.amount
+        )
+      }
+
+      if (transaction.platform) {
+        accumulate(
+          platforms,
+          transaction.platform,
+          transaction.type,
+          transaction.amount
+        )
+      }
+
+      for (const ledger of transaction.ledgers) {
+        accumulate(ledgers, ledger, transaction.type, transaction.amount)
+      }
+    }
+
+    return response.ok({ categories, platforms, ledgers })
+  })
+
 export const getSpendingByLocation = forge
   .query({
     description: 'Get spending aggregated by location for heatmap',
@@ -814,6 +909,64 @@ export const getChartData = forge
           resultMap[bucket.label].expenses > 0
             ? -resultMap[bucket.label].expenses
             : 0
+      }))
+    )
+  })
+
+export const getDailyBreakdown = forge
+  .query({
+    description: 'Get daily income and expenses for a date range',
+    input: {
+      query: z.object({
+        range: RANGE_MODE.optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional()
+      })
+    },
+    output: {
+      OK: DailyBreakdownOutput
+    }
+  })
+  .callback(async ({ db, query: { range, startDate, endDate }, response }) => {
+    const dateRange = resolveDateRange(range, startDate, endDate)
+
+    const { incomeExpenses } = await fetchTransactions(db)
+
+    const end = dateRange.endDate
+      ? dayjs(dateRange.endDate).endOf('day')
+      : dayjs().endOf('day')
+
+    const start = dateRange.startDate
+      ? dayjs(dateRange.startDate).startOf('day')
+      : incomeExpenses.length > 0
+        ? dayjs(
+            Math.min(...incomeExpenses.map(t => dayjs(t.date).valueOf()))
+          ).startOf('day')
+        : dayjs().startOf('month')
+
+    const map: Record<string, { income: number; expenses: number }> = {}
+
+    let cursor = start
+
+    while (!cursor.isAfter(end, 'day')) {
+      map[cursor.format('YYYY-MM-DD')] = { income: 0, expenses: 0 }
+
+      cursor = cursor.add(1, 'day')
+    }
+
+    for (const transaction of incomeExpenses) {
+      const entry = map[dayjs(transaction.date).format('YYYY-MM-DD')]
+
+      if (!entry) continue
+
+      entry[transaction.type] += transaction.amount
+    }
+
+    return response.ok(
+      Object.entries(map).map(([date, value]) => ({
+        date,
+        income: parseFloat(value.income.toFixed(2)),
+        expenses: parseFloat(value.expenses.toFixed(2))
       }))
     )
   })

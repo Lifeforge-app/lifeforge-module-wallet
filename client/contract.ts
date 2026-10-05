@@ -4750,6 +4750,187 @@ export const contract = {
         }
       }
     },
+    "getDailyBreakdown": {
+      "method": "get",
+      "description": "Get daily income and expenses for a date range",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "income": {
+                "type": "number"
+              },
+              "expenses": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "date",
+              "income",
+              "expenses"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "getEntityBreakdown": {
+      "method": "get",
+      "description": "Get accumulated income and expenses per category, platform and ledger for a range",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "range": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month",
+                "mtd",
+                "quarter",
+                "year",
+                "ytd",
+                "all",
+                "custom"
+              ]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "categories": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "income": {
+                    "type": "number"
+                  },
+                  "expenses": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "income",
+                  "expenses",
+                  "count"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "platforms": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "income": {
+                    "type": "number"
+                  },
+                  "expenses": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "income",
+                  "expenses",
+                  "count"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "ledgers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "income": {
+                    "type": "number"
+                  },
+                  "expenses": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "income",
+                  "expenses",
+                  "count"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "categories",
+            "platforms",
+            "ledgers"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
     "getIncomeExpensesSummary": {
       "method": "get",
       "description": "Get income and expenses summary for a month",
