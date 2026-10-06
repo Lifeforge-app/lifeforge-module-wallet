@@ -4,27 +4,10 @@ import { type InferOutput, useForgeMutation } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import { Box, Button, ModalHeader, Stack, Text, toast } from '@lifeforge/ui'
 
+import type { WalletTransaction } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 
 import TransactionCard from './components/TransactionCard'
-
-export interface LocalTransaction {
-  id: string
-  date: string
-  amount: number
-  type: 'income' | 'expenses' | 'transfer'
-  category?: string | null
-  particulars?: string
-  location_name?: string
-  location_coords?: { lat: number; lon: number }
-  asset?: string
-  platform?: string
-  from?: string
-  to?: string
-  ledgers?: string[]
-  receipt?: unknown
-  collectionId?: string
-}
 
 function ConfirmMultipleTransactionsModal({
   onClose,
@@ -37,12 +20,41 @@ function ConfirmMultipleTransactionsModal({
 }) {
   const { t } = useModuleTranslation()
 
-  const [transactions, setTransactions] = useState<LocalTransaction[]>(() =>
-    initialTransactions.map((tx, idx) => ({
-      id: `temp-${idx}-${Math.random().toString(36).substring(2, 11)}`,
-      ...tx,
-      ledgers: tx.ledgers ?? []
-    }))
+  const [transactions, setTransactions] = useState<WalletTransaction[]>(() =>
+    initialTransactions.map((tx, idx) => {
+      const id = `temp-${idx}-${Math.random().toString(36).substring(2, 11)}`
+
+      if (tx.type === 'transfer') {
+        return {
+          id,
+          type: 'transfer' as const,
+          amount: tx.amount,
+          date: tx.date,
+          receipt: '',
+          from: tx.from,
+          to: tx.to
+        }
+      }
+
+      return {
+        id,
+        type: tx.type,
+        amount: tx.amount,
+        date: tx.date,
+        receipt: '',
+        particulars: tx.particulars,
+        asset: tx.asset,
+        asset_info: tx.asset_info,
+        category: tx.category,
+        category_info: tx.category_info,
+        platform: tx.platform ?? null,
+        platform_info: tx.platform_info,
+        ledgers: tx.ledgers ?? [],
+        ledger_info: tx.ledger_info,
+        location_name: tx.location_name,
+        location_coords: tx.location_coords
+      }
+    })
   )
 
   const mutation = useForgeMutation(forgeAPI.transactions.createMultiple, {

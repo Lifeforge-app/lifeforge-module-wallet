@@ -118,7 +118,9 @@ export const contract = {
               },
               "required": [
                 "type",
-                "amount"
+                "amount",
+                "from",
+                "to"
               ],
               "additionalProperties": false
             }
@@ -153,14 +155,6 @@ export const contract = {
             },
             "receipt": {
               "type": "string"
-            },
-            "created": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "updated": {
-              "type": "string",
-              "format": "date-time"
             }
           },
           "required": [
@@ -168,9 +162,7 @@ export const contract = {
             "type",
             "amount",
             "date",
-            "receipt",
-            "created",
-            "updated"
+            "receipt"
           ],
           "additionalProperties": false
         }
@@ -295,7 +287,9 @@ export const contract = {
                     },
                     "required": [
                       "type",
-                      "amount"
+                      "amount",
+                      "from",
+                      "to"
                     ],
                     "additionalProperties": false
                   }
@@ -366,33 +360,11 @@ export const contract = {
                 "receipt": {
                   "type": "string"
                 },
-                "created": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "updated": {
-                  "type": "string",
-                  "format": "date-time"
-                },
                 "from": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 },
                 "to": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 }
               },
               "required": [
@@ -401,8 +373,6 @@ export const contract = {
                 "amount",
                 "date",
                 "receipt",
-                "created",
-                "updated",
                 "from",
                 "to"
               ],
@@ -432,36 +402,14 @@ export const contract = {
                 "receipt": {
                   "type": "string"
                 },
-                "created": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "updated": {
-                  "type": "string",
-                  "format": "date-time"
-                },
                 "particulars": {
                   "type": "string"
                 },
                 "asset": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 },
                 "category": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 },
                 "platform": {
                   "anyOf": [
@@ -504,6 +452,96 @@ export const contract = {
                       "type": "null"
                     }
                   ]
+                },
+                "asset_info": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "icon"
+                  ],
+                  "additionalProperties": false
+                },
+                "category_info": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "icon",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                },
+                "platform_info": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "icon",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ledger_info": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "icon",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
               "required": [
@@ -512,15 +550,17 @@ export const contract = {
                 "amount",
                 "date",
                 "receipt",
-                "created",
-                "updated",
                 "particulars",
                 "asset",
                 "category",
                 "platform",
                 "ledgers",
                 "location_name",
-                "location_coords"
+                "location_coords",
+                "asset_info",
+                "category_info",
+                "platform_info",
+                "ledger_info"
               ],
               "additionalProperties": false
             },
@@ -548,36 +588,14 @@ export const contract = {
                 "receipt": {
                   "type": "string"
                 },
-                "created": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "updated": {
-                  "type": "string",
-                  "format": "date-time"
-                },
                 "particulars": {
                   "type": "string"
                 },
                 "asset": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 },
                 "category": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": "string"
                 },
                 "platform": {
                   "anyOf": [
@@ -620,6 +638,96 @@ export const contract = {
                       "type": "null"
                     }
                   ]
+                },
+                "asset_info": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "icon"
+                  ],
+                  "additionalProperties": false
+                },
+                "category_info": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "icon",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                },
+                "platform_info": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "icon",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ledger_info": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "icon",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
               "required": [
@@ -628,15 +736,17 @@ export const contract = {
                 "amount",
                 "date",
                 "receipt",
-                "created",
-                "updated",
                 "particulars",
                 "asset",
                 "category",
                 "platform",
                 "ledgers",
                 "location_name",
-                "location_coords"
+                "location_coords",
+                "asset_info",
+                "category_info",
+                "platform_info",
+                "ledger_info"
               ],
               "additionalProperties": false
             }
@@ -713,309 +823,441 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
-            "items": {
+            "groups": {
               "type": "array",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "transfer"
-                      },
-                      "amount": {
-                        "type": "number",
-                        "minimum": -140737488355328,
-                        "maximum": 140737488355327
-                      },
-                      "date": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "receipt": {
-                        "type": "string"
-                      },
-                      "created": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "updated": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "from": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "to": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "type",
-                      "amount",
-                      "date",
-                      "receipt",
-                      "created",
-                      "updated",
-                      "from",
-                      "to"
-                    ],
-                    "additionalProperties": false
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string"
                   },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "income"
-                      },
-                      "amount": {
-                        "type": "number",
-                        "minimum": -140737488355328,
-                        "maximum": 140737488355327
-                      },
-                      "date": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "receipt": {
-                        "type": "string"
-                      },
-                      "created": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "updated": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "particulars": {
-                        "type": "string"
-                      },
-                      "asset": {
-                        "anyOf": [
-                          {
-                            "type": "string"
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "type": {
+                              "type": "string",
+                              "const": "transfer"
+                            },
+                            "amount": {
+                              "type": "number",
+                              "minimum": -140737488355328,
+                              "maximum": 140737488355327
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "receipt": {
+                              "type": "string"
+                            },
+                            "from": {
+                              "type": "string"
+                            },
+                            "to": {
+                              "type": "string"
+                            }
                           },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "category": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "platform": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "ledgers": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "location_name": {
-                        "type": "string"
-                      },
-                      "location_coords": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "lon": {
-                                "type": "number"
-                              },
-                              "lat": {
-                                "type": "number"
+                          "required": [
+                            "id",
+                            "type",
+                            "amount",
+                            "date",
+                            "receipt",
+                            "from",
+                            "to"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "type": {
+                              "type": "string",
+                              "const": "income"
+                            },
+                            "amount": {
+                              "type": "number",
+                              "minimum": -140737488355328,
+                              "maximum": 140737488355327
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "receipt": {
+                              "type": "string"
+                            },
+                            "particulars": {
+                              "type": "string"
+                            },
+                            "asset": {
+                              "type": "string"
+                            },
+                            "category": {
+                              "type": "string"
+                            },
+                            "platform": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "ledgers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
                               }
                             },
-                            "required": [
-                              "lon",
-                              "lat"
-                            ],
-                            "additionalProperties": false
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "type",
-                      "amount",
-                      "date",
-                      "receipt",
-                      "created",
-                      "updated",
-                      "particulars",
-                      "asset",
-                      "category",
-                      "platform",
-                      "ledgers",
-                      "location_name",
-                      "location_coords"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "expenses"
-                      },
-                      "amount": {
-                        "type": "number",
-                        "minimum": -140737488355328,
-                        "maximum": 140737488355327
-                      },
-                      "date": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "receipt": {
-                        "type": "string"
-                      },
-                      "created": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "updated": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "particulars": {
-                        "type": "string"
-                      },
-                      "asset": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "category": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "platform": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "ledgers": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "location_name": {
-                        "type": "string"
-                      },
-                      "location_coords": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "lon": {
-                                "type": "number"
+                            "location_name": {
+                              "type": "string"
+                            },
+                            "location_coords": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "lon": {
+                                      "type": "number"
+                                    },
+                                    "lat": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "lon",
+                                    "lat"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "asset_info": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "icon": {
+                                  "type": "string"
+                                }
                               },
-                              "lat": {
-                                "type": "number"
+                              "required": [
+                                "name",
+                                "icon"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "category_info": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "icon": {
+                                  "type": "string"
+                                },
+                                "color": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "icon",
+                                "color"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "platform_info": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "icon": {
+                                      "type": "string"
+                                    },
+                                    "color": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "icon",
+                                    "color"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "ledger_info": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "icon": {
+                                      "type": "string"
+                                    },
+                                    "color": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "icon",
+                                    "color"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "amount",
+                            "date",
+                            "receipt",
+                            "particulars",
+                            "asset",
+                            "category",
+                            "platform",
+                            "ledgers",
+                            "location_name",
+                            "location_coords",
+                            "asset_info",
+                            "category_info",
+                            "platform_info",
+                            "ledger_info"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "type": {
+                              "type": "string",
+                              "const": "expenses"
+                            },
+                            "amount": {
+                              "type": "number",
+                              "minimum": -140737488355328,
+                              "maximum": 140737488355327
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "receipt": {
+                              "type": "string"
+                            },
+                            "particulars": {
+                              "type": "string"
+                            },
+                            "asset": {
+                              "type": "string"
+                            },
+                            "category": {
+                              "type": "string"
+                            },
+                            "platform": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "ledgers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
                               }
                             },
-                            "required": [
-                              "lon",
-                              "lat"
-                            ],
-                            "additionalProperties": false
+                            "location_name": {
+                              "type": "string"
+                            },
+                            "location_coords": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "lon": {
+                                      "type": "number"
+                                    },
+                                    "lat": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "lon",
+                                    "lat"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "asset_info": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "icon": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "icon"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "category_info": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "icon": {
+                                  "type": "string"
+                                },
+                                "color": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "icon",
+                                "color"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "platform_info": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "icon": {
+                                      "type": "string"
+                                    },
+                                    "color": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "icon",
+                                    "color"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "ledger_info": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "icon": {
+                                      "type": "string"
+                                    },
+                                    "color": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "icon",
+                                    "color"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
                           },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "type",
-                      "amount",
-                      "date",
-                      "receipt",
-                      "created",
-                      "updated",
-                      "particulars",
-                      "asset",
-                      "category",
-                      "platform",
-                      "ledgers",
-                      "location_name",
-                      "location_coords"
-                    ],
-                    "additionalProperties": false
+                          "required": [
+                            "id",
+                            "type",
+                            "amount",
+                            "date",
+                            "receipt",
+                            "particulars",
+                            "asset",
+                            "category",
+                            "platform",
+                            "ledgers",
+                            "location_name",
+                            "location_coords",
+                            "asset_info",
+                            "category_info",
+                            "platform_info",
+                            "ledger_info"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
                   }
-                ]
+                },
+                "required": [
+                  "date",
+                  "items"
+                ],
+                "additionalProperties": false
               }
             },
             "page": {
@@ -1032,7 +1274,7 @@ export const contract = {
             }
           },
           "required": [
-            "items",
+            "groups",
             "page",
             "perPage",
             "totalItems",
@@ -1099,14 +1341,7 @@ export const contract = {
               ]
             },
             "category": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "type": "string"
             },
             "platform": {
               "anyOf": [
@@ -1293,7 +1528,9 @@ export const contract = {
               },
               "required": [
                 "type",
-                "amount"
+                "amount",
+                "from",
+                "to"
               ],
               "additionalProperties": false
             }
@@ -1328,14 +1565,6 @@ export const contract = {
             },
             "receipt": {
               "type": "string"
-            },
-            "created": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "updated": {
-              "type": "string",
-              "format": "date-time"
             }
           },
           "required": [
@@ -1343,9 +1572,7 @@ export const contract = {
             "type",
             "amount",
             "date",
-            "receipt",
-            "created",
-            "updated"
+            "receipt"
           ],
           "additionalProperties": false
         }
@@ -1378,83 +1605,351 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "date": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "income",
-                  "expenses",
-                  "transfer"
-                ]
-              },
-              "category": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "particulars": {
-                "type": "string"
-              },
-              "location_coords": {
+            "oneOf": [
+              {
                 "type": "object",
                 "properties": {
-                  "lon": {
+                  "date": {
+                    "type": "string"
+                  },
+                  "amount": {
                     "type": "number"
                   },
-                  "lat": {
-                    "type": "number"
+                  "type": {
+                    "type": "string",
+                    "const": "transfer"
+                  },
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "lon",
-                  "lat"
+                  "date",
+                  "amount",
+                  "type",
+                  "from",
+                  "to"
                 ],
                 "additionalProperties": false
               },
-              "location_name": {
-                "type": "string"
+              {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "particulars": {
+                    "type": "string"
+                  },
+                  "location_coords": {
+                    "type": "object",
+                    "properties": {
+                      "lon": {
+                        "type": "number"
+                      },
+                      "lat": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "lon",
+                      "lat"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "location_name": {
+                    "type": "string"
+                  },
+                  "asset": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "ledgers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "asset_info": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "icon"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "category_info": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      },
+                      "color": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "icon",
+                      "color"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "platform_info": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "icon",
+                          "color"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "ledger_info": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "icon",
+                          "color"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "income"
+                  }
+                },
+                "required": [
+                  "date",
+                  "amount",
+                  "category",
+                  "particulars",
+                  "location_coords",
+                  "location_name",
+                  "asset",
+                  "asset_info",
+                  "category_info",
+                  "platform_info",
+                  "ledger_info",
+                  "type"
+                ],
+                "additionalProperties": false
               },
-              "asset": {
-                "type": "string"
-              },
-              "platform": {
-                "type": "string"
-              },
-              "from": {
-                "type": "string"
-              },
-              "to": {
-                "type": "string"
-              },
-              "ledgers": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "particulars": {
+                    "type": "string"
+                  },
+                  "location_coords": {
+                    "type": "object",
+                    "properties": {
+                      "lon": {
+                        "type": "number"
+                      },
+                      "lat": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "lon",
+                      "lat"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "location_name": {
+                    "type": "string"
+                  },
+                  "asset": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "ledgers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "asset_info": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "icon"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "category_info": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      },
+                      "color": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "icon",
+                      "color"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "platform_info": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "icon",
+                          "color"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "ledger_info": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "icon",
+                          "color"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "expenses"
+                  }
+                },
+                "required": [
+                  "date",
+                  "amount",
+                  "category",
+                  "particulars",
+                  "location_coords",
+                  "location_name",
+                  "asset",
+                  "asset_info",
+                  "category_info",
+                  "platform_info",
+                  "ledger_info",
+                  "type"
+                ],
+                "additionalProperties": false
               }
-            },
-            "required": [
-              "date",
-              "amount",
-              "type",
-              "category",
-              "particulars",
-              "location_coords",
-              "location_name"
-            ],
-            "additionalProperties": false
+            ]
           }
         }
       }
@@ -3559,33 +4054,11 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "from": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "to": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -3594,8 +4067,6 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "from",
                               "to"
                             ],
@@ -3625,36 +4096,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -3697,6 +4146,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -3705,15 +4244,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           },
@@ -3741,36 +4282,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -3813,6 +4332,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -3821,15 +4430,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           }
@@ -3881,33 +4492,11 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "from": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "to": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -3916,8 +4505,6 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "from",
                               "to"
                             ],
@@ -3947,36 +4534,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -4019,6 +4584,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -4027,15 +4682,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           },
@@ -4063,36 +4720,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -4135,6 +4770,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -4143,15 +4868,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           }
@@ -4203,33 +4930,11 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "from": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "to": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -4238,8 +4943,6 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "from",
                               "to"
                             ],
@@ -4269,36 +4972,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -4341,6 +5022,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -4349,15 +5120,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           },
@@ -4385,36 +5158,14 @@ export const contract = {
                               "receipt": {
                                 "type": "string"
                               },
-                              "created": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
                               "particulars": {
                                 "type": "string"
                               },
                               "asset": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "category": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string"
                               },
                               "platform": {
                                 "anyOf": [
@@ -4457,6 +5208,96 @@ export const contract = {
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "asset_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "category_info": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "icon",
+                                  "color"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "platform_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "ledger_info": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "icon": {
+                                        "type": "string"
+                                      },
+                                      "color": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "icon",
+                                      "color"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": [
@@ -4465,15 +5306,17 @@ export const contract = {
                               "amount",
                               "date",
                               "receipt",
-                              "created",
-                              "updated",
                               "particulars",
                               "asset",
                               "category",
                               "platform",
                               "ledgers",
                               "location_name",
-                              "location_coords"
+                              "location_coords",
+                              "asset_info",
+                              "category_info",
+                              "platform_info",
+                              "ledger_info"
                             ],
                             "additionalProperties": false
                           }

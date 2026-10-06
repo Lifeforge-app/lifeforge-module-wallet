@@ -6,11 +6,11 @@ import forge from '../forge'
 import {
   walletCategories,
   walletTransactions,
-  walletTransactionsIncomeExpenses,
-  walletTransactionsTransfer
+  walletTransactionsIncomeExpenses
 } from '../schema.drizzle'
 import {
   EnrichedTransactionOutput,
+  enrichedTransactionQuery,
   mapToEnrichedTransaction
 } from '../utils/enrichedTransaction'
 import { getAllAssetAccumulatedBalance } from '../utils/getAllAssetAccumulatedBalance'
@@ -108,24 +108,7 @@ export const get = forge
 
     const endOfPrevMonth = startOfMonth.subtract(1, 'day').endOf('day')
 
-    const rows = await db
-      .select({
-        base: walletTransactions,
-        sub: walletTransactionsIncomeExpenses,
-        transfer: walletTransactionsTransfer
-      })
-      .from(walletTransactions)
-      .leftJoin(
-        walletTransactionsIncomeExpenses,
-        eq(
-          walletTransactionsIncomeExpenses.base_transaction,
-          walletTransactions.id
-        )
-      )
-      .leftJoin(
-        walletTransactionsTransfer,
-        eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
-      )
+    const rows = await enrichedTransactionQuery(db)
       .where(
         and(
           gte(walletTransactions.date, startOfMonth.toDate()),
@@ -134,8 +117,14 @@ export const get = forge
       )
       .orderBy(asc(walletTransactions.date), asc(walletTransactions.created))
 
-    const monthTransactions = rows.map(({ base, sub, transfer }) =>
-      mapToEnrichedTransaction(base, sub, transfer)
+    const monthTransactions = rows.map(
+      ({ base, sub, transfer, asset, category, platform, ledger }) =>
+        mapToEnrichedTransaction(base, sub, transfer, {
+          asset,
+          category,
+          platform,
+          ledger
+        })
     )
 
     const prevMonthRows = await db

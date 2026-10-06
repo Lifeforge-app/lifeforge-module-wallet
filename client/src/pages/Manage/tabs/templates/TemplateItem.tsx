@@ -44,7 +44,11 @@ function TemplateItem({
               onClose()
               open(ModifyTransactionsModal, {
                 type: 'create',
-                initialData: template
+                initialData: {
+                  ...template,
+                  asset: template.asset ?? undefined,
+                  category: template.category ?? undefined
+                }
               })
             }
           : undefined

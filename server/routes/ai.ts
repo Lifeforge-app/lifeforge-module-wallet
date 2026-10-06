@@ -12,10 +12,17 @@ import forge, { type WalletSchema } from '../forge'
 import {
   walletAssets,
   walletCategories,
+  walletLedgers,
   walletPlatforms,
   walletTransactionTemplates,
   walletTransactionsPrompts
 } from '../schema.drizzle'
+import {
+  assetInfoDto,
+  categoryInfoDto,
+  ledgerInfoDto,
+  platformInfoDto
+} from '../utils/enrichedTransaction'
 
 type WalletDb = PostgresJsDatabase<BuiltModuleSchema<WalletSchema>>
 
@@ -41,7 +48,7 @@ async function fetchInitialData(
   db: WalletDb,
   getAPIKey: GetAPIKeyFunc
 ) {
-  const [particularPrompt, categories, key, assets, platforms] =
+  const [particularPrompt, categories, key, assets, platforms, ledgers] =
     await Promise.all([
       db.query.transactions_prompts.findFirst().catch(() => null),
       db
@@ -56,6 +63,10 @@ async function fetchInitialData(
       db
         .select()
         .from(walletPlatforms)
+        .catch(() => []),
+      db
+        .select()
+        .from(walletLedgers)
         .catch(() => [])
     ])
 
@@ -64,7 +75,8 @@ async function fetchInitialData(
     categories,
     key,
     assets,
-    platforms
+    platforms,
+    ledgers
   }
 }
 
@@ -448,6 +460,25 @@ async function batchResolveLocationCoords(
   return resultMap
 }
 
+const enrichedFields = {
+  date: z.string(),
+  amount: z.number(),
+  category: z.string(),
+  particulars: z.string(),
+  location_coords: z.object({
+    lon: z.number(),
+    lat: z.number()
+  }),
+  location_name: z.string(),
+  asset: z.string(),
+  platform: z.string().optional(),
+  ledgers: z.array(z.string()).optional(),
+  asset_info: assetInfoDto,
+  category_info: categoryInfoDto,
+  platform_info: platformInfoDto.nullable(),
+  ledger_info: ledgerInfoDto.nullable()
+}
+
 export const fromNaturalLanguage = forge
   .mutation({
     description:
@@ -459,23 +490,17 @@ export const fromNaturalLanguage = forge
     },
     output: {
       OK: z.array(
-        z.object({
-          date: z.string(),
-          amount: z.number(),
-          type: z.enum(['income', 'expenses', 'transfer']),
-          category: z.string().nullable(),
-          particulars: z.string(),
-          location_coords: z.object({
-            lon: z.number(),
-            lat: z.number()
+        z.discriminatedUnion('type', [
+          z.object({
+            date: z.string(),
+            amount: z.number(),
+            type: z.literal('transfer'),
+            from: z.string(),
+            to: z.string()
           }),
-          location_name: z.string(),
-          asset: z.string().optional(),
-          platform: z.string().optional(),
-          from: z.string().optional(),
-          to: z.string().optional(),
-          ledgers: z.array(z.string()).optional()
-        })
+          z.object({ ...enrichedFields, type: z.literal('income') }),
+          z.object({ ...enrichedFields, type: z.literal('expenses') })
+        ])
       )
     }
   })
@@ -489,7 +514,7 @@ export const fromNaturalLanguage = forge
   }) {
     const todayStr = dayjs().format('YYYY-MM-DD')
 
-    const { particularPrompt, categories, key, assets, platforms } =
+    const { particularPrompt, categories, key, assets, platforms, ledgers } =
       await fetchInitialData(db, getAPIKey)
 
     const categoryMap = new Map(
@@ -578,18 +603,14 @@ export const fromNaturalLanguage = forge
             date: item.date,
             type: 'transfer' as const,
             amount: item.amount,
-            category: null,
-            particulars: '',
-            location_coords: { lon: 0, lat: 0 },
-            location_name: '',
             from:
               item.from && item.from !== 'Unknown'
-                ? assetMap.get(item.from)
-                : undefined,
+                ? (assetMap.get(item.from) ?? '')
+                : '',
             to:
               item.to && item.to !== 'Unknown'
-                ? assetMap.get(item.to)
-                : undefined
+                ? (assetMap.get(item.to) ?? '')
+                : ''
           }
         }
 
@@ -597,23 +618,24 @@ export const fromNaturalLanguage = forge
 
         const finalResult: {
           date: string
-          type: 'income' | 'expenses' | 'transfer'
+          type: 'income' | 'expenses'
           amount: number
-          category: string | null
+          category: string
           particulars: string
           location_coords: {
             lon: number
             lat: number
           }
           location_name: string
-          asset: string | undefined
+          asset: string
           platform: string | undefined
           ledgers: string[] | undefined
         } = {
           date: item.date,
           type: item.type,
           amount: item.amount,
-          category: (item.category ? categoryMap.get(item.category) : null) || null,
+          category:
+            (item.category ? categoryMap.get(item.category) : null) || '',
           particulars: particularsMap.get(idx) || '',
           location_coords: {
             lon: 0,
@@ -622,8 +644,8 @@ export const fromNaturalLanguage = forge
           location_name: '',
           asset:
             item.asset && item.asset !== 'Unknown'
-              ? assetMap.get(item.asset)
-              : undefined,
+              ? (assetMap.get(item.asset) ?? '')
+              : '',
           platform:
             item.platform && item.platform !== 'None'
               ? platformMap.get(item.platform)
@@ -679,7 +701,43 @@ export const fromNaturalLanguage = forge
           finalResult.platform = matchedTemplate.platform
         }
 
-        return finalResult
+        const assetEntity = assets.find(a => a.id === finalResult.asset)
+        const categoryEntity = categories.find(
+          c => c.id === finalResult.category
+        )
+        const platformEntity = finalResult.platform
+          ? platforms.find(p => p.id === finalResult.platform)
+          : undefined
+        const ledgerEntity = finalResult.ledgers?.[0]
+          ? ledgers.find(l => l.id === finalResult.ledgers![0])
+          : undefined
+
+        return {
+          ...finalResult,
+          asset_info: {
+            name: assetEntity?.name ?? '',
+            icon: assetEntity?.icon ?? ''
+          },
+          category_info: {
+            name: categoryEntity?.name ?? '',
+            icon: categoryEntity?.icon ?? '',
+            color: categoryEntity?.color ?? ''
+          },
+          platform_info: platformEntity
+            ? {
+                name: platformEntity.name,
+                icon: platformEntity.icon,
+                color: platformEntity.color
+              }
+            : null,
+          ledger_info: ledgerEntity
+            ? {
+                name: ledgerEntity.name,
+                icon: ledgerEntity.icon,
+                color: ledgerEntity.color
+              }
+            : null
+        }
       })
     )
 

@@ -24,6 +24,7 @@ import {
 import { RANGE_MODE, resolveDateRange } from '../utils/dateRange'
 import {
   EnrichedTransactionOutput,
+  enrichedTransactionQuery,
   mapToEnrichedTransaction,
   transactionDto
 } from '../utils/enrichedTransaction'
@@ -46,8 +47,8 @@ const MutateTransactionInputSchema = z.union([
     type: z.literal('transfer'),
     amount: z.number(),
     date: z.string().optional(),
-    from: z.string().optional(),
-    to: z.string().optional()
+    from: z.string(),
+    to: z.string()
   })
 ])
 
@@ -90,7 +91,12 @@ export const list = forge
     },
     output: {
       OK: z.object({
-        items: z.array(EnrichedTransactionOutput),
+        groups: z.array(
+          z.object({
+            date: z.string(),
+            items: z.array(EnrichedTransactionOutput)
+          })
+        ),
         page: z.number(),
         perPage: z.number(),
         totalItems: z.number(),
@@ -205,24 +211,7 @@ export const list = forge
 
       const where = conditions.length > 0 ? and(...conditions) : undefined
 
-      const rows = await db
-        .select({
-          base: walletTransactions,
-          sub: walletTransactionsIncomeExpenses,
-          transfer: walletTransactionsTransfer
-        })
-        .from(walletTransactions)
-        .leftJoin(
-          walletTransactionsIncomeExpenses,
-          eq(
-            walletTransactionsIncomeExpenses.base_transaction,
-            walletTransactions.id
-          )
-        )
-        .leftJoin(
-          walletTransactionsTransfer,
-          eq(walletTransactionsTransfer.base_transaction, walletTransactions.id)
-        )
+      const rows = await enrichedTransactionQuery(db)
         .where(where)
         .orderBy(desc(walletTransactions.date), desc(walletTransactions.created))
         .limit(parsedPerPage)
@@ -244,12 +233,35 @@ export const list = forge
         )
         .where(where)
 
-      const items = rows.map(({ base, sub, transfer }) =>
-        mapToEnrichedTransaction(base, sub, transfer)
-      )
+      const groups = rows
+        .map(({ base, sub, transfer, asset, category, platform, ledger }) =>
+          mapToEnrichedTransaction(base, sub, transfer, {
+            asset,
+            category,
+            platform,
+            ledger
+          })
+        )
+        .reduce<
+          {
+            date: string
+            items: ReturnType<typeof mapToEnrichedTransaction>[]
+          }[]
+        >((acc, item) => {
+          const date = dayjs(item.date).format('YYYY-MM-DD')
+          const lastGroup = acc[acc.length - 1]
+
+          if (!lastGroup || lastGroup.date !== date) {
+            acc.push({ date, items: [item] })
+          } else {
+            lastGroup.items.push(item)
+          }
+
+          return acc
+        }, [])
 
       return response.ok({
-        items,
+        groups,
         page: parsedPage,
         perPage: parsedPerPage,
         totalItems: totalRow.value,
@@ -269,38 +281,20 @@ export const getById = forge
     }
   })
   .callback(async ({ db, query: { id }, response }) => {
-    const baseTransaction = (await db.query.transactions.findFirst({
-      where: { id }
-    }))!
+    const [row] = await enrichedTransactionQuery(db).where(
+      eq(walletTransactions.id, id)
+    )
 
-    if (baseTransaction.type === 'transfer') {
-      const sub = await db.query.transactions_transfer.findFirst({
-        where: { base_transaction: id }
+    const { base, sub, transfer, asset, category, platform, ledger } = row
+
+    return response.ok(
+      mapToEnrichedTransaction(base, sub, transfer, {
+        asset,
+        category,
+        platform,
+        ledger
       })
-
-      return response.ok({
-        ...baseTransaction,
-        type: 'transfer' as const,
-        from: sub?.from ?? null,
-        to: sub?.to ?? null
-      })
-    }
-
-    const sub = await db.query.transactions_income_expenses.findFirst({
-      where: { base_transaction: id }
-    })
-
-    return response.ok({
-      ...baseTransaction,
-      type: (sub?.type ?? 'expenses') as 'income' | 'expenses',
-      particulars: sub?.particulars ?? '',
-      asset: sub?.asset ?? null,
-      category: sub?.category ?? null,
-      platform: sub?.platform ?? null,
-      ledgers: sub?.ledgers ?? [],
-      location_name: sub?.location_name ?? '',
-      location_coords: sub?.location_coords ?? null
-    })
+    )
   })
 
 export const create = forge
@@ -377,7 +371,9 @@ export const create = forge
         })
       }
 
-      return response.created(baseTransaction)
+      const { created, updated, ...transaction } = baseTransaction
+
+      return response.created(transaction)
     }
   )
 
@@ -492,7 +488,9 @@ export const update = forge
         }
       }
 
-      return response.ok(baseTransaction)
+      const { created, updated, ...transaction } = baseTransaction
+
+      return response.ok(transaction)
     }
   )
 
@@ -525,7 +523,7 @@ export const scanReceipt = forge
         date: z.string(),
         amount: z.number(),
         type: z.enum(['income', 'expenses']),
-        category: z.string().nullable(),
+        category: z.string(),
         platform: z.string().nullable(),
         particulars: z.string(),
         location_coords: z.object({

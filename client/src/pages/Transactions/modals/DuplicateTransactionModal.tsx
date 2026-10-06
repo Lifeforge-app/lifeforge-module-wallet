@@ -15,7 +15,7 @@ import type { WalletTransaction } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 
 import type { CreateAnotherValue } from '../components/CreateAnotherFIeld'
-import TransactionItem from '../components/TransactionList/components/TransactionItem'
+import TransactionItem from '../components/TransactionItem'
 import ModifyTransactionsModal from './ModifyTransactionsModal'
 
 function DuplicateTransactionModal({

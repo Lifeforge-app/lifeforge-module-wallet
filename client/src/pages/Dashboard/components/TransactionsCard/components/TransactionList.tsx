@@ -27,7 +27,9 @@ function TransactionList() {
     <WithQuery query={transactionsQuery}>
       {transactions => (
         <Stack>
-          {transactions.items.map(transaction => (
+          {transactions.groups
+            .flatMap(group => group.items)
+            .map(transaction => (
             <Card
               key={transaction.id}
               bg={surface.lightInteractive}
