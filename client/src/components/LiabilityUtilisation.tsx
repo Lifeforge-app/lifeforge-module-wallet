@@ -1,6 +1,7 @@
 import { Flex, Icon, Text } from '@lifeforge/ui'
 
 import type { WalletAsset } from '@/hooks/useWalletData'
+import { useWalletStore } from '@/stores/useWalletStore'
 import getLiabilityUtilisation from '@/utils/getLiabilityUtilisation'
 import numberToCurrency from '@/utils/numberToCurrency'
 
@@ -11,10 +12,12 @@ function LiabilityUtilisation({
   asset: WalletAsset
   size?: 'sm' | 'base'
 }) {
+  const { isAmountHidden } = useWalletStore()
+
   const { used, limit, hasLimit, percentage, over } =
     getLiabilityUtilisation(asset)
 
-  if (!hasLimit) {
+  if (!hasLimit || isAmountHidden) {
     return null
   }
 

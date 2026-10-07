@@ -20,21 +20,30 @@ import LiabilityUtilisation from '@/components/LiabilityUtilisation'
 import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
 import { useWalletStore } from '@/stores/useWalletStore'
+import numberToCurrency from '@/utils/numberToCurrency'
 
-import numberToCurrency from '../../../utils/numberToCurrency'
-
-function AssetsBalanceCard() {
+function AssetsBalance({ isWidget = false }: { isWidget?: boolean }) {
   const navigate = useNavigate()
   const { assetsQuery } = useWalletData()
-  const { isAmountHidden } = useWalletStore()
+  const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
   const { t } = useModuleTranslation()
 
   return (
     <Widget
       actionComponent={
-        <Button as={Link} p="xs" to="./assets" variant="plain">
-          <Icon icon="tabler:chevron-right" />
-        </Button>
+        <Flex align="center" gap="xs">
+          {isWidget && (
+            <Button
+              icon={isAmountHidden ? 'tabler:eye-off' : 'tabler:eye'}
+              p="xs"
+              variant="plain"
+              onClick={toggleAmountVisibility}
+            />
+          )}
+          <Button as={Link} p="xs" to="/wallet/assets" variant="plain">
+            <Icon icon="tabler:chevron-right" />
+          </Button>
+        </Flex>
       }
       icon="tabler:wallet"
       title="Assets Balance"
@@ -124,4 +133,4 @@ function AssetsBalanceCard() {
   )
 }
 
-export default AssetsBalanceCard
+export default AssetsBalance

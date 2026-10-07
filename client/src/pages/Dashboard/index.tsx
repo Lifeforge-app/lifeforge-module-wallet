@@ -22,13 +22,13 @@ import {
   ModuleHeader
 } from '@lifeforge/ui'
 
+import AssetsBalance from '@/components/AssetsBalance'
 import RangeSelector from '@/components/RangeSelector'
 import { RangeProvider } from '@/providers/RangeProvider'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import TransactionCreationMenu from '../Transactions/components/TransactionCreationMenu'
 import ActivityCalendarCard from './components/ActivityCalendarCard'
-import AssetsBalanceCard from './components/AssetsBalanceCard'
 import CategoriesBreakdownCard from './components/CategoriesBreakdownCard'
 import IncomeExpenseCard from './components/IncomeExpensesCard'
 import PlatformsBreakdownCard from './components/PlatformsBreakdownCard'
@@ -65,7 +65,7 @@ const WIDGETS: {
   },
   {
     key: 'assetsBalance',
-    element: <AssetsBalanceCard />,
+    element: <AssetsBalance />,
     minHeight: { base: '32rem', xl: '0' }
   },
   { key: 'statisticChart', element: <StatisticChartCard /> },
