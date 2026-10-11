@@ -1,12 +1,9 @@
 import dayjs from 'dayjs'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import z from 'zod'
 
 import type { BuiltModuleSchema } from '@lifeforge/drizzle'
-import type {
-  FetchAIFunc,
-  SearchLocationsFunc
-} from '@lifeforge/server-utils'
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import type { FetchAIFunc, SearchLocationsFunc } from '@lifeforge/server-utils'
 
 import forge, { type WalletSchema } from '../forge'
 import {
@@ -44,10 +41,7 @@ type ExtractedData = {
   to?: string | null
 }
 
-async function fetchInitialData(
-  db: WalletDb,
-  getAPIKey: GetAPIKeyFunc
-) {
+async function fetchInitialData(db: WalletDb, getAPIKey: GetAPIKeyFunc) {
   const [particularPrompt, categories, key, assets, platforms, ledgers] =
     await Promise.all([
       db.query.transactions_prompts.findFirst().catch(() => null),
@@ -107,7 +101,9 @@ async function extractBasicDetails(
       category: hasCategories
         ? z.enum(categoryNames).describe('The matched category')
         : z.string().describe('The matched category name'),
-      platform: platformEnum.describe('The matched purchase platform, or "None"'),
+      platform: platformEnum.describe(
+        'The matched purchase platform, or "None"'
+      ),
       amount: z.number().describe('Numeric amount without currency symbol'),
       location: z.string().describe('Location name or "Unknown"'),
       asset: assetEnum.describe(
