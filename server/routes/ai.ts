@@ -248,7 +248,7 @@ ${description}`
 
   const results = transactions.map(() => null as TransactionTemplate | null)
 
-  if (templateData && templateData.matches) {
+  if (templateData) {
     for (const match of templateData.matches) {
       if (
         match.transactionIndex >= 0 &&
@@ -374,7 +374,7 @@ ${description}`
     structure: ParticularsListSchema
   })
 
-  if (particularsData && particularsData.particularsList) {
+  if (particularsData) {
     for (const item of particularsData.particularsList) {
       results.set(item.transactionIndex, item.particulars)
     }
@@ -410,10 +410,10 @@ async function resolveLocationCoords(
   if (locations.length > 0) {
     return {
       coords: {
-        lon: locations[0].location.longitude,
-        lat: locations[0].location.latitude
+        lon: locations[0]?.location.longitude ?? 0,
+        lat: locations[0]?.location.latitude ?? 0
       },
-      name: locations[0].name
+      name: locations[0]?.name ?? ''
     }
   }
 
@@ -552,7 +552,7 @@ export const fromNaturalLanguage = forge
       platformNames
     )
 
-    if (!extractedData || !extractedData.transactions) {
+    if (!extractedData) {
       throw new Error('Failed to extract transaction details')
     }
 
@@ -666,22 +666,17 @@ export const fromNaturalLanguage = forge
             finalResult.location_coords = matchedTemplate.location_coords
           }
 
-          if (
-            finalResult.amount === 0 &&
-            matchedTemplate.amount !== undefined &&
-            matchedTemplate.amount !== null &&
-            matchedTemplate.amount > 0
-          ) {
+          if (finalResult.amount === 0 && matchedTemplate.amount > 0) {
             finalResult.amount = matchedTemplate.amount
           }
 
-          if (matchedTemplate.ledgers && matchedTemplate.ledgers.length > 0) {
+          if (matchedTemplate.ledgers.length > 0) {
             finalResult.ledgers = matchedTemplate.ledgers
           }
         }
 
-        if (!finalResult.location_name?.trim()) {
-          const resolvedLoc = locationCoordsMap.get(item.location ?? '') || null
+        if (!finalResult.location_name.trim()) {
+          const resolvedLoc = locationCoordsMap.get(item.location) || null
 
           if (resolvedLoc) {
             finalResult.location_coords = resolvedLoc.coords

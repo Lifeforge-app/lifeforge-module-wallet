@@ -1,7 +1,7 @@
-import { and, eq, gte, lte } from 'drizzle-orm'
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { and, eq, gte, lte } from 'drizzle-orm'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import z from 'zod'
 
 import type { BuiltModuleSchema } from '@lifeforge/drizzle'
@@ -207,7 +207,7 @@ export async function getTransactionDetails(
       }
     }
 
-    if (!finalResult.particulars?.trim()) {
+    if (!finalResult.particulars.trim()) {
       const particularsData = await fetchAI({
         provider: 'deepseek',
         model: 'deepseek-flash',
@@ -254,20 +254,15 @@ export async function getTransactionDetails(
     }
   }
 
-  if (
-    !finalResult.location_coords &&
-    key &&
-    extractedData.location &&
-    extractedData.location !== 'Unknown'
-  ) {
+  if (key && extractedData.location && extractedData.location !== 'Unknown') {
     const locations = await searchLocations(key, extractedData.location)
 
     if (locations.length > 0) {
       finalResult.location_coords = {
-        lon: locations[0].location.longitude,
-        lat: locations[0].location.latitude
+        lon: locations[0]?.location.longitude ?? 0,
+        lat: locations[0]?.location.latitude ?? 0
       }
-      finalResult.location_name = locations[0].name
+      finalResult.location_name = locations[0]?.name ?? ''
     }
   }
 

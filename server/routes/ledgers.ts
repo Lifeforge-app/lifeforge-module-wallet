@@ -64,6 +64,10 @@ export const create = forge
   .callback(async ({ db, body, response }) => {
     const [created] = await db.insert(walletLedgers).values(body).returning()
 
+    if (!created) {
+      return response.badRequest('Failed to create ledger')
+    }
+
     return response.created(created)
   })
 
@@ -86,6 +90,10 @@ export const update = forge
       .set(body)
       .where(eq(walletLedgers.id, id))
       .returning()
+
+    if (!updated) {
+      return response.notFound()
+    }
 
     return response.ok(updated)
   })

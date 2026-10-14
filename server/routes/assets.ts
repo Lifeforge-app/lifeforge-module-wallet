@@ -203,7 +203,7 @@ export const getAssetAccumulatedBalance = forge
       const accumulatedBalance: Record<string, number> = {}
 
       const firstDate = dayjs(
-        allTransactions[allTransactions.length - 1].date
+        allTransactions[allTransactions.length - 1]?.date
       ).startOf('day')
 
       const endDay = dayjs().startOf('day')
@@ -250,9 +250,8 @@ export const getAssetAccumulatedBalance = forge
 
       return response.ok({
         balances: filtered,
-        startBalance: balances.length > 0 ? balances[0] : starting_balance,
-        endBalance:
-          balances.length > 0 ? balances[balances.length - 1] : starting_balance
+        startBalance: balances[0] ?? starting_balance,
+        endBalance: balances[balances.length - 1] ?? starting_balance
       })
     }
   )
@@ -269,6 +268,10 @@ export const create = forge
   })
   .callback(async ({ db, body, response }) => {
     const [created] = await db.insert(walletAssets).values(body).returning()
+
+    if (!created) {
+      return response.badRequest('Failed to create asset')
+    }
 
     return response.created(created)
   })
@@ -292,6 +295,10 @@ export const update = forge
       .set(body)
       .where(eq(walletAssets.id, id))
       .returning()
+
+    if (!updated) {
+      return response.notFound()
+    }
 
     return response.ok(updated)
   })

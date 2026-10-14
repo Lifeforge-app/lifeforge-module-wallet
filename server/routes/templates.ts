@@ -47,30 +47,28 @@ export const list = forge
   .query({
     description: 'Get all transaction templates',
     output: {
-      OK: z.record(
-        z.enum(['income', 'expenses']),
-        z.array(templateDto)
-      )
+      OK: z.record(z.enum(['income', 'expenses']), z.array(templateDto))
     }
   })
   .callback(async ({ db, response }) => {
     const rows = await db
       .select()
       .from(walletTransactionTemplates)
-      .orderBy(asc(walletTransactionTemplates.type), asc(walletTransactionTemplates.name))
+      .orderBy(
+        asc(walletTransactionTemplates.type),
+        asc(walletTransactionTemplates.name)
+      )
 
-    const grouped: Record<'income' | 'expenses', z.infer<typeof templateDto>[]> =
-      {
-        income: [],
-        expenses: []
-      }
+    const grouped: Record<
+      'income' | 'expenses',
+      z.infer<typeof templateDto>[]
+    > = {
+      income: [],
+      expenses: []
+    }
 
     for (const template of rows) {
-      const type = template.type as 'income' | 'expenses'
-
-      if (grouped[type]) {
-        grouped[type].push(template)
-      }
+      grouped[template.type].push(template)
     }
 
     return response.ok(grouped)
@@ -91,6 +89,10 @@ export const create = forge
       .insert(walletTransactionTemplates)
       .values(mapTemplate(body))
       .returning()
+
+    if (!created) {
+      return response.badRequest('Failed to create template')
+    }
 
     return response.created(created)
   })
@@ -114,6 +116,10 @@ export const update = forge
       .set(mapTemplate(body))
       .where(eq(walletTransactionTemplates.id, id))
       .returning()
+
+    if (!updated) {
+      return response.notFound()
+    }
 
     return response.ok(updated)
   })

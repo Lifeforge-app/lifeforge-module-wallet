@@ -51,6 +51,10 @@ export const update = forge
         .values(body)
         .returning()
 
+      if (!created) {
+        return response.badRequest('Failed to create prompts')
+      }
+
       return response.ok({ income: created.income, expenses: created.expenses })
     }
 
@@ -59,6 +63,10 @@ export const update = forge
       .set(body)
       .where(eq(walletTransactionsPrompts.id, record.id))
       .returning()
+
+    if (!updated) {
+      return response.notFound()
+    }
 
     return response.ok({ income: updated.income, expenses: updated.expenses })
   })
@@ -100,7 +108,10 @@ export const autoGenerate = forge
 
         const transaction = rows[randomIndex]
 
-        if (!sampleTransactions.includes(transaction.particulars)) {
+        if (
+          transaction &&
+          !sampleTransactions.includes(transaction.particulars)
+        ) {
           sampleTransactions.push(transaction.particulars)
         }
       }

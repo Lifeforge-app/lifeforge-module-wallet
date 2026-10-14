@@ -55,7 +55,7 @@ function MiniCalendarContent({
               'zh-CN': ['一', '二', '三', '四', '五', '六', '日'],
               'zh-TW': ['一', '二', '三', '四', '五', '六', '日'],
               ms: ['Is', 'Se', 'Ra', 'Kh', 'Ju', 'Sa', 'Ah']
-            }[language ?? 'en']?.map(day => (
+            }[language]?.map(day => (
               <Text key={day} align="center" color="muted" size="sm">
                 {day}
               </Text>

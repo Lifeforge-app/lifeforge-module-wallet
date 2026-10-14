@@ -207,7 +207,11 @@ export const get = forge
           percentageChange: 0
         }
 
-        items[transaction.category].currentAmount += transaction.amount
+        const item = items[transaction.category]
+
+        if (item) {
+          item.currentAmount += transaction.amount
+        }
       }
 
       for (const row of prevMonthRows) {
@@ -222,11 +226,17 @@ export const get = forge
           percentageChange: 0
         }
 
-        items[row.category].previousAmount += row.amount
+        const item = items[row.category]
+
+        if (item) {
+          item.previousAmount += row.amount
+        }
       }
 
       for (const id in items) {
         const item = items[id]
+
+        if (!item) continue
 
         item.change = item.currentAmount - item.previousAmount
         item.percentageChange = percentageChange(
@@ -268,7 +278,11 @@ export const get = forge
     let liabilityCurrent = 0
 
     for (const assetId in balanceMap) {
-      const { last, current, is_liability } = balanceMap[assetId]
+      const balance = balanceMap[assetId]
+
+      if (!balance) continue
+
+      const { last, current, is_liability } = balance
 
       const change = current - last
 

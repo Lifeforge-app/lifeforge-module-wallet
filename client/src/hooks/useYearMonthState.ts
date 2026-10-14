@@ -19,7 +19,7 @@ export default function useYearMonthState(controller: ForgeEndpoint) {
     monthsByYear: Record<number, number[]>
   }>(controller.queryOptions() as any)
 
-  const yearsOptions = yearMonthsQuery.data?.years ?? []
+  const yearsOptions = yearMonthsQuery.data?.years
 
   const monthsOptions =
     yearMonth.year !== null

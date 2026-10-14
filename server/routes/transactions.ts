@@ -264,8 +264,8 @@ export const list = forge
         groups,
         page: parsedPage,
         perPage: parsedPerPage,
-        totalItems: totalRow.value,
-        totalPages: Math.ceil(totalRow.value / parsedPerPage)
+        totalItems: totalRow?.value ?? 0,
+        totalPages: Math.ceil((totalRow?.value ?? 0) / parsedPerPage)
       })
     }
   )
@@ -284,6 +284,10 @@ export const getById = forge
     const [row] = await enrichedTransactionQuery(db).where(
       eq(walletTransactions.id, id)
     )
+
+    if (!row) {
+      return response.notFound()
+    }
 
     const { base, sub, transfer, asset, category, platform, ledger } = row
 
@@ -356,6 +360,10 @@ export const create = forge
           receipt: receiptKey
         })
         .returning()
+
+      if (!baseTransaction) {
+        return response.badRequest('Failed to create transaction')
+      }
 
       if (body.type === 'transfer') {
         await db.insert(walletTransactionsTransfer).values({
@@ -442,6 +450,10 @@ export const update = forge
         })
         .where(eq(walletTransactions.id, id))
         .returning()
+
+      if (!baseTransaction) {
+        return response.notFound()
+      }
 
       if (body.type === 'transfer') {
         await db
@@ -615,6 +627,10 @@ export const createMultiple = forge
           date: body.date ? new Date(body.date) : new Date()
         })
         .returning()
+
+      if (!baseTransaction) {
+        return response.badRequest('Failed to create transaction')
+      }
 
       if (body.type === 'transfer') {
         await db.insert(walletTransactionsTransfer).values({

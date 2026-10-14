@@ -69,6 +69,10 @@ export const create = forge
   .callback(async ({ db, body, response }) => {
     const [created] = await db.insert(walletCategories).values(body).returning()
 
+    if (!created) {
+      return response.badRequest('Failed to create category')
+    }
+
     return response.created(created)
   })
 
@@ -91,6 +95,10 @@ export const update = forge
       .set(body)
       .where(eq(walletCategories.id, id))
       .returning()
+
+    if (!updated) {
+      return response.notFound()
+    }
 
     return response.ok(updated)
   })

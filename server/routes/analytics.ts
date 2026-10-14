@@ -1,11 +1,11 @@
-import { eq } from 'drizzle-orm'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import { eq } from 'drizzle-orm'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import z from 'zod'
 
 import type { BuiltModuleSchema } from '@lifeforge/drizzle'
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 
 import forge, { type WalletSchema } from '../forge'
 import {
@@ -182,91 +182,96 @@ export const getTypesCount = forge
         ? getPreviousDateRange(range, startDate, endDate)
         : null
 
-    const { incomeExpenses, transfers } = await fetchTransactions(db)
+      const { incomeExpenses, transfers } = await fetchTransactions(db)
 
-    const inCurrentRange = (date: Date) => {
-      if (dateRange) {
-        return isWithinDateRange(date, dateRange)
+      const inCurrentRange = (date: Date) => {
+        if (dateRange) {
+          return isWithinDateRange(date, dateRange)
+        }
+
+        return (
+          !hasRange ||
+          (date.getFullYear() === parsedYear &&
+            date.getMonth() + 1 === parsedMonth)
+        )
       }
 
-      return (
-        !hasRange ||
-        (date.getFullYear() === parsedYear &&
-          date.getMonth() + 1 === parsedMonth)
-      )
-    }
+      const inPreviousRange = (date: Date) =>
+        previousRange ? isWithinDateRange(date, previousRange) : false
 
-    const inPreviousRange = (date: Date) =>
-      previousRange ? isWithinDateRange(date, previousRange) : false
-
-    const typesCount: Record<
-      string,
-      {
-        transactionCount: number
-        accumulatedAmount: number
-        previousCount: number
-        previousAmount: number
-        percentageChange: number
+      const typesCount: Record<
+        string,
+        {
+          transactionCount: number
+          accumulatedAmount: number
+          previousCount: number
+          previousAmount: number
+          percentageChange: number
+        }
+      > = {
+        income: {
+          transactionCount: 0,
+          accumulatedAmount: 0,
+          previousCount: 0,
+          previousAmount: 0,
+          percentageChange: 0
+        },
+        expenses: {
+          transactionCount: 0,
+          accumulatedAmount: 0,
+          previousCount: 0,
+          previousAmount: 0,
+          percentageChange: 0
+        },
+        transfer: {
+          transactionCount: 0,
+          accumulatedAmount: 0,
+          previousCount: 0,
+          previousAmount: 0,
+          percentageChange: 0
+        }
       }
-    > = {
-      income: {
-        transactionCount: 0,
-        accumulatedAmount: 0,
-        previousCount: 0,
-        previousAmount: 0,
-        percentageChange: 0
-      },
-      expenses: {
-        transactionCount: 0,
-        accumulatedAmount: 0,
-        previousCount: 0,
-        previousAmount: 0,
-        percentageChange: 0
-      },
-      transfer: {
-        transactionCount: 0,
-        accumulatedAmount: 0,
-        previousCount: 0,
-        previousAmount: 0,
-        percentageChange: 0
+
+      for (const transaction of incomeExpenses) {
+        const entry = typesCount[transaction.type]
+
+        if (!entry) continue
+
+        if (inCurrentRange(transaction.date)) {
+          entry.transactionCount++
+          entry.accumulatedAmount += transaction.amount
+        } else if (inPreviousRange(transaction.date)) {
+          entry.previousCount++
+          entry.previousAmount += transaction.amount
+        }
       }
-    }
 
-    for (const transaction of incomeExpenses) {
-      const entry = typesCount[transaction.type]
+      for (const transaction of transfers) {
+        const entry = typesCount.transfer
 
-      if (inCurrentRange(transaction.date)) {
-        entry.transactionCount++
-        entry.accumulatedAmount += transaction.amount
-      } else if (inPreviousRange(transaction.date)) {
-        entry.previousCount++
-        entry.previousAmount += transaction.amount
+        if (!entry) continue
+
+        if (inCurrentRange(transaction.date)) {
+          entry.transactionCount++
+          entry.accumulatedAmount += transaction.amount
+        } else if (inPreviousRange(transaction.date)) {
+          entry.previousCount++
+          entry.previousAmount += transaction.amount
+        }
       }
-    }
 
-    for (const transaction of transfers) {
-      const entry = typesCount.transfer
-
-      if (inCurrentRange(transaction.date)) {
-        entry.transactionCount++
-        entry.accumulatedAmount += transaction.amount
-      } else if (inPreviousRange(transaction.date)) {
-        entry.previousCount++
-        entry.previousAmount += transaction.amount
+      for (const entry of Object.values(typesCount)) {
+        entry.percentageChange =
+          entry.previousAmount > 0
+            ? ((entry.accumulatedAmount - entry.previousAmount) /
+                entry.previousAmount) *
+              100
+            : 0
       }
-    }
 
-    for (const entry of Object.values(typesCount)) {
-      entry.percentageChange =
-        entry.previousAmount > 0
-          ? ((entry.accumulatedAmount - entry.previousAmount) /
-              entry.previousAmount) *
-            100
-          : 0
+      return response.ok(typesCount)
     }
-
-    return response.ok(typesCount)
-  })
+  )
 
 export const getIncomeExpensesSummary = forge
   .query({
@@ -292,9 +297,10 @@ export const getIncomeExpensesSummary = forge
 
     const { incomeExpenses } = await fetchTransactions(db)
 
-    const inThisMonth = incomeExpenses.filter(transaction =>
-      dayjs(transaction.date).isSameOrAfter(start) &&
-      dayjs(transaction.date).isSameOrBefore(end)
+    const inThisMonth = incomeExpenses.filter(
+      transaction =>
+        dayjs(transaction.date).isSameOrAfter(start) &&
+        dayjs(transaction.date).isSameOrBefore(end)
     )
 
     const totalIncome = incomeExpenses.reduce(
@@ -350,85 +356,90 @@ export const getCategoriesBreakdown = forge
       const dateRange = range
         ? resolveDateRange(range, startDate, endDate)
         : year && month
-        ? {
-            startDate: dayjs()
-              .year(parseInt(year))
-              .month(parseInt(month) - 1)
-              .startOf('month')
-              .format('YYYY-MM-DD'),
-            endDate: dayjs()
-              .year(parseInt(year))
-              .month(parseInt(month) - 1)
-              .endOf('month')
-              .format('YYYY-MM-DD')
-          }
-        : { startDate: null, endDate: null }
+          ? {
+              startDate: dayjs()
+                .year(parseInt(year))
+                .month(parseInt(month) - 1)
+                .startOf('month')
+                .format('YYYY-MM-DD'),
+              endDate: dayjs()
+                .year(parseInt(year))
+                .month(parseInt(month) - 1)
+                .endOf('month')
+                .format('YYYY-MM-DD')
+            }
+          : { startDate: null, endDate: null }
 
-    const { incomeExpenses } = await fetchTransactions(db)
+      const { incomeExpenses } = await fetchTransactions(db)
 
-    const transactions = incomeExpenses.filter(transaction =>
-      isWithinDateRange(transaction.date, dateRange)
-    )
+      const transactions = incomeExpenses.filter(transaction =>
+        isWithinDateRange(transaction.date, dateRange)
+      )
 
-    const incomeByCategory: Record<
-      string,
-      { amount: number; count: number; percentage: number }
-    > = {}
+      const incomeByCategory: Record<
+        string,
+        { amount: number; count: number; percentage: number }
+      > = {}
 
-    const expensesByCategory: Record<
-      string,
-      { amount: number; count: number; percentage: number }
-    > = {}
+      const expensesByCategory: Record<
+        string,
+        { amount: number; count: number; percentage: number }
+      > = {}
 
-    for (const transaction of transactions) {
-      const categoryId = transaction.category
+      for (const transaction of transactions) {
+        const categoryId = transaction.category
 
-      const amount = transaction.amount
+        const amount = transaction.amount
 
-      const type = transaction.type
+        const type = transaction.type
 
-      if (!categoryId) continue
+        if (!categoryId) continue
 
-      const targetMap =
-        type === 'income' ? incomeByCategory : expensesByCategory
+        const targetMap =
+          type === 'income' ? incomeByCategory : expensesByCategory
 
-      if (targetMap[categoryId]) {
-        targetMap[categoryId].amount += amount
-        targetMap[categoryId].count += 1
-      } else {
-        targetMap[categoryId] = { amount, count: 1, percentage: 0 }
+        if (targetMap[categoryId]) {
+          targetMap[categoryId].amount += amount
+          targetMap[categoryId].count += 1
+        } else {
+          targetMap[categoryId] = { amount, count: 1, percentage: 0 }
+        }
       }
+
+      const totalIncome = Object.values(incomeByCategory).reduce(
+        (acc, { amount }) => acc + amount,
+        0
+      )
+
+      for (const categoryId in incomeByCategory) {
+        const entry = incomeByCategory[categoryId]
+
+        if (!entry) continue
+
+        entry.percentage =
+          totalIncome > 0 ? (entry.amount / totalIncome) * 100 : 0
+      }
+
+      const totalExpenses = Object.values(expensesByCategory).reduce(
+        (acc, { amount }) => acc + amount,
+        0
+      )
+
+      for (const categoryId in expensesByCategory) {
+        const entry = expensesByCategory[categoryId]
+
+        if (!entry) continue
+
+        entry.percentage =
+          totalExpenses > 0 ? (entry.amount / totalExpenses) * 100 : 0
+      }
+
+      return response.ok({
+        income: incomeByCategory,
+        expenses: expensesByCategory
+      })
     }
-
-    const totalIncome = Object.values(incomeByCategory).reduce(
-      (acc, { amount }) => acc + amount,
-      0
-    )
-
-    for (const categoryId in incomeByCategory) {
-      incomeByCategory[categoryId].percentage =
-        totalIncome > 0
-          ? (incomeByCategory[categoryId].amount / totalIncome) * 100
-          : 0
-    }
-
-    const totalExpenses = Object.values(expensesByCategory).reduce(
-      (acc, { amount }) => acc + amount,
-      0
-    )
-
-    for (const categoryId in expensesByCategory) {
-      expensesByCategory[categoryId].percentage =
-        totalExpenses > 0
-          ? (expensesByCategory[categoryId].amount / totalExpenses) * 100
-          : 0
-    }
-
-    return response.ok({
-      income: incomeByCategory,
-      expenses: expensesByCategory
-    })
-  })
+  )
 
 export const getSpendingByPlatform = forge
   .query({
@@ -455,66 +466,67 @@ export const getSpendingByPlatform = forge
       const dateRange = range
         ? resolveDateRange(range, startDate, endDate)
         : year && month
-        ? {
-            startDate: dayjs()
-              .year(parseInt(year))
-              .month(parseInt(month) - 1)
-              .startOf('month')
-              .format('YYYY-MM-DD'),
-            endDate: dayjs()
-              .year(parseInt(year))
-              .month(parseInt(month) - 1)
-              .endOf('month')
-              .format('YYYY-MM-DD')
+          ? {
+              startDate: dayjs()
+                .year(parseInt(year))
+                .month(parseInt(month) - 1)
+                .startOf('month')
+                .format('YYYY-MM-DD'),
+              endDate: dayjs()
+                .year(parseInt(year))
+                .month(parseInt(month) - 1)
+                .endOf('month')
+                .format('YYYY-MM-DD')
+            }
+          : { startDate: null, endDate: null }
+
+      const { incomeExpenses } = await fetchTransactions(db)
+
+      const expenses = incomeExpenses.filter(
+        transaction =>
+          transaction.type === 'expenses' &&
+          isWithinDateRange(transaction.date, dateRange)
+      )
+
+      const grouped: Record<
+        string,
+        { platform: string; amount: number; count: number }
+      > = {}
+
+      for (const transaction of expenses) {
+        if (!transaction.platform) continue
+
+        const key = transaction.platform
+
+        if (!grouped[key]) {
+          grouped[key] = {
+            platform: transaction.platform,
+            amount: 0,
+            count: 0
           }
-        : { startDate: null, endDate: null }
-
-    const { incomeExpenses } = await fetchTransactions(db)
-
-    const expenses = incomeExpenses.filter(
-      transaction =>
-        transaction.type === 'expenses' &&
-        isWithinDateRange(transaction.date, dateRange)
-    )
-
-    const grouped: Record<
-      string,
-      { platform: string; amount: number; count: number }
-    > = {}
-
-    for (const transaction of expenses) {
-      if (!transaction.platform) continue
-
-      const key = transaction.platform
-
-      if (!grouped[key]) {
-        grouped[key] = {
-          platform: transaction.platform,
-          amount: 0,
-          count: 0
         }
+
+        grouped[key].amount += transaction.amount
+        grouped[key].count += 1
       }
 
-      grouped[key].amount += transaction.amount
-      grouped[key].count += 1
+      const total = Object.values(grouped).reduce(
+        (acc, { amount }) => acc + amount,
+        0
+      )
+
+      const result = Object.values(grouped)
+        .map(item => ({
+          platform: item.platform,
+          amount: parseFloat(item.amount.toFixed(2)),
+          count: item.count,
+          percentage: total > 0 ? (item.amount / total) * 100 : 0
+        }))
+        .sort((a, b) => b.amount - a.amount)
+
+      return response.ok(result)
     }
-
-    const total = Object.values(grouped).reduce(
-      (acc, { amount }) => acc + amount,
-      0
-    )
-
-    const result = Object.values(grouped)
-      .map(item => ({
-        platform: item.platform,
-        amount: parseFloat(item.amount.toFixed(2)),
-        count: item.count,
-        percentage: total > 0 ? (item.amount / total) * 100 : 0
-      }))
-      .sort((a, b) => b.amount - a.amount)
-
-    return response.ok(result)
-  })
+  )
 
 export const getEntityBreakdown = forge
   .query({
@@ -610,7 +622,13 @@ export const getSpendingByLocation = forge
 
     const grouped: Record<
       string,
-      { lat: number; lng: number; locationName: string; amount: number; count: number }
+      {
+        lat: number
+        lng: number
+        locationName: string
+        amount: number
+        count: number
+      }
     > = {}
 
     for (const transaction of incomeExpenses) {
@@ -679,7 +697,9 @@ export const getAvailableYearMonths = forge
     const monthsByYear: Record<number, number[]> = {}
 
     for (const year of years) {
-      monthsByYear[year] = Array.from(yearMonthMap[year]).sort((a, b) => b - a)
+      monthsByYear[year] = Array.from(
+        yearMonthMap[year] ?? new Set<number>()
+      ).sort((a, b) => b - a)
     }
 
     return response.ok({ years, monthsByYear })
@@ -704,12 +724,12 @@ export const getTransactionCountByDay = forge
 
     const parsedMonth = parseInt(month) + 1
 
-    const parsedViewFilter: ('income' | 'expenses' | 'transfer')[] = (viewFilter
+    const parsedViewFilter: ('income' | 'expenses' | 'transfer')[] = viewFilter
       ?.split(',')
       .map(v => v.trim())
       .filter(t => ['income', 'expenses', 'transfer'].includes(t)) as (
       'income' | 'expenses' | 'transfer'
-    )[]) ?? ['income', 'expenses', 'transfer']
+    )[]
 
     const { incomeExpenses, transfers } = await fetchTransactions(db)
 
@@ -756,7 +776,7 @@ export const getTransactionCountByDay = forge
 
       const entry = ensure(dateKey)
 
-      if (parsedViewFilter.includes(transaction.type as 'income' | 'expenses')) {
+      if (parsedViewFilter.includes(transaction.type)) {
         if (transaction.type === 'income') {
           entry.income += 1
           entry.incomeAmount += transaction.amount
@@ -784,6 +804,8 @@ export const getTransactionCountByDay = forge
 
     for (const dateKey in countMap) {
       const entry = countMap[dateKey]
+
+      if (!entry) continue
 
       entry.incomeAmount = parseFloat(entry.incomeAmount.toFixed(2))
       entry.expensesAmount = parseFloat(entry.expensesAmount.toFixed(2))
@@ -894,20 +916,24 @@ export const getChartData = forge
 
       if (!label) continue
 
+      const entry = resultMap[label]
+
+      if (!entry) continue
+
       if (transaction.type === 'income') {
-        resultMap[label].income += transaction.amount
-      } else if (transaction.type === 'expenses') {
-        resultMap[label].expenses += transaction.amount
+        entry.income += transaction.amount
+      } else {
+        entry.expenses += transaction.amount
       }
     }
 
     return response.ok(
       buckets.map(bucket => ({
         date: bucket.label,
-        income: resultMap[bucket.label].income,
+        income: resultMap[bucket.label]?.income ?? 0,
         expenses:
-          resultMap[bucket.label].expenses > 0
-            ? -resultMap[bucket.label].expenses
+          (resultMap[bucket.label]?.expenses ?? 0) > 0
+            ? -(resultMap[bucket.label]?.expenses ?? 0)
             : 0
       }))
     )
