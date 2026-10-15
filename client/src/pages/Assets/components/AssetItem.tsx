@@ -4,6 +4,7 @@ import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Card,
+  type CardProps,
   Flex,
   Icon,
   Stack,
@@ -26,10 +27,12 @@ import AssetDelta from './AssetDelta'
 
 function AssetItem({
   asset,
-  rangeMode
+  rangeMode,
+  bg
 }: {
   asset: WalletAsset
   rangeMode: 'week' | 'month' | 'quarter' | 'year' | 'all'
+  bg?: CardProps['bg']
 }) {
   const { t } = useModuleTranslation()
   const { isAmountHidden } = useWalletStore()
@@ -56,6 +59,7 @@ function AssetItem({
 
   return (
     <Card
+      bg={bg}
       direction={{ base: 'column', md: 'row' }}
       gapX="2xl"
       gapY="lg"
