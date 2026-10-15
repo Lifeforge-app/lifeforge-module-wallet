@@ -236,12 +236,20 @@ function ModifyTransactionsModal({
     color: ledger.color
   }))
 
-  const platformOptions = platforms.map(platform => ({
-    text: platform.name,
-    value: platform.id,
-    icon: platform.icon,
-    color: platform.color
-  }))
+  const platformOptions = [
+    {
+      color: TAILWIND_PALETTE.gray[500],
+      icon: 'tabler:ban',
+      text: 'None',
+      value: ''
+    },
+    ...platforms.map(platform => ({
+      text: platform.name,
+      value: platform.id,
+      icon: platform.icon,
+      color: platform.color
+    }))
+  ]
 
   return (
     <FormModal
