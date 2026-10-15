@@ -20,7 +20,6 @@ export const dashboardGrid = style({
     "statisticChart"
     "activityCalendar"
     "categoriesBreakdown"
-    "platformsBreakdown"
     "recentTransactions"
   `,
   '@media': {
@@ -35,9 +34,9 @@ export const dashboardGrid = style({
         "recentTransactions recentTransactions categoriesBreakdown"
         "recentTransactions recentTransactions categoriesBreakdown"
         "recentTransactions recentTransactions categoriesBreakdown"
-        "recentTransactions recentTransactions platformsBreakdown"
-        "recentTransactions recentTransactions platformsBreakdown"
-        "recentTransactions recentTransactions platformsBreakdown"
+        "recentTransactions recentTransactions categoriesBreakdown"
+        "recentTransactions recentTransactions categoriesBreakdown"
+        "recentTransactions recentTransactions categoriesBreakdown"
       `
     }
   }

@@ -75,7 +75,10 @@
     "totalLiabilities": "Total Liabilities",
     "netWorth": "Net Worth",
     "platformsBreakdown": "Platforms Breakdown",
-    "activityCalendar": "Activity Calendar"
+    "activityCalendar": "Activity Calendar",
+    "breakdown": {
+      "title": "Breakdown"
+    }
   },
   "tags": {
     "liability": "Liability"

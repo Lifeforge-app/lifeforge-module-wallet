@@ -75,7 +75,10 @@
     "totalLiabilities": "總負債",
     "netWorth": "淨資產",
     "platformsBreakdown": "平台消費統計",
-    "activityCalendar": "活動日曆"
+    "activityCalendar": "活動日曆",
+    "breakdown": {
+      "title": "統計分析"
+    }
   },
   "tags": {
     "liability": "負債"

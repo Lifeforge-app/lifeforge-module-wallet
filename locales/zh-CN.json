@@ -75,7 +75,10 @@
     "totalLiabilities": "总负债",
     "netWorth": "净资产",
     "platformsBreakdown": "平台消费统计",
-    "activityCalendar": "活动日历"
+    "activityCalendar": "活动日历",
+    "breakdown": {
+      "title": "统计分析"
+    }
   },
   "tags": {
     "liability": "负债"

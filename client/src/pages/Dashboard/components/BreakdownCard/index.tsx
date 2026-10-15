@@ -8,33 +8,50 @@ import { forgeAPI } from '@/manifest'
 
 import type { WalletRange } from '@/providers/RangeProvider'
 
-import type { WalletCategory } from '../../../Transactions'
 import BreakdownContent from './components/BreakdownContent'
 
-type CategoryBreakdown = InferOutput<
-  typeof forgeAPI.analytics.getCategoriesBreakdown
->['income']
+export type BreakdownGroupBy =
+  | 'categories'
+  | 'assets'
+  | 'platforms'
+  | 'ledgers'
 
-export const CategoriesBreakdownContext = createContext<{
-  breakdown: CategoryBreakdown
-  categories: WalletCategory[]
+export type BreakdownEntity = {
+  id: string
+  name: string
+  icon: string
+  color: string
+}
+
+type Breakdown = InferOutput<typeof forgeAPI.analytics.getCategoriesBreakdown>[
+  | 'income'
+  | 'expenses']
+
+export const BreakdownContext = createContext<{
+  breakdown: Breakdown
+  entities: BreakdownEntity[]
   type: 'income' | 'expenses'
+  groupBy: BreakdownGroupBy
   range: WalletRange
   startDate: string
   endDate: string
 }>({
   breakdown: {},
-  categories: [],
+  entities: [],
   type: 'expenses',
+  groupBy: 'categories',
   range: 'mtd',
   startDate: '',
   endDate: ''
 })
 
-function CategoriesBreakdownCard() {
+function BreakdownCard() {
   const [selectedType, setSelectedType] = useState<'income' | 'expenses'>(
     'expenses'
   )
+
+  const [selectedGroupBy, setSelectedGroupBy] =
+    useState<BreakdownGroupBy>('categories')
 
   return (
     <Widget
@@ -49,14 +66,16 @@ function CategoriesBreakdownCard() {
         </Button>
       }
       icon="tabler:chart-donut-3"
-      title="Categories Breakdown"
+      title="Breakdown"
     >
       <BreakdownContent
+        selectedGroupBy={selectedGroupBy}
         selectedType={selectedType}
+        setSelectedGroupBy={setSelectedGroupBy}
         setSelectedType={setSelectedType}
       />
     </Widget>
   )
 }
 
-export default CategoriesBreakdownCard
+export default BreakdownCard

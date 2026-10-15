@@ -118,6 +118,7 @@ async function fetchTransactions(db: WalletDb) {
         amount: walletTransactions.amount,
         date: walletTransactions.date,
         category: walletTransactionsIncomeExpenses.category,
+        asset: walletTransactionsIncomeExpenses.asset,
         platform: walletTransactionsIncomeExpenses.platform,
         ledgers: walletTransactionsIncomeExpenses.ledgers,
         location_name: walletTransactionsIncomeExpenses.location_name,
@@ -333,14 +334,18 @@ export const getIncomeExpensesSummary = forge
 
 export const getCategoriesBreakdown = forge
   .query({
-    description: 'Get income and expenses breakdown by category for a month',
+    description:
+      'Get income and expenses breakdown by the selected entity for a month',
     input: {
       query: z.object({
         year: z.string().optional(),
         month: z.string().optional(),
         range: RANGE_MODE.optional(),
         startDate: z.string().optional(),
-        endDate: z.string().optional()
+        endDate: z.string().optional(),
+        groupBy: z
+          .enum(['categories', 'assets', 'platforms', 'ledgers'])
+          .optional()
       })
     },
     output: {
@@ -350,7 +355,7 @@ export const getCategoriesBreakdown = forge
   .callback(
     async ({
       db,
-      query: { year, month, range, startDate, endDate },
+      query: { year, month, range, startDate, endDate, groupBy },
       response
     }) => {
       const dateRange = range
@@ -386,23 +391,36 @@ export const getCategoriesBreakdown = forge
         { amount: number; count: number; percentage: number }
       > = {}
 
-      for (const transaction of transactions) {
-        const categoryId = transaction.category
+      const getEntityKeys = (
+        transaction: (typeof transactions)[number]
+      ): string[] => {
+        switch (groupBy ?? 'categories') {
+          case 'assets':
+            return transaction.asset ? [transaction.asset] : []
+          case 'platforms':
+            return transaction.platform ? [transaction.platform] : []
+          case 'ledgers':
+            return transaction.ledgers
+          default:
+            return transaction.category ? [transaction.category] : []
+        }
+      }
 
+      for (const transaction of transactions) {
         const amount = transaction.amount
 
         const type = transaction.type
 
-        if (!categoryId) continue
-
         const targetMap =
           type === 'income' ? incomeByCategory : expensesByCategory
 
-        if (targetMap[categoryId]) {
-          targetMap[categoryId].amount += amount
-          targetMap[categoryId].count += 1
-        } else {
-          targetMap[categoryId] = { amount, count: 1, percentage: 0 }
+        for (const entityId of getEntityKeys(transaction)) {
+          if (targetMap[entityId]) {
+            targetMap[entityId].amount += amount
+            targetMap[entityId].count += 1
+          } else {
+            targetMap[entityId] = { amount, count: 1, percentage: 0 }
+          }
         }
       }
 

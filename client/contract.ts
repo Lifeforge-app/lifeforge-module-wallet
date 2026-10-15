@@ -5456,7 +5456,7 @@ export const contract = {
     },
     "getCategoriesBreakdown": {
       "method": "get",
-      "description": "Get income and expenses breakdown by category for a month",
+      "description": "Get income and expenses breakdown by the selected entity for a month",
       "noAuth": false,
       "encrypted": true,
       "isDownloadable": false,
@@ -5490,6 +5490,15 @@ export const contract = {
             },
             "endDate": {
               "type": "string"
+            },
+            "groupBy": {
+              "type": "string",
+              "enum": [
+                "categories",
+                "assets",
+                "platforms",
+                "ledgers"
+              ]
             }
           },
           "additionalProperties": false

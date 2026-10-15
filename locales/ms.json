@@ -75,7 +75,10 @@
     "totalLiabilities": "Jumlah Liabiliti",
     "netWorth": "Nilai Bersih",
     "platformsBreakdown": "Pecahan Platform",
-    "activityCalendar": "Kalendar Aktiviti"
+    "activityCalendar": "Kalendar Aktiviti",
+    "breakdown": {
+      "title": "Pecahan"
+    }
   },
   "tags": {
     "liability": "Liabiliti"

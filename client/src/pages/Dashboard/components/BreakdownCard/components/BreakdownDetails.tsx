@@ -3,11 +3,11 @@ import { AutoSizer } from 'react-virtualized'
 
 import { Flex, Scrollbar, Stack } from '@lifeforge/ui'
 
-import { CategoriesBreakdownContext } from '..'
-import BreakdownCategoryItem from './BreakdownCategoryItem'
+import { BreakdownContext } from '..'
+import BreakdownEntityItem from './BreakdownEntityItem'
 
 function BreakdownDetails() {
-  const { categories } = useContext(CategoriesBreakdownContext)
+  const { entities } = useContext(BreakdownContext)
 
   return (
     <Flex height="100%" minHeight="24em" width="100%">
@@ -20,8 +20,8 @@ function BreakdownDetails() {
             }}
           >
             <Stack>
-              {categories.map(category => (
-                <BreakdownCategoryItem key={category.id} category={category} />
+              {entities.map(entity => (
+                <BreakdownEntityItem key={entity.id} entity={entity} />
               ))}
             </Stack>
           </Scrollbar>

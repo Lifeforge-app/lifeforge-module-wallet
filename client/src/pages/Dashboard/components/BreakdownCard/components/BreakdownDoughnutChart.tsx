@@ -7,20 +7,20 @@ import { Bordered, Box, Flex, Icon, Stack, Text, surface } from '@lifeforge/ui'
 import { useWalletStore } from '@/stores/useWalletStore'
 import numberToCurrency from '@/utils/numberToCurrency'
 
-import { CategoriesBreakdownContext } from '..'
+import { BreakdownContext } from '..'
 
 function BreakdownDoughnutChart() {
   const { t } = useModuleTranslation()
   const { isAmountHidden } = useWalletStore()
-  const { breakdown, categories, type } = useContext(CategoriesBreakdownContext)
+  const { breakdown, entities, type } = useContext(BreakdownContext)
 
   const chartData = useMemo(() => {
-    return categories.map(category => ({
-      name: category.name,
-      value: breakdown?.[category.id]?.amount || 0,
-      color: category.color
+    return entities.map(entity => ({
+      name: entity.name,
+      value: breakdown?.[entity.id]?.amount || 0,
+      color: entity.color
     }))
-  }, [categories, breakdown])
+  }, [entities, breakdown])
 
   const totalAmount = useMemo(() => {
     return Object.values(breakdown).reduce((acc, curr) => acc + curr.amount, 0)
