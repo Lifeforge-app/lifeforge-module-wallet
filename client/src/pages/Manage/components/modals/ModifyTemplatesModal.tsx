@@ -57,7 +57,9 @@ function ModifyTemplatesModal({
 const { categoriesQuery, assetsQuery, platformsQuery, ledgersQuery } =
     useWalletData()
 
-  const assets = assetsQuery.data ?? []
+  const assets = (assetsQuery.data ?? []).filter(
+    asset => !asset.is_inactive || asset.id === initialData?.asset
+  )
 
   const categories = categoriesQuery.data ?? []
 

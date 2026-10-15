@@ -16,6 +16,7 @@ import {
   surface
 } from '@lifeforge/ui'
 
+import InactiveAssetsItem from '@/components/InactiveAssetsItem'
 import LiabilityUtilisation from '@/components/LiabilityUtilisation'
 import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -49,15 +50,19 @@ function AssetsBalance({ isWidget = false }: { isWidget?: boolean }) {
       title="Assets Balance"
     >
       <WithQuery query={assetsQuery}>
-        {assets =>
-          assets.length > 0 ? (
+        {assets => {
+          const activeAssets = assets.filter(asset => !asset.is_inactive)
+
+          const inactiveAssets = assets.filter(asset => asset.is_inactive)
+
+          return assets.length > 0 ? (
             <Stack gap="lg" height="100%" width="100%">
               <Card bg={surface.light}>
                 <NetWorthSummary assets={assets} />
               </Card>
               <Scrollbar>
                 <Stack as="ul" gap="sm" pb="sm">
-                  {assets.map(asset => (
+                  {activeAssets.map(asset => (
                     <Card
                       key={asset.id}
                       align="center"
@@ -107,6 +112,9 @@ function AssetsBalance({ isWidget = false }: { isWidget?: boolean }) {
                       </Flex>
                     </Card>
                   ))}
+                  {inactiveAssets.length > 0 && (
+                    <InactiveAssetsItem assets={inactiveAssets} />
+                  )}
                 </Stack>
               </Scrollbar>
             </Stack>
@@ -127,7 +135,7 @@ function AssetsBalance({ isWidget = false }: { isWidget?: boolean }) {
               }}
             />
           )
-        }
+        }}
       </WithQuery>
     </Widget>
   )

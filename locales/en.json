@@ -82,7 +82,9 @@
   },
   "labels": {
     "overLimit": "Over limit by",
-    "vsPrevious": "vs previous period"
+    "vsPrevious": "vs previous period",
+    "inactiveAssets": "Inactive Assets",
+    "inactiveAssetsCount": "{{count}} assets"
   },
   "transactionCount": "Transactions",
   "receiptUploadInfo": "Only PDF and image files are accepted",
@@ -102,6 +104,10 @@
     "assets": {
       "title": "No Assets Found",
       "description": "You haven't created any assets yet. Click the button above to add one."
+    },
+    "inactiveAssets": {
+      "title": "No Inactive Assets",
+      "description": "You don't have any assets marked as inactive."
     },
     "platforms": {
       "title": "No Platforms Found",
@@ -212,6 +218,7 @@
       }
     },
     "assetsBalanceChart": "Assets Balance Chart",
+    "inactiveAssets": "Inactive Assets",
     "templates": {
       "create": "Create Template",
       "update": "Update Template",
@@ -262,6 +269,7 @@
     "categoryType": "Category Type",
     "initialBalance": "Initial Balance",
     "isLiability": "Is Liability",
+    "isInactive": "Is Inactive",
     "creditLimit": "Credit Limit",
     "fromAsset": "From Asset",
     "toAsset": "To Asset",

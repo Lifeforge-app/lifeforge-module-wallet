@@ -127,7 +127,15 @@ function ModifyTransactionsModal({
   const { assetsQuery, categoriesQuery, platformsQuery, ledgersQuery } =
     useWalletData()
 
-  const assets = assetsQuery.data ?? []
+  const assets = (assetsQuery.data ?? []).filter(asset => {
+    if (!asset.is_inactive) return true
+
+    if (initialData?.type === 'transfer') {
+      return asset.id === initialData.from || asset.id === initialData.to
+    }
+
+    return asset.id === initialData?.asset
+  })
 
   const categories = categoriesQuery.data ?? []
 

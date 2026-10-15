@@ -22,12 +22,14 @@ import {
   useModalStore
 } from '@lifeforge/ui'
 
+import InactiveAssetsItem from '@/components/InactiveAssetsItem'
 import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 import { useWalletStore } from '@/stores/useWalletStore'
 
 import AssetItem from './components/AssetItem'
+import InactiveAssetsModal from './modals/InactiveAssetsModal'
 import ModifyAssetModal from './modals/ModifyAssetModal'
 
 const RANGE_OPTIONS = ['week', 'month', 'quarter', 'year', 'all'] as const
@@ -50,15 +52,20 @@ function Assets() {
     defaultValue: 'month' as RangeMode
   })
 
-  const filteredAssets = useMemo(() => {
-    if (!searchQuery) return assetsQuery.data ?? []
+  const activeAssets = useMemo(() => {
+    const active = (assetsQuery.data ?? []).filter(asset => !asset.is_inactive)
+
+    if (!searchQuery) return active
 
     const q = searchQuery.toLowerCase()
 
-    return (assetsQuery.data ?? []).filter(asset =>
-      asset.name.toLowerCase().includes(q)
-    )
+    return active.filter(asset => asset.name.toLowerCase().includes(q))
   }, [assetsQuery.data, searchQuery])
+
+  const inactiveAssets = useMemo(
+    () => (assetsQuery.data ?? []).filter(asset => asset.is_inactive),
+    [assetsQuery.data]
+  )
 
   const handleCreateCategory = useCallback(() => {
     open(ModifyAssetModal, {
@@ -94,6 +101,16 @@ function Assets() {
                 menu: { minWidth: '15rem' }
               }}
             >
+              <ContextMenuItem
+                icon="tabler:archive"
+                label={t('labels.inactiveAssets')}
+                namespace={false}
+                onClick={() => {
+                  open(InactiveAssetsModal, {
+                    rangeMode: rangeMode as RangeMode
+                  })
+                }}
+              />
               <ContextMenuItem
                 icon="tabler:refresh"
                 label="Refresh"
@@ -150,15 +167,21 @@ function Assets() {
             >
               <NetWorthSummary spread assets={assets} />
             </Widget>
-            {filteredAssets.length > 0 ? (
+            {activeAssets.length > 0 || inactiveAssets.length > 0 ? (
               <Stack mb="2xl">
-                {filteredAssets.map(asset => (
+                {activeAssets.map(asset => (
                   <AssetItem
                     key={asset.id}
                     asset={asset}
                     rangeMode={rangeMode as RangeMode}
                   />
                 ))}
+                {inactiveAssets.length > 0 && (
+                  <InactiveAssetsItem
+                    assets={inactiveAssets}
+                    rangeMode={rangeMode as RangeMode}
+                  />
+                )}
               </Stack>
             ) : (
               <EmptyStateScreen

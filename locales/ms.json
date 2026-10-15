@@ -82,7 +82,9 @@
   },
   "labels": {
     "overLimit": "Melebihi had",
-    "vsPrevious": "berbanding tempoh sebelumnya"
+    "vsPrevious": "berbanding tempoh sebelumnya",
+    "inactiveAssets": "Aset Tidak Aktif",
+    "inactiveAssetsCount": "{{count}} aset"
   },
   "transactionCount": "Transaksi",
   "receiptUploadInfo": "Hanya fail PDF dan imej diterima",
@@ -102,6 +104,10 @@
     "assets": {
       "title": "Tiada Aset Dijumpai",
       "description": "Anda belum mencipta sebarang aset lagi. Klik butang di atas untuk menambah satu."
+    },
+    "inactiveAssets": {
+      "title": "Tiada Aset Tidak Aktif",
+      "description": "Anda tidak mempunyai sebarang aset yang ditandakan sebagai tidak aktif."
     },
     "platforms": {
       "title": "Tiada Platform Dijumpai",
@@ -212,6 +218,7 @@
       }
     },
     "assetsBalanceChart": "Carta Baki Asset",
+    "inactiveAssets": "Aset Tidak Aktif",
     "templates": {
       "create": "Cipta Templat",
       "update": "Kemas Kini Templat",
@@ -262,6 +269,7 @@
     "categoryType": "Jenis Kategori",
     "initialBalance": "Baki Permulaan",
     "isLiability": "Adalah Liabiliti",
+    "isInactive": "Tidak Aktif",
     "creditLimit": "Had Kredit",
     "fromAsset": "Dari Aset",
     "toAsset": "Ke Aset",

@@ -32,6 +32,7 @@ export const walletAssets = pgTable('assets', {
   icon: text('icon').notNull().default(''),
   starting_balance: doublePrecision('starting_balance').notNull().default(0),
   is_liability: boolean('is_liability').notNull().default(false),
+  is_inactive: boolean('is_inactive').notNull().default(false),
   credit_limit: doublePrecision('credit_limit').notNull().default(0)
 })
 

@@ -2341,6 +2341,9 @@ export const contract = {
             "is_liability": {
               "type": "boolean"
             },
+            "is_inactive": {
+              "type": "boolean"
+            },
             "credit_limit": {
               "type": "number"
             }
@@ -2350,6 +2353,7 @@ export const contract = {
             "icon",
             "starting_balance",
             "is_liability",
+            "is_inactive",
             "credit_limit"
           ],
           "additionalProperties": false
@@ -2379,6 +2383,9 @@ export const contract = {
             "is_liability": {
               "type": "boolean"
             },
+            "is_inactive": {
+              "type": "boolean"
+            },
             "credit_limit": {
               "type": "number",
               "minimum": -140737488355328,
@@ -2391,6 +2398,7 @@ export const contract = {
             "icon",
             "starting_balance",
             "is_liability",
+            "is_inactive",
             "credit_limit"
           ],
           "additionalProperties": false
@@ -2494,6 +2502,9 @@ export const contract = {
               "is_liability": {
                 "type": "boolean"
               },
+              "is_inactive": {
+                "type": "boolean"
+              },
               "credit_limit": {
                 "type": "number"
               },
@@ -2510,6 +2521,7 @@ export const contract = {
               "icon",
               "starting_balance",
               "is_liability",
+              "is_inactive",
               "credit_limit",
               "transaction_count",
               "current_balance"
@@ -2582,6 +2594,9 @@ export const contract = {
             "is_liability": {
               "type": "boolean"
             },
+            "is_inactive": {
+              "type": "boolean"
+            },
             "credit_limit": {
               "type": "number"
             }
@@ -2591,6 +2606,7 @@ export const contract = {
             "icon",
             "starting_balance",
             "is_liability",
+            "is_inactive",
             "credit_limit"
           ],
           "additionalProperties": false
@@ -2620,6 +2636,9 @@ export const contract = {
             "is_liability": {
               "type": "boolean"
             },
+            "is_inactive": {
+              "type": "boolean"
+            },
             "credit_limit": {
               "type": "number",
               "minimum": -140737488355328,
@@ -2632,6 +2651,7 @@ export const contract = {
             "icon",
             "starting_balance",
             "is_liability",
+            "is_inactive",
             "credit_limit"
           ],
           "additionalProperties": false

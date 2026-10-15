@@ -82,7 +82,9 @@
   },
   "labels": {
     "overLimit": "超出限額",
-    "vsPrevious": "較上期"
+    "vsPrevious": "較上期",
+    "inactiveAssets": "閒置資產",
+    "inactiveAssetsCount": "{{count}} 個資產"
   },
   "transactionCount": "筆交易",
   "receiptUploadInfo": "僅接受 PDF 和圖片文件",
@@ -102,6 +104,10 @@
     "assets": {
       "title": "未找到資產",
       "description": "您尚未創建任何資產。點擊上面的按鈕添加一個。"
+    },
+    "inactiveAssets": {
+      "title": "沒有閒置資產",
+      "description": "您沒有任何標記為停用的資產。"
     },
     "platforms": {
       "title": "未找到平台",
@@ -212,6 +218,7 @@
       }
     },
     "assetsBalanceChart": "資產餘額圖表",
+    "inactiveAssets": "閒置資產",
     "templates": {
       "create": "建立模板",
       "update": "更新模板",
@@ -262,6 +269,7 @@
     "categoryType": "類別類型",
     "initialBalance": "初始餘額",
     "isLiability": "是負債",
+    "isInactive": "已停用",
     "creditLimit": "信用額度",
     "fromAsset": "轉出資產",
     "toAsset": "轉入資產",

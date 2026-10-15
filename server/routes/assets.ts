@@ -25,6 +25,7 @@ const assetAggregateDto = z.object({
   icon: z.string(),
   starting_balance: z.number(),
   is_liability: z.boolean(),
+  is_inactive: z.boolean(),
   credit_limit: z.number(),
   transaction_count: z.number(),
   current_balance: z.number()
@@ -35,6 +36,7 @@ const assetInputDto = z.object({
   icon: z.string(),
   starting_balance: z.number(),
   is_liability: z.boolean(),
+  is_inactive: z.boolean(),
   credit_limit: z.number()
 })
 
@@ -101,6 +103,7 @@ export const list = forge
           icon: asset.icon,
           starting_balance: asset.starting_balance,
           is_liability: asset.is_liability,
+          is_inactive: asset.is_inactive,
           credit_limit: asset.credit_limit,
           transaction_count: transactionCount,
           current_balance: parseFloat(currentBalance.toFixed(2))

@@ -20,6 +20,7 @@ const schema = z.object({
   icon: z.string().min(1, 'Asset icon is required'),
   starting_balance: z.number(),
   is_liability: z.boolean(),
+  is_inactive: z.boolean(),
   credit_limit: z.number().min(0)
 })
 
@@ -107,6 +108,12 @@ function ModifyAssetModal({
           name="credit_limit"
         />
       )}
+      <CheckboxField
+        control={form.control}
+        icon="tabler:archive"
+        label="Is Inactive"
+        name="is_inactive"
+      />
     </FormModal>
   )
 }
