@@ -14,12 +14,15 @@ export default function useYearMonthState(controller: ForgeEndpoint) {
     month: null
   })
 
-  const yearMonthsQuery = useQuery<{
-    years: number[]
-    monthsByYear: Record<number, number[]>
-  }>(controller.queryOptions() as any)
+  const yearMonthsQuery = useQuery<
+    | {
+        years: number[]
+        monthsByYear: Record<number, number[]>
+      }
+    | undefined
+  >(controller.queryOptions() as any)
 
-  const yearsOptions = yearMonthsQuery.data?.years
+  const yearsOptions = yearMonthsQuery.data?.years ?? []
 
   const monthsOptions =
     yearMonth.year !== null
