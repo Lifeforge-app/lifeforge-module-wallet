@@ -149,7 +149,7 @@ function ModifyTransactionsModal({
   })
 
   const updateMutation = useForgeMutation(
-    forgeAPI.transactions.update.input({ id: initialData?.id || ''! }),
+    forgeAPI.transactions.update.input({ id: initialData?.id || '' }),
     { action: 'update', queryKey: forgeAPI.key }
   )
 
