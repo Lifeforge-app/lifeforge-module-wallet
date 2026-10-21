@@ -8,30 +8,37 @@ function AssetsSectionItem({
   icon,
   label,
   id,
-  amount
+  amount,
+  filterKey = 'asset'
 }: {
   icon: string
   label: string
   id: string | null
   amount: number | undefined
+  filterKey?: 'asset' | 'inactiveAssets'
 }) {
-  const { asset, updateFilter } = useFilter()
+  const { asset, inactiveAssets, setFilters } = useFilter()
+
+  const value = filterKey === 'inactiveAssets' ? inactiveAssets : asset
+
+  const active =
+    id === null ? asset === '' && inactiveAssets === '' : value === id
 
   const handleCancelButtonClick = useCallback(() => {
-    updateFilter('asset', '')
-  }, [updateFilter])
+    setFilters({ asset: '', inactiveAssets: '' })
+  }, [setFilters])
 
   const handleClick = useCallback(() => {
-    if (id === null) {
-      updateFilter('asset', '')
+    if (filterKey === 'inactiveAssets') {
+      setFilters({ asset: '', inactiveAssets: 'true' })
     } else {
-      updateFilter('asset', id)
+      setFilters({ asset: id ?? '', inactiveAssets: '' })
     }
-  }, [id, updateFilter])
+  }, [id, filterKey, setFilters])
 
   return (
     <SidebarItem
-      active={asset === id || (asset === '' && id === null)}
+      active={active}
       icon={icon}
       label={label}
       namespace={id ? false : undefined}

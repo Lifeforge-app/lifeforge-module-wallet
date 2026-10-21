@@ -8,6 +8,14 @@ import { useWalletData } from '@/hooks/useWalletData'
 
 import AssetsSectionItem from './AssetsSectionItem'
 
+type AssetsSectionEntry = {
+  icon: string
+  name: string
+  id: string | null
+  current_balance: number
+  filterKey?: 'asset' | 'inactiveAssets'
+}
+
 function AssetsSection() {
   const { t } = useModuleTranslation()
   const { assetsQuery } = useWalletData()
@@ -17,19 +25,43 @@ function AssetsSection() {
     navigate('/wallet/assets#new')
   }, [navigate])
 
-  const ITEMS = useMemo(
-    () =>
-      [
-        {
-          icon: 'tabler:coin',
-          name: 'allAssets',
-          color: 'white',
-          id: null,
-          current_balance: 0
-        }
-      ].concat(assetsQuery.data ?? ([] as any)),
-    [assetsQuery.data, t]
-  )
+  const ITEMS = useMemo<AssetsSectionEntry[]>(() => {
+    const assets = assetsQuery.data ?? []
+
+    const inactiveAssets = assets.filter(asset => asset.is_inactive)
+
+    const items: AssetsSectionEntry[] = [
+      {
+        icon: 'tabler:coin',
+        name: 'allAssets',
+        id: null,
+        current_balance: 0
+      },
+      ...assets
+        .filter(asset => !asset.is_inactive)
+        .map(asset => ({
+          icon: asset.icon,
+          name: asset.name,
+          id: asset.id,
+          current_balance: asset.current_balance
+        }))
+    ]
+
+    if (inactiveAssets.length > 0) {
+      items.push({
+        icon: 'tabler:archive',
+        name: t('labels.inactiveAssets'),
+        id: 'true',
+        filterKey: 'inactiveAssets',
+        current_balance: inactiveAssets.reduce(
+          (sum, asset) => sum + asset.current_balance,
+          0
+        )
+      })
+    }
+
+    return items
+  }, [assetsQuery.data, t])
 
   return (
     <>
@@ -40,10 +72,11 @@ function AssetsSection() {
         }}
         label="assets"
       />
-      {ITEMS.map(({ icon, name, id, current_balance }) => (
+      {ITEMS.map(({ icon, name, id, current_balance, filterKey }) => (
         <AssetsSectionItem
           key={id}
           amount={current_balance}
+          filterKey={filterKey}
           icon={icon}
           id={id}
           label={name}

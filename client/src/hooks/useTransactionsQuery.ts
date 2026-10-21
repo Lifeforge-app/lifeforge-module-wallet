@@ -12,6 +12,7 @@ export default function useTransactionsQuery() {
     platform,
     asset,
     ledger,
+    inactiveAssets,
     startDate,
     endDate,
     page
@@ -28,6 +29,7 @@ export default function useTransactionsQuery() {
         platform: platform || undefined,
         asset: asset || undefined,
         ledger: ledger || undefined,
+        inactiveAssets: inactiveAssets === 'true' ? 'true' : undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
         page: String(page)

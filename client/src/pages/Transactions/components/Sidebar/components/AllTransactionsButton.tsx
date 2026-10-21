@@ -5,11 +5,17 @@ import { SidebarItem } from '@lifeforge/ui'
 import useFilter from '@/hooks/useFilter'
 
 function AllTransactionsButton() {
-  const { type, category, asset, ledger, updateFilter } = useFilter()
+  const { type, category, asset, ledger, inactiveAssets, updateFilter } =
+    useFilter()
 
   const activeState = useMemo(
-    () => category === '' && asset === '' && ledger === '' && type === '',
-    [category, asset, ledger, type]
+    () =>
+      category === '' &&
+      asset === '' &&
+      ledger === '' &&
+      inactiveAssets === '' &&
+      type === '',
+    [category, asset, ledger, inactiveAssets, type]
   )
 
   const handleAllTransactionsClick = useCallback(() => {
@@ -17,6 +23,7 @@ function AllTransactionsButton() {
     updateFilter('category', '')
     updateFilter('asset', '')
     updateFilter('ledger', '')
+    updateFilter('inactiveAssets', '')
   }, [updateFilter])
 
   return (

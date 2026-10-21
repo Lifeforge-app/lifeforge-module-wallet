@@ -789,6 +789,13 @@ export const contract = {
             "ledger": {
               "type": "string"
             },
+            "inactiveAssets": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
             "startDate": {
               "type": "string"
             },

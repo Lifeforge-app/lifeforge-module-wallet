@@ -15,11 +15,20 @@ import { useWalletData } from '@/hooks/useWalletData'
 function InnerHeader() {
   const { t } = useModuleTranslation(['common.buttons'])
   const { setIsSidebarOpen } = useModuleSidebarState()
+
   const { assetsQuery, categoriesQuery, ledgersQuery, platformsQuery } =
     useWalletData()
 
-  const { searchQuery, type, category, platform, asset, ledger, updateFilter } =
-    useFilter()
+  const {
+    searchQuery,
+    type,
+    category,
+    platform,
+    asset,
+    ledger,
+    inactiveAssets,
+    updateFilter
+  } = useFilter()
 
   const transactionsQuery = useTransactionsQuery()
 
@@ -42,6 +51,7 @@ function InnerHeader() {
               !platform &&
               !asset &&
               !ledger &&
+              !inactiveAssets &&
               searchQuery === ''
                 ? 'all'
                 : 'filtered'
@@ -109,6 +119,15 @@ function InnerHeader() {
                 label: ledger.name
               })),
               isColored: true
+            },
+            inactiveAssets: {
+              data: [
+                {
+                  id: 'true',
+                  icon: 'tabler:archive',
+                  label: t('labels.inactiveAssets')
+                }
+              ]
             }
           }}
           values={{
@@ -116,7 +135,8 @@ function InnerHeader() {
             category,
             platform,
             asset,
-            ledger
+            ledger,
+            inactiveAssets
           }}
           onChange={{
             type: (value: string | null) => updateFilter('type', value ?? ''),
@@ -126,7 +146,9 @@ function InnerHeader() {
               updateFilter('platform', value ?? ''),
             asset: (value: string | null) => updateFilter('asset', value ?? ''),
             ledger: (value: string | null) =>
-              updateFilter('ledger', value ?? '')
+              updateFilter('ledger', value ?? ''),
+            inactiveAssets: (value: string | null) =>
+              updateFilter('inactiveAssets', value ?? '')
           }}
         />
       </Stack>

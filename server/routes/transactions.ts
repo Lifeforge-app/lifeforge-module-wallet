@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import {
   and,
   countDistinct,
@@ -5,18 +6,22 @@ import {
   eq,
   gte,
   ilike,
+  inArray,
   lte,
   or,
   sql
 } from 'drizzle-orm'
-import dayjs from 'dayjs'
 import fs from 'fs'
 import z from 'zod'
 
-import { LocationSchema } from '@lifeforge/server-utils'
+import { LocationSchema, existsIn } from '@lifeforge/server-utils'
 
 import forge from '../forge'
 import {
+  walletAssets,
+  walletCategories,
+  walletLedgers,
+  walletPlatforms,
   walletTransactions,
   walletTransactionsIncomeExpenses,
   walletTransactionsTransfer
@@ -78,10 +83,11 @@ export const list = forge
       query: z.object({
         q: z.string().optional(),
         type: z.enum(['income', 'expenses', 'transfer']).optional(),
-        category: z.string().optional(),
-        platform: z.string().optional(),
-        asset: z.string().optional(),
-        ledger: z.string().optional(),
+        category: existsIn(z.string().optional(), walletCategories),
+        platform: existsIn(z.string().optional(), walletPlatforms),
+        asset: existsIn(z.string().optional(), walletAssets),
+        ledger: existsIn(z.string().optional(), walletLedgers),
+        inactiveAssets: z.enum(['true', 'false']).optional(),
         startDate: z.string().optional(),
         endDate: z.string().optional(),
         range: RANGE_MODE.optional(),
@@ -114,6 +120,7 @@ export const list = forge
         platform,
         asset,
         ledger,
+        inactiveAssets,
         startDate,
         endDate,
         range,
@@ -203,6 +210,29 @@ export const list = forge
         )
       }
 
+      if (inactiveAssets === 'true') {
+        const inactiveAssetIds = db
+          .select({ id: walletAssets.id })
+          .from(walletAssets)
+          .where(eq(walletAssets.is_inactive, true))
+
+        conditions.push(
+          or(
+            and(
+              eq(walletTransactions.type, 'income_expenses'),
+              inArray(walletTransactionsIncomeExpenses.asset, inactiveAssetIds)
+            ),
+            and(
+              eq(walletTransactions.type, 'transfer'),
+              or(
+                inArray(walletTransactionsTransfer.from, inactiveAssetIds),
+                inArray(walletTransactionsTransfer.to, inactiveAssetIds)
+              )
+            )
+          )
+        )
+      }
+
       if (ledger) {
         conditions.push(
           sql`jsonb_exists(${walletTransactionsIncomeExpenses.ledgers}, ${ledger})`
@@ -213,7 +243,10 @@ export const list = forge
 
       const rows = await enrichedTransactionQuery(db)
         .where(where)
-        .orderBy(desc(walletTransactions.date), desc(walletTransactions.created))
+        .orderBy(
+          desc(walletTransactions.date),
+          desc(walletTransactions.created)
+        )
         .limit(parsedPerPage)
         .offset((parsedPage - 1) * parsedPerPage)
 
@@ -460,9 +493,11 @@ export const update = forge
           .delete(walletTransactionsIncomeExpenses)
           .where(eq(walletTransactionsIncomeExpenses.base_transaction, id))
 
-        const existingTransfer = await db.query.transactions_transfer.findFirst({
-          where: { base_transaction: id }
-        })
+        const existingTransfer = await db.query.transactions_transfer.findFirst(
+          {
+            where: { base_transaction: id }
+          }
+        )
 
         if (existingTransfer) {
           await db

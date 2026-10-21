@@ -18,6 +18,7 @@ export default function useFilter() {
     platform: parseAsString.withDefault(''),
     asset: parseAsString.withDefault(''),
     ledger: parseAsString.withDefault(''),
+    inactiveAssets: parseAsString.withDefault(''),
     startDate: parseAsString.withDefault(''),
     endDate: parseAsString.withDefault('')
   })
