@@ -87,7 +87,7 @@ export async function getTransactionDetails(
 
   const extractedData = await fetchAI({
     provider: 'openrouter',
-    model: 'inclusionai/ling-3.0-flash-vl',
+    model: 'nvidia/nemotron-3.5-super-vl:free',
     messages: [
       {
         role: 'system',
