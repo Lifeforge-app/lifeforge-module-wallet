@@ -134,7 +134,7 @@ function ActivityCalendarCard() {
                     renderBlock={(block, activity) =>
                       cloneElement(block, {
                         'data-tooltip-id': 'wallet-activity-calendar',
-                        'data-tooltip-content': `${activity.date} — RM ${numberToCurrency(
+                        'data-tooltip-content': `${activity.date} - RM ${numberToCurrency(
                           activity.count
                         )}`
                       })
@@ -153,17 +153,9 @@ function ActivityCalendarCard() {
       <Tooltip
         id="wallet-activity-calendar"
         render={({ content }) => (
-          <Box
-            shadow
-            bg={{ base: 'bg-50', dark: 'bg-800' }}
-            px="md"
-            py="sm"
-            r="md"
-          >
-            <Text as="div" color={{ base: 'bg-600', dark: 'bg-400' }}>
-              {content}
-            </Text>
-          </Box>
+          <Text as="div" color={{ base: 'bg-600', dark: 'bg-400' }}>
+            {content}
+          </Text>
         )}
       />
     </Widget>
