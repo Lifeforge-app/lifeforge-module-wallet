@@ -48,6 +48,7 @@ function BreakdownFilters({
           </Flex>
         )}
         value={selectedType}
+        width="100%"
         onChange={(value: 'income' | 'expenses') => setSelectedType(value)}
       >
         {(['income', 'expenses'] as const).map(type => (
@@ -74,6 +75,7 @@ function BreakdownFilters({
           </Flex>
         )}
         value={selectedGroupBy}
+        width="100%"
         onChange={(value: BreakdownGroupBy) => setSelectedGroupBy(value)}
       >
         {GROUP_BY_OPTIONS.map(option => (
