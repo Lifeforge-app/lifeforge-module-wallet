@@ -43,21 +43,23 @@ function InnerHeader() {
   return (
     <Flex align="center" justify="between">
       <Stack>
-        <Text as="h1" size={{ base: '3xl', lg: '4xl' }} weight="semibold">
-          {t(
-            `header.${
-              !type &&
-              !category &&
-              !platform &&
-              !asset &&
-              !ledger &&
-              !inactiveAssets &&
-              searchQuery === ''
-                ? 'all'
-                : 'filtered'
-            }Transactions`
-          )}{' '}
-          <Text color="muted" size="base">
+        <Text as="h1" weight="semibold">
+          <Text size={{ base: '3xl', lg: '4xl' }}>
+            {t(
+              `header.${
+                !type &&
+                !category &&
+                !platform &&
+                !asset &&
+                !ledger &&
+                !inactiveAssets &&
+                searchQuery === ''
+                  ? 'all'
+                  : 'filtered'
+              }Transactions`
+            )}
+          </Text>{' '}
+          <Text color="muted">
             ({(transactionsQuery.data?.totalItems ?? 0).toLocaleString()})
           </Text>
         </Text>

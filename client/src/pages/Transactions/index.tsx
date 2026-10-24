@@ -1,24 +1,19 @@
 import { useQueryClient } from '@tanstack/react-query'
-import dayjs from 'dayjs'
 import { useCallback, useEffect } from 'react'
 import { useLocation } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
-import { useModuleTranslation } from '@lifeforge/localization'
 import {
-  Box,
   ContentWrapperWithSidebar,
   ContextMenu,
   ContextMenuItem,
   EmptyStateScreen,
-  Flex,
   LayoutWithSidebar,
   ModuleHeader,
   Pagination,
   Scrollbar,
   SearchInput,
   Stack,
-  Text,
   WithQuery,
   useModalStore
 } from '@lifeforge/ui'
@@ -30,7 +25,7 @@ import { forgeAPI } from '@/manifest'
 import InnerHeader from './components/InnerHeader'
 import Sidebar from './components/Sidebar'
 import TransactionCreationMenu from './components/TransactionCreationMenu'
-import TransactionItem from './components/TransactionItem'
+import TransactionGroup from './components/TransactionGroup'
 import ChooseTemplateModal from './modals/ChooseTemplateModal'
 import ModifyTransactionsModal from './modals/ModifyTransactionsModal'
 import NaturalLanguageModal from './modals/NaturalLanguageModal'
@@ -47,7 +42,6 @@ export type WalletCategory = InferOutput<
 function Transactions() {
   const { hash } = useLocation()
   const { open } = useModalStore()
-  const { t } = useModuleTranslation()
   const transactionsQuery = useTransactionsQuery()
   const { page, setPage, asset, searchQuery, setSearchQuery } = useFilter()
   const queryClient = useQueryClient()
@@ -70,23 +64,6 @@ function Transactions() {
 
     modals[hash as keyof typeof modals]()
   }, [hash])
-
-  const today = dayjs().startOf('day')
-  const yesterday = today.subtract(1, 'day')
-
-  const getGroupLabel = (date: string) => {
-    const groupDate = dayjs(date)
-
-    if (groupDate.isSame(today, 'day')) {
-      return t('transactionGroups.today')
-    }
-
-    if (groupDate.isSame(yesterday, 'day')) {
-      return t('transactionGroups.yesterday')
-    }
-
-    return groupDate.format('MMM DD, YYYY')
-  }
 
   return (
     <>
@@ -132,35 +109,13 @@ function Transactions() {
                       onPageChange={setPage}
                     />
                     <Scrollbar>
-                      <Stack gap="xl">
+                      <Stack gap="xl" mb={{ base: '2xl', md: 'none' }}>
                         {transactions.groups.map(group => (
-                          <Stack key={group.date} gap="sm">
-                            <Flex align="center" gap="sm">
-                              <Box
-                                bg="primary"
-                                height="1.25rem"
-                                r="full"
-                                width="0.25rem"
-                              />
-                              <Text
-                                color="muted"
-                                size="sm"
-                                tracking="wide"
-                                weight="semibold"
-                              >
-                                {getGroupLabel(group.date)}
-                              </Text>
-                            </Flex>
-                            <Stack gap="sm">
-                              {group.items.map(transaction => (
-                                <TransactionItem
-                                  key={transaction.id}
-                                  highlightAsset={asset}
-                                  transaction={transaction}
-                                />
-                              ))}
-                            </Stack>
-                          </Stack>
+                          <TransactionGroup
+                            key={group.date}
+                            group={group}
+                            highlightAsset={asset}
+                          />
                         ))}
                       </Stack>
                     </Scrollbar>
