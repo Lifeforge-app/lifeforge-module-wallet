@@ -1,20 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { cloneElement, useState } from 'react'
-import { ActivityCalendar } from 'react-activity-calendar'
+import { useState } from 'react'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
-  Box,
-  EmptyStateScreen,
+  ActivityCalendar,
   Flex,
   Icon,
   Listbox,
   ListboxOption,
   Text,
-  Tooltip,
   Widget,
-  WithQuery,
-  usePersonalization
+  WithQuery
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -28,7 +24,6 @@ const TYPE_COLORS = {
 
 function ActivityCalendarCard() {
   const { t } = useModuleTranslation()
-  const { derivedTheme } = usePersonalization()
   const { queryInput } = useWalletRange()
   const [selectedType, setSelectedType] = useState<'income' | 'expenses'>(
     'expenses'
@@ -76,9 +71,6 @@ function ActivityCalendarCard() {
             return { date: item.date, count: value, level: getLevel(value) }
           })
 
-          const emptyColor =
-            derivedTheme === 'dark' ? 'rgb(38 38 38)' : 'rgb(229 229 229)'
-
           return (
             <Flex direction="column" gap="md" width="100%">
               <Listbox
@@ -113,51 +105,24 @@ function ActivityCalendarCard() {
                   />
                 ))}
               </Listbox>
-              {data.length === 0 ? (
-                <EmptyStateScreen
-                  icon="tabler:calendar-off"
-                  message={{
-                    id: 'transactions'
-                  }}
-                />
-              ) : (
-                <Box minWidth="0" overflowX="auto" width="100%">
-                  <ActivityCalendar
-                    showWeekdayLabels
-                    blockMargin={4}
-                    blockSize={14}
-                    colorScheme={derivedTheme}
-                    data={calendarData}
-                    hideColorLegend
-                    hideTotalCount
-                    maxLevel={4}
-                    renderBlock={(block, activity) =>
-                      cloneElement(block, {
-                        'data-tooltip-id': 'wallet-activity-calendar',
-                        'data-tooltip-content': `${activity.date} - RM ${numberToCurrency(
-                          activity.count
-                        )}`
-                      })
-                    }
-                    theme={{
-                      dark: [emptyColor, TYPE_COLORS[selectedType]],
-                      light: [emptyColor, TYPE_COLORS[selectedType]]
-                    }}
-                  />
-                </Box>
-              )}
+              <ActivityCalendar
+                hideColorLegend
+                hideTotalCount
+                accentColor={TYPE_COLORS[selectedType]}
+                blockMargin={4}
+                blockSize={14}
+                data={calendarData}
+                empty={data.length === 0}
+                emptyMessage={{ id: 'transactions' }}
+                maxLevel={4}
+                tooltipContent={activity =>
+                  `${activity.date} - RM ${numberToCurrency(activity.count)}`
+                }
+              />
             </Flex>
           )
         }}
       </WithQuery>
-      <Tooltip
-        id="wallet-activity-calendar"
-        render={({ content }) => (
-          <Text as="div" color={{ base: 'bg-600', dark: 'bg-400' }}>
-            {content}
-          </Text>
-        )}
-      />
     </Widget>
   )
 }

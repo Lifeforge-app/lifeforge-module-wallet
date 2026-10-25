@@ -17,7 +17,7 @@ function PlatformList({
   if (platforms.length === 0) {
     return (
       <EmptyStateScreen
-        icon="tabler:building-store-off"
+        icon="tabler:building-off"
         message={{
           id: 'platforms'
         }}

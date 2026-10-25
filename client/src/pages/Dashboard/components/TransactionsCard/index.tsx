@@ -34,6 +34,7 @@ function TransactionsCard() {
                 <TransactionList />
               ) : (
                 <EmptyStateScreen
+                  smaller
                   icon="tabler:wallet-off"
                   message={{
                     id: 'transactions'

@@ -4,6 +4,7 @@ import {
   ContextMenuItem,
   EmptyStateScreen,
   ModuleHeader,
+  Stack,
   WithQuery,
   useModalStore
 } from '@lifeforge/ui'
@@ -49,33 +50,37 @@ function SpendingHeatmapView() {
           </ContextMenu>
         }
       />
-      <WithQuery query={googleMapAPIKeyQuery} showRetryButton={false}>
-        {googleMapAPIKey =>
-          googleMapAPIKey ? (
-            <WithQuery query={spendingDataQuery}>
-              {() =>
-                spendingData.length > 0 ? (
-                  <SpendingHeatmapMap googleMapAPIKey={googleMapAPIKey} />
-                ) : (
-                  <EmptyStateScreen
-                    icon="tabler:map-pin-off"
-                    message={{
-                      id: 'location'
-                    }}
-                  />
-                )
-              }
-            </WithQuery>
-          ) : (
-            <EmptyStateScreen
-              icon="tabler:key-off"
-              message={{
-                id: 'mapKey'
-              }}
-            />
-          )
-        }
-      </WithQuery>
+      <Stack flex="1">
+        <WithQuery query={googleMapAPIKeyQuery} showRetryButton={false}>
+          {googleMapAPIKey =>
+            googleMapAPIKey ? (
+              <>
+                <WithQuery query={spendingDataQuery}>
+                  {() =>
+                    spendingData.length > 0 ? (
+                      <SpendingHeatmapMap googleMapAPIKey={googleMapAPIKey} />
+                    ) : (
+                      <EmptyStateScreen
+                        icon="tabler:map-pin-off"
+                        message={{
+                          id: 'location'
+                        }}
+                      />
+                    )
+                  }
+                </WithQuery>
+              </>
+            ) : (
+              <EmptyStateScreen
+                icon="tabler:key-off"
+                message={{
+                  id: 'mapKey'
+                }}
+              />
+            )
+          }
+        </WithQuery>
+      </Stack>
     </>
   )
 }

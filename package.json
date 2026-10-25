@@ -22,7 +22,6 @@
     "chart.js": "^4.5.0",
     "moment": "^2.30.1",
     "moment-range": "^4.0.2",
-    "react-activity-calendar": "^2.7.14",
     "react-chartjs-2": "^5.3.0",
     "react-to-print": "^3.1.1",
     "react-virtualized": "^9.22.6",
@@ -55,8 +54,8 @@
     "@lifeforge/api": "workspace:*",
     "@lifeforge/configs": "workspace:*",
     "@lifeforge/drizzle": "workspace:*",
-    "@lifeforge/file-storage": "workspace:*",
     "@lifeforge/federation": "workspace:*",
+    "@lifeforge/file-storage": "workspace:*",
     "@lifeforge/localization": "workspace:*",
     "@lifeforge/server-utils": "workspace:*",
     "@lifeforge/ui": "workspace:*"

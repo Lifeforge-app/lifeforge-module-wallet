@@ -1,4 +1,3 @@
-import { useModuleTranslation } from '@lifeforge/localization'
 import { ContextMenu, ContextMenuGroup, ContextMenuItem } from '@lifeforge/ui'
 
 import type { WalletTransaction } from '@/pages/Transactions'
@@ -16,17 +15,21 @@ function MiniCalendarToggleViewMenu({
   viewsFilter: WalletTransaction['type'][]
   toggleView: (view: WalletTransaction['type']) => void
 }) {
-  const { t } = useModuleTranslation()
-
   return (
-    <ContextMenu>
+    <ContextMenu
+      componentProps={{
+        button: {
+          p: 'sm'
+        }
+      }}
+    >
       <ContextMenuGroup icon="tabler:eye" label="Toggle view">
         {VIEWS.map(([icon, id]) => (
           <ContextMenuItem
             key={id}
             checked={viewsFilter.includes(id)}
             icon={icon}
-            label={t(`transactionTypes.${id}`)}
+            label={`transactionTypes.${id}`}
             onClick={() => {
               toggleView(id)
             }}

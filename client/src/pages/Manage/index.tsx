@@ -64,7 +64,7 @@ function ManageContent() {
       />
       <RangeSelector />
       <ManageTabbedView.Selector />
-      <Stack mb="lg" mt="md">
+      <Stack flex="1" mb="lg" mt="md">
         <Section />
       </Stack>
       <FAB icon="tabler:plus" onClick={create} />

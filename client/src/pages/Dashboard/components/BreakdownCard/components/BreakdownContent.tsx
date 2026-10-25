@@ -7,10 +7,7 @@ import { useWalletData } from '@/hooks/useWalletData'
 import { forgeAPI } from '@/manifest'
 import { useWalletRange } from '@/providers/RangeProvider'
 
-import {
-  type BreakdownGroupBy,
-  BreakdownContext
-} from '..'
+import { BreakdownContext, type BreakdownGroupBy } from '..'
 import BreakdownChartLegend from './BreakdownChartLegend'
 import BreakdownDetails from './BreakdownDetails'
 import BreakdownDoughnutChart from './BreakdownDoughnutChart'
@@ -119,7 +116,7 @@ function BreakdownContent({
 
   return (
     <BreakdownContext value={memoizedContextValue}>
-      <Stack centered flex="1" gap="lg" minHeight="0">
+      <Stack centered flex="1" gap="lg" height="100%" minHeight="0">
         <BreakdownFilters
           selectedGroupBy={selectedGroupBy}
           selectedType={selectedType}
@@ -130,7 +127,8 @@ function BreakdownContent({
           {data =>
             Object.keys(data[selectedType]).length === 0 ? (
               <EmptyStateScreen
-                icon="tabler:wallet-off"
+                smaller
+                icon="tabler:chart-pie-off"
                 message={{
                   id: 'transactions'
                 }}

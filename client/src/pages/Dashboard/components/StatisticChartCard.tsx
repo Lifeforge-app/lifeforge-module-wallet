@@ -114,7 +114,7 @@ function StatisticChartCard() {
 
   return (
     <Widget icon="tabler:chart-dots" title="Statistics">
-      <Flex centered flex="1" height="24rem" width="100%">
+      <Flex centered flex="1" height="24rem" pb="md" width="100%">
         <WithQuery query={chartDataQuery}>
           {chartData =>
             chartData.length === 0 ? (
