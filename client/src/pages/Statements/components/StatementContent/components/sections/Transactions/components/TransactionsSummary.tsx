@@ -1,5 +1,15 @@
 import { useModuleTranslation } from '@lifeforge/localization'
-import { Flex, Icon, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
+import {
+  Flex,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableRow,
+  Text,
+  WithQuery
+} from '@lifeforge/ui'
 
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 
@@ -31,44 +41,42 @@ function TransactionsSummary() {
   return (
     <WithQuery query={statementQuery}>
       {({ transactions }) => (
-        <Flex direction="column" mt="lg" width="100%">
-          {ROWS.map((row, index) => (
-            <Flex
-              key={row.label}
-              align="center"
-              bg={
-                index % 2 === 1 ? colorWithOpacity('bg-500', '5%') : undefined
-              }
-              justify="between"
-              p="md"
-            >
-              <Flex align="center" gap="sm">
-                <Icon color={row.color} icon={row.icon} size="1.5rem" />
-                <Text size="xl">{row.label}</Text>
-              </Flex>
-              <Text size="lg">
-                {transactions[row.type].count} {t('transactionCount')}
-              </Text>
-            </Flex>
-          ))}
-          <Flex
-            align="center"
-            bg={colorWithOpacity('bg-500', '5%')}
-            justify="between"
-          >
-            <Text p="md" size="xl" weight="semibold">
-              {t('statement.total')}
-            </Text>
-            <Text
-              p="md"
-              size="lg"
-              style={{ borderTop: '2px solid', borderBottom: '6px double' }}
-              weight="medium"
-            >
-              {transactions.totalCount} {t('transactionCount')}
-            </Text>
-          </Flex>
-        </Flex>
+        <Table mt="lg" width="100%">
+          <TableBody>
+            {ROWS.map(row => (
+              <TableRow key={row.label}>
+                <TableCell width="100%">
+                  <Flex align="center" gap="sm">
+                    <Icon color={row.color} icon={row.icon} size="1.5rem" />
+                    <Text>{row.label}</Text>
+                  </Flex>
+                </TableCell>
+                <TableCell nowrap align="right" width="min-content">
+                  <Text>
+                    {transactions[row.type].count} {t('transactionCount')}
+                  </Text>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell width="100%">
+                <Text weight="semibold">{t('statement.total')}</Text>
+              </TableCell>
+              <TableCell
+                nowrap
+                align="right"
+                variant="total"
+                width="min-content"
+              >
+                <Text weight="medium">
+                  {transactions.totalCount} {t('transactionCount')}
+                </Text>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
       )}
     </WithQuery>
   )

@@ -2,10 +2,14 @@ import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Flex,
   Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
   Text,
   WithQuery,
-  colorWithOpacity,
-  usePersonalization
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
@@ -16,9 +20,6 @@ function PlatformsTable() {
   const { platformsQuery } = useWalletData()
   const { statementQuery } = useStatementData()
   const { t } = useModuleTranslation()
-  const { getMostReadableColor } = usePersonalization()
-
-  const headerTextColor = getMostReadableColor()
 
   return (
     <WithQuery query={platformsQuery}>
@@ -38,71 +39,25 @@ function PlatformsTable() {
                   <Text>1.4 </Text>
                   {t('widgets.platformsBreakdown')}
                 </Text>
-                <table
-                  style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
-                >
-                  <thead>
-                    <tr
-                      style={{
-                        backgroundColor: 'var(--color-custom-500)',
-                        color: headerTextColor
-                      }}
-                    >
-                      <th
-                        style={{
-                          width: '100%',
-                          padding: '0.75rem',
-                          textAlign: 'left',
-                          fontSize: '1.125rem',
-                          fontWeight: '500'
-                        }}
-                      >
+                <Table minWidth="0" mt="lg" width="100%">
+                  <TableHeader>
+                    <TableRow bg="custom-500">
+                      <TableHeaderCell align="left" width="100%">
                         {t('statement.platform')}
-                      </th>
-                      <th
-                        style={{
-                          padding: '0.75rem',
-                          fontSize: '1.125rem',
-                          fontWeight: '500',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        RM
-                      </th>
-                      <th
-                        style={{
-                          padding: '0.75rem',
-                          fontSize: '1.125rem',
-                          fontWeight: '500',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        %
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {platformBreakdown.map((item, index) => {
+                      </TableHeaderCell>
+                      <TableHeaderCell>RM</TableHeaderCell>
+                      <TableHeaderCell>%</TableHeaderCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {platformBreakdown.map(item => {
                       const platform = platforms.find(
                         p => p.id === item.platform
                       )
 
                       return (
-                        <tr
-                          key={item.platform ?? 'unassigned'}
-                          style={{
-                            backgroundColor:
-                              index % 2 === 0
-                                ? colorWithOpacity('bg-500', '5%').toString()
-                                : undefined
-                          }}
-                        >
-                          <td
-                            style={{
-                              padding: '0.75rem',
-                              fontSize: '1.125rem'
-                            }}
-                          >
+                        <TableRow key={item.platform ?? 'unassigned'}>
+                          <TableCell>
                             <Flex align="center" gap="sm">
                               <Icon
                                 icon={
@@ -115,32 +70,18 @@ function PlatformsTable() {
                                 {platform?.name ?? t('statement.unassigned')}
                               </Text>
                             </Flex>
-                          </td>
-                          <td
-                            style={{
-                              padding: '0.75rem',
-                              textAlign: 'right',
-                              fontSize: '1.125rem',
-                              whiteSpace: 'nowrap'
-                            }}
-                          >
+                          </TableCell>
+                          <TableCell nowrap align="right">
                             {numberToCurrency(item.amount)}
-                          </td>
-                          <td
-                            style={{
-                              padding: '0.75rem',
-                              textAlign: 'right',
-                              fontSize: '1.125rem',
-                              whiteSpace: 'nowrap'
-                            }}
-                          >
+                          </TableCell>
+                          <TableCell nowrap align="right">
                             {item.percentage.toFixed(2)}%
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       )
                     })}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </>
             )
           }

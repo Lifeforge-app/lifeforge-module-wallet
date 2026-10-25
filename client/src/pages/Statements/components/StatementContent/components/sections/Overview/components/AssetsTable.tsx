@@ -5,10 +5,16 @@ import {
   Flex,
   Icon,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
   Text,
   WithQuery,
   colorWithOpacity,
-  usePersonalization
 } from '@lifeforge/ui'
 
 import LiabilityUtilisation from '@/components/LiabilityUtilisation'
@@ -20,9 +26,6 @@ function AssetsTable({ month }: { month: number }) {
   const { assetsQuery } = useWalletData()
   const { statementQuery } = useStatementData()
   const { t } = useModuleTranslation()
-  const { getMostReadableColor } = usePersonalization()
-
-  const headerTextColor = getMostReadableColor()
 
   return (
     <WithQuery query={assetsQuery}>
@@ -52,358 +55,178 @@ function AssetsTable({ month }: { month: number }) {
                 : 0
 
             return (
-              <table
-                style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
-              >
-              <thead>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-custom-500)',
-                    color: headerTextColor
-                  }}
-                >
-                  <th
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      textAlign: 'left',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    {t('statement.assets')}
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {dayjs().month(month - 1).format('MMM YYYY')}
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {dayjs().month(month).format('MMM YYYY')}
-                  </th>
-                  <th
-                    colSpan={2}
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {t('statement.change')}
-                  </th>
-                </tr>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-bg-800)',
-                    color: 'white'
-                  }}
-                >
-                  <th
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 1rem',
-                      textAlign: 'left',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  ></th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    %
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {assets
-                  .filter(asset => !asset.is_inactive)
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((asset, index) => {
-                    const balance = assetData.balances[asset.id]
+              <Table minWidth="0" mt="lg" width="100%">
+                <TableHeader>
+                  <TableRow bg="custom-500">
+                    <TableHeaderCell align="left" width="100%">
+                      {t('statement.assets')}
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                      {dayjs()
+                        .month(month - 1)
+                        .format('MMM YYYY')}
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                      {dayjs().month(month).format('MMM YYYY')}
+                    </TableHeaderCell>
+                    <TableHeaderCell colSpan={2}>
+                      {t('statement.change')}
+                    </TableHeaderCell>
+                  </TableRow>
+                  <TableRow bg="bg-800" color="bg-50">
+                    <TableHeaderCell align="left" width="100%" />
+                    <TableHeaderCell>RM</TableHeaderCell>
+                    <TableHeaderCell>RM</TableHeaderCell>
+                    <TableHeaderCell>RM</TableHeaderCell>
+                    <TableHeaderCell>%</TableHeaderCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {assets
+                    .filter(asset => !asset.is_inactive)
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(asset => {
+                      const balance = assetData.balances[asset.id]
 
-                    if (!balance) return null
+                      if (!balance) return null
 
-                    const { last, current, change, percentage } = balance
+                      const { last, current, change, percentage } = balance
 
-                    return (
-                      <tr
-                        key={asset.id}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0
-                              ? colorWithOpacity('bg-500', '5%').toString()
-                              : undefined
-                        }}
+                      return (
+                        <TableRow key={asset.id}>
+                          <TableCell>
+                            <Stack gap="xs">
+                              <Flex align="center" gap="sm">
+                                <Icon icon={asset.icon} size="1.5rem" />
+                                <Text whiteSpace="nowrap">{asset.name}</Text>
+                                {asset.is_liability && (
+                                  <Text
+                                    style={{
+                                      color: '#e11d48',
+                                      border: '1px solid #e11d48',
+                                      borderRadius: '999px',
+                                      padding: '0 0.5rem',
+                                      whiteSpace: 'nowrap'
+                                    }}
+                                  >
+                                    {t('tags.liability')}
+                                  </Text>
+                                )}
+                              </Flex>
+                              <LiabilityUtilisation asset={asset} />
+                            </Stack>
+                          </TableCell>
+                          <TableCell nowrap align="right">
+                            {numberToCurrency(last)}
+                          </TableCell>
+                          <TableCell nowrap align="right">
+                            {numberToCurrency(current)}
+                          </TableCell>
+                          <TableCell
+                            nowrap
+                            align="right"
+                            color={change < 0 ? 'rose-600' : undefined}
+                          >
+                            {change < 0
+                              ? `(${numberToCurrency(Math.abs(change))})`
+                              : numberToCurrency(change)}
+                          </TableCell>
+                          <TableCell
+                            nowrap
+                            align="right"
+                            color={percentage < 0 ? 'rose-600' : undefined}
+                          >
+                            {percentage < 0
+                              ? `(${Math.abs(percentage).toFixed(2)}%)`
+                              : `${percentage.toFixed(2)}%`}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  {inactiveAggregate && (
+                    <TableRow bg={colorWithOpacity('bg-500', '5%')} color="inherit">
+                      <TableCell>
+                        <Flex align="center" gap="sm">
+                          <Icon icon="tabler:archive" size="1.5rem" />
+                          <Text whiteSpace="nowrap">
+                            {t('labels.inactiveAssets')}
+                          </Text>
+                        </Flex>
+                      </TableCell>
+                      <TableCell nowrap align="right">
+                        {numberToCurrency(inactiveAggregate.last)}
+                      </TableCell>
+                      <TableCell nowrap align="right">
+                        {numberToCurrency(inactiveAggregate.current)}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={
+                          inactiveAggregate.change < 0 ? 'rose-600' : undefined
+                        }
                       >
-                        <td
-                          style={{
-                            padding: '0.75rem',
-                            fontSize: '1.125rem'
-                          }}
-                        >
-                          <Stack gap="xs">
-                            <Flex align="center" gap="sm">
-                              <Icon icon={asset.icon} size="1.5rem" />
-                              <Text whiteSpace="nowrap">{asset.name}</Text>
-                              {asset.is_liability && (
-                                <Text
-                                  size="sm"
-                                  style={{
-                                    color: '#e11d48',
-                                    border: '1px solid #e11d48',
-                                    borderRadius: '999px',
-                                    padding: '0 0.5rem',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  {t('tags.liability')}
-                                </Text>
-                              )}
-                            </Flex>
-                            <LiabilityUtilisation asset={asset} />
-                          </Stack>
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.75rem',
-                            textAlign: 'right',
-                            fontSize: '1.125rem',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {numberToCurrency(last)}
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.75rem',
-                            textAlign: 'right',
-                            fontSize: '1.125rem',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {numberToCurrency(current)}
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.75rem',
-                            textAlign: 'right',
-                            fontSize: '1.125rem',
-                            whiteSpace: 'nowrap',
-                            color: change < 0 ? '#e11d48' : undefined
-                          }}
-                        >
-                          {change < 0
-                            ? `(${numberToCurrency(Math.abs(change))})`
-                            : numberToCurrency(change)}
-                        </td>
-                        <td
-                          style={{
-                            padding: '0.75rem',
-                            textAlign: 'right',
-                            fontSize: '1.125rem',
-                            whiteSpace: 'nowrap',
-                            color: percentage < 0 ? '#e11d48' : undefined
-                          }}
-                        >
-                          {percentage < 0
-                            ? `(${Math.abs(percentage).toFixed(2)}%)`
-                            : `${percentage.toFixed(2)}%`}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                {inactiveAggregate && (
-                  <tr
-                    style={{
-                      backgroundColor: colorWithOpacity('bg-500', '5%').toString()
-                    }}
-                  >
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '1.125rem'
-                      }}
-                    >
-                      <Flex align="center" gap="sm">
-                        <Icon icon="tabler:archive" size="1.5rem" />
-                        <Text whiteSpace="nowrap">
-                          {t('labels.inactiveAssets')}
+                        {inactiveAggregate.change < 0
+                          ? `(${numberToCurrency(Math.abs(inactiveAggregate.change))})`
+                          : numberToCurrency(inactiveAggregate.change)}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={inactivePercentage < 0 ? 'rose-600' : undefined}
+                      >
+                        {inactivePercentage < 0
+                          ? `(${Math.abs(inactivePercentage).toFixed(2)}%)`
+                          : `${inactivePercentage.toFixed(2)}%`}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  {[
+                    { label: t('widgets.totalAssets'), data: assetData.total },
+                    {
+                      label: t('widgets.totalLiabilities'),
+                      data: assetData.liabilitiesTotal
+                    },
+                    { label: t('widgets.netWorth'), data: assetData.netWorth }
+                  ].map(row => (
+                    <TableRow key={row.label}>
+                      <TableCell>
+                        <Text weight="semibold">
+                          {row.label}
                         </Text>
-                      </Flex>
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {numberToCurrency(inactiveAggregate.last)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {numberToCurrency(inactiveAggregate.current)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        whiteSpace: 'nowrap',
-                        color: inactiveAggregate.change < 0 ? '#e11d48' : undefined
-                      }}
-                    >
-                      {inactiveAggregate.change < 0
-                        ? `(${numberToCurrency(Math.abs(inactiveAggregate.change))})`
-                        : numberToCurrency(inactiveAggregate.change)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        whiteSpace: 'nowrap',
-                        color: inactivePercentage < 0 ? '#e11d48' : undefined
-                      }}
-                    >
-                      {inactivePercentage < 0
-                        ? `(${Math.abs(inactivePercentage).toFixed(2)}%)`
-                        : `${inactivePercentage.toFixed(2)}%`}
-                    </td>
-                  </tr>
-                )}
-                {[
-                  { label: t('widgets.totalAssets'), data: assetData.total },
-                  {
-                    label: t('widgets.totalLiabilities'),
-                    data: assetData.liabilitiesTotal
-                  },
-                  { label: t('widgets.netWorth'), data: assetData.netWorth }
-                ].map(row => (
-                  <tr key={row.label}>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '1.125rem'
-                      }}
-                    >
-                      <Text size="xl" weight="semibold">
-                        {row.label}
-                      </Text>
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        fontWeight: '500',
-                        whiteSpace: 'nowrap',
-                        borderTop: '2px solid',
-                        borderBottom: '6px double'
-                      }}
-                    >
-                      {numberToCurrency(row.data.last)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        fontWeight: '500',
-                        whiteSpace: 'nowrap',
-                        borderTop: '2px solid',
-                        borderBottom: '6px double'
-                      }}
-                    >
-                      {numberToCurrency(row.data.current)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        fontWeight: '500',
-                        whiteSpace: 'nowrap',
-                        borderTop: '2px solid',
-                        borderBottom: '6px double',
-                        color: row.data.change < 0 ? '#e11d48' : undefined
-                      }}
-                    >
-                      {row.data.change < 0
-                        ? `(${numberToCurrency(Math.abs(row.data.change))})`
-                        : numberToCurrency(row.data.change)}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'right',
-                        fontSize: '1.125rem',
-                        fontWeight: '500',
-                        whiteSpace: 'nowrap',
-                        borderTop: '2px solid',
-                        borderBottom: '6px double',
-                        color: row.data.percentage < 0 ? '#e11d48' : undefined
-                      }}
-                    >
-                      {row.data.percentage < 0
-                        ? `(${Math.abs(row.data.percentage).toFixed(2)}%)`
-                        : `${row.data.percentage.toFixed(2)}%`}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </TableCell>
+                      <TableCell nowrap align="right" variant="total">
+                        {numberToCurrency(row.data.last)}
+                      </TableCell>
+                      <TableCell nowrap align="right" variant="total">
+                        {numberToCurrency(row.data.current)}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={row.data.change < 0 ? 'rose-600' : undefined}
+                        variant="total"
+                      >
+                        {row.data.change < 0
+                          ? `(${numberToCurrency(Math.abs(row.data.change))})`
+                          : numberToCurrency(row.data.change)}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={row.data.percentage < 0 ? 'rose-600' : undefined}
+                        variant="total"
+                      >
+                        {row.data.percentage < 0
+                          ? `(${Math.abs(row.data.percentage).toFixed(2)}%)`
+                          : `${row.data.percentage.toFixed(2)}%`}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableFooter>
+              </Table>
             )
           }}
         </WithQuery>

@@ -5,10 +5,15 @@ import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Flex,
   Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
   Text,
   WithQuery,
-  colorWithOpacity,
-  usePersonalization
 } from '@lifeforge/ui'
 
 import { useWalletData } from '@/hooks/useWalletData'
@@ -34,9 +39,6 @@ function IncomeExpensesTable({
   const { categoriesQuery } = useWalletData()
   const { statementQuery } = useStatementData()
   const { t } = useModuleTranslation()
-  const { getMostReadableColor } = usePersonalization()
-
-  const headerTextColor = getMostReadableColor()
 
   const categories = categoriesQuery.data ?? []
 
@@ -76,133 +78,43 @@ function IncomeExpensesTable({
               <Text>1.{type === 'income' ? '2' : '3'} </Text>
               {t(`transactionTypes.${type}`)}
             </Text>
-            <table
-              style={{ width: '100%', marginTop: '1.5rem', minWidth: '0' }}
-            >
-              <thead>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-custom-500)',
-                    color: headerTextColor
-                  }}
-                >
-                  <th
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      textAlign: 'left',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
+            <Table minWidth="0" mt="lg" width="100%">
+              <TableHeader>
+                <TableRow bg="custom-500">
+                  <TableHeaderCell align="left" width="100%">
                     {t('statement.category')}
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
+                  </TableHeaderCell>
+                  <TableHeaderCell>
                     {dayjs()
                       .year(prevMonth.year)
                       .month(prevMonth.month - 1)
                       .format('MMM YYYY')}
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
+                  </TableHeaderCell>
+                  <TableHeaderCell>
                     {dayjs().year(year).month(month).format('MMM YYYY')}
-                  </th>
-                  <th
-                    colSpan={2}
-                    style={{
-                      padding: '0.75rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
+                  </TableHeaderCell>
+                  <TableHeaderCell colSpan={2}>
                     {t('statement.change')}
-                  </th>
-                </tr>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-bg-800)',
-                    color: 'white'
-                  }}
-                >
-                  <th
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 1rem',
-                      textAlign: 'left',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  ></th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    RM
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '1.125rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    %
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCategories.map((category, index) => {
+                  </TableHeaderCell>
+                </TableRow>
+                <TableRow bg="bg-800" color="bg-50">
+                  <TableHeaderCell align="left" width="100%" />
+                  <TableHeaderCell>RM</TableHeaderCell>
+                  <TableHeaderCell>RM</TableHeaderCell>
+                  <TableHeaderCell>RM</TableHeaderCell>
+                  <TableHeaderCell>%</TableHeaderCell>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCategories.map(category => {
                   const item = comparison.items[category.id] ?? EMPTY_ITEM
 
                   const isNegativeChange =
                     type === 'income' ? item.change < 0 : item.change > 0
 
                   return (
-                    <tr
-                      key={category.id}
-                      style={{
-                        backgroundColor:
-                          index % 2 === 0
-                            ? colorWithOpacity('bg-500', '5%').toString()
-                            : undefined
-                      }}
-                    >
-                      <td style={{ padding: '0.75rem', fontSize: '1.125rem' }}>
+                    <TableRow key={category.id}>
+                      <TableCell>
                         <Flex align="center" gap="sm">
                           <Icon
                             icon={category.icon}
@@ -211,125 +123,73 @@ function IncomeExpensesTable({
                           />
                           <Text whiteSpace="nowrap">{category.name}</Text>
                         </Flex>
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          textAlign: 'right',
-                          fontSize: '1.125rem',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
+                      </TableCell>
+                      <TableCell nowrap align="right">
                         {numberToCurrency(item.previousAmount)}
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          textAlign: 'right',
-                          fontSize: '1.125rem',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
+                      </TableCell>
+                      <TableCell nowrap align="right">
                         {numberToCurrency(item.currentAmount)}
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          textAlign: 'right',
-                          fontSize: '1.125rem',
-                          whiteSpace: 'nowrap',
-                          color: isNegativeChange ? '#e11d48' : undefined
-                        }}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={isNegativeChange ? 'rose-600' : undefined}
                       >
                         {item.change < 0
                           ? `(${numberToCurrency(Math.abs(item.change))})`
                           : numberToCurrency(item.change)}
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          textAlign: 'right',
-                          fontSize: '1.125rem',
-                          whiteSpace: 'nowrap',
-                          color: isNegativeChange ? '#e11d48' : undefined
-                        }}
+                      </TableCell>
+                      <TableCell
+                        nowrap
+                        align="right"
+                        color={isNegativeChange ? 'rose-600' : undefined}
                       >
                         {Math.abs(item.previousAmount) < 0.001
                           ? '-'
                           : `${item.percentageChange.toFixed(2)}%`}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   )
                 })}
-                <tr>
-                  <td style={{ padding: '0.75rem', fontSize: '1.125rem' }}>
-                    <Text size="xl" weight="semibold">
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell>
+                    <Text weight="semibold">
                       {t('statement.totalType', {
                         type: t(`transactionTypes.${type}`)
                       })}
                     </Text>
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double'
-                    }}
-                  >
+                  </TableCell>
+                  <TableCell nowrap align="right" variant="total">
                     {numberToCurrency(comparison.previousTotal)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double'
-                    }}
-                  >
+                  </TableCell>
+                  <TableCell nowrap align="right" variant="total">
                     {numberToCurrency(comparison.currentTotal)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double',
-                      color: isNegativeChange ? '#e11d48' : undefined
-                    }}
+                  </TableCell>
+                  <TableCell
+                    nowrap
+                    align="right"
+                    color={isNegativeChange ? 'rose-600' : undefined}
+                    variant="total"
                   >
                     {change < 0
                       ? `(${numberToCurrency(Math.abs(change))})`
                       : numberToCurrency(change)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'right',
-                      fontSize: '1.125rem',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      borderTop: '2px solid',
-                      borderBottom: '6px double',
-                      color: isNegativeChange ? '#e11d48' : undefined
-                    }}
+                  </TableCell>
+                  <TableCell
+                    nowrap
+                    align="right"
+                    color={isNegativeChange ? 'rose-600' : undefined}
+                    variant="total"
                   >
                     {Math.abs(comparison.previousTotal) < 0.001
                       ? '-'
                       : `${comparison.totalPercentageChange.toFixed(2)}%`}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
           </>
         )
       }}

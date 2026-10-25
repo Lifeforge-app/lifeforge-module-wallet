@@ -4,10 +4,15 @@ import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Flex,
   Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
   TagChip,
   Text,
-  colorWithOpacity,
-  usePersonalization
 } from '@lifeforge/ui'
 
 import { type WalletTransaction, useWalletData } from '@/hooks/useWalletData'
@@ -24,9 +29,6 @@ function TransactionList({
 }) {
   const { assetsQuery, categoriesQuery } = useWalletData()
   const { t } = useModuleTranslation()
-  const { getMostReadableColor } = usePersonalization()
-
-  const headerTextColor = getMostReadableColor()
 
   const assets = assetsQuery.data ?? []
 
@@ -45,149 +47,40 @@ function TransactionList({
         <Text>2.{['income', 'expenses', 'transfer'].indexOf(type) + 1} </Text>
         {t(`transactionTypes.${type}`)}
       </Text>
-      <table style={{ width: '100%', marginTop: '1.5rem' }}>
-        <thead>
-          <tr
-            style={{
-              backgroundColor: 'var(--color-custom-500)',
-              color: headerTextColor
-            }}
-          >
-            <th
-              style={{
-                padding: '0.75rem',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {t('statement.date')}
-            </th>
-            <th
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                textAlign: 'left',
-                fontSize: '1.125rem',
-                fontWeight: '500'
-              }}
-            >
+      <Table mt="lg" width="100%">
+        <TableHeader>
+          <TableRow bg="custom-500">
+            <TableHeaderCell>{t('statement.date')}</TableHeaderCell>
+            <TableHeaderCell align="left" width="100%">
               {t('statement.particular')}
-            </th>
+            </TableHeaderCell>
             {type !== 'transfer' && (
               <>
-                <th
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    fontWeight: '500',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {t('statement.asset')}
-                </th>
-                <th
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    fontWeight: '500',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {t('statement.category')}
-                </th>
+                <TableHeaderCell>{t('statement.asset')}</TableHeaderCell>
+                <TableHeaderCell>{t('statement.category')}</TableHeaderCell>
               </>
             )}
-            <th
-              style={{
-                padding: '0.75rem',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {t('statement.amount')}
-            </th>
-          </tr>
-          <tr
-            style={{ backgroundColor: 'var(--color-bg-800)', color: 'white' }}
-          >
-            <th
-              style={{
-                padding: '0.75rem',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                whiteSpace: 'nowrap'
-              }}
-            ></th>
-            <th
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                textAlign: 'left',
-                fontSize: '1.125rem',
-                fontWeight: '500'
-              }}
-            ></th>
+            <TableHeaderCell>{t('statement.amount')}</TableHeaderCell>
+          </TableRow>
+          <TableRow bg="bg-800" color="bg-50">
+            <TableHeaderCell />
+            <TableHeaderCell align="left" width="100%" />
             {type !== 'transfer' && (
               <>
-                <th
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    fontWeight: '500',
-                    whiteSpace: 'nowrap'
-                  }}
-                ></th>
-                <th
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    fontWeight: '500',
-                    whiteSpace: 'nowrap'
-                  }}
-                ></th>
+                <TableHeaderCell />
+                <TableHeaderCell />
               </>
             )}
-            <th
-              style={{
-                padding: '0.75rem',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              RM
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => (
-            <tr
-              key={transaction.id}
-              style={{
-                backgroundColor:
-                  index % 2 === 0
-                    ? colorWithOpacity('bg-500', '5%').toString()
-                    : undefined
-              }}
-            >
-              <td
-                style={{
-                  padding: '0.75rem',
-                  fontSize: '1.125rem',
-                  whiteSpace: 'nowrap'
-                }}
-              >
+            <TableHeaderCell>RM</TableHeaderCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.map(transaction => (
+            <TableRow key={transaction.id}>
+              <TableCell nowrap>
                 {dayjs(transaction.date).format('MMM DD')}
-              </td>
-              <td
-                style={{
-                  minWidth: '24rem',
-                  padding: '0.75rem',
-                  fontSize: '1.125rem'
-                }}
-              >
+              </TableCell>
+              <TableCell minWidth="24rem">
                 {transaction.type === 'transfer'
                   ? t('statement.transferFromTo', {
                       from:
@@ -198,15 +91,9 @@ function TransactionList({
                         t('statement.unknownAsset')
                     })
                   : transaction.particulars}
-              </td>
+              </TableCell>
               {transaction.type !== 'transfer' && (
-                <td
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
+                <TableCell nowrap>
                   <Flex align="center" gap="sm">
                     <Icon
                       icon={
@@ -219,16 +106,10 @@ function TransactionList({
                       {assets.find(a => a.id === transaction.asset)?.name}
                     </Text>
                   </Flex>
-                </td>
+                </TableCell>
               )}
               {transaction.type !== 'transfer' && (
-                <td
-                  style={{
-                    padding: '0.75rem',
-                    fontSize: '1.125rem',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
+                <TableCell nowrap>
                   <TagChip
                     color={
                       categories.find(c => c.id === transaction.category)?.color
@@ -241,55 +122,33 @@ function TransactionList({
                         ?.name ?? '-'
                     }
                   />
-                </td>
+                </TableCell>
               )}
-              <td
-                style={{
-                  padding: '0.75rem',
-                  textAlign: 'right',
-                  fontSize: '1.125rem',
-                  whiteSpace: 'nowrap'
-                }}
-              >
+              <TableCell nowrap align="right">
                 {type === 'expenses'
                   ? `(${numberToCurrency(transaction.amount)})`
                   : numberToCurrency(transaction.amount)}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-          <tr>
-            <td
-              colSpan={type !== 'transfer' ? 4 : 2}
-              style={{
-                padding: '0.75rem',
-                textAlign: 'left',
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {t('statement.totalType', {
-                type: t(`transactionTypes.${type}`)
-              })}
-            </td>
-            <td
-              style={{
-                padding: '0.75rem',
-                textAlign: 'right',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                whiteSpace: 'nowrap',
-                borderTop: '2px solid',
-                borderBottom: '6px double'
-              }}
-            >
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={type !== 'transfer' ? 4 : 2}>
+              <Text weight="semibold">
+                {t('statement.totalType', {
+                  type: t(`transactionTypes.${type}`)
+                })}
+              </Text>
+            </TableCell>
+            <TableCell nowrap align="right" variant="total">
               {total < 0
                 ? `(${numberToCurrency(Math.abs(total))})`
                 : numberToCurrency(total)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
     </>
   )
 }

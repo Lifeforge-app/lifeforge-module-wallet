@@ -1,5 +1,13 @@
 import { useModuleTranslation } from '@lifeforge/localization'
-import { Flex, Text, WithQuery, colorWithOpacity } from '@lifeforge/ui'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableRow,
+  Text,
+  WithQuery
+} from '@lifeforge/ui'
 
 import { useStatementData } from '@/pages/Statements/providers/StatementDataProvider'
 import numberToCurrency from '@/utils/numberToCurrency'
@@ -14,38 +22,48 @@ function OverviewSummary() {
         const { monthlyIncome, monthlyExpenses, netIncome } = overview
 
         return (
-          <Flex direction="column" mt="lg" width="100%">
-            <Flex align="center" justify="between" p="md">
-              <Text size="xl">{t('statement.income')}</Text>
-              <Text size="lg">RM {numberToCurrency(monthlyIncome)}</Text>
-            </Flex>
-            <Flex
-              align="center"
-              bg={colorWithOpacity('bg-500', '5%')}
-              justify="between"
-              p="md"
-            >
-              <Text size="xl">{t('statement.expenses')}</Text>
-              <Text size="lg">RM ({numberToCurrency(monthlyExpenses)})</Text>
-            </Flex>
-            <Flex align="center" justify="between">
-              <Text p="md" size="xl" weight="semibold">
-                {t('statement.netIncomeLoss')}
-              </Text>
-              <Text
-                color={netIncome < 0 ? 'rose-600' : undefined}
-                p="md"
-                size="lg"
-                style={{ borderTop: '2px solid', borderBottom: '6px double' }}
-                weight="medium"
-              >
-                RM{' '}
-                {netIncome >= 0
-                  ? numberToCurrency(netIncome)
-                  : `(${numberToCurrency(Math.abs(netIncome))})`}
-              </Text>
-            </Flex>
-          </Flex>
+          <Table mt="lg" width="100%">
+            <TableBody>
+              <TableRow>
+                <TableCell width="100%">
+                  <Text>{t('statement.income')}</Text>
+                </TableCell>
+                <TableCell nowrap align="right" width="min-content">
+                  <Text>RM {numberToCurrency(monthlyIncome)}</Text>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell width="100%">
+                  <Text>{t('statement.expenses')}</Text>
+                </TableCell>
+                <TableCell nowrap align="right" width="min-content">
+                  <Text>
+                    RM ({numberToCurrency(monthlyExpenses)})
+                  </Text>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell width="100%">
+                  <Text weight="semibold">
+                    {t('statement.netIncomeLoss')}
+                  </Text>
+                </TableCell>
+                <TableCell nowrap align="right" variant="total" width="min-content">
+                  <Text
+                    color={netIncome < 0 ? 'rose-600' : undefined}
+                    weight="medium"
+                  >
+                    RM{' '}
+                    {netIncome >= 0
+                      ? numberToCurrency(netIncome)
+                      : `(${numberToCurrency(Math.abs(netIncome))})`}
+                  </Text>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
         )
       }}
     </WithQuery>
