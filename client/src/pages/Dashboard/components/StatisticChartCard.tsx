@@ -25,10 +25,9 @@ import {
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
+import { useWalletRange } from '@/providers/RangeProvider'
 import getChartScale from '@/utils/getChartScale'
 import numberToCurrency from '@/utils/numberToCurrency'
-
-import { useWalletRange } from '@/providers/RangeProvider'
 
 function StatisticChartCard() {
   const { t } = useModuleTranslation()
@@ -115,7 +114,7 @@ function StatisticChartCard() {
 
   return (
     <Widget icon="tabler:chart-dots" title="Statistics">
-      <Flex centered flex="1" height="100%" minHeight="24rem" width="100%">
+      <Flex centered flex="1" height="24rem" width="100%">
         <WithQuery query={chartDataQuery}>
           {chartData =>
             chartData.length === 0 ? (

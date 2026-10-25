@@ -4,10 +4,9 @@ import { useModuleTranslation } from '@lifeforge/localization'
 import { Flex, Icon, Text, Widget, WithQuery } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
+import { useWalletRange } from '@/providers/RangeProvider'
 import { useWalletStore } from '@/stores/useWalletStore'
 import numberToCurrency from '@/utils/numberToCurrency'
-
-import { useWalletRange } from '@/providers/RangeProvider'
 
 function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
   const isIncome = title.toLowerCase() === 'income'
@@ -27,6 +26,8 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
       <WithQuery query={typesCountQuery}>
         {data => {
           const entry = data[type]
+
+          if (!entry) return null
 
           const change = entry.percentageChange
 
@@ -52,7 +53,7 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
             <Flex direction="column" height="100%" justify="evenly">
               <Flex align="end" gap="sm" height="auto" width="100%">
                 <Flex asChild align="baseline" gap="sm" height="auto">
-                  <Text size={{ base: '4xl', xl: '5xl' }} weight="medium">
+                  <Text weight="medium">
                     <Text color="muted" size={{ base: '2xl', xl: '3xl' }}>
                       RM
                     </Text>
@@ -69,7 +70,9 @@ function IncomeExpenseCard({ title, icon }: { title: string; icon: string }) {
                           ))}
                       </Flex>
                     ) : (
-                      numberToCurrency(entry.accumulatedAmount)
+                      <Text size={{ base: '4xl', xl: '5xl' }}>
+                        {numberToCurrency(entry.accumulatedAmount)}
+                      </Text>
                     )}
                   </Text>
                 </Flex>

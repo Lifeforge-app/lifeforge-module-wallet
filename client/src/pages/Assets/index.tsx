@@ -1,35 +1,29 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router'
 
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
-  Button,
-  ContextMenu,
-  ContextMenuItem,
   EmptyStateScreen,
   FAB,
   Flex,
   Listbox,
   ListboxOption,
-  ModuleHeader,
   SearchInput,
   Stack,
   Text,
   Widget,
   WithQuery,
+  surface,
   useModalStore
 } from '@lifeforge/ui'
 
 import InactiveAssetsItem from '@/components/InactiveAssetsItem'
 import NetWorthSummary from '@/components/NetWorthSummary'
 import { useWalletData } from '@/hooks/useWalletData'
-import { forgeAPI } from '@/manifest'
-import { useWalletStore } from '@/stores/useWalletStore'
 
 import AssetItem from './components/AssetItem'
-import InactiveAssetsModal from './modals/InactiveAssetsModal'
+import AssetsHeader from './components/AssetsHeader'
 import ModifyAssetModal from './modals/ModifyAssetModal'
 
 const RANGE_OPTIONS = ['week', 'month', 'quarter', 'year', 'all'] as const
@@ -37,11 +31,9 @@ const RANGE_OPTIONS = ['week', 'month', 'quarter', 'year', 'all'] as const
 type RangeMode = (typeof RANGE_OPTIONS)[number]
 
 function Assets() {
-  const queryClient = useQueryClient()
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
   const { assetsQuery } = useWalletData()
-  const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
   const { hash } = useLocation()
 
   const [searchQuery, setSearchQuery] = useQueryState('q', {
@@ -49,7 +41,7 @@ function Assets() {
   })
 
   const [rangeMode, setRangeMode] = useQueryState('range', {
-    defaultValue: 'month' as RangeMode
+    defaultValue: 'month'
   })
 
   const activeAssets = useMemo(() => {
@@ -81,70 +73,29 @@ function Assets() {
 
   return (
     <>
-      <ModuleHeader
-        icon="tabler:wallet"
-        title="Assets"
-        trailing={
-          <>
-            <Button
-              display={{ base: 'none', sm: 'flex' }}
-              icon="tabler:plus"
-              tProps={{
-                item: t('items.asset')
-              }}
-              onClick={handleCreateCategory}
-            >
-              new
-            </Button>
-            <ContextMenu
-              componentProps={{
-                menu: { minWidth: '15rem' }
-              }}
-            >
-              <ContextMenuItem
-                icon="tabler:archive"
-                label={t('labels.inactiveAssets')}
-                namespace={false}
-                onClick={() => {
-                  open(InactiveAssetsModal, {
-                    rangeMode: rangeMode as RangeMode
-                  })
-                }}
-              />
-              <ContextMenuItem
-                icon="tabler:refresh"
-                label="Refresh"
-                onClick={() => {
-                  queryClient.invalidateQueries({
-                    queryKey: forgeAPI.assets.key
-                  })
-                  assetsQuery.refetch()
-                }}
-              />
-              <ContextMenuItem
-                checked={isAmountHidden}
-                icon="tabler:eye-off"
-                label="Hide Amount"
-                onClick={() => {
-                  toggleAmountVisibility()
-                }}
-              />
-            </ContextMenu>
-          </>
-        }
+      <AssetsHeader
+        rangeMode={rangeMode as RangeMode}
+        onCreate={handleCreateCategory}
       />
-      <Flex align="center" gap="md" mb="lg">
+      <Flex
+        align="center"
+        direction={{ base: 'column', sm: 'row' }}
+        gap="sm"
+        mb="lg"
+      >
         <SearchInput
           searchTarget="asset"
           value={searchQuery}
           onChange={setSearchQuery}
         />
         <Listbox
+          bg={surface.defaultInteractive}
           minWidth="14em"
           renderContent={() => (
             <Text whiteSpace="nowrap">{t(`rangeModes.${rangeMode}`)}</Text>
           )}
           value={rangeMode}
+          width={{ base: '100%', sm: 'auto' }}
           onChange={setRangeMode}
         >
           {RANGE_OPTIONS.map(option => (
