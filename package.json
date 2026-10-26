@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/lifeforge-app/lifeforge-module-wallet.git"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "author": "Melvin Chia <melvinchia623600@gmail.com>",
   "description": "Become your own financial superhero.",
