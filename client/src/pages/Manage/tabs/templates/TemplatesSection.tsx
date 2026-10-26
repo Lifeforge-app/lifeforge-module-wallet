@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { useModuleTranslation } from '@lifeforge/localization'
-import { Alert, SearchInput, WithQueryData, surface } from '@lifeforge/ui'
+import { Alert, SearchInput, WithQueryData } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -15,11 +15,8 @@ function TemplatesSection() {
   return (
     <TemplatesTabbedView.Root>
       <TemplatesTabbedView.Selector />
-      <Alert type="note">
-        {t('messages.aiAccuracy')}
-      </Alert>
+      <Alert type="note">{t('messages.aiAccuracy')}</Alert>
       <SearchInput
-        bg={surface.lightInteractive}
         debounceMs={300}
         my="md"
         searchTarget="template"

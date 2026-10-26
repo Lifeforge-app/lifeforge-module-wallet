@@ -1,12 +1,6 @@
 import { useState } from 'react'
 
-import {
-  EmptyStateScreen,
-  SearchInput,
-  Stack,
-  WithQuery,
-  surface
-} from '@lifeforge/ui'
+import { EmptyStateScreen, SearchInput, Stack, WithQuery } from '@lifeforge/ui'
 
 import useEntityBreakdown from '@/hooks/useEntityBreakdown'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -23,7 +17,6 @@ function LedgersSection() {
   return (
     <>
       <SearchInput
-        bg={surface.lightInteractive}
         debounceMs={300}
         my="md"
         searchTarget="ledger"

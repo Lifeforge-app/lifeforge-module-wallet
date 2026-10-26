@@ -98,7 +98,7 @@ function Transactions() {
             value={searchQuery}
             onChange={setSearchQuery}
           />
-          <Stack gap="md" height="100%" my="lg" width="100%">
+          <Stack gap="md" minHeight="0">
             <WithQuery query={transactionsQuery}>
               {transactions =>
                 transactions.groups.length > 0 ? (
@@ -108,8 +108,8 @@ function Transactions() {
                       totalPages={transactions.totalPages}
                       onPageChange={setPage}
                     />
-                    <Scrollbar>
-                      <Stack gap="xl" mb={{ base: '2xl', md: 'none' }}>
+                    <Scrollbar pb={{ base: '2xl', md: 'none' }}>
+                      <Stack gap="xl">
                         {transactions.groups.map(group => (
                           <TransactionGroup
                             key={group.date}

@@ -61,7 +61,7 @@ function AssetsBalance({ isWidget = false }: { isWidget?: boolean }) {
                 <NetWorthSummary assets={assets} />
               </Card>
               <Scrollbar>
-                <Stack as="ul" gap="sm" pb="sm">
+                <Stack as="ul" gap="sm">
                   {activeAssets.map(asset => (
                     <Card
                       key={asset.id}

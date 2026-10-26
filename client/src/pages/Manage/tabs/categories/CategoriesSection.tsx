@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { SearchInput, WithQuery, surface } from '@lifeforge/ui'
+import { SearchInput, WithQuery } from '@lifeforge/ui'
 
 import useEntityBreakdown from '@/hooks/useEntityBreakdown'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -17,7 +17,6 @@ function CategoriesSection() {
     <CategoriesTabbedView.Root>
       <CategoriesTabbedView.Selector />
       <SearchInput
-        bg={surface.lightInteractive}
         debounceMs={300}
         my="md"
         searchTarget="category"

@@ -77,7 +77,7 @@ function ManageItem({
   return (
     <Card
       align="center"
-      bg={onClick ? surface.lightInteractive : surface.light}
+      bg={onClick ? surface.defaultInteractive : surface.default}
       direction="row"
       gap="md"
       isInteractive={onClick !== undefined}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { SearchInput, WithQuery, surface } from '@lifeforge/ui'
+import { SearchInput, WithQuery } from '@lifeforge/ui'
 
 import useEntityBreakdown from '@/hooks/useEntityBreakdown'
 import { useWalletData } from '@/hooks/useWalletData'
@@ -15,7 +15,6 @@ function PlatformsSection() {
   return (
     <>
       <SearchInput
-        bg={surface.lightInteractive}
         debounceMs={300}
         my="md"
         searchTarget="platform"
