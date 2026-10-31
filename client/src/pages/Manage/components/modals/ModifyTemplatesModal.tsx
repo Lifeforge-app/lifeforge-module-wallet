@@ -73,7 +73,7 @@ const { categoriesQuery, assetsQuery, platformsQuery, ledgersQuery } =
   })
 
   const updateMutation = useForgeMutation(
-    forgeAPI.templates.update.input({ id: initialData?.id || ''! }),
+    forgeAPI.templates.update.input({ id: initialData?.id || '' }),
     { action: 'update', queryKey: forgeAPI.templates.key }
   )
 

@@ -45,7 +45,7 @@ function TypeSectionItem({
       updateFilter('category', '')
       updateFilter(
         'type',
-        label.toLowerCase() as 'income' | 'expenses' | 'transfer'
+        label.toLowerCase()
       )
     }
   }, [label, updateFilter])

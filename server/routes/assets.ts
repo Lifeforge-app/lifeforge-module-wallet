@@ -178,16 +178,14 @@ export const getAssetAccumulatedBalance = forge
 
       const allTransactions = [
         ...incomeExpenses.map(t => ({
-          type: t.type as 'income' | 'expenses',
+          type: t.type,
           amount: t.amount,
           date: t.date
         })),
         ...transfers
           .filter(t => t.from === id || t.to === id)
           .map(t => ({
-            type: (t.from === id ? 'expenses' : 'income') as
-              | 'income'
-              | 'expenses',
+            type: (t.from === id ? 'expenses' : 'income'),
             amount: t.amount,
             date: t.date
           }))

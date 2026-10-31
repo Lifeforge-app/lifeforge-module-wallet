@@ -47,7 +47,7 @@ function ModifyCategoryModal({
   })
 
   const updateMutation = useForgeMutation(
-    forgeAPI.categories.update.input({ id: initialData?.id || ''! }),
+    forgeAPI.categories.update.input({ id: initialData?.id || '' }),
     { action: 'update', queryKey: forgeAPI.categories.key }
   )
 

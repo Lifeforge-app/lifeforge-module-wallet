@@ -41,7 +41,7 @@ function ModifyPlatformModal({
   })
 
   const updateMutation = useForgeMutation(
-    forgeAPI.platforms.update.input({ id: initialData?.id || ''! }),
+    forgeAPI.platforms.update.input({ id: initialData?.id || '' }),
     { action: 'update', queryKey: forgeAPI.platforms.key }
   )
 

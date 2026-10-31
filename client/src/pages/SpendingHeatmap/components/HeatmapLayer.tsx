@@ -70,7 +70,7 @@ export function HeatmapLayer({
 
         if (!projection || !map || !('getBounds' in map)) return
 
-        const gMap = map as google.maps.Map
+        const gMap = map
         const bounds = gMap.getBounds()
 
         if (!bounds) return

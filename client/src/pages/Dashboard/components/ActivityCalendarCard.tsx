@@ -25,7 +25,8 @@ const TYPE_COLORS = {
 function ActivityCalendarCard() {
   const { t } = useModuleTranslation()
   const { queryInput } = useWalletRange()
-  const [selectedType, setSelectedType] = useState<'income' | 'expenses'>(
+  
+const [selectedType, setSelectedType] = useState<'income' | 'expenses'>(
     'expenses'
   )
 

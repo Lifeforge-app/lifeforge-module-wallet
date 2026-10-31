@@ -87,7 +87,7 @@ export async function getAllAssetAccumulatedBalance(
     const incomeExpenses = incomeExpensesRaw
       .filter(t => t.asset === asset.id)
       .map(t => ({
-        type: t.type as 'income' | 'expenses',
+        type: t.type,
         amount: t.amount,
         date: t.date
       }))
@@ -95,9 +95,7 @@ export async function getAllAssetAccumulatedBalance(
     const transfers = transfersRaw
       .filter(t => t.from === asset.id || t.to === asset.id)
       .map(t => ({
-        type: (t.from === asset.id ? 'expenses' : 'income') as
-          | 'income'
-          | 'expenses',
+        type: (t.from === asset.id ? 'expenses' : 'income'),
         amount: t.amount,
         date: t.date
       }))
