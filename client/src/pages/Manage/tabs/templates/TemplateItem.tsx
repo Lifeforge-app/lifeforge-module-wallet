@@ -33,6 +33,7 @@ function TemplateItem({
 
   return (
     <ManageItem
+    
       color={targetCategory?.color}
       deleteDescription="Are you sure you want to delete this template?"
       deleteTitle="Delete Template"

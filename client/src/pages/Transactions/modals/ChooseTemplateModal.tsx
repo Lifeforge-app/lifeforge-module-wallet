@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { AutoSizer } from 'react-virtualized'
 
 import {
   Box,
@@ -12,8 +11,8 @@ import {
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
-import TemplateList from '@/pages/Manage/tabs/templates/TemplateList'
 import { TemplatesTabbedView } from '@/pages/Manage/constants/templates_tabbed_view'
+import TemplateList from '@/pages/Manage/tabs/templates/TemplateList'
 
 function ChooseTemplateModal({ onClose }: { onClose: () => void }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -38,18 +37,14 @@ function ChooseTemplateModal({ onClose }: { onClose: () => void }) {
         <Box flex="1" minHeight="0">
           <WithQueryData contract={forgeAPI.templates.list}>
             {templates => (
-              <AutoSizer>
-                {({ width, height }) => (
-                  <Scrollbar style={{ width, height }}>
-                    <TemplateList
-                      choosing
-                      searchQuery={searchQuery}
-                      templates={templates}
-                      onClose={onClose}
-                    />
-                  </Scrollbar>
-                )}
-              </AutoSizer>
+              <Scrollbar>
+                <TemplateList
+                  choosing
+                  searchQuery={searchQuery}
+                  templates={templates}
+                  onClose={onClose}
+                />
+              </Scrollbar>
             )}
           </WithQueryData>
         </Box>

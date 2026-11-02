@@ -75,10 +75,12 @@ function BreakdownDoughnutChart() {
   return (
     <Flex
       centered
-      aspectRatio="1/1"
+      aspectRatio={{ xl: 'auto' }}
       direction="column"
+      flex={{ xl: '1' }}
       gap="md"
       height="auto"
+      minHeight={{ xl: '0' }}
       minWidth="0"
       position="relative"
       width="80%"

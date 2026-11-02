@@ -93,7 +93,7 @@ function Transactions() {
           <InnerHeader />
           <SearchInput
             debounceMs={300}
-            mt="md"
+            my="md"
             searchTarget="transaction"
             value={searchQuery}
             onChange={setSearchQuery}

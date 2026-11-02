@@ -12,6 +12,7 @@ import {
   Tooltip
 } from 'chart.js'
 import type { ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
 
 import {
   Box,
@@ -19,7 +20,8 @@ import {
   ContextMenu,
   ContextMenuItem,
   Grid,
-  ModuleHeader
+  ModuleHeader,
+  useDivSize
 } from '@lifeforge/ui'
 
 import AssetsBalance from '@/components/AssetsBalance'
@@ -68,7 +70,11 @@ const WIDGETS: {
     minHeight: { base: '32rem', xl: '0' }
   },
   { key: 'statisticChart', element: <StatisticChartCard /> },
-  { key: 'activityCalendar', element: <ActivityCalendarCard />, minHeight: '0' },
+  {
+    key: 'activityCalendar',
+    element: <ActivityCalendarCard />,
+    minHeight: '0'
+  },
   {
     key: 'recentTransactions',
     element: <TransactionsCard />,
@@ -81,8 +87,21 @@ const WIDGETS: {
   }
 ]
 
+const REFERENCE_WIDGETS = new Set(['income', 'expenses'])
+
 function WalletDashboard() {
   const { isAmountHidden, toggleAmountVisibility } = useWalletStore()
+  const gridRef = useRef<HTMLDivElement>(null)
+  const incomeRef = useRef<HTMLDivElement>(null)
+  const { height: rowHeight } = useDivSize(incomeRef)
+
+  useEffect(() => {
+    const grid = gridRef.current
+
+    if (!grid || !rowHeight) return
+
+    grid.style.setProperty('--wallet-dashboard-row-height', `${rowHeight}px`)
+  }, [rowHeight])
 
   return (
     <RangeProvider>
@@ -104,9 +123,18 @@ function WalletDashboard() {
         }
       />
       <RangeSelector />
-      <Grid className={dashboardGrid} pb="2xl" width="100%">
+      <Grid ref={gridRef} className={dashboardGrid} pb="2xl" width="100%">
         {WIDGETS.map(({ key, element, minHeight }) => (
-          <Box key={key} gridArea={key} minHeight={minHeight} minWidth="0">
+          <Box
+            key={key}
+            ref={key === 'income' ? incomeRef : undefined}
+            gridArea={key}
+            minHeight={minHeight}
+            minWidth="0"
+            style={
+              REFERENCE_WIDGETS.has(key) ? { alignSelf: 'start' } : undefined
+            }
+          >
             {element}
           </Box>
         ))}

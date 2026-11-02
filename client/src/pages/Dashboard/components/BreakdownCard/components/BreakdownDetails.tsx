@@ -10,7 +10,12 @@ function BreakdownDetails() {
   const { entities } = useContext(BreakdownContext)
 
   return (
-    <Flex height="100%" minHeight="24em" width="100%">
+    <Flex
+      flex={{ xl: '1' }}
+      height="100%"
+      minHeight={{ base: '24em', xl: '0' }}
+      width="100%"
+    >
       <AutoSizer>
         {({ width, height }) => (
           <Scrollbar

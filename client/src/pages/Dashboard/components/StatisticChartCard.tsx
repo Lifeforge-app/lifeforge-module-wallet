@@ -114,79 +114,88 @@ function StatisticChartCard() {
 
   return (
     <Widget icon="tabler:chart-dots" title="Statistics">
-      <Flex centered flex="1" height="24rem" pb="md" width="100%">
-        <WithQuery query={chartDataQuery}>
-          {chartData =>
-            chartData.length === 0 ? (
-              <EmptyStateScreen
-                message={{
-                  id: 'transactions'
-                }}
-              />
-            ) : (
-              <ResponsiveContainer height="100%" width="100%">
-                <ComposedChart
-                  barGap={0}
-                  data={data}
-                  margin={{ top: 0, bottom: 20, left: 20, right: 0 }}
-                >
-                  <CartesianGrid
-                    stroke={
-                      bgTempPalette[derivedTheme === 'dark' ? '800' : '200']
-                    }
-                    strokeDasharray="3 3"
-                    vertical={false}
-                  />
-                  <XAxis
-                    axisLine={false}
-                    dataKey="date"
-                    tick={{ fill: 'currentColor', fontSize: 12 }}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    domain={['auto', 'auto']}
-                    scale={chartScale}
-                    tick={{ fill: 'currentColor', fontSize: 12 }}
-                    tickFormatter={value =>
-                      `${numberToCurrency(Math.abs(value))}`
-                    }
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    content={<CustomTooltip />}
-                    cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }}
-                  />
-                  <Bar
-                    dataKey="income"
-                    fill="rgba(34,197,94,0.2)"
-                    name="Income"
-                    radius={[8, 8, 8, 8]}
-                    stroke="rgb(34 197 94)"
-                    strokeWidth={2}
-                  />
-                  <Bar
-                    dataKey="expenses"
-                    fill="rgba(239,68,68,0.2)"
-                    name="Expenses"
-                    radius={[8, 8, 8, 8]}
-                    stroke="rgb(239 68 68)"
-                    strokeWidth={2}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            )
-          }
-        </WithQuery>
-      </Flex>
-      <Flex centered gap="2xl">
-        <Flex align="center" gap="sm">
-          <Box bg="green-500" height="0.75rem" r="full" width="0.75rem" />
-          <Text size="sm">{t('transactionTypes.income')}</Text>
+      <Flex direction="column" height="100%" minHeight="0" width="100%">
+        <Flex
+          centered
+          flex={{ xl: '1' }}
+          height={{ base: '24rem', xl: 'auto' }}
+          minHeight={{ xl: '0' }}
+          pb="md"
+          width="100%"
+        >
+          <WithQuery query={chartDataQuery}>
+            {chartData =>
+              chartData.length === 0 ? (
+                <EmptyStateScreen
+                  message={{
+                    id: 'transactions'
+                  }}
+                />
+              ) : (
+                <ResponsiveContainer height="100%" width="100%">
+                  <ComposedChart
+                    barGap={0}
+                    data={data}
+                    margin={{ top: 0, bottom: 20, left: 20, right: 0 }}
+                  >
+                    <CartesianGrid
+                      stroke={
+                        bgTempPalette[derivedTheme === 'dark' ? '800' : '200']
+                      }
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
+                    <XAxis
+                      axisLine={false}
+                      dataKey="date"
+                      tick={{ fill: 'currentColor', fontSize: 12 }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      domain={['auto', 'auto']}
+                      scale={chartScale}
+                      tick={{ fill: 'currentColor', fontSize: 12 }}
+                      tickFormatter={value =>
+                        `${numberToCurrency(Math.abs(value))}`
+                      }
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      content={<CustomTooltip />}
+                      cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }}
+                    />
+                    <Bar
+                      dataKey="income"
+                      fill="rgba(34,197,94,0.2)"
+                      name="Income"
+                      radius={[8, 8, 8, 8]}
+                      stroke="rgb(34 197 94)"
+                      strokeWidth={2}
+                    />
+                    <Bar
+                      dataKey="expenses"
+                      fill="rgba(239,68,68,0.2)"
+                      name="Expenses"
+                      radius={[8, 8, 8, 8]}
+                      stroke="rgb(239 68 68)"
+                      strokeWidth={2}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              )
+            }
+          </WithQuery>
         </Flex>
-        <Flex align="center" gap="sm">
-          <Box bg="red-500" height="0.75rem" r="full" width="0.75rem" />
-          <Text size="sm">{t('transactionTypes.expenses')}</Text>
+        <Flex centered flexShrink="0" gap="2xl">
+          <Flex align="center" gap="sm">
+            <Box bg="green-500" height="0.75rem" r="full" width="0.75rem" />
+            <Text size="sm">{t('transactionTypes.income')}</Text>
+          </Flex>
+          <Flex align="center" gap="sm">
+            <Box bg="red-500" height="0.75rem" r="full" width="0.75rem" />
+            <Text size="sm">{t('transactionTypes.expenses')}</Text>
+          </Flex>
         </Flex>
       </Flex>
     </Widget>
