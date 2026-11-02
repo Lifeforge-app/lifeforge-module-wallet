@@ -98,7 +98,7 @@ function Transactions() {
             value={searchQuery}
             onChange={setSearchQuery}
           />
-          <Stack gap="md" minHeight="0">
+          <Stack flex="1" gap="md" minHeight="0">
             <WithQuery query={transactionsQuery}>
               {transactions =>
                 transactions.groups.length > 0 ? (

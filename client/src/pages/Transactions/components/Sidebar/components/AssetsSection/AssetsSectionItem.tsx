@@ -42,7 +42,7 @@ function AssetsSectionItem({
       icon={icon}
       label={label}
       namespace={id ? false : undefined}
-      number={amount}
+      number={label === 'allAssets' ? undefined : amount}
       onCancelButtonClick={id !== null ? handleCancelButtonClick : undefined}
       onClick={handleClick}
     />
