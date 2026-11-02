@@ -71,7 +71,7 @@ function TransactionContextMenu() {
         onClick={() =>
           open(ModifyTransactionsModal, {
             type: 'create',
-            initialData: transaction
+            initialData: { ...transaction, receipt: '' }
           })
         }
       />
